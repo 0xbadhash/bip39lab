@@ -135,10 +135,15 @@ test.describe("BIP39 Lab E2E", () => {
     const firstCopy = page
       .locator("#addrTableBody tr:not(.empty-row)")
       .first()
-      .getByLabel("Copy address to clipboard")
+      .getByLabel(/Copy address to clipboard|Copied to clipboard/i)
       .first();
     await firstCopy.click();
+    // Visible feedback is required (Comet defect: label must change)
     await expect(firstCopy).toHaveText(/Copied/i, { timeout: 3000 });
+    await expect(firstCopy).toHaveClass(/copied/);
+    await expect(page.locator("#copyFeedback")).toContainText(/Copied to clipboard/i, {
+      timeout: 3000,
+    });
 
     const clip = await page.evaluate(() => navigator.clipboard.readText());
     expect(clip.length).toBeGreaterThan(10);

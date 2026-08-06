@@ -123,8 +123,11 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 
 | Step | Action | Expected |
 |------|--------|----------|
-| 1 | Click **Copy** on first address | Button shows Copied (briefly) |
-| 2 | Clipboard (if readable) | Matches address text |
+| 1 | Click **Copy** on first address in the table | Button label becomes **Copied** (green background) within ~0.5s and stays ~2s |
+| 2 | Look under the table for live feedback | Line like `Copied to clipboard: bc1…` (`#copyFeedback`) |
+| 3 | Clipboard (if readable by agent) | Matches the address text that was copied |
+
+**Note:** If clipboard API is blocked by the agent environment, the UI must still show **Copied** or **Failed** (never stay on plain "Copy" with no feedback).
 
 ### S7 — QR modal
 

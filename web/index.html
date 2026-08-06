@@ -225,8 +225,10 @@
             </div>
             <p class="control-help copy-hint">
               Click <strong>Copy</strong> next to any address to put it on the clipboard (like copying an IBAN).
+              The button should change to <strong>Copied</strong> (green) for about 2 seconds, and a line below confirms what was copied.
               Use <strong>QR</strong> to show a scannable code offline. Only the address is copied — never the recovery phrase.
             </p>
+            <p id="copyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
 
             <div class="card-sub watch-only" id="watchOnlyPanel">
               <h3>Watch-only export</h3>

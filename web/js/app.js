@@ -146,40 +146,141 @@
     if (kind) el.classList.add(kind);
   }
 
-  function copyAddress(addr, btn) {
-    if (!addr) return;
-    const done = () => {
-      if (!btn) return;
-      const prev = btn.textContent;
-      btn.textContent = "Copied";
-      btn.classList.add("copied");
-      setTimeout(() => {
-        btn.textContent = prev;
-        btn.classList.remove("copied");
-      }, 1200);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(addr).then(done).catch(() => fallbackCopy(addr, done));
-    } else {
-      fallbackCopy(addr, done);
+  /** Visible copy feedback (button label + aria-live strip). Always updates UI even if clipboard API hangs. */
+  function setCopyFeedback(btn, state, detail) {
+    const idle = btn && (btn.dataset.copyIdle || "Copy");
+    if (btn) {
+      if (!btn.dataset.copyIdle) btn.dataset.copyIdle = (btn.textContent || "Copy").replace(/^Copied$|^Failed$|^Copying…$/, "Copy") || "Copy";
+      btn.classList.remove("copied", "copy-failed", "copying");
+      if (state === "ok") {
+        btn.textContent = "Copied";
+        btn.classList.add("copied");
+        btn.setAttribute("aria-label", "Copied to clipboard");
+      } else if (state === "err") {
+        btn.textContent = "Failed";
+        btn.classList.add("copy-failed");
+        btn.setAttribute("aria-label", "Copy failed");
+      } else if (state === "pending") {
+        btn.textContent = "Copying…";
+        btn.classList.add("copying");
+      } else {
+        btn.textContent = btn.dataset.copyIdle || idle || "Copy";
+        btn.setAttribute("aria-label", "Copy address to clipboard");
+      }
+    }
+    const live = $("copyFeedback");
+    if (live) {
+      if (state === "ok") {
+        live.textContent = "Copied to clipboard: " + (detail || "").slice(0, 72) + ((detail || "").length > 72 ? "…" : "");
+        live.className = "copy-feedback ok";
+      } else if (state === "err") {
+        live.textContent = "Copy failed — select the text and copy manually.";
+        live.className = "copy-feedback err";
+      } else if (state === "pending") {
+        live.textContent = "Copying…";
+        live.className = "copy-feedback";
+      } else {
+        live.textContent = "";
+        live.className = "copy-feedback";
+      }
     }
   }
 
-  function fallbackCopy(addr, done) {
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = addr;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      done();
-    } catch (e) {
+  function copyAddress(addr, btn) {
+    if (!addr) return;
+    const restoreMs = 2000;
+    const idleLabel =
+      btn && btn.dataset.copyIdle
+        ? btn.dataset.copyIdle
+        : btn && btn.textContent && !/^(Copied|Failed|Copying…)$/.test(btn.textContent)
+          ? btn.textContent
+          : btn && btn.getAttribute("aria-label") && /key/i.test(btn.getAttribute("aria-label") || "")
+            ? "Copy key"
+            : "Copy";
+    if (btn) btn.dataset.copyIdle = idleLabel;
+
+    setCopyFeedback(btn, "pending", addr);
+
+    const succeed = () => {
+      setCopyFeedback(btn, "ok", addr);
+      window.clearTimeout(btn && btn._copyTimer);
+      if (btn) {
+        btn._copyTimer = window.setTimeout(() => setCopyFeedback(btn, "idle"), restoreMs);
+      } else {
+        window.setTimeout(() => setCopyFeedback(null, "idle"), restoreMs);
+      }
+    };
+
+    const fail = () => {
+      setCopyFeedback(btn, "err", addr);
       setStatus("Could not copy — select the address manually.", "err");
+      window.clearTimeout(btn && btn._copyTimer);
+      if (btn) {
+        btn._copyTimer = window.setTimeout(() => setCopyFeedback(btn, "idle"), restoreMs);
+      }
+    };
+
+    // Prefer sync fallback first (more reliable for some automation agents / permission edge cases),
+    // then try async clipboard API.
+    let wrote = false;
+    try {
+      wrote = fallbackCopySync(addr);
+    } catch (e) {
+      wrote = false;
     }
+
+    if (wrote) {
+      succeed();
+      // Best-effort modern API (ignore result)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(addr).catch(function () {});
+      }
+      return;
+    }
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      const p = navigator.clipboard.writeText(addr);
+      if (p && typeof p.then === "function") {
+        p.then(succeed).catch(fail);
+        // If the promise never settles (some agents), still show outcome after timeout
+        window.setTimeout(function () {
+          if (btn && btn.textContent === "Copying…") {
+            // leave pending only briefly — attempt fail so user sees feedback
+            fail();
+          }
+        }, 2500);
+        return;
+      }
+    }
+    fail();
+  }
+
+  function fallbackCopySync(addr) {
+    const ta = document.createElement("textarea");
+    ta.value = addr;
+    ta.setAttribute("readonly", "");
+    ta.setAttribute("aria-hidden", "true");
+    ta.style.position = "fixed";
+    ta.style.top = "0";
+    ta.style.left = "0";
+    ta.style.width = "1px";
+    ta.style.height = "1px";
+    ta.style.padding = "0";
+    ta.style.border = "none";
+    ta.style.outline = "none";
+    ta.style.boxShadow = "none";
+    ta.style.background = "transparent";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, addr.length);
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } finally {
+      document.body.removeChild(ta);
+    }
+    return !!ok;
   }
 
   function makeAddrCell(addr, col) {

@@ -448,11 +448,13 @@ code {
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 6px;
-  padding: 0.2rem 0.45rem;
+  padding: 0.2rem 0.55rem;
   font-size: 0.72rem;
   font-weight: 650;
   cursor: pointer;
   font-family: "Segoe UI", system-ui, sans-serif;
+  min-width: 3.6rem;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
 }
 
 .btn-copy:hover {
@@ -460,9 +462,40 @@ code {
   color: var(--focus);
 }
 
+.btn-copy.copying {
+  border-color: var(--muted);
+  color: var(--muted);
+}
+
 .btn-copy.copied {
   border-color: var(--ok);
-  color: var(--ok);
+  background: rgba(34, 160, 107, 0.2);
+  color: #3dd68c;
+  font-weight: 700;
+}
+
+.btn-copy.copy-failed {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+  color: #ff8a80;
+}
+
+.copy-feedback {
+  min-height: 1.25rem;
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.copy-feedback.ok {
+  color: #3dd68c;
+  font-weight: 600;
+}
+
+.copy-feedback.err {
+  color: #ff8a80;
+  font-weight: 600;
 }
 
 .addr-table .empty-row td {
