@@ -1,29 +1,27 @@
-# PR Draft: Phase 2 address-only balance (v0.3.0)
+# PR Draft: Phase 3 hardening (v0.4.0)
 
-**Range:** `v0.2.0...HEAD`
+**Range:** `v0.3.0...HEAD`
 
 ## Summary
 
-- `bip39lab balance` address-only
-- Fail-closed unknown vs zero
-- Network requires explicit leak acknowledgment
+SECURITY.md, README, VERSION 0.4.0, web rebuild docs.
 
 ## What Problem This Solves
 
-Balance checks must not accept seeds or treat API failure as zero.
+Operators lacked written policy and entry docs for the offline lab.
 
 ## Why This Change Was Made
 
-Phase 2 ROADMAP.
+Phase 3 ROADMAP.
 
 ## User Impact
 
-Optional explorer check without seed path.
+Clear install, usage, and security expectations.
 
 ## Evidence
 
 ```text
-red_cmd: python -m pytest -q tests/test_balance.py
+red_cmd: python -m pytest -q tests/test_hardening_docs.py
 green_cmd: python -m pytest -q
 ```
 
@@ -33,32 +31,31 @@ green_cmd: python -m pytest -q
 |------|--------|
 | hard_gates | pr_review |
 | smoke | pytest |
-| pytest | 25 passed |
+| pytest | suite green |
 
 ## Spec
 
-**Spec:** `.agents/specs/2026-08-06-phase-2-address-balance.md`
+**Spec:** `.agents/specs/2026-08-06-phase-3-hardening.md`
 
 ## Traceability
 
-| AC | Test |
-|----|------|
-| AC2.1 reject mnemonic | test_rejects_mnemonic_like |
-| AC2.2 fail closed | test_blockstream_http_failure_unknown |
-| AC2.3 default none | test_offline_default_unknown |
-| AC2.4 no mnemonic param | CLI balance address only |
-| AC2.5 mocks | test_blockstream_ok_mocked |
-| AC2.6 smoke | pytest |
+| AC | Evidence |
+|----|----------|
+| AC3.1 SECURITY.md | test_hardening_docs |
+| AC3.2 README | test_hardening_docs |
+| AC3.3 VERSION | test_hardening_docs |
+| AC3.4–3.5 REBUILD.md | file present |
+| AC3.6 tests | pytest |
 
 ## Threat notes
 
-- Network backends leak address interest to third parties — requires explicit flag.
-- Mnemonic-shaped input rejected on balance path.
+- Docs restate no-retention and address-leak consent.
+- Rebuild path keeps crypto offline-vendored.
 
 ## Red-proof
 
 ```text
-red_cmd: python -m pytest -q tests/test_balance.py
+red_cmd: python -m pytest -q tests/test_hardening_docs.py
 green_cmd: python -m pytest -q
 ```
 
@@ -68,27 +65,27 @@ See artifacts.
 
 ## Test plan
 
-- [x] unit mocks
-- [x] CLI offline
+- [x] docs tests
+- [x] full suite
 
 ## Things that look bad but are actually fine
 
-1. Hardcoded Blockstream URL — only backend; gated by ack flag.
-2. Exit code 2 for unknown — intentional fail-closed.
-3. Web UI still offline CSP — balance not in browser Phase 2.
+1. No code-signing yet — documented out of scope.
+2. npm still needed only for rebuild, not runtime.
+3. VERSION vs git tags manual — release tags v0.4.0.
 
 ```yaml
 things_that_look_bad_but_are_fine:
-  - file: "src/bip39lab/balance.py"
-    concern: "external URL"
-    why_fine: "address-only optional backend"
-    validation: "tests + ack flag"
-  - file: "src/bip39lab/cli.py"
-    concern: "network command"
-    why_fine: "default backend none"
-    validation: "test_cli_balance_offline"
-  - file: "web/index.html"
-    concern: "no balance in UI"
-    why_fine: "CSP connect-src none preserved"
-    validation: "index CSP"
+  - file: "SECURITY.md"
+    concern: "policy only"
+    why_fine: "Phase 3 is hygiene"
+    validation: "test_hardening_docs"
+  - file: "web/REBUILD.md"
+    concern: "npm mention"
+    why_fine: "build-time only"
+    validation: "bundle committed"
+  - file: "VERSION"
+    concern: "manual bump"
+    why_fine: "aligned with pyproject"
+    validation: "0.4.0"
 ```

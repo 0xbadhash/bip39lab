@@ -98,9 +98,10 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-06-phase-2-address-balance.md`
 
-### [PLANNED] Phase 3 — Hardening
-- **Status:** planned
+### [DONE] Phase 3 — Hardening
+- **Status:** done
 - **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-06-phase-3-hardening.md`
 
 ## Current focus
 

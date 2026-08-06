@@ -11,4 +11,4 @@ __all__ = [
     "validate_mnemonic",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.4.0"
