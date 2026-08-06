@@ -1,5 +1,10 @@
 # bitcoin-scripts — offline BIP39 / entropy lab
 
+<!-- CURRENT_RELEASE -->
+**Current release:** `v0.4.0` (docs synced via `/sync_docs`)
+<!-- /CURRENT_RELEASE -->
+
+
 Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by public converters but without third-party trust for seed material.
 
 **Not** a funded-wallet brute-force scanner. Legacy unsafe scanner is under `legacy/` only.
