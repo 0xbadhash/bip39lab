@@ -224,40 +224,140 @@ export function buildMultisigFromText(partsText, m, options) {
   };
 }
 
+const WORD_STRENGTH = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 };
+
+/** SLIP-132 mainnet public version bytes for BIP84 native-segwit account keys (zpub). */
+const ZPUB_VERSION = [0x04, 0xb2, 0x47, 0x46];
+
+function b58decode(s) {
+  const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let n = 0n;
+  for (const c of s) {
+    const i = ALPH.indexOf(c);
+    if (i < 0) throw new Error("invalid base58");
+    n = n * 58n + BigInt(i);
+  }
+  let hex = n.toString(16);
+  if (hex.length % 2) hex = "0" + hex;
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  let leading = 0;
+  for (const c of s) {
+    if (c === "1") leading++;
+    else break;
+  }
+  const out = new Uint8Array(leading + bytes.length);
+  out.set(bytes, leading);
+  return out;
+}
+
+function b58encode(bytes) {
+  const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let n = 0n;
+  for (const b of bytes) n = (n << 8n) + BigInt(b);
+  let res = "";
+  while (n > 0n) {
+    res = ALPH[Number(n % 58n)] + res;
+    n /= 58n;
+  }
+  for (const b of bytes) {
+    if (b === 0) res = "1" + res;
+    else break;
+  }
+  return res || "1";
+}
+
+function b58checkDecode(s) {
+  const raw = b58decode(s);
+  const data = raw.slice(0, -4);
+  const chk = raw.slice(-4);
+  const h = sha256(sha256(data));
+  if (h[0] !== chk[0] || h[1] !== chk[1] || h[2] !== chk[2] || h[3] !== chk[3]) {
+    throw new Error("base58check checksum");
+  }
+  return data;
+}
+
+function b58checkEncode(data) {
+  const h = sha256(sha256(data));
+  const out = new Uint8Array(data.length + 4);
+  out.set(data);
+  out.set(h.slice(0, 4), data.length);
+  return b58encode(out);
+}
+
+/** Convert BIP32 xpub → SLIP-132 BIP84 zpub (account-level native segwit). */
+function xpubToZpub(xpub) {
+  const data = b58checkDecode(xpub);
+  data[0] = ZPUB_VERSION[0];
+  data[1] = ZPUB_VERSION[1];
+  data[2] = ZPUB_VERSION[2];
+  data[3] = ZPUB_VERSION[3];
+  return b58checkEncode(data);
+}
+
 /**
  * Generate N throwaway cosigners for education only.
- * Each: random 12-word mnemonic → BIP84 receive index 0 compressed pubkey.
- * Path: m/84'/0'/0'/0/0 (same style as a normal native-segwit first receive key).
+ *
+ * Each cosigner uses BIP84 native segwit derivation (not BIP44/86):
+ * - Account zpub: m/84'/0'/0'  (SLIP-132 zpub — “BIP84 zpub”, not a raw BIP32 xpub label)
+ * - Script pubkey: m/84'/0'/0'/0/0 compressed key (for simple M-of-N CHECKMULTISIG demos)
  *
  * WARNING: demo only — never fund these mnemonics for real money.
  *
  * @param {number} n cosigner count 2–7
- * @returns {{ path: string, cosigners: Array<{label,mnemonic,pubkeyHex,path}>, pubkeysText: string }}
+ * @param {{ words?: number, passphrase?: string }} [options]
  */
-export function generateDemoCosigners(n) {
+export function generateDemoCosigners(n, options) {
   const count = Math.max(2, Math.min(7, Math.floor(Number(n) || 3)));
-  const path = "m/84'/0'/0'/0/0";
+  const words = (options && options.words) || 12;
+  const strength = WORD_STRENGTH[words];
+  if (!strength) throw new Error("word count must be 12, 15, 18, 21, or 24");
+  const passphrase = (options && options.passphrase) || "";
+
+  const accountPath = "m/84'/0'/0'"; // BIP84 account
+  const keyPath = "m/84'/0'/0'/0/0"; // BIP84 first receive (for script pubkey demo)
   const cosigners = [];
+
   for (let i = 0; i < count; i++) {
-    const mnemonic = generateMnemonic(wordlist, 128);
-    const seed = mnemonicToSeedSync(mnemonic, "");
+    const mnemonic = generateMnemonic(wordlist, strength);
+    const seed = mnemonicToSeedSync(mnemonic, passphrase);
     const root = HDKey.fromMasterSeed(seed);
-    const child = root.derive(path);
+    const account = root.derive(accountPath);
+    const child = root.derive(keyPath);
     const pub = child.publicKey;
     if (!pub || pub.length !== 33) throw new Error("failed to derive public key");
+    const xpubStd = account.publicExtendedKey;
+    const zpub = xpubToZpub(xpubStd);
     cosigners.push({
       label: "Cosigner " + String.fromCharCode(65 + i), // A, B, C…
       mnemonic,
+      words,
+      entropyBits: strength,
+      passphraseUsed: passphrase.length > 0,
+      /** BIP84 account-level zpub (SLIP-132) — this is the “BIP84 xpub-style” watch key */
+      bip84Zpub: zpub,
+      bip84AccountPath: accountPath,
+      /** Compressed pubkey at BIP84 receive index 0 — used to build the educational multisig script */
       pubkeyHex: bytesToHex(pub),
-      path,
+      pubkeyPath: keyPath,
     });
   }
   return {
-    path,
+    scheme: "BIP84 native segwit",
+    accountPath,
+    keyPath,
+    words,
+    entropyBits: strength,
     cosigners,
+    /** Multisig builder still needs compressed pubkeys, one per line */
     pubkeysText: cosigners.map((c) => c.pubkeyHex).join("\n"),
+    /** Optional: copy-paste zpubs for HD multisig wallets (not used by bare script builder) */
+    zpubsText: cosigners.map((c) => c.bip84Zpub).join("\n"),
     warning:
-      "DEMO ONLY — these recovery phrases were generated in this browser for learning. Do not send real bitcoin to wallets made from them unless you intend a throwaway test.",
+      "DEMO ONLY — BIP84 throwaway seeds generated in this browser. Do not send real bitcoin. " +
+      "Each card shows BIP39 words, ENT bits, BIP84 zpub (account m/84'/0'/0'), and the compressed " +
+      "pubkey at m/84'/0'/0'/0/0 used to build this page’s simple M-of-N address.",
   };
 }
 
@@ -265,7 +365,8 @@ export const MultisigLab = {
   buildMultisigFromText,
   generateDemoCosigners,
   looksPrivate,
-  VERSION: "0.9.1-ms",
+  WORD_STRENGTH,
+  VERSION: "0.9.2-ms",
 };
 
 const g = typeof globalThis !== "undefined" ? globalThis : undefined;

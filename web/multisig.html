@@ -95,24 +95,48 @@
         <div class="card card-wide">
           <h2>1 · Generate demo cosigners (optional)</h2>
           <p class="control-help">
-            Creates N new random 12-word phrases offline and derives each cosigner’s first BIP84 public key
-            (<code>m/84'/0'/0'/0/0</code>). Then pastes those pubkeys into the box for step 2.
+            This demo uses <strong>BIP84 native segwit</strong> only (purpose <code>84'</code>) — not BIP44/BIP86.
+            For each cosigner you get: BIP39 words, entropy bits, <strong>BIP84 zpub</strong>
+            (account <code>m/84'/0'/0'</code> — the SLIP-132 form of the BIP84 account public key people call “xpub”
+            in casual speech, but the prefix is <code>zpub</code>), plus the compressed pubkey at
+            <code>m/84'/0'/0'/0/0</code> used to build the simple M-of-N script in step 2.
           </p>
-          <div class="derive-controls">
-            <div class="control-block">
-              <label class="field inline" for="msDemoN">How many cosigners (N)
-                <select id="msDemoN">
-                  <option value="2">2</option>
-                  <option value="3" selected>3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </label>
-            </div>
-            <div class="control-block" style="justify-content:flex-end">
-              <button type="button" class="btn" id="msGenDemo" style="margin-top:1.4rem">Generate demo cosigners</button>
-            </div>
+
+          <div class="control-block">
+            <label class="field inline" for="msDemoN">How many cosigners (N)
+              <select id="msDemoN">
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </label>
+            <p class="control-help">N people in the vault. Example: N=3 → often M=2 (2-of-3).</p>
           </div>
+
+          <div class="seg-block">
+            <span class="toggles-label" id="msWordsLabel">BIP39 word count for every demo cosigner</span>
+            <div class="seg-tabs" role="tablist" aria-labelledby="msWordsLabel" id="msWordTabs">
+              <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-words="12">12 words · 128-bit ENT</button>
+              <button type="button" class="seg-tab" role="tab" aria-selected="false" data-words="15">15 · 160</button>
+              <button type="button" class="seg-tab" role="tab" aria-selected="false" data-words="18">18 · 192</button>
+              <button type="button" class="seg-tab" role="tab" aria-selected="false" data-words="21">21 · 224</button>
+              <button type="button" class="seg-tab" role="tab" aria-selected="false" data-words="24">24 · 256</button>
+            </div>
+            <p class="control-help">
+              Pick strength first (12–24 words), then generate. All N cosigners use the same word count for this batch.
+            </p>
+          </div>
+
+          <label class="field" for="msDemoPass">Optional BIP39 passphrase (applied to every demo cosigner)
+            <input id="msDemoPass" type="password" autocomplete="off" placeholder="empty = no passphrase" />
+          </label>
+          <p class="control-help">Like the 25th word — changes seed and BIP84 zpub. Leave empty unless you are teaching passphrases.</p>
+
+          <div class="row">
+            <button type="button" class="btn" id="msGenDemo">Generate N cosigners (BIP84)</button>
+          </div>
+
           <div id="msDemoList" class="watch-list" hidden></div>
           <p id="msDemoWarn" class="control-help" style="color:#f0d78c" hidden></p>
         </div>

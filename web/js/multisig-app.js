@@ -126,6 +126,12 @@
     setCopyFeedback(null, "idle");
   }
 
+  function getDemoWords() {
+    const active = document.querySelector("#msWordTabs .seg-tab.active");
+    const w = active && parseInt(active.getAttribute("data-words"), 10);
+    return [12, 15, 18, 21, 24].indexOf(w) >= 0 ? w : 12;
+  }
+
   function genDemo() {
     const api = globalThis.MultisigLab;
     if (!api || !api.generateDemoCosigners) {
@@ -134,9 +140,11 @@
     }
     try {
       const n = parseInt($("msDemoN").value, 10) || 3;
-      const demo = api.generateDemoCosigners(n);
+      const words = getDemoWords();
+      const passphrase = ($("msDemoPass") && $("msDemoPass").value) || "";
+      const demo = api.generateDemoCosigners(n, { words, passphrase });
       $("msParts").value = demo.pubkeysText;
-      // Suggest M = n-1 for 2-of-3 style when n>=3, else 2-of-2
+      // Suggest M = n-1 for 2-of-3 style when n>=3, else n-of-n
       $("msM").value = String(n >= 3 ? n - 1 : n);
 
       const list = $("msDemoList");
@@ -147,15 +155,38 @@
         item.className = "watch-item";
         item.innerHTML =
           "<div class=\"watch-item-title\"></div>" +
-          "<div class=\"watch-item-path\"></div>" +
-          "<p class=\"control-help\"><strong>Demo recovery phrase</strong> (throwaway — do not fund)</p>" +
+          "<p class=\"watch-item-note ms-demo-meta\"></p>" +
+          "<p class=\"control-help\"><strong>BIP39 recovery phrase</strong> (throwaway — do not fund)</p>" +
           "<div class=\"watch-item-key ms-demo-mnemonic\"></div>" +
-          "<p class=\"control-help\"><strong>Compressed public key</strong> (used in the vault)</p>" +
+          "<p class=\"control-help\"><strong>Entropy</strong></p>" +
+          "<div class=\"watch-item-key ms-demo-ent\"></div>" +
+          "<p class=\"control-help\"><strong>BIP84 zpub</strong> (account <code>m/84'/0'/0'</code> — native segwit account public key; prefix <code>zpub</code>, not <code>xpub</code>)</p>" +
+          "<div class=\"watch-item-key ms-demo-zpub\"></div>" +
+          "<div class=\"row ms-demo-zpub-row\"></div>" +
+          "<p class=\"control-help\"><strong>Compressed pubkey</strong> at BIP84 path <code>m/84'/0'/0'/0/0</code> (pasted into step 2 for this lab’s M-of-N script)</p>" +
           "<div class=\"watch-item-key ms-demo-pub\"></div>";
         item.querySelector(".watch-item-title").textContent = c.label;
-        item.querySelector(".watch-item-path").textContent = c.path;
+        item.querySelector(".ms-demo-meta").textContent =
+          c.words +
+          "-word BIP39 · " +
+          c.entropyBits +
+          "-bit ENT · scheme BIP84 native segwit" +
+          (c.passphraseUsed ? " · passphrase used" : " · no passphrase");
         item.querySelector(".ms-demo-mnemonic").textContent = c.mnemonic;
+        item.querySelector(".ms-demo-ent").textContent =
+          c.entropyBits + " bits (" + c.words + "-word BIP-39)";
+        item.querySelector(".ms-demo-zpub").textContent = c.bip84Zpub;
         item.querySelector(".ms-demo-pub").textContent = c.pubkeyHex;
+
+        const zrow = item.querySelector(".ms-demo-zpub-row");
+        const bCopy = document.createElement("button");
+        bCopy.type = "button";
+        bCopy.className = "btn-copy";
+        bCopy.textContent = "Copy BIP84 zpub";
+        bCopy.dataset.copyIdle = "Copy BIP84 zpub";
+        bCopy.addEventListener("click", () => copyText(c.bip84Zpub, bCopy));
+        zrow.appendChild(bCopy);
+
         list.appendChild(item);
       }
       const warn = $("msDemoWarn");
@@ -164,7 +195,9 @@
       setStatus(
         "Generated " +
           n +
-          " demo cosigners offline. Public keys filled below — set M if needed, then Build.",
+          " × " +
+          words +
+          "-word BIP84 demo cosigners offline. Compressed pubkeys filled for Build; copy BIP84 zpubs from each card if you need them.",
         "ok"
       );
     } catch (e) {
@@ -177,11 +210,22 @@
     $("msClear").addEventListener("click", clearAll);
     const gen = $("msGenDemo");
     if (gen) gen.addEventListener("click", genDemo);
+
+    document.querySelectorAll("#msWordTabs .seg-tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#msWordTabs .seg-tab").forEach((b) => {
+          const on = b === btn;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+        });
+      });
+    });
+
     $("msCopyP2sh").addEventListener("click", () => copyText($("msP2sh").textContent, $("msCopyP2sh")));
     $("msCopyP2wsh").addEventListener("click", () => copyText($("msP2wsh").textContent, $("msCopyP2wsh")));
     $("msCopyScript").addEventListener("click", () => copyText($("msScript").textContent, $("msCopyScript")));
     setStatus(
-      "Ready. Use “Generate demo cosigners” or paste compressed public keys (hex), set M, then Build.",
+      "Ready. Choose N + BIP39 word count (12–24), optional passphrase → Generate N cosigners (BIP84), then Build.",
       ""
     );
   });

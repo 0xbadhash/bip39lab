@@ -1534,9 +1534,9 @@
   });
   var genBase58 = /* @__NO_SIDE_EFFECTS__ */ (abc) => /* @__PURE__ */ chain(/* @__PURE__ */ radix(58), /* @__PURE__ */ alphabet(abc), /* @__PURE__ */ join(""));
   var base58 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ genBase58("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"));
-  var createBase58check = (sha2564) => {
-    afn(sha2564);
-    const _sha256 = sha2564;
+  var createBase58check = (sha2565) => {
+    afn(sha2565);
+    const _sha256 = sha2565;
     return /* @__PURE__ */ chain(checksum(4, (data) => _sha256(_sha256(data))), base58);
   };
 
@@ -3641,7 +3641,7 @@ zero
 zone
 zoo`.split("\n"));
 
-  // node_modules/@scure/bip32/node_modules/@noble/hashes/utils.js
+  // node_modules/@noble/curves/node_modules/@noble/hashes/utils.js
   function isBytes4(a) {
     return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
   }
@@ -3703,9 +3703,6 @@ zoo`.split("\n"));
   }
   function rotr3(word, shift) {
     return word << 32 - shift | word >>> shift;
-  }
-  function rotl2(word, shift) {
-    return word << shift | word >>> 32 - shift >>> 0;
   }
   var hasHexBuiltin = /* @__PURE__ */ (() => (
     // @ts-ignore
@@ -3800,7 +3797,7 @@ zoo`.split("\n"));
     oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
   });
 
-  // node_modules/@scure/bip32/node_modules/@noble/hashes/_md.js
+  // node_modules/@noble/curves/node_modules/@noble/hashes/_md.js
   function Chi3(a, b, c) {
     return a & b ^ ~a & c;
   }
@@ -3913,61 +3910,8 @@ zoo`.split("\n"));
     528734635,
     1541459225
   ]);
-  var SHA512_IV3 = /* @__PURE__ */ Uint32Array.from([
-    1779033703,
-    4089235720,
-    3144134277,
-    2227873595,
-    1013904242,
-    4271175723,
-    2773480762,
-    1595750129,
-    1359893119,
-    2917565137,
-    2600822924,
-    725511199,
-    528734635,
-    4215389547,
-    1541459225,
-    327033209
-  ]);
 
-  // node_modules/@scure/bip32/node_modules/@noble/hashes/_u64.js
-  var U32_MASK642 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
-  var _32n2 = /* @__PURE__ */ BigInt(32);
-  function fromBig2(n, le = false) {
-    if (le)
-      return { h: Number(n & U32_MASK642), l: Number(n >> _32n2 & U32_MASK642) };
-    return { h: Number(n >> _32n2 & U32_MASK642) | 0, l: Number(n & U32_MASK642) | 0 };
-  }
-  function split2(lst, le = false) {
-    const len = lst.length;
-    let Ah = new Uint32Array(len);
-    let Al = new Uint32Array(len);
-    for (let i = 0; i < len; i++) {
-      const { h, l } = fromBig2(lst[i], le);
-      [Ah[i], Al[i]] = [h, l];
-    }
-    return [Ah, Al];
-  }
-  var shrSH2 = (h, _l, s) => h >>> s;
-  var shrSL2 = (h, l, s) => h << 32 - s | l >>> s;
-  var rotrSH2 = (h, l, s) => h >>> s | l << 32 - s;
-  var rotrSL2 = (h, l, s) => h << 32 - s | l >>> s;
-  var rotrBH2 = (h, l, s) => h << 64 - s | l >>> s - 32;
-  var rotrBL2 = (h, l, s) => h >>> s - 32 | l << 64 - s;
-  function add2(Ah, Al, Bh, Bl) {
-    const l = (Al >>> 0) + (Bl >>> 0);
-    return { h: Ah + Bh + (l / 2 ** 32 | 0) | 0, l: l | 0 };
-  }
-  var add3L2 = (Al, Bl, Cl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0);
-  var add3H2 = (low, Ah, Bh, Ch) => Ah + Bh + Ch + (low / 2 ** 32 | 0) | 0;
-  var add4L2 = (Al, Bl, Cl, Dl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0);
-  var add4H2 = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 0;
-  var add5L2 = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
-  var add5H2 = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
-
-  // node_modules/@scure/bip32/node_modules/@noble/hashes/sha2.js
+  // node_modules/@noble/curves/node_modules/@noble/hashes/sha2.js
   var SHA256_K3 = /* @__PURE__ */ Uint32Array.from([
     1116352408,
     1899447441,
@@ -4113,219 +4057,12 @@ zoo`.split("\n"));
       super(32);
     }
   };
-  var K5122 = /* @__PURE__ */ (() => split2([
-    "0x428a2f98d728ae22",
-    "0x7137449123ef65cd",
-    "0xb5c0fbcfec4d3b2f",
-    "0xe9b5dba58189dbbc",
-    "0x3956c25bf348b538",
-    "0x59f111f1b605d019",
-    "0x923f82a4af194f9b",
-    "0xab1c5ed5da6d8118",
-    "0xd807aa98a3030242",
-    "0x12835b0145706fbe",
-    "0x243185be4ee4b28c",
-    "0x550c7dc3d5ffb4e2",
-    "0x72be5d74f27b896f",
-    "0x80deb1fe3b1696b1",
-    "0x9bdc06a725c71235",
-    "0xc19bf174cf692694",
-    "0xe49b69c19ef14ad2",
-    "0xefbe4786384f25e3",
-    "0x0fc19dc68b8cd5b5",
-    "0x240ca1cc77ac9c65",
-    "0x2de92c6f592b0275",
-    "0x4a7484aa6ea6e483",
-    "0x5cb0a9dcbd41fbd4",
-    "0x76f988da831153b5",
-    "0x983e5152ee66dfab",
-    "0xa831c66d2db43210",
-    "0xb00327c898fb213f",
-    "0xbf597fc7beef0ee4",
-    "0xc6e00bf33da88fc2",
-    "0xd5a79147930aa725",
-    "0x06ca6351e003826f",
-    "0x142929670a0e6e70",
-    "0x27b70a8546d22ffc",
-    "0x2e1b21385c26c926",
-    "0x4d2c6dfc5ac42aed",
-    "0x53380d139d95b3df",
-    "0x650a73548baf63de",
-    "0x766a0abb3c77b2a8",
-    "0x81c2c92e47edaee6",
-    "0x92722c851482353b",
-    "0xa2bfe8a14cf10364",
-    "0xa81a664bbc423001",
-    "0xc24b8b70d0f89791",
-    "0xc76c51a30654be30",
-    "0xd192e819d6ef5218",
-    "0xd69906245565a910",
-    "0xf40e35855771202a",
-    "0x106aa07032bbd1b8",
-    "0x19a4c116b8d2d0c8",
-    "0x1e376c085141ab53",
-    "0x2748774cdf8eeb99",
-    "0x34b0bcb5e19b48a8",
-    "0x391c0cb3c5c95a63",
-    "0x4ed8aa4ae3418acb",
-    "0x5b9cca4f7763e373",
-    "0x682e6ff3d6b2b8a3",
-    "0x748f82ee5defb2fc",
-    "0x78a5636f43172f60",
-    "0x84c87814a1f0ab72",
-    "0x8cc702081a6439ec",
-    "0x90befffa23631e28",
-    "0xa4506cebde82bde9",
-    "0xbef9a3f7b2c67915",
-    "0xc67178f2e372532b",
-    "0xca273eceea26619c",
-    "0xd186b8c721c0c207",
-    "0xeada7dd6cde0eb1e",
-    "0xf57d4f7fee6ed178",
-    "0x06f067aa72176fba",
-    "0x0a637dc5a2c898a6",
-    "0x113f9804bef90dae",
-    "0x1b710b35131c471b",
-    "0x28db77f523047d84",
-    "0x32caab7b40c72493",
-    "0x3c9ebe0a15c9bebc",
-    "0x431d67c49c100d4c",
-    "0x4cc5d4becb3e42b6",
-    "0x597f299cfc657e2a",
-    "0x5fcb6fab3ad6faec",
-    "0x6c44198c4a475817"
-  ].map((n) => BigInt(n))))();
-  var SHA512_Kh2 = /* @__PURE__ */ (() => K5122[0])();
-  var SHA512_Kl2 = /* @__PURE__ */ (() => K5122[1])();
-  var SHA512_W_H2 = /* @__PURE__ */ new Uint32Array(80);
-  var SHA512_W_L2 = /* @__PURE__ */ new Uint32Array(80);
-  var SHA2_64B2 = class extends HashMD3 {
-    constructor(outputLen) {
-      super(128, outputLen, 16, false);
-    }
-    // prettier-ignore
-    get() {
-      const { Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl } = this;
-      return [Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl];
-    }
-    // prettier-ignore
-    set(Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl) {
-      this.Ah = Ah | 0;
-      this.Al = Al | 0;
-      this.Bh = Bh | 0;
-      this.Bl = Bl | 0;
-      this.Ch = Ch | 0;
-      this.Cl = Cl | 0;
-      this.Dh = Dh | 0;
-      this.Dl = Dl | 0;
-      this.Eh = Eh | 0;
-      this.El = El | 0;
-      this.Fh = Fh | 0;
-      this.Fl = Fl | 0;
-      this.Gh = Gh | 0;
-      this.Gl = Gl | 0;
-      this.Hh = Hh | 0;
-      this.Hl = Hl | 0;
-    }
-    process(view, offset) {
-      for (let i = 0; i < 16; i++, offset += 4) {
-        SHA512_W_H2[i] = view.getUint32(offset);
-        SHA512_W_L2[i] = view.getUint32(offset += 4);
-      }
-      for (let i = 16; i < 80; i++) {
-        const W15h = SHA512_W_H2[i - 15] | 0;
-        const W15l = SHA512_W_L2[i - 15] | 0;
-        const s0h = rotrSH2(W15h, W15l, 1) ^ rotrSH2(W15h, W15l, 8) ^ shrSH2(W15h, W15l, 7);
-        const s0l = rotrSL2(W15h, W15l, 1) ^ rotrSL2(W15h, W15l, 8) ^ shrSL2(W15h, W15l, 7);
-        const W2h = SHA512_W_H2[i - 2] | 0;
-        const W2l = SHA512_W_L2[i - 2] | 0;
-        const s1h = rotrSH2(W2h, W2l, 19) ^ rotrBH2(W2h, W2l, 61) ^ shrSH2(W2h, W2l, 6);
-        const s1l = rotrSL2(W2h, W2l, 19) ^ rotrBL2(W2h, W2l, 61) ^ shrSL2(W2h, W2l, 6);
-        const SUMl = add4L2(s0l, s1l, SHA512_W_L2[i - 7], SHA512_W_L2[i - 16]);
-        const SUMh = add4H2(SUMl, s0h, s1h, SHA512_W_H2[i - 7], SHA512_W_H2[i - 16]);
-        SHA512_W_H2[i] = SUMh | 0;
-        SHA512_W_L2[i] = SUMl | 0;
-      }
-      let { Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl } = this;
-      for (let i = 0; i < 80; i++) {
-        const sigma1h = rotrSH2(Eh, El, 14) ^ rotrSH2(Eh, El, 18) ^ rotrBH2(Eh, El, 41);
-        const sigma1l = rotrSL2(Eh, El, 14) ^ rotrSL2(Eh, El, 18) ^ rotrBL2(Eh, El, 41);
-        const CHIh = Eh & Fh ^ ~Eh & Gh;
-        const CHIl = El & Fl ^ ~El & Gl;
-        const T1ll = add5L2(Hl, sigma1l, CHIl, SHA512_Kl2[i], SHA512_W_L2[i]);
-        const T1h = add5H2(T1ll, Hh, sigma1h, CHIh, SHA512_Kh2[i], SHA512_W_H2[i]);
-        const T1l = T1ll | 0;
-        const sigma0h = rotrSH2(Ah, Al, 28) ^ rotrBH2(Ah, Al, 34) ^ rotrBH2(Ah, Al, 39);
-        const sigma0l = rotrSL2(Ah, Al, 28) ^ rotrBL2(Ah, Al, 34) ^ rotrBL2(Ah, Al, 39);
-        const MAJh = Ah & Bh ^ Ah & Ch ^ Bh & Ch;
-        const MAJl = Al & Bl ^ Al & Cl ^ Bl & Cl;
-        Hh = Gh | 0;
-        Hl = Gl | 0;
-        Gh = Fh | 0;
-        Gl = Fl | 0;
-        Fh = Eh | 0;
-        Fl = El | 0;
-        ({ h: Eh, l: El } = add2(Dh | 0, Dl | 0, T1h | 0, T1l | 0));
-        Dh = Ch | 0;
-        Dl = Cl | 0;
-        Ch = Bh | 0;
-        Cl = Bl | 0;
-        Bh = Ah | 0;
-        Bl = Al | 0;
-        const All = add3L2(T1l, sigma0l, MAJl);
-        Ah = add3H2(All, T1h, sigma0h, MAJh);
-        Al = All | 0;
-      }
-      ({ h: Ah, l: Al } = add2(this.Ah | 0, this.Al | 0, Ah | 0, Al | 0));
-      ({ h: Bh, l: Bl } = add2(this.Bh | 0, this.Bl | 0, Bh | 0, Bl | 0));
-      ({ h: Ch, l: Cl } = add2(this.Ch | 0, this.Cl | 0, Ch | 0, Cl | 0));
-      ({ h: Dh, l: Dl } = add2(this.Dh | 0, this.Dl | 0, Dh | 0, Dl | 0));
-      ({ h: Eh, l: El } = add2(this.Eh | 0, this.El | 0, Eh | 0, El | 0));
-      ({ h: Fh, l: Fl } = add2(this.Fh | 0, this.Fl | 0, Fh | 0, Fl | 0));
-      ({ h: Gh, l: Gl } = add2(this.Gh | 0, this.Gl | 0, Gh | 0, Gl | 0));
-      ({ h: Hh, l: Hl } = add2(this.Hh | 0, this.Hl | 0, Hh | 0, Hl | 0));
-      this.set(Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl);
-    }
-    roundClean() {
-      clean3(SHA512_W_H2, SHA512_W_L2);
-    }
-    destroy() {
-      this.destroyed = true;
-      clean3(this.buffer);
-      this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    }
-  };
-  var _SHA5122 = class extends SHA2_64B2 {
-    Ah = SHA512_IV3[0] | 0;
-    Al = SHA512_IV3[1] | 0;
-    Bh = SHA512_IV3[2] | 0;
-    Bl = SHA512_IV3[3] | 0;
-    Ch = SHA512_IV3[4] | 0;
-    Cl = SHA512_IV3[5] | 0;
-    Dh = SHA512_IV3[6] | 0;
-    Dl = SHA512_IV3[7] | 0;
-    Eh = SHA512_IV3[8] | 0;
-    El = SHA512_IV3[9] | 0;
-    Fh = SHA512_IV3[10] | 0;
-    Fl = SHA512_IV3[11] | 0;
-    Gh = SHA512_IV3[12] | 0;
-    Gl = SHA512_IV3[13] | 0;
-    Hh = SHA512_IV3[14] | 0;
-    Hl = SHA512_IV3[15] | 0;
-    constructor() {
-      super(64);
-    }
-  };
   var sha2563 = /* @__PURE__ */ createHasher3(
     () => new _SHA2563(),
     /* @__PURE__ */ oidNist3(1)
   );
-  var sha5122 = /* @__PURE__ */ createHasher3(
-    () => new _SHA5122(),
-    /* @__PURE__ */ oidNist3(3)
-  );
 
-  // node_modules/@scure/bip32/node_modules/@noble/curves/utils.js
+  // node_modules/@noble/curves/utils.js
   var abytes4 = (value, length, title) => abytes3(value, length, title);
   var anumber5 = anumber4;
   var bytesToHex2 = bytesToHex;
@@ -4477,7 +4214,7 @@ zoo`.split("\n"));
     iter(optFields, true);
   }
 
-  // node_modules/@scure/bip32/node_modules/@noble/curves/abstract/modular.js
+  // node_modules/@noble/curves/abstract/modular.js
   var _0n2 = /* @__PURE__ */ BigInt(0);
   var _1n2 = /* @__PURE__ */ BigInt(1);
   var _2n = /* @__PURE__ */ BigInt(2);
@@ -4891,7 +4628,7 @@ zoo`.split("\n"));
     return isLE ? numberToBytesLE(reduced, fieldLen) : numberToBytesBE(reduced, fieldLen);
   }
 
-  // node_modules/@scure/bip32/node_modules/@noble/curves/abstract/curve.js
+  // node_modules/@noble/curves/abstract/curve.js
   var _0n3 = /* @__PURE__ */ BigInt(0);
   var _1n3 = /* @__PURE__ */ BigInt(1);
   function negateCt(condition, item) {
@@ -5125,7 +4862,7 @@ zoo`.split("\n"));
     };
   }
 
-  // node_modules/@scure/bip32/node_modules/@noble/hashes/hmac.js
+  // node_modules/@noble/curves/node_modules/@noble/hashes/hmac.js
   var _HMAC2 = class {
     oHash;
     iHash;
@@ -5201,7 +4938,7 @@ zoo`.split("\n"));
     return hmac_;
   })();
 
-  // node_modules/@scure/bip32/node_modules/@noble/curves/abstract/weierstrass.js
+  // node_modules/@noble/curves/abstract/weierstrass.js
   var divNearest = (num, den) => (num + (num >= 0 ? den : -den) / _2n2) / den;
   function _splitEndoScalar(k, basis, n) {
     aInRange("scalar", k, _0n4, n);
@@ -5883,7 +5620,7 @@ zoo`.split("\n"));
     });
     ecdsaOpts = Object.assign({}, ecdsaOpts);
     const randomBytes4 = ecdsaOpts.randomBytes === void 0 ? randomBytes3 : ecdsaOpts.randomBytes;
-    const hmac3 = ecdsaOpts.hmac === void 0 ? (key, msg) => hmac2(hash_, key, msg) : ecdsaOpts.hmac;
+    const hmac4 = ecdsaOpts.hmac === void 0 ? (key, msg) => hmac2(hash_, key, msg) : ecdsaOpts.hmac;
     const { Fp, Fn: Fn2 } = Point2;
     const { ORDER: CURVE_ORDER, BITS: fnBits } = Fn2;
     const { keygen, getPublicKey, getSharedSecret, utils: utils2, lengths } = ecdh(Point2, ecdsaOpts);
@@ -6057,7 +5794,7 @@ zoo`.split("\n"));
     }
     function sign(message, secretKey, opts = {}) {
       const { seed, k2sig } = prepSig(message, secretKey, opts);
-      const drbg = createHmacDrbg(hash_.outputLen, Fn2.BYTES, hmac3);
+      const drbg = createHmacDrbg(hash_.outputLen, Fn2.BYTES, hmac4);
       const sig = drbg(seed, k2sig);
       return sig.toBytes(opts.format);
     }
@@ -6109,7 +5846,7 @@ zoo`.split("\n"));
     });
   }
 
-  // node_modules/@scure/bip32/node_modules/@noble/curves/secp256k1.js
+  // node_modules/@noble/curves/secp256k1.js
   var secp256k1_CURVE = {
     p: BigInt("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"),
     n: BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),
@@ -6155,6 +5892,311 @@ zoo`.split("\n"));
     endo: secp256k1_ENDO
   });
   var secp256k1 = /* @__PURE__ */ ecdsa(Pointk1, sha2563);
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/utils.js
+  function isBytes6(a) {
+    return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
+  }
+  function anumber6(n, title = "") {
+    if (typeof n !== "number") {
+      const prefix = title && `"${title}" `;
+      throw new TypeError(`${prefix}expected number, got ${typeof n}`);
+    }
+    if (!Number.isSafeInteger(n) || n < 0) {
+      const prefix = title && `"${title}" `;
+      throw new RangeError(`${prefix}expected integer >= 0, got ${n}`);
+    }
+  }
+  function abytes5(value, length, title = "") {
+    const bytes = isBytes6(value);
+    const len = value?.length;
+    const needsLen = length !== void 0;
+    if (!bytes || needsLen && len !== length) {
+      const prefix = title && `"${title}" `;
+      const ofLen = needsLen ? ` of length ${length}` : "";
+      const got = bytes ? `length=${len}` : `type=${typeof value}`;
+      const message = prefix + "expected Uint8Array" + ofLen + ", got " + got;
+      if (!bytes)
+        throw new TypeError(message);
+      throw new RangeError(message);
+    }
+    return value;
+  }
+  function ahash3(h) {
+    if (typeof h !== "function" || typeof h.create !== "function")
+      throw new TypeError("Hash must wrapped by utils.createHasher");
+    anumber6(h.outputLen);
+    anumber6(h.blockLen);
+    if (h.outputLen < 1)
+      throw new Error('"outputLen" must be >= 1');
+    if (h.blockLen < 1)
+      throw new Error('"blockLen" must be >= 1');
+  }
+  function aexists4(instance, checkFinished = true) {
+    if (instance.destroyed)
+      throw new Error("Hash instance has been destroyed");
+    if (checkFinished && instance.finished)
+      throw new Error("Hash#digest() has already been called");
+  }
+  function aoutput4(out, instance) {
+    abytes5(out, void 0, "digestInto() output");
+    const min = instance.outputLen;
+    if (out.length < min) {
+      throw new RangeError('"digestInto() output" expected to be of length >=' + min);
+    }
+  }
+  function clean4(...arrays) {
+    for (let i = 0; i < arrays.length; i++) {
+      arrays[i].fill(0);
+    }
+  }
+  function createView4(arr) {
+    return new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+  }
+  function rotr4(word, shift) {
+    return word << 32 - shift | word >>> shift;
+  }
+  function rotl2(word, shift) {
+    return word << shift | word >>> 32 - shift >>> 0;
+  }
+  function concatBytes3(...arrays) {
+    let sum = 0;
+    for (let i = 0; i < arrays.length; i++) {
+      const a = arrays[i];
+      abytes5(a);
+      sum += a.length;
+    }
+    const res = new Uint8Array(sum);
+    for (let i = 0, pad = 0; i < arrays.length; i++) {
+      const a = arrays[i];
+      res.set(a, pad);
+      pad += a.length;
+    }
+    return res;
+  }
+  function createHasher4(hashCons, info = {}) {
+    const hashC = (msg, opts) => hashCons(opts).update(msg).digest();
+    const tmp = hashCons(void 0);
+    hashC.outputLen = tmp.outputLen;
+    hashC.blockLen = tmp.blockLen;
+    hashC.canXOF = tmp.canXOF;
+    hashC.create = (opts) => hashCons(opts);
+    Object.assign(hashC, info);
+    return Object.freeze(hashC);
+  }
+  var oidNist4 = (suffix) => ({
+    // Current NIST hashAlgs suffixes used here fit in one DER subidentifier octet.
+    // Larger suffix values would need base-128 OID encoding and a different length byte.
+    oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
+  });
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/hmac.js
+  var _HMAC3 = class {
+    oHash;
+    iHash;
+    blockLen;
+    outputLen;
+    canXOF = false;
+    finished = false;
+    destroyed = false;
+    constructor(hash, key) {
+      ahash3(hash);
+      abytes5(key, void 0, "key");
+      this.iHash = hash.create();
+      if (typeof this.iHash.update !== "function")
+        throw new Error("Expected instance of class which extends utils.Hash");
+      this.blockLen = this.iHash.blockLen;
+      this.outputLen = this.iHash.outputLen;
+      const blockLen = this.blockLen;
+      const pad = new Uint8Array(blockLen);
+      pad.set(key.length > blockLen ? hash.create().update(key).digest() : key);
+      for (let i = 0; i < pad.length; i++)
+        pad[i] ^= 54;
+      this.iHash.update(pad);
+      this.oHash = hash.create();
+      for (let i = 0; i < pad.length; i++)
+        pad[i] ^= 54 ^ 92;
+      this.oHash.update(pad);
+      clean4(pad);
+    }
+    update(buf) {
+      aexists4(this);
+      this.iHash.update(buf);
+      return this;
+    }
+    digestInto(out) {
+      aexists4(this);
+      aoutput4(out, this);
+      this.finished = true;
+      const buf = out.subarray(0, this.outputLen);
+      this.iHash.digestInto(buf);
+      this.oHash.update(buf);
+      this.oHash.digestInto(buf);
+      this.destroy();
+    }
+    digest() {
+      const out = new Uint8Array(this.oHash.outputLen);
+      this.digestInto(out);
+      return out;
+    }
+    _cloneInto(to) {
+      to ||= Object.create(Object.getPrototypeOf(this), {});
+      const { oHash, iHash, finished, destroyed, blockLen, outputLen } = this;
+      to = to;
+      to.finished = finished;
+      to.destroyed = destroyed;
+      to.blockLen = blockLen;
+      to.outputLen = outputLen;
+      to.oHash = oHash._cloneInto(to.oHash);
+      to.iHash = iHash._cloneInto(to.iHash);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+    destroy() {
+      this.destroyed = true;
+      this.oHash.destroy();
+      this.iHash.destroy();
+    }
+  };
+  var hmac3 = /* @__PURE__ */ (() => {
+    const hmac_ = ((hash, key, message) => new _HMAC3(hash, key).update(message).digest());
+    hmac_.create = (hash, key) => new _HMAC3(hash, key);
+    return hmac_;
+  })();
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/_md.js
+  function Chi4(a, b, c) {
+    return a & b ^ ~a & c;
+  }
+  function Maj4(a, b, c) {
+    return a & b ^ a & c ^ b & c;
+  }
+  var HashMD4 = class {
+    blockLen;
+    outputLen;
+    canXOF = false;
+    padOffset;
+    isLE;
+    // For partial updates less than block size
+    buffer;
+    view;
+    finished = false;
+    length = 0;
+    pos = 0;
+    destroyed = false;
+    constructor(blockLen, outputLen, padOffset, isLE) {
+      this.blockLen = blockLen;
+      this.outputLen = outputLen;
+      this.padOffset = padOffset;
+      this.isLE = isLE;
+      this.buffer = new Uint8Array(blockLen);
+      this.view = createView4(this.buffer);
+    }
+    update(data) {
+      aexists4(this);
+      abytes5(data);
+      const { view, buffer, blockLen } = this;
+      const len = data.length;
+      for (let pos = 0; pos < len; ) {
+        const take = Math.min(blockLen - this.pos, len - pos);
+        if (take === blockLen) {
+          const dataView = createView4(data);
+          for (; blockLen <= len - pos; pos += blockLen)
+            this.process(dataView, pos);
+          continue;
+        }
+        buffer.set(data.subarray(pos, pos + take), this.pos);
+        this.pos += take;
+        pos += take;
+        if (this.pos === blockLen) {
+          this.process(view, 0);
+          this.pos = 0;
+        }
+      }
+      this.length += data.length;
+      this.roundClean();
+      return this;
+    }
+    digestInto(out) {
+      aexists4(this);
+      aoutput4(out, this);
+      this.finished = true;
+      const { buffer, view, blockLen, isLE } = this;
+      let { pos } = this;
+      buffer[pos++] = 128;
+      clean4(this.buffer.subarray(pos));
+      if (this.padOffset > blockLen - pos) {
+        this.process(view, 0);
+        pos = 0;
+      }
+      for (let i = pos; i < blockLen; i++)
+        buffer[i] = 0;
+      view.setBigUint64(blockLen - 8, BigInt(this.length * 8), isLE);
+      this.process(view, 0);
+      const oview = createView4(out);
+      const len = this.outputLen;
+      if (len % 4)
+        throw new Error("_sha2: outputLen must be aligned to 32bit");
+      const outLen = len / 4;
+      const state = this.get();
+      if (outLen > state.length)
+        throw new Error("_sha2: outputLen bigger than state");
+      for (let i = 0; i < outLen; i++)
+        oview.setUint32(4 * i, state[i], isLE);
+    }
+    digest() {
+      const { buffer, outputLen } = this;
+      this.digestInto(buffer);
+      const res = buffer.slice(0, outputLen);
+      this.destroy();
+      return res;
+    }
+    _cloneInto(to) {
+      to ||= new this.constructor();
+      to.set(...this.get());
+      const { blockLen, buffer, length, finished, destroyed, pos } = this;
+      to.destroyed = destroyed;
+      to.finished = finished;
+      to.length = length;
+      to.pos = pos;
+      if (length % blockLen)
+        to.buffer.set(buffer);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+  };
+  var SHA256_IV4 = /* @__PURE__ */ Uint32Array.from([
+    1779033703,
+    3144134277,
+    1013904242,
+    2773480762,
+    1359893119,
+    2600822924,
+    528734635,
+    1541459225
+  ]);
+  var SHA512_IV4 = /* @__PURE__ */ Uint32Array.from([
+    1779033703,
+    4089235720,
+    3144134277,
+    2227873595,
+    1013904242,
+    4271175723,
+    2773480762,
+    1595750129,
+    1359893119,
+    2917565137,
+    2600822924,
+    725511199,
+    528734635,
+    4215389547,
+    1541459225,
+    327033209
+  ]);
 
   // node_modules/@scure/bip32/node_modules/@noble/hashes/legacy.js
   var Rho1602 = /* @__PURE__ */ Uint8Array.from([
@@ -6223,7 +6265,7 @@ zoo`.split("\n"));
     return x ^ (y | ~z);
   }
   var BUF_1602 = /* @__PURE__ */ new Uint32Array(16);
-  var _RIPEMD1602 = class extends HashMD3 {
+  var _RIPEMD1602 = class extends HashMD4 {
     h0 = 1732584193 | 0;
     h1 = 4023233417 | 0;
     h2 = 2562383102 | 0;
@@ -6264,34 +6306,427 @@ zoo`.split("\n"));
       this.set(this.h1 + cl + dr | 0, this.h2 + dl + er | 0, this.h3 + el + ar | 0, this.h4 + al + br | 0, this.h0 + bl + cr | 0);
     }
     roundClean() {
-      clean3(BUF_1602);
+      clean4(BUF_1602);
     }
     destroy() {
       this.destroyed = true;
-      clean3(this.buffer);
+      clean4(this.buffer);
       this.set(0, 0, 0, 0, 0);
     }
   };
-  var ripemd1602 = /* @__PURE__ */ createHasher3(() => new _RIPEMD1602());
+  var ripemd1602 = /* @__PURE__ */ createHasher4(() => new _RIPEMD1602());
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/_u64.js
+  var U32_MASK642 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
+  var _32n2 = /* @__PURE__ */ BigInt(32);
+  function fromBig2(n, le = false) {
+    if (le)
+      return { h: Number(n & U32_MASK642), l: Number(n >> _32n2 & U32_MASK642) };
+    return { h: Number(n >> _32n2 & U32_MASK642) | 0, l: Number(n & U32_MASK642) | 0 };
+  }
+  function split2(lst, le = false) {
+    const len = lst.length;
+    let Ah = new Uint32Array(len);
+    let Al = new Uint32Array(len);
+    for (let i = 0; i < len; i++) {
+      const { h, l } = fromBig2(lst[i], le);
+      [Ah[i], Al[i]] = [h, l];
+    }
+    return [Ah, Al];
+  }
+  var shrSH2 = (h, _l, s) => h >>> s;
+  var shrSL2 = (h, l, s) => h << 32 - s | l >>> s;
+  var rotrSH2 = (h, l, s) => h >>> s | l << 32 - s;
+  var rotrSL2 = (h, l, s) => h << 32 - s | l >>> s;
+  var rotrBH2 = (h, l, s) => h << 64 - s | l >>> s - 32;
+  var rotrBL2 = (h, l, s) => h >>> s - 32 | l << 64 - s;
+  function add2(Ah, Al, Bh, Bl) {
+    const l = (Al >>> 0) + (Bl >>> 0);
+    return { h: Ah + Bh + (l / 2 ** 32 | 0) | 0, l: l | 0 };
+  }
+  var add3L2 = (Al, Bl, Cl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0);
+  var add3H2 = (low, Ah, Bh, Ch) => Ah + Bh + Ch + (low / 2 ** 32 | 0) | 0;
+  var add4L2 = (Al, Bl, Cl, Dl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0);
+  var add4H2 = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 0;
+  var add5L2 = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
+  var add5H2 = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/sha2.js
+  var SHA256_K4 = /* @__PURE__ */ Uint32Array.from([
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ]);
+  var SHA256_W4 = /* @__PURE__ */ new Uint32Array(64);
+  var SHA2_32B4 = class extends HashMD4 {
+    constructor(outputLen) {
+      super(64, outputLen, 8, false);
+    }
+    get() {
+      const { A, B, C, D, E, F, G, H } = this;
+      return [A, B, C, D, E, F, G, H];
+    }
+    // prettier-ignore
+    set(A, B, C, D, E, F, G, H) {
+      this.A = A | 0;
+      this.B = B | 0;
+      this.C = C | 0;
+      this.D = D | 0;
+      this.E = E | 0;
+      this.F = F | 0;
+      this.G = G | 0;
+      this.H = H | 0;
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        SHA256_W4[i] = view.getUint32(offset, false);
+      for (let i = 16; i < 64; i++) {
+        const W15 = SHA256_W4[i - 15];
+        const W2 = SHA256_W4[i - 2];
+        const s0 = rotr4(W15, 7) ^ rotr4(W15, 18) ^ W15 >>> 3;
+        const s1 = rotr4(W2, 17) ^ rotr4(W2, 19) ^ W2 >>> 10;
+        SHA256_W4[i] = s1 + SHA256_W4[i - 7] + s0 + SHA256_W4[i - 16] | 0;
+      }
+      let { A, B, C, D, E, F, G, H } = this;
+      for (let i = 0; i < 64; i++) {
+        const sigma1 = rotr4(E, 6) ^ rotr4(E, 11) ^ rotr4(E, 25);
+        const T1 = H + sigma1 + Chi4(E, F, G) + SHA256_K4[i] + SHA256_W4[i] | 0;
+        const sigma0 = rotr4(A, 2) ^ rotr4(A, 13) ^ rotr4(A, 22);
+        const T2 = sigma0 + Maj4(A, B, C) | 0;
+        H = G;
+        G = F;
+        F = E;
+        E = D + T1 | 0;
+        D = C;
+        C = B;
+        B = A;
+        A = T1 + T2 | 0;
+      }
+      A = A + this.A | 0;
+      B = B + this.B | 0;
+      C = C + this.C | 0;
+      D = D + this.D | 0;
+      E = E + this.E | 0;
+      F = F + this.F | 0;
+      G = G + this.G | 0;
+      H = H + this.H | 0;
+      this.set(A, B, C, D, E, F, G, H);
+    }
+    roundClean() {
+      clean4(SHA256_W4);
+    }
+    destroy() {
+      this.destroyed = true;
+      this.set(0, 0, 0, 0, 0, 0, 0, 0);
+      clean4(this.buffer);
+    }
+  };
+  var _SHA2564 = class extends SHA2_32B4 {
+    // We cannot use array here since array allows indexing by variable
+    // which means optimizer/compiler cannot use registers.
+    A = SHA256_IV4[0] | 0;
+    B = SHA256_IV4[1] | 0;
+    C = SHA256_IV4[2] | 0;
+    D = SHA256_IV4[3] | 0;
+    E = SHA256_IV4[4] | 0;
+    F = SHA256_IV4[5] | 0;
+    G = SHA256_IV4[6] | 0;
+    H = SHA256_IV4[7] | 0;
+    constructor() {
+      super(32);
+    }
+  };
+  var K5122 = /* @__PURE__ */ (() => split2([
+    "0x428a2f98d728ae22",
+    "0x7137449123ef65cd",
+    "0xb5c0fbcfec4d3b2f",
+    "0xe9b5dba58189dbbc",
+    "0x3956c25bf348b538",
+    "0x59f111f1b605d019",
+    "0x923f82a4af194f9b",
+    "0xab1c5ed5da6d8118",
+    "0xd807aa98a3030242",
+    "0x12835b0145706fbe",
+    "0x243185be4ee4b28c",
+    "0x550c7dc3d5ffb4e2",
+    "0x72be5d74f27b896f",
+    "0x80deb1fe3b1696b1",
+    "0x9bdc06a725c71235",
+    "0xc19bf174cf692694",
+    "0xe49b69c19ef14ad2",
+    "0xefbe4786384f25e3",
+    "0x0fc19dc68b8cd5b5",
+    "0x240ca1cc77ac9c65",
+    "0x2de92c6f592b0275",
+    "0x4a7484aa6ea6e483",
+    "0x5cb0a9dcbd41fbd4",
+    "0x76f988da831153b5",
+    "0x983e5152ee66dfab",
+    "0xa831c66d2db43210",
+    "0xb00327c898fb213f",
+    "0xbf597fc7beef0ee4",
+    "0xc6e00bf33da88fc2",
+    "0xd5a79147930aa725",
+    "0x06ca6351e003826f",
+    "0x142929670a0e6e70",
+    "0x27b70a8546d22ffc",
+    "0x2e1b21385c26c926",
+    "0x4d2c6dfc5ac42aed",
+    "0x53380d139d95b3df",
+    "0x650a73548baf63de",
+    "0x766a0abb3c77b2a8",
+    "0x81c2c92e47edaee6",
+    "0x92722c851482353b",
+    "0xa2bfe8a14cf10364",
+    "0xa81a664bbc423001",
+    "0xc24b8b70d0f89791",
+    "0xc76c51a30654be30",
+    "0xd192e819d6ef5218",
+    "0xd69906245565a910",
+    "0xf40e35855771202a",
+    "0x106aa07032bbd1b8",
+    "0x19a4c116b8d2d0c8",
+    "0x1e376c085141ab53",
+    "0x2748774cdf8eeb99",
+    "0x34b0bcb5e19b48a8",
+    "0x391c0cb3c5c95a63",
+    "0x4ed8aa4ae3418acb",
+    "0x5b9cca4f7763e373",
+    "0x682e6ff3d6b2b8a3",
+    "0x748f82ee5defb2fc",
+    "0x78a5636f43172f60",
+    "0x84c87814a1f0ab72",
+    "0x8cc702081a6439ec",
+    "0x90befffa23631e28",
+    "0xa4506cebde82bde9",
+    "0xbef9a3f7b2c67915",
+    "0xc67178f2e372532b",
+    "0xca273eceea26619c",
+    "0xd186b8c721c0c207",
+    "0xeada7dd6cde0eb1e",
+    "0xf57d4f7fee6ed178",
+    "0x06f067aa72176fba",
+    "0x0a637dc5a2c898a6",
+    "0x113f9804bef90dae",
+    "0x1b710b35131c471b",
+    "0x28db77f523047d84",
+    "0x32caab7b40c72493",
+    "0x3c9ebe0a15c9bebc",
+    "0x431d67c49c100d4c",
+    "0x4cc5d4becb3e42b6",
+    "0x597f299cfc657e2a",
+    "0x5fcb6fab3ad6faec",
+    "0x6c44198c4a475817"
+  ].map((n) => BigInt(n))))();
+  var SHA512_Kh2 = /* @__PURE__ */ (() => K5122[0])();
+  var SHA512_Kl2 = /* @__PURE__ */ (() => K5122[1])();
+  var SHA512_W_H2 = /* @__PURE__ */ new Uint32Array(80);
+  var SHA512_W_L2 = /* @__PURE__ */ new Uint32Array(80);
+  var SHA2_64B2 = class extends HashMD4 {
+    constructor(outputLen) {
+      super(128, outputLen, 16, false);
+    }
+    // prettier-ignore
+    get() {
+      const { Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl } = this;
+      return [Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl];
+    }
+    // prettier-ignore
+    set(Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl) {
+      this.Ah = Ah | 0;
+      this.Al = Al | 0;
+      this.Bh = Bh | 0;
+      this.Bl = Bl | 0;
+      this.Ch = Ch | 0;
+      this.Cl = Cl | 0;
+      this.Dh = Dh | 0;
+      this.Dl = Dl | 0;
+      this.Eh = Eh | 0;
+      this.El = El | 0;
+      this.Fh = Fh | 0;
+      this.Fl = Fl | 0;
+      this.Gh = Gh | 0;
+      this.Gl = Gl | 0;
+      this.Hh = Hh | 0;
+      this.Hl = Hl | 0;
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4) {
+        SHA512_W_H2[i] = view.getUint32(offset);
+        SHA512_W_L2[i] = view.getUint32(offset += 4);
+      }
+      for (let i = 16; i < 80; i++) {
+        const W15h = SHA512_W_H2[i - 15] | 0;
+        const W15l = SHA512_W_L2[i - 15] | 0;
+        const s0h = rotrSH2(W15h, W15l, 1) ^ rotrSH2(W15h, W15l, 8) ^ shrSH2(W15h, W15l, 7);
+        const s0l = rotrSL2(W15h, W15l, 1) ^ rotrSL2(W15h, W15l, 8) ^ shrSL2(W15h, W15l, 7);
+        const W2h = SHA512_W_H2[i - 2] | 0;
+        const W2l = SHA512_W_L2[i - 2] | 0;
+        const s1h = rotrSH2(W2h, W2l, 19) ^ rotrBH2(W2h, W2l, 61) ^ shrSH2(W2h, W2l, 6);
+        const s1l = rotrSL2(W2h, W2l, 19) ^ rotrBL2(W2h, W2l, 61) ^ shrSL2(W2h, W2l, 6);
+        const SUMl = add4L2(s0l, s1l, SHA512_W_L2[i - 7], SHA512_W_L2[i - 16]);
+        const SUMh = add4H2(SUMl, s0h, s1h, SHA512_W_H2[i - 7], SHA512_W_H2[i - 16]);
+        SHA512_W_H2[i] = SUMh | 0;
+        SHA512_W_L2[i] = SUMl | 0;
+      }
+      let { Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl } = this;
+      for (let i = 0; i < 80; i++) {
+        const sigma1h = rotrSH2(Eh, El, 14) ^ rotrSH2(Eh, El, 18) ^ rotrBH2(Eh, El, 41);
+        const sigma1l = rotrSL2(Eh, El, 14) ^ rotrSL2(Eh, El, 18) ^ rotrBL2(Eh, El, 41);
+        const CHIh = Eh & Fh ^ ~Eh & Gh;
+        const CHIl = El & Fl ^ ~El & Gl;
+        const T1ll = add5L2(Hl, sigma1l, CHIl, SHA512_Kl2[i], SHA512_W_L2[i]);
+        const T1h = add5H2(T1ll, Hh, sigma1h, CHIh, SHA512_Kh2[i], SHA512_W_H2[i]);
+        const T1l = T1ll | 0;
+        const sigma0h = rotrSH2(Ah, Al, 28) ^ rotrBH2(Ah, Al, 34) ^ rotrBH2(Ah, Al, 39);
+        const sigma0l = rotrSL2(Ah, Al, 28) ^ rotrBL2(Ah, Al, 34) ^ rotrBL2(Ah, Al, 39);
+        const MAJh = Ah & Bh ^ Ah & Ch ^ Bh & Ch;
+        const MAJl = Al & Bl ^ Al & Cl ^ Bl & Cl;
+        Hh = Gh | 0;
+        Hl = Gl | 0;
+        Gh = Fh | 0;
+        Gl = Fl | 0;
+        Fh = Eh | 0;
+        Fl = El | 0;
+        ({ h: Eh, l: El } = add2(Dh | 0, Dl | 0, T1h | 0, T1l | 0));
+        Dh = Ch | 0;
+        Dl = Cl | 0;
+        Ch = Bh | 0;
+        Cl = Bl | 0;
+        Bh = Ah | 0;
+        Bl = Al | 0;
+        const All = add3L2(T1l, sigma0l, MAJl);
+        Ah = add3H2(All, T1h, sigma0h, MAJh);
+        Al = All | 0;
+      }
+      ({ h: Ah, l: Al } = add2(this.Ah | 0, this.Al | 0, Ah | 0, Al | 0));
+      ({ h: Bh, l: Bl } = add2(this.Bh | 0, this.Bl | 0, Bh | 0, Bl | 0));
+      ({ h: Ch, l: Cl } = add2(this.Ch | 0, this.Cl | 0, Ch | 0, Cl | 0));
+      ({ h: Dh, l: Dl } = add2(this.Dh | 0, this.Dl | 0, Dh | 0, Dl | 0));
+      ({ h: Eh, l: El } = add2(this.Eh | 0, this.El | 0, Eh | 0, El | 0));
+      ({ h: Fh, l: Fl } = add2(this.Fh | 0, this.Fl | 0, Fh | 0, Fl | 0));
+      ({ h: Gh, l: Gl } = add2(this.Gh | 0, this.Gl | 0, Gh | 0, Gl | 0));
+      ({ h: Hh, l: Hl } = add2(this.Hh | 0, this.Hl | 0, Hh | 0, Hl | 0));
+      this.set(Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl);
+    }
+    roundClean() {
+      clean4(SHA512_W_H2, SHA512_W_L2);
+    }
+    destroy() {
+      this.destroyed = true;
+      clean4(this.buffer);
+      this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+  };
+  var _SHA5122 = class extends SHA2_64B2 {
+    Ah = SHA512_IV4[0] | 0;
+    Al = SHA512_IV4[1] | 0;
+    Bh = SHA512_IV4[2] | 0;
+    Bl = SHA512_IV4[3] | 0;
+    Ch = SHA512_IV4[4] | 0;
+    Cl = SHA512_IV4[5] | 0;
+    Dh = SHA512_IV4[6] | 0;
+    Dl = SHA512_IV4[7] | 0;
+    Eh = SHA512_IV4[8] | 0;
+    El = SHA512_IV4[9] | 0;
+    Fh = SHA512_IV4[10] | 0;
+    Fl = SHA512_IV4[11] | 0;
+    Gh = SHA512_IV4[12] | 0;
+    Gl = SHA512_IV4[13] | 0;
+    Hh = SHA512_IV4[14] | 0;
+    Hl = SHA512_IV4[15] | 0;
+    constructor() {
+      super(64);
+    }
+  };
+  var sha2564 = /* @__PURE__ */ createHasher4(
+    () => new _SHA2564(),
+    /* @__PURE__ */ oidNist4(1)
+  );
+  var sha5122 = /* @__PURE__ */ createHasher4(
+    () => new _SHA5122(),
+    /* @__PURE__ */ oidNist4(3)
+  );
 
   // node_modules/@scure/bip32/index.js
   var Point = /* @__PURE__ */ (() => secp256k1.Point)();
   var Fn = /* @__PURE__ */ (() => Point.Fn)();
-  var base58check = /* @__PURE__ */ createBase58check(sha2563);
+  var base58check = /* @__PURE__ */ createBase58check(sha2564);
   var MASTER_SECRET = /* @__PURE__ */ (() => {
     return Uint8Array.from("Bitcoin seed".split(""), (char) => char.charCodeAt(0));
   })();
   var BITCOIN_VERSIONS = { private: 76066276, public: 76067358 };
   var HARDENED_OFFSET = 2147483648;
-  var hash160 = (data) => ripemd1602(sha2563(data));
-  var fromU32 = (data) => createView3(data).getUint32(0, false);
+  var hash160 = (data) => ripemd1602(sha2564(data));
+  var fromU32 = (data) => createView4(data).getUint32(0, false);
   var toU32 = (n) => {
     if (typeof n !== "number")
       throw new TypeError("invalid number, should be from 0 to 2**32-1, got " + n);
     if (!Number.isSafeInteger(n) || n < 0 || n > 2 ** 32 - 1)
       throw new RangeError("invalid number, should be from 0 to 2**32-1, got " + n);
     const buf = new Uint8Array(4);
-    createView3(buf).setUint32(0, n, false);
+    createView4(buf).setUint32(0, n, false);
     return buf;
   };
   var HDKey = class _HDKey {
@@ -6320,7 +6755,7 @@ zoo`.split("\n"));
       if (!priv) {
         throw new Error("No private key");
       }
-      return base58check.encode(this.serialize(this.versions.private, concatBytes(Uint8Array.of(0), priv)));
+      return base58check.encode(this.serialize(this.versions.private, concatBytes3(Uint8Array.of(0), priv)));
     }
     get publicExtendedKey() {
       if (!this._publicKey) {
@@ -6329,18 +6764,18 @@ zoo`.split("\n"));
       return base58check.encode(this.serialize(this.versions.public, this._publicKey));
     }
     static fromMasterSeed(seed, versions = BITCOIN_VERSIONS) {
-      abytes3(seed);
+      abytes5(seed);
       if (8 * seed.length < 128 || 8 * seed.length > 512) {
         throw new RangeError("HDKey: seed length must be between 128 and 512 bits; 256 bits is advised, got " + seed.length);
       }
-      const I = hmac2(sha5122, MASTER_SECRET, seed);
+      const I = hmac3(sha5122, MASTER_SECRET, seed);
       const privateKey = I.slice(0, 32);
       const chainCode = I.slice(32);
       return new _HDKey({ versions, chainCode, privateKey });
     }
     static fromExtendedKey(base58key, versions = BITCOIN_VERSIONS) {
       const keyBuffer = base58check.decode(base58key);
-      const keyView = createView3(keyBuffer);
+      const keyView = createView4(keyBuffer);
       const version = keyView.getUint32(0, false);
       const opt = {
         versions,
@@ -6441,12 +6876,12 @@ zoo`.split("\n"));
         if (!priv) {
           throw new Error("Could not derive hardened child key");
         }
-        data = concatBytes(Uint8Array.of(0), priv, data);
+        data = concatBytes3(Uint8Array.of(0), priv, data);
       } else {
-        data = concatBytes(this._publicKey, data);
+        data = concatBytes3(this._publicKey, data);
       }
-      const out = _I || hmac2(sha5122, this.chainCode, data);
-      abytes3(out, 64);
+      const out = _I || hmac3(sha5122, this.chainCode, data);
+      abytes5(out, 64);
       const childTweak = out.slice(0, 32);
       const chainCode = out.slice(32);
       const opt = {
@@ -6484,12 +6919,12 @@ zoo`.split("\n"));
       if (!this._privateKey) {
         throw new Error("No privateKey set!");
       }
-      abytes3(hash, 32);
+      abytes5(hash, 32);
       return secp256k1.sign(hash, this._privateKey, { prehash: false });
     }
     verify(hash, signature) {
-      abytes3(hash, 32);
-      abytes3(signature, 64);
+      abytes5(hash, 32);
+      abytes5(signature, 64);
       if (!this._publicKey) {
         throw new Error("No publicKey set!");
       }
@@ -6512,8 +6947,8 @@ zoo`.split("\n"));
       if (!this.chainCode) {
         throw new Error("No chainCode set");
       }
-      abytes3(key, 33);
-      return concatBytes(toU32(version), new Uint8Array([this.depth]), toU32(this.parentFingerprint), toU32(this.index), this.chainCode, key);
+      abytes5(key, 33);
+      return concatBytes3(toU32(version), new Uint8Array([this.depth]), toU32(this.parentFingerprint), toU32(this.index), this.chainCode, key);
     }
   };
 
@@ -6559,7 +6994,7 @@ zoo`.split("\n"));
     }
     throw new Error("push too large");
   }
-  function concatBytes3(arrays) {
+  function concatBytes4(arrays) {
     const n = arrays.reduce((s, a) => s + a.length, 0);
     const out = new Uint8Array(n);
     let o = 0;
@@ -6582,7 +7017,7 @@ zoo`.split("\n"));
     const parts = [new Uint8Array([opN(m)])];
     for (const p of pubkeys) parts.push(pushData(p));
     parts.push(new Uint8Array([opN(pubkeys.length), OP_CHECKMULTISIG]));
-    return concatBytes3(parts);
+    return concatBytes4(parts);
   }
   function base58check2(payload) {
     const alphabet2 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -6681,37 +7116,123 @@ zoo`.split("\n"));
       summary: mNum + "-of-" + n + " multisig \xB7 " + (bip67 ? "BIP67 sorted" : "custom order") + " \xB7 offline"
     };
   }
-  function generateDemoCosigners(n) {
+  var WORD_STRENGTH = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 };
+  var ZPUB_VERSION = [4, 178, 71, 70];
+  function b58decode(s) {
+    const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    let n = 0n;
+    for (const c of s) {
+      const i = ALPH.indexOf(c);
+      if (i < 0) throw new Error("invalid base58");
+      n = n * 58n + BigInt(i);
+    }
+    let hex = n.toString(16);
+    if (hex.length % 2) hex = "0" + hex;
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+    let leading = 0;
+    for (const c of s) {
+      if (c === "1") leading++;
+      else break;
+    }
+    const out = new Uint8Array(leading + bytes.length);
+    out.set(bytes, leading);
+    return out;
+  }
+  function b58encode(bytes) {
+    const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    let n = 0n;
+    for (const b of bytes) n = (n << 8n) + BigInt(b);
+    let res = "";
+    while (n > 0n) {
+      res = ALPH[Number(n % 58n)] + res;
+      n /= 58n;
+    }
+    for (const b of bytes) {
+      if (b === 0) res = "1" + res;
+      else break;
+    }
+    return res || "1";
+  }
+  function b58checkDecode(s) {
+    const raw = b58decode(s);
+    const data = raw.slice(0, -4);
+    const chk = raw.slice(-4);
+    const h = sha256(sha256(data));
+    if (h[0] !== chk[0] || h[1] !== chk[1] || h[2] !== chk[2] || h[3] !== chk[3]) {
+      throw new Error("base58check checksum");
+    }
+    return data;
+  }
+  function b58checkEncode(data) {
+    const h = sha256(sha256(data));
+    const out = new Uint8Array(data.length + 4);
+    out.set(data);
+    out.set(h.slice(0, 4), data.length);
+    return b58encode(out);
+  }
+  function xpubToZpub(xpub) {
+    const data = b58checkDecode(xpub);
+    data[0] = ZPUB_VERSION[0];
+    data[1] = ZPUB_VERSION[1];
+    data[2] = ZPUB_VERSION[2];
+    data[3] = ZPUB_VERSION[3];
+    return b58checkEncode(data);
+  }
+  function generateDemoCosigners(n, options) {
     const count = Math.max(2, Math.min(7, Math.floor(Number(n) || 3)));
-    const path = "m/84'/0'/0'/0/0";
+    const words = options && options.words || 12;
+    const strength = WORD_STRENGTH[words];
+    if (!strength) throw new Error("word count must be 12, 15, 18, 21, or 24");
+    const passphrase = options && options.passphrase || "";
+    const accountPath = "m/84'/0'/0'";
+    const keyPath = "m/84'/0'/0'/0/0";
     const cosigners = [];
     for (let i = 0; i < count; i++) {
-      const mnemonic = generateMnemonic(wordlist, 128);
-      const seed = mnemonicToSeedSync(mnemonic, "");
+      const mnemonic = generateMnemonic(wordlist, strength);
+      const seed = mnemonicToSeedSync(mnemonic, passphrase);
       const root = HDKey.fromMasterSeed(seed);
-      const child = root.derive(path);
+      const account = root.derive(accountPath);
+      const child = root.derive(keyPath);
       const pub = child.publicKey;
       if (!pub || pub.length !== 33) throw new Error("failed to derive public key");
+      const xpubStd = account.publicExtendedKey;
+      const zpub = xpubToZpub(xpubStd);
       cosigners.push({
         label: "Cosigner " + String.fromCharCode(65 + i),
         // A, B, C…
         mnemonic,
+        words,
+        entropyBits: strength,
+        passphraseUsed: passphrase.length > 0,
+        /** BIP84 account-level zpub (SLIP-132) — this is the “BIP84 xpub-style” watch key */
+        bip84Zpub: zpub,
+        bip84AccountPath: accountPath,
+        /** Compressed pubkey at BIP84 receive index 0 — used to build the educational multisig script */
         pubkeyHex: bytesToHex3(pub),
-        path
+        pubkeyPath: keyPath
       });
     }
     return {
-      path,
+      scheme: "BIP84 native segwit",
+      accountPath,
+      keyPath,
+      words,
+      entropyBits: strength,
       cosigners,
+      /** Multisig builder still needs compressed pubkeys, one per line */
       pubkeysText: cosigners.map((c) => c.pubkeyHex).join("\n"),
-      warning: "DEMO ONLY \u2014 these recovery phrases were generated in this browser for learning. Do not send real bitcoin to wallets made from them unless you intend a throwaway test."
+      /** Optional: copy-paste zpubs for HD multisig wallets (not used by bare script builder) */
+      zpubsText: cosigners.map((c) => c.bip84Zpub).join("\n"),
+      warning: "DEMO ONLY \u2014 BIP84 throwaway seeds generated in this browser. Do not send real bitcoin. Each card shows BIP39 words, ENT bits, BIP84 zpub (account m/84'/0'/0'), and the compressed pubkey at m/84'/0'/0'/0/0 used to build this page\u2019s simple M-of-N address."
     };
   }
   var MultisigLab = {
     buildMultisigFromText,
     generateDemoCosigners,
     looksPrivate,
-    VERSION: "0.9.1-ms"
+    WORD_STRENGTH,
+    VERSION: "0.9.2-ms"
   };
   var g = typeof globalThis !== "undefined" ? globalThis : void 0;
   if (g) g.MultisigLab = MultisigLab;

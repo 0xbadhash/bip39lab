@@ -29,9 +29,13 @@ test.describe("Multisig explainer E2E", () => {
   test("S12b generate demo cosigners then build", async ({ page }) => {
     await page.goto("/multisig.html");
     await page.locator("#msDemoN").selectOption("3");
+    await page.locator('#msWordTabs .seg-tab[data-words="12"]').click();
     await page.locator("#msGenDemo").click();
     await expect(page.locator("#msDemoList")).toBeVisible();
     await expect(page.locator("#msDemoList .watch-item")).toHaveCount(3);
+    await expect(page.locator("#msDemoList")).toContainText(/BIP84 zpub/i);
+    await expect(page.locator("#msDemoList")).toContainText(/zpub/);
+    await expect(page.locator("#msDemoList")).toContainText(/128 bits/);
     const pubs = await page.locator("#msParts").inputValue();
     expect(pubs.trim().split(/\n/).length).toBe(3);
     expect(pubs).toMatch(/^0[23]/m);
