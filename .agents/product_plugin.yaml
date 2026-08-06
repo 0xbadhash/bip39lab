@@ -1,0 +1,61 @@
+# Product plugin — bitcoin-scripts (secure offline BIP39 / entropy lab)
+# Harness does not assume a language; stack is declared here.
+
+product_id: bitcoin-scripts
+product_name: Bitcoin Scripts (secure BIP39 / entropy lab)
+repo_root: .
+
+stack:
+  languages: [python]
+  package_manager: pip
+  test_runners: [pytest]
+  app_layout: "src/ (preferred) · legacy CLI at repo root until Phase 0 cleanup"
+
+product_roadmap: ROADMAP.md
+harness_backlog: .agents/BACKLOG.md
+
+# Executed at release / smoke (argv arrays; cwd relative to product root).
+smoke:
+  - name: unit
+    cmd: ["bash", "scripts/smoke_unit.sh"]
+    cwd: .
+
+vault:
+  enabled: false
+  root_env: PRODUCT_VAULT_ROOT
+  default_root: ""
+  project_label: bitcoin-scripts
+  dev_log_rel: 01-Projects/bitcoin-scripts/dev-log.md
+  mirror_docs: []
+
+product_path_prefixes:
+  - src/
+  - web/
+  - tests/
+
+domain_review_hints:
+  - no secret retention (mnemonics, entropy, seeds, xprv, private keys)
+  - no logging of seed material
+  - offline-first; network only for opt-in address queries
+  - no eval/exec of config
+  - vendored BIP-39 wordlists with integrity checks
+  - audited crypto for production path; hand-rolled ECC is non-default only
+  - BIP39 checksum validation required
+  - balance failure must not be treated as zero
+  - domain correctness vs BIP32/39/44/49/84 fixtures
+
+night_shift:
+  default_host: ""
+  live_path: ""
+  live_urls: []
+  live_expect_code: "200"
+  coverage_soft: "1"
+
+# Full ship FSM is required for every ROADMAP phase (see ROADMAP.md).
+# Agents must start each phase with /spec (or an explicit Spec waiver).
+ship_policy:
+  full_fsm_per_roadmap_phase: true
+  require_spec: true
+  allow_spec_waiver_only_for: [hotfix, chore, docs-only, prose-only]
+
+product_skills: []

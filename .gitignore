@@ -1,0 +1,34 @@
+# Secrets / retention anti-patterns
+tested_mnemonics.json
+*.mnemonic
+*.seed
+.env
+.env.*
+bitcoin_scanner.local.conf
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Agent harness runtime
+.agents/traces/*
+!.agents/traces/.gitkeep
+.agents/artifacts/*
+!.agents/artifacts/.gitkeep
+# keep pipeline state tracked lightly — allow local override
+# .agents/state/pipeline.json is intentionally tracked as init template after install
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
