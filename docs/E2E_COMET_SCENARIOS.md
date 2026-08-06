@@ -1,11 +1,19 @@
 # BIP39 Lab — E2E suite for Comet / Perplexity
 
 **Canonical file in repo:** `docs/E2E_COMET_SCENARIOS.md`  
-**Live app under test:** https://bip39.catalyxt.xyz/  
+**Live apps:**  
+- BIP39 Lab: https://bip39.catalyxt.xyz/  
+- Multisig lab: https://bip39.catalyxt.xyz/multisig.html  
+
 **GitHub (raw):** https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 **GitHub (blob):** https://github.com/0xbadhash/bip39lab/blob/master/docs/E2E_COMET_SCENARIOS.md  
 
-Automated twin: Playwright `e2e/lab.spec.ts` (`npm run test:e2e` or `npm run test:e2e:live`).
+| Suite | Playwright file | Scenarios |
+|-------|-----------------|-----------|
+| BIP39 Lab | `e2e/lab.spec.ts` | S0–S11 |
+| Multisig | `e2e/multisig.spec.ts` | S12 |
+
+Run: `npm run test:e2e` or `npm run test:e2e:live`
 
 ---
 

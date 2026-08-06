@@ -5,7 +5,8 @@ const P2 = "02c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5";
 const P2SH = "33RQmypKhD6f4tMquiR5a3C6dRT7eBpaiG";
 
 test.describe("Multisig explainer E2E", () => {
-  test("build 2-of-2 from public keys and refuse private", async ({ page }) => {
+  /** Maps to Comet scenario S12 in docs/E2E_COMET_SCENARIOS.md */
+  test("S12 build 2-of-2 from public keys and refuse private", async ({ page }) => {
     await page.goto("/multisig.html");
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
 
