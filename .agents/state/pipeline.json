@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "blocked",
-  "score": 90,
+  "phase": "init",
+  "score": 0.0,
   "spec_id": ".agents/specs/2026-08-06-phase-1-static-site.md",
   "task": "",
   "waiver": null
