@@ -105,4 +105,4 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**In ship:** **Phase 0** — `/spec` ready → `/execute_dev`.
+**All roadmap phases 0–3 shipped** (tags `v0.1.0`–`v0.4.0`). Pipeline phase: `init` (ready for next `/spec`).
