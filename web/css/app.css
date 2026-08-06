@@ -476,11 +476,6 @@ code {
   margin-top: 0.65rem;
 }
 
-/* Full-width shell for the address lab */
-.app {
-  grid-template-columns: 280px minmax(0, 1fr);
-}
-
 .panel {
   display: none;
 }
