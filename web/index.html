@@ -170,57 +170,44 @@
               </div>
             </div>
 
-            <div class="column-toggles" role="group" aria-label="Address type columns">
-              <span class="toggles-label">Show address types</span>
-              <label class="check">
-                <input type="checkbox" id="colBip86" checked disabled />
-                BIP86 Taproot <em>(always on)</em>
-              </label>
-              <label class="check">
-                <input type="checkbox" id="colBip84" checked disabled />
-                BIP84 native segwit <em>(always on)</em>
-              </label>
-              <label class="check">
-                <input type="checkbox" id="colBip49" />
-                BIP49 nested
-              </label>
-              <label class="check">
-                <input type="checkbox" id="colBip44" />
-                BIP44 legacy
-              </label>
+            <div class="seg-block">
+              <span class="toggles-label" id="addrTypeLabel">Address type (one at a time)</span>
+              <div class="seg-tabs" role="tablist" aria-labelledby="addrTypeLabel">
+                <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-addr-type="bip86">BIP86 · Taproot</button>
+                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip84">BIP84 · native</button>
+                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip49">BIP49 · nested</button>
+                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip44">BIP44 · legacy</button>
+              </div>
+              <p id="addrTypeHelp" class="control-help">
+                <strong>Taproot (bc1p…)</strong> — newest common format (like a modern IBAN). Path <code>m/86'/…</code>.
+              </p>
             </div>
-            <p class="control-help">
-              Modern wallets mostly use <strong>Taproot (bc1p…)</strong> and <strong>native segwit (bc1q…)</strong>.
-              Nested (3…) and legacy (1…) are older formats — leave them off unless you need them; that keeps the table wide and readable without sideways scrolling.
-            </p>
 
             <details class="help-fold">
-              <summary>What each column means (simple)</summary>
+              <summary>What each type means (simple)</summary>
               <ul class="help-list">
-                <li><strong>idx</strong> — address number in the sequence (0, 1, 2…). Same phrase + same settings always gives the same list.</li>
-                <li><strong>BIP86 Taproot (bc1p…)</strong> — newest common format; like a modern IBAN. Path style <code>m/86'/0'/account'/change/index</code>.</li>
-                <li><strong>BIP84 native segwit (bc1q…)</strong> — widely used “bc1q” addresses. Path <code>m/84'/…</code>.</li>
-                <li><strong>BIP49 nested (3…)</strong> — older “compatibility” style. Path <code>m/49'/…</code>. Optional.</li>
-                <li><strong>BIP44 legacy (1…)</strong> — oldest style still seen on chain. Path <code>m/44'/…</code>. Optional.</li>
+                <li><strong>#</strong> — address number in the sequence (0, 1, 2…). Same phrase + same settings always gives the same list.</li>
+                <li><strong>BIP86 Taproot (bc1p…)</strong> — newest common format. Path <code>m/86'/0'/account'/change/index</code>.</li>
+                <li><strong>BIP84 native segwit (bc1q…)</strong> — widely used. Path <code>m/84'/…</code>.</li>
+                <li><strong>BIP49 nested (3…)</strong> — older compatibility style. Path <code>m/49'/…</code>.</li>
+                <li><strong>BIP44 legacy (1…)</strong> — oldest style. Path <code>m/44'/…</code>.</li>
               </ul>
               <p class="control-help">
-                <strong>What this is:</strong> public receive numbers only (safe to share one when you want payment).<br />
-                <strong>What this is not:</strong> not your recovery phrase, not a private key, not a balance, and not a bank transfer — you still need a real wallet to spend.
+                <strong>What this is:</strong> public receive numbers only (safe to share when you want payment).<br />
+                <strong>What this is not:</strong> not your recovery phrase, not a private key, not a balance.
               </p>
             </details>
 
             <p id="derivePathSummary" class="path-summary" aria-live="polite"></p>
             <p id="deriveStatusPlain" class="status-plain" aria-live="polite"></p>
 
-            <div class="table-scroll" id="tableScroll" aria-live="polite">
+            <div class="table-scroll cols-modern" id="tableScroll" aria-live="polite">
               <table class="addr-table" id="addrTable">
                 <thead>
                   <tr>
                     <th scope="col" class="col-idx">#</th>
-                    <th scope="col" class="col-bip86" data-col="bip86">BIP86 · Taproot</th>
-                    <th scope="col" class="col-bip84" data-col="bip84">BIP84 · native segwit</th>
-                    <th scope="col" class="col-bip49" data-col="bip49" hidden>BIP49 · nested</th>
-                    <th scope="col" class="col-bip44" data-col="bip44" hidden>BIP44 · legacy</th>
+                    <th scope="col" id="addrColHeader">Address · BIP86 Taproot</th>
+                    <th scope="col" class="col-actions">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="addrTableBody">
@@ -244,31 +231,21 @@
                 Public keys only for the <strong>Account</strong> above — never <code>xprv</code>. A passphrase changes every key.
               </p>
 
-              <div class="column-toggles watch-toggles" role="group" aria-label="Which watch-only keys to show">
-                <span class="toggles-label">Show one key type at a time (or several if you need them)</span>
-                <label class="check">
-                  <input type="checkbox" id="woBip84" checked />
-                  BIP84 · zpub <em>(native segwit — usual Sparrow import)</em>
-                </label>
-                <label class="check">
-                  <input type="checkbox" id="woBip86" />
-                  BIP86 · xpub <em>(Taproot account)</em>
-                </label>
-                <label class="check">
-                  <input type="checkbox" id="woBip49" />
-                  BIP49 · ypub <em>(nested)</em>
-                </label>
-                <label class="check">
-                  <input type="checkbox" id="woBip44" />
-                  BIP44 · xpub <em>(legacy)</em>
-                </label>
+              <div class="seg-block">
+                <span class="toggles-label" id="woTypeLabel">Watch-only key type (one at a time)</span>
+                <div class="seg-tabs" role="tablist" aria-labelledby="woTypeLabel">
+                  <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-wo-type="84">BIP84 · zpub</button>
+                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="86">BIP86 · xpub</button>
+                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="49">BIP49 · ypub</button>
+                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="44">BIP44 · xpub</button>
+                </div>
+                <p id="woTypeHelp" class="control-help">
+                  <strong>BIP84 zpub</strong> — usual Sparrow / mobile watch-only import for native segwit.
+                </p>
               </div>
-              <p class="control-help">
-                Default shows only <strong>BIP84 zpub</strong> so the page stays short. Tick others only when you need them.
-              </p>
 
               <div class="row">
-                <button type="button" class="btn secondary" id="btnWatchOnly">Refresh watch-only keys</button>
+                <button type="button" class="btn secondary" id="btnWatchOnly">Refresh watch-only key</button>
               </div>
               <div id="watchOnlyList" class="watch-list" aria-live="polite">
                 <p class="control-help">Generate or paste a valid phrase, then refresh (or wait for auto-derive).</p>

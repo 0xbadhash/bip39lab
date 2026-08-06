@@ -87,40 +87,88 @@
     return { account, change, count };
   }
 
-  function showLegacy49() {
-    return !!($("colBip49") && $("colBip49").checked);
+  const ADDR_TYPE_META = {
+    bip86: {
+      label: "BIP86 · Taproot",
+      help: "Taproot (bc1p…) — newest common format (like a modern IBAN). Path m/86'/0'/account'/change/index.",
+      field: "bip86_p2tr",
+      purpose: 86,
+    },
+    bip84: {
+      label: "BIP84 · native segwit",
+      help: "Native segwit (bc1q…) — widely used. Path m/84'/0'/account'/change/index.",
+      field: "bip84_p2wpkh",
+      purpose: 84,
+    },
+    bip49: {
+      label: "BIP49 · nested",
+      help: "Nested segwit (addresses start with 3) — older compatibility style. Path m/49'/…",
+      field: "bip49_p2sh_p2wpkh",
+      purpose: 49,
+    },
+    bip44: {
+      label: "BIP44 · legacy",
+      help: "Legacy (addresses start with 1) — oldest style still seen on chain. Path m/44'/…",
+      field: "bip44_p2pkh",
+      purpose: 44,
+    },
+  };
+
+  const WO_TYPE_META = {
+    84: {
+      help: "BIP84 zpub — usual Sparrow / mobile watch-only import for native segwit.",
+    },
+    86: {
+      help: "BIP86 xpub — Taproot account public key (watch-only where supported).",
+    },
+    49: {
+      help: "BIP49 ypub — nested segwit account (older wallets).",
+    },
+    44: {
+      help: "BIP44 xpub — legacy P2PKH account public key.",
+    },
+  };
+
+  function getActiveAddrType() {
+    const active = document.querySelector(".seg-tab[data-addr-type].active");
+    const t = active && active.getAttribute("data-addr-type");
+    return ADDR_TYPE_META[t] ? t : "bip86";
   }
 
-  function showLegacy44() {
-    return !!($("colBip44") && $("colBip44").checked);
+  function getActiveWatchPurpose() {
+    const active = document.querySelector(".seg-tab[data-wo-type].active");
+    const p = active && parseInt(active.getAttribute("data-wo-type"), 10);
+    return [84, 86, 49, 44].indexOf(p) >= 0 ? p : 84;
   }
 
-  function visibleColCount() {
-    return 1 + 2 + (showLegacy49() ? 1 : 0) + (showLegacy44() ? 1 : 0);
-  }
-
-  function applyColumnVisibility() {
-    const leg49 = showLegacy49();
-    const leg44 = showLegacy44();
-    document.querySelectorAll('[data-col="bip49"]').forEach((el) => {
-      el.hidden = !leg49;
+  function setSegActive(selector, attr, value) {
+    document.querySelectorAll(selector).forEach((btn) => {
+      const on = btn.getAttribute(attr) === String(value);
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-selected", on ? "true" : "false");
     });
-    document.querySelectorAll('[data-col="bip44"]').forEach((el) => {
-      el.hidden = !leg44;
-    });
-    const scroll = $("tableScroll");
-    if (scroll) {
-      scroll.classList.toggle("cols-modern", !leg49 && !leg44);
-      scroll.classList.toggle("cols-legacy", leg49 || leg44);
-    }
+  }
+
+  function updateAddrTypeChrome() {
+    const t = getActiveAddrType();
+    const meta = ADDR_TYPE_META[t];
+    const help = $("addrTypeHelp");
+    if (help) help.innerHTML = meta.help;
+    const hdr = $("addrColHeader");
+    if (hdr) hdr.textContent = "Address · " + meta.label;
+  }
+
+  function updateWatchTypeChrome() {
+    const p = getActiveWatchPurpose();
+    const help = $("woTypeHelp");
+    if (help && WO_TYPE_META[p]) help.innerHTML = WO_TYPE_META[p].help;
   }
 
   function updatePathSummary(opts, rowCount) {
     const last = Math.max(0, (rowCount || opts.count) - 1);
     const chWord = opts.change === 1 ? "change (internal leftovers)" : "receive (for people paying you)";
-    const types = ["BIP86 Taproot", "BIP84 native"];
-    if (showLegacy49()) types.push("BIP49 nested");
-    if (showLegacy44()) types.push("BIP44 legacy");
+    const t = getActiveAddrType();
+    const meta = ADDR_TYPE_META[t];
 
     $("derivePathSummary").textContent =
       "Showing account " +
@@ -129,9 +177,11 @@
       chWord +
       " · address numbers 0 through " +
       last +
-      " · formats: " +
-      types.join(", ") +
-      ". Technical path pattern: m/purpose'/0'/" +
+      " · type: " +
+      meta.label +
+      ". Path pattern: m/" +
+      meta.purpose +
+      "'/0'/" +
       opts.account +
       "'/" +
       opts.change +
@@ -283,40 +333,55 @@
     return !!ok;
   }
 
-  function makeAddrCell(addr, col) {
-    const td = document.createElement("td");
-    td.className = "addr";
-    td.setAttribute("data-col", col);
-    if (col === "bip49" && !showLegacy49()) td.hidden = true;
-    if (col === "bip44" && !showLegacy44()) td.hidden = true;
+  function addrFromRow(row, typeKey) {
+    const meta = ADDR_TYPE_META[typeKey] || ADDR_TYPE_META.bip86;
+    return row[meta.field] || "";
+  }
 
+  function makeAddrRow(row) {
+    const typeKey = getActiveAddrType();
+    const addr = addrFromRow(row, typeKey);
+    const tr = document.createElement("tr");
+
+    const tdIdx = document.createElement("td");
+    tdIdx.className = "idx";
+    tdIdx.textContent = String(row.index);
+    tr.appendChild(tdIdx);
+
+    const tdAddr = document.createElement("td");
+    tdAddr.className = "addr";
     const wrap = document.createElement("div");
     wrap.className = "addr-cell";
-
     const span = document.createElement("span");
     span.className = "addr-text";
-    span.textContent = addr || "";
-    span.title = addr || "";
+    span.textContent = addr;
+    span.title = addr;
+    wrap.appendChild(span);
+    tdAddr.appendChild(wrap);
+    tr.appendChild(tdAddr);
 
+    const tdAct = document.createElement("td");
+    tdAct.className = "col-actions";
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "btn-copy";
     btn.textContent = "Copy";
     btn.setAttribute("aria-label", "Copy address to clipboard");
     btn.addEventListener("click", () => copyAddress(addr, btn));
-
     const btnQr = document.createElement("button");
     btnQr.type = "button";
     btnQr.className = "btn-copy";
     btnQr.textContent = "QR";
     btnQr.setAttribute("aria-label", "Show address QR code");
-    btnQr.addEventListener("click", () => showQr(addr, "Receive address · " + col).catch(console.error));
+    btnQr.addEventListener("click", () =>
+      showQr(addr, "Receive address · " + (ADDR_TYPE_META[typeKey] || {}).label).catch(console.error)
+    );
+    tdAct.appendChild(btn);
+    tdAct.appendChild(document.createTextNode(" "));
+    tdAct.appendChild(btnQr);
+    tr.appendChild(tdAct);
 
-    wrap.appendChild(span);
-    wrap.appendChild(btn);
-    wrap.appendChild(btnQr);
-    td.appendChild(wrap);
-    return td;
+    return tr;
   }
 
   async function showQr(text, label) {
@@ -340,32 +405,11 @@
   /** Last full exportWatchOnly result (all purposes); UI filters by checkboxes. */
   let lastWatchExport = null;
 
-  function selectedWatchPurposes() {
-    const map = [
-      { id: "woBip84", purpose: 84 },
-      { id: "woBip86", purpose: 86 },
-      { id: "woBip49", purpose: 49 },
-      { id: "woBip44", purpose: 44 },
-    ];
-    const out = [];
-    for (const m of map) {
-      const el = $(m.id);
-      if (el && el.checked) out.push(m.purpose);
-    }
-    return out;
-  }
-
   function renderWatchOnlyList(exp) {
     const list = $("watchOnlyList");
     if (!list) return;
-    const want = selectedWatchPurposes();
     list.innerHTML = "";
-
-    if (!want.length) {
-      list.innerHTML =
-        "<p class=\"control-help\">Tick at least one key type above (e.g. BIP84 zpub) to show an export card.</p>";
-      return;
-    }
+    updateWatchTypeChrome();
 
     if (!exp || !exp.keys || !exp.keys.length) {
       list.innerHTML =
@@ -373,45 +417,44 @@
       return;
     }
 
-    const filtered = exp.keys.filter((k) => want.indexOf(k.purpose) >= 0);
-    if (!filtered.length) {
+    const purpose = getActiveWatchPurpose();
+    const k = exp.keys.find((x) => x.purpose === purpose);
+    if (!k) {
       list.innerHTML =
-        "<p class=\"control-help\">No keys match the selected types. Refresh after generating a phrase.</p>";
+        "<p class=\"control-help\">No key for this type. Refresh after generating a phrase.</p>";
       return;
     }
 
-    for (const k of filtered) {
-      const item = document.createElement("div");
-      item.className = "watch-item";
-      item.setAttribute("data-purpose", String(k.purpose));
-      item.innerHTML =
-        "<div class=\"watch-item-title\"></div>" +
-        "<div class=\"watch-item-path\"></div>" +
-        "<div class=\"watch-item-key\"></div>" +
-        "<p class=\"watch-item-note\"></p>" +
-        "<div class=\"row\"></div>";
-      item.querySelector(".watch-item-title").textContent = k.label;
-      item.querySelector(".watch-item-path").textContent = k.path + " · account " + exp.account;
-      item.querySelector(".watch-item-key").textContent = k.key;
-      item.querySelector(".watch-item-note").textContent = k.note;
-      const row = item.querySelector(".row");
-      const bCopy = document.createElement("button");
-      bCopy.type = "button";
-      bCopy.className = "btn-copy";
-      bCopy.textContent = "Copy key";
-      bCopy.dataset.copyIdle = "Copy key";
-      bCopy.setAttribute("aria-label", "Copy key to clipboard");
-      bCopy.addEventListener("click", () => copyAddress(k.key, bCopy));
-      const bQr = document.createElement("button");
-      bQr.type = "button";
-      bQr.className = "btn-copy";
-      bQr.textContent = "QR";
-      bQr.setAttribute("aria-label", "Show key QR code");
-      bQr.addEventListener("click", () => showQr(k.key, k.label + " · " + k.path).catch(console.error));
-      row.appendChild(bCopy);
-      row.appendChild(bQr);
-      list.appendChild(item);
-    }
+    const item = document.createElement("div");
+    item.className = "watch-item";
+    item.setAttribute("data-purpose", String(k.purpose));
+    item.innerHTML =
+      "<div class=\"watch-item-title\"></div>" +
+      "<div class=\"watch-item-path\"></div>" +
+      "<div class=\"watch-item-key\"></div>" +
+      "<p class=\"watch-item-note\"></p>" +
+      "<div class=\"row\"></div>";
+    item.querySelector(".watch-item-title").textContent = k.label;
+    item.querySelector(".watch-item-path").textContent = k.path + " · account " + exp.account;
+    item.querySelector(".watch-item-key").textContent = k.key;
+    item.querySelector(".watch-item-note").textContent = k.note;
+    const row = item.querySelector(".row");
+    const bCopy = document.createElement("button");
+    bCopy.type = "button";
+    bCopy.className = "btn-copy";
+    bCopy.textContent = "Copy key";
+    bCopy.dataset.copyIdle = "Copy key";
+    bCopy.setAttribute("aria-label", "Copy key to clipboard");
+    bCopy.addEventListener("click", () => copyAddress(k.key, bCopy));
+    const bQr = document.createElement("button");
+    bQr.type = "button";
+    bQr.className = "btn-copy";
+    bQr.textContent = "QR";
+    bQr.setAttribute("aria-label", "Show key QR code");
+    bQr.addEventListener("click", () => showQr(k.key, k.label + " · " + k.path).catch(console.error));
+    row.appendChild(bCopy);
+    row.appendChild(bQr);
+    list.appendChild(item);
   }
 
   async function refreshWatchOnly() {
@@ -456,13 +499,13 @@
     const tr = document.createElement("tr");
     tr.className = "empty-row";
     const td = document.createElement("td");
-    td.colSpan = visibleColCount();
+    td.colSpan = 3;
     td.textContent =
       message ||
       "Generate or paste a valid recovery phrase to list receive addresses (like printing cheque numbers from a pad).";
     tr.appendChild(td);
     tbody.appendChild(tr);
-    applyColumnVisibility();
+    updateAddrTypeChrome();
   }
 
   function fillAddressTable(result) {
@@ -470,26 +513,14 @@
     tbody.innerHTML = "";
     const rows = result.rows || [];
     lastRows = rows;
+    updateAddrTypeChrome();
     if (!rows.length) {
       clearAddressTable();
       return;
     }
     for (const r of rows) {
-      const tr = document.createElement("tr");
-
-      const tdIdx = document.createElement("td");
-      tdIdx.className = "idx";
-      tdIdx.textContent = String(r.index);
-      tr.appendChild(tdIdx);
-
-      tr.appendChild(makeAddrCell(r.bip86_p2tr || "", "bip86"));
-      tr.appendChild(makeAddrCell(r.bip84_p2wpkh || "", "bip84"));
-      tr.appendChild(makeAddrCell(r.bip49_p2sh_p2wpkh || "", "bip49"));
-      tr.appendChild(makeAddrCell(r.bip44_p2pkh || "", "bip44"));
-
-      tbody.appendChild(tr);
+      tbody.appendChild(makeAddrRow(r));
     }
-    applyColumnVisibility();
   }
 
   async function refreshMnemonicEntropy() {
@@ -655,29 +686,26 @@
       $(id).addEventListener("input", () => scheduleDerive());
     });
 
-    ["colBip49", "colBip44"].forEach((id) => {
-      const el = $(id);
-      if (!el) return;
-      el.addEventListener("change", () => {
-        applyColumnVisibility();
-        if (lastRows && lastRows.length) {
-          fillAddressTable({ rows: lastRows });
-        }
+    document.querySelectorAll(".seg-tab[data-addr-type]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setSegActive(".seg-tab[data-addr-type]", "data-addr-type", btn.getAttribute("data-addr-type"));
+        updateAddrTypeChrome();
+        if (lastRows && lastRows.length) fillAddressTable({ rows: lastRows });
         updatePathSummary(getDeriveOptions(), lastRows ? lastRows.length : getDeriveOptions().count);
+      });
+    });
+
+    document.querySelectorAll(".seg-tab[data-wo-type]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setSegActive(".seg-tab[data-wo-type]", "data-wo-type", btn.getAttribute("data-wo-type"));
+        updateWatchTypeChrome();
+        if (lastWatchExport) renderWatchOnlyList(lastWatchExport);
+        else refreshWatchOnly().catch(console.error);
       });
     });
 
     const btnWo = $("btnWatchOnly");
     if (btnWo) btnWo.addEventListener("click", () => refreshWatchOnly().catch(console.error));
-
-    ["woBip84", "woBip86", "woBip49", "woBip44"].forEach((id) => {
-      const el = $(id);
-      if (!el) return;
-      el.addEventListener("change", () => {
-        if (lastWatchExport) renderWatchOnlyList(lastWatchExport);
-        else refreshWatchOnly().catch(console.error);
-      });
-    });
 
     const btnQrClose = $("btnQrClose");
     if (btnQrClose) btnQrClose.addEventListener("click", hideQr);
@@ -707,7 +735,8 @@
     );
     clearEntropyFields();
     clearAddressTable();
-    applyColumnVisibility();
+    updateAddrTypeChrome();
+    updateWatchTypeChrome();
     updatePathSummary(getDeriveOptions(), 5);
     showTab("lab");
   });

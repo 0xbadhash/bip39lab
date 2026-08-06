@@ -41,9 +41,10 @@ test.describe("BIP39 Lab E2E", () => {
 
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
 
-    const body = await page.locator("#addrTableBody").innerText();
-    expect(body).toMatch(/bc1p/);
-    expect(body).toMatch(/bc1q/);
+    // Default pad BIP86 → bc1p; switch to BIP84 → bc1q
+    await expect(page.locator("#addrTableBody")).toContainText(/bc1p/);
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(/bc1q/);
   });
 
   test("S2 abandon golden addresses", async ({ page }) => {
@@ -52,9 +53,10 @@ test.describe("BIP39 Lab E2E", () => {
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
 
-    const body = await page.locator("#addrTableBody").innerText();
-    expect(body).toContain(ADDR86);
-    expect(body).toContain(ADDR84);
+    // Default pad: BIP86
+    await expect(page.locator("#addrTableBody")).toContainText(ADDR86);
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
   });
 
@@ -62,9 +64,8 @@ test.describe("BIP39 Lab E2E", () => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-
-    const before = await page.locator("#addrTableBody").innerText();
-    expect(before).toContain(ADDR84);
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
 
     await page.locator("#passphrase").fill("test");
     await page.waitForTimeout(500);
@@ -105,24 +106,26 @@ test.describe("BIP39 Lab E2E", () => {
     await page.locator("#deriveCount").selectOption("5");
     await page.waitForTimeout(450);
     await waitForTableRows(page, 5);
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
     await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
   });
 
-  test("S5 optional BIP49/BIP44 columns", async ({ page }) => {
+  test("S5 address type pads one at a time", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
 
-    await expect(page.locator('th[data-col=bip49]')).toBeHidden();
-    await expect(page.locator('th[data-col=bip44]')).toBeHidden();
+    await expect(page.locator('.seg-tab[data-addr-type="bip86"]')).toHaveClass(/active/);
+    await expect(page.locator("#addrTableBody")).toContainText(ADDR86);
 
-    await page.locator("#colBip49").check();
-    await expect(page.locator('th[data-col=bip49]')).toBeVisible();
-    // abandon index-0 nested P2SH
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
+    await expect(page.locator("#addrTableBody")).not.toContainText(ADDR86);
+
+    await page.locator('.seg-tab[data-addr-type="bip49"]').click();
     await expect(page.locator("#addrTableBody")).toContainText("37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf");
 
-    await page.locator("#colBip44").check();
-    await expect(page.locator('th[data-col=bip44]')).toBeVisible();
+    await page.locator('.seg-tab[data-addr-type="bip44"]').click();
     await expect(page.locator("#addrTableBody")).toContainText("1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA");
   });
 
@@ -174,9 +177,8 @@ test.describe("BIP39 Lab E2E", () => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-    // Default: only BIP84 checkbox on — one card, not all four
-    await expect(page.locator("#woBip84")).toBeChecked();
-    await expect(page.locator("#woBip86")).not.toBeChecked();
+    // Default pad: BIP84 zpub — one card
+    await expect(page.locator('.seg-tab[data-wo-type="84"]')).toHaveClass(/active/);
     await page.locator("#btnWatchOnly").click();
     await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(1, { timeout: 10_000 });
 
@@ -185,9 +187,9 @@ test.describe("BIP39 Lab E2E", () => {
     expect(listText).toMatch(/BIP84|native segwit/i);
     expect(listText).not.toMatch(/xprv/i);
 
-    // Opt-in another type
-    await page.locator("#woBip44").check();
-    await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(2);
+    // Switch pad to BIP44 — still one card
+    await page.locator('.seg-tab[data-wo-type="44"]').click();
+    await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(1);
     listText = await page.locator("#watchOnlyList").innerText();
     expect(listText).toMatch(/xpub/);
     expect(listText).not.toMatch(/xprv/i);
