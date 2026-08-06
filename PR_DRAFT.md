@@ -1,20 +1,20 @@
-# PR Draft: Phase 7 HTML table + Option A derivation
+# PR Draft: Option B — Watch-only xpub/zpub + offline QR
 
-**Range:** `v0.6.0...HEAD`
+**Range:** `v0.7.1...HEAD`
 
 ## What Problem This Solves
 
-ASCII address dump wrapped badly; no Taproot / path controls.
+Users could not export watch-only account keys or show offline address QRs from the lab.
 
 ## Why This Change Was Made
 
-User: proper HTML table without wrap; full FSM Option A; park B/C on roadmap.
+ROADMAP Option B / full FSM after harness reinstall.
 
 ## User Impact
 
-- Wide HTML table (BIP86/84/49/44), nowrap + horizontal scroll
-- Account, change, indices 5/10/20
-- Auto-derive unchanged
+- Watch-only panel: BIP86 xpub, BIP84 zpub, BIP49 ypub, BIP44 xpub (no xprv)
+- Copy + QR on addresses and keys
+- Offline SVG QR; CSP `img-src 'self' data:`
 
 ## Evidence
 
@@ -29,36 +29,36 @@ green_cmd: python -m pytest -q
 |------|--------|
 | hard_gates | PR_DRAFT + CODE-REVIEW + BEHAVIOR + red-proof |
 | smoke | pytest |
-| pytest | 40 passed |
+| pytest | 41 passed |
 | validate | 5/5 |
 
 ## Spec
 
-**Spec:** `.agents/specs/2026-08-06-phase-7-address-table-derivation-a.md`
+**Spec:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr.md`
 
-**Plan:** `.agents/specs/2026-08-06-phase-7-address-table-derivation-a-plan.md`
+**Plan:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr-plan.md`
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| AC7.1–7.2 table nowrap | HTML `#addrTable`, CSS `white-space: nowrap` |
-| AC7.3 BIP86 column | build-entry p2tr + vector |
-| AC7.4 controls | deriveAccount/Change/Count |
-| AC7.5 BIP86 abandon | `bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr` |
-| AC7.6 auto-derive | app.js generate/passphrase |
-| AC7.7 B/C roadmap | ROADMAP OPEN |
-| AC7.8 tests | pytest |
+| ACB.1 zpub BIP84 | test_web_js_watch_only_and_qr |
+| ACB.2 BIP86/44 xpub | exportWatchOnly keys list |
+| ACB.3 no xprv | test noXprv + refuse QR xprv |
+| ACB.4 QR offline | qrDataUrl SVG data URL |
+| ACB.5 English help | watch-only panel copy |
+| ACB.6 CSP | connect-src none; img data for QR |
+| ACB.7 tests | 41 passed |
 
 ## Threat notes
 
-- Offline derivation only; no seed export.
-- BIP86 key-path only (standard BIP86).
+- Public keys/addresses only; private extended keys refused in QR.
+- Watch-only is not spending capability.
 
 ## Red-proof
 
 ```text
-red_cmd: python -m pytest -q tests/test_web_vectors.py
+red_cmd: python -m pytest -q tests/test_web_vectors.py::test_web_js_watch_only_and_qr
 green_cmd: python -m pytest -q
 ```
 
@@ -68,19 +68,19 @@ CODE-REVIEW p0=0; CROSS-REVIEW blockers=0; BEHAVIOR pass.
 
 ## Things that look bad but are actually fine
 
-1. Content max-width 72rem — table still scrolls if needed.
-2. Option B/C not built — intentional park.
-3. No free-form custom path yet — out of scope this phase.
+1. Bundle ~250KB with qrcode — offline vendor, no CDN.
+2. BIP86 uses standard xpub not a special SLIP-132 (documented).
+3. Option C still open.
 
 ```yaml
 things_that_look_bad_but_are_fine:
-  - file: "web/css/app.css"
-    concern: "wide layout"
-    why_fine: "user asked no wrap"
-  - file: "ROADMAP.md"
-    concern: "B/C open"
-    why_fine: "user request"
+  - file: "web/js/bip39lab.bundle.js"
+    concern: "size"
+    why_fine: "offline QR encoder"
   - file: "web/js/build-entry.mjs"
-    concern: "hand-rolled p2tr"
-    why_fine: "BIP86 vector tested"
+    concern: "BIP86 xpub not vpub"
+    why_fine: "no standard SLIP for all wallets"
+  - file: "ROADMAP.md"
+    concern: "C still open"
+    why_fine: "separate ship"
 ```

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Offline crypto: no third-party scripts or network from this page -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'" />
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
   <link rel="stylesheet" href="css/app.css" />
@@ -225,8 +225,27 @@
             </div>
             <p class="control-help copy-hint">
               Click <strong>Copy</strong> next to any address to put it on the clipboard (like copying an IBAN).
-              Only the address is copied — never the recovery phrase.
+              Use <strong>QR</strong> to show a scannable code offline. Only the address is copied — never the recovery phrase.
             </p>
+
+            <div class="card-sub watch-only" id="watchOnlyPanel">
+              <h3>Watch-only export</h3>
+              <p class="lead-help">
+                <strong>Watch-only</strong> is like a bank statement login: you can <em>see</em> balances in another app,
+                but you cannot <em>spend</em>. These are public extended keys for the <strong>Account</strong> number above
+                (and current passphrase). They are not your recovery phrase and not private keys.
+              </p>
+              <p class="control-help">
+                Import a <strong>zpub</strong> (BIP84) into Sparrow or similar as watch-only. A passphrase changes every key.
+                This lab never shows <code>xprv</code> / private extended keys.
+              </p>
+              <div class="row">
+                <button type="button" class="btn secondary" id="btnWatchOnly">Refresh watch-only keys</button>
+              </div>
+              <div id="watchOnlyList" class="watch-list" aria-live="polite">
+                <p class="control-help">Generate or paste a valid phrase, then refresh.</p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -271,6 +290,21 @@
           <a href="https://bip39.catalyxt.xyz/">https://bip39.catalyxt.xyz/</a>
         </p>
       </main>
+    </div>
+  </div>
+
+  <!-- Offline QR modal -->
+  <div id="qrModal" class="qr-modal" hidden role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <div class="qr-modal-card">
+      <h3 id="qrModalTitle">Address QR</h3>
+      <p id="qrModalLabel" class="control-help"></p>
+      <img id="qrModalImg" alt="QR code" width="220" height="220" />
+      <p id="qrModalText" class="qr-modal-text"></p>
+      <div class="row">
+        <button type="button" class="btn secondary" id="btnQrCopy">Copy text</button>
+        <button type="button" class="btn" id="btnQrClose">Close</button>
+      </div>
+      <p class="control-help">Generated offline on this page. No network request.</p>
     </div>
   </div>
 

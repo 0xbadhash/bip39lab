@@ -156,17 +156,17 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Auto-derive; BIP86 abandon vector
 - **Notes:** tag `v0.7.0`
 
-### [OPEN] Option B — Watch-only (xpub / zpub / QR)
-- **Status:** open
+### [DONE] Option B — Watch-only (xpub / zpub / QR)
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr.md`
 - **Plan:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr-plan.md`
 - **Acceptance:**
-  - [ ] Account public extended keys (zpub/xpub; no xprv by default)
-  - [ ] Offline per-address QR
-  - [ ] English watch-only help; CSP offline
+  - [x] Account public extended keys (zpub/xpub; no xprv by default)
+  - [x] Offline per-address QR
+  - [x] English watch-only help; CSP offline
 - **Smoke:** pytest + manual QR/export
-- **Notes:** Spec ready — **Next:** `/execute_dev` Option B
+- **Notes:** Full FSM — tag `v0.8.0`
 
 ### [OPEN] Option C — Network tab (fees / mempool traffic / balances)
 - **Status:** open
@@ -191,6 +191,6 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Phases 0–7 + v0.7.1 polish shipped.** Specs ready for Options **B** and **C**.
+**Phases 0–7 + Option B shipped** (`v0.8.0`). Option **C** still OPEN.
 
-**Next:** `/execute_dev` Option B (recommended) or Option C.
+**Next:** `/execute_dev` Option C (network tab) when ready.

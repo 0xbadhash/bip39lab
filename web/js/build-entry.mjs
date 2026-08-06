@@ -4,6 +4,7 @@ import { HDKey } from "@scure/bip32";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { ripemd160 } from "@noble/hashes/legacy.js";
 import { secp256k1, schnorr } from "@noble/curves/secp256k1.js";
+import QRCode from "qrcode";
 
 function hash160(data) {
   return ripemd160(sha256(data));
@@ -168,11 +169,166 @@ function validate(m) {
   return validateMnemonic(m, wordlist);
 }
 
+/** Base58 alphabet decode → bytes (includes leading zero pad for '1's). */
+function b58decode(s) {
+  const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let n = 0n;
+  for (const c of s) {
+    const i = ALPH.indexOf(c);
+    if (i < 0) throw new Error("invalid base58");
+    n = n * 58n + BigInt(i);
+  }
+  let hex = n.toString(16);
+  if (hex.length % 2) hex = "0" + hex;
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  let leading = 0;
+  for (const c of s) {
+    if (c === "1") leading++;
+    else break;
+  }
+  const out = new Uint8Array(leading + bytes.length);
+  out.set(bytes, leading);
+  return out;
+}
+
+function b58encode(bytes) {
+  const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  let n = 0n;
+  for (const b of bytes) n = (n << 8n) + BigInt(b);
+  let res = "";
+  while (n > 0n) {
+    res = ALPH[Number(n % 58n)] + res;
+    n /= 58n;
+  }
+  for (const b of bytes) {
+    if (b === 0) res = "1" + res;
+    else break;
+  }
+  return res || "1";
+}
+
+function b58checkDecode(s) {
+  const raw = b58decode(s);
+  if (raw.length < 5) throw new Error("invalid base58check");
+  const data = raw.slice(0, -4);
+  const chk = raw.slice(-4);
+  const h = sha256(sha256(data));
+  if (h[0] !== chk[0] || h[1] !== chk[1] || h[2] !== chk[2] || h[3] !== chk[3]) {
+    throw new Error("base58check checksum");
+  }
+  return data;
+}
+
+function b58checkEncode(data) {
+  const h = sha256(sha256(data));
+  const out = new Uint8Array(data.length + 4);
+  out.set(data);
+  out.set(h.slice(0, 4), data.length);
+  return b58encode(out);
+}
+
+/** SLIP-132 version bytes (mainnet public). */
+const SLIP132 = {
+  xpub: [0x04, 0x88, 0xb2, 0x1e],
+  ypub: [0x04, 0x9d, 0x7c, 0xb2],
+  zpub: [0x04, 0xb2, 0x47, 0x46],
+};
+
+function toVersionedXpub(xpub, versionKey) {
+  const data = b58checkDecode(xpub);
+  if (data.length < 4) throw new Error("xpub too short");
+  const ver = SLIP132[versionKey] || SLIP132.xpub;
+  data[0] = ver[0];
+  data[1] = ver[1];
+  data[2] = ver[2];
+  data[3] = ver[3];
+  return b58checkEncode(data);
+}
+
+/**
+ * Account-level watch-only public keys only (never returns xprv).
+ * @returns {{ account: number, keys: Array<{purpose,path,label,key,note}> }}
+ */
+function exportWatchOnly(mnemonic, passphrase, options) {
+  if (!validateMnemonic(mnemonic, wordlist)) throw new Error("invalid mnemonic");
+  const seed = mnemonicToSeedSync(mnemonic, passphrase || "");
+  const root = HDKey.fromMasterSeed(seed);
+  const account = Math.max(0, Math.floor(Number((options && options.account) || 0)));
+
+  const specs = [
+    {
+      purpose: 86,
+      path: `m/86'/0'/${account}'`,
+      label: "BIP86 Taproot (xpub)",
+      version: "xpub",
+      note: "Standard BIP32 xpub at account path — import as watch-only where supported.",
+    },
+    {
+      purpose: 84,
+      path: `m/84'/0'/${account}'`,
+      label: "BIP84 native segwit (zpub)",
+      version: "zpub",
+      note: "SLIP-132 zpub for Sparrow / many mobile wallets (P2WPKH).",
+    },
+    {
+      purpose: 49,
+      path: `m/49'/0'/${account}'`,
+      label: "BIP49 nested (ypub)",
+      version: "ypub",
+      note: "SLIP-132 ypub for nested segwit watch-only.",
+    },
+    {
+      purpose: 44,
+      path: `m/44'/0'/${account}'`,
+      label: "BIP44 legacy (xpub)",
+      version: "xpub",
+      note: "Classic xpub for legacy P2PKH watch-only.",
+    },
+  ];
+
+  const keys = specs.map((s) => {
+    const node = root.derive(s.path);
+    // Public export only — never return privateExtendedKey
+    const xpubStd = node.publicExtendedKey;
+    const key = s.version === "xpub" ? xpubStd : toVersionedXpub(xpubStd, s.version);
+    return {
+      purpose: s.purpose,
+      path: s.path,
+      label: s.label,
+      key,
+      note: s.note,
+    };
+  });
+
+  return { account, keys };
+}
+
+/** Offline QR as SVG data URL (no canvas required). Public strings only. */
+async function qrDataUrl(text, options) {
+  if (!text || typeof text !== "string") throw new Error("empty qr payload");
+  // Refuse private-looking payloads
+  if (/^xprv/i.test(text) || /^yprv/i.test(text) || /^zprv/i.test(text)) {
+    throw new Error("refusing to QR private extended keys");
+  }
+  const size = (options && options.width) || 220;
+  const svg = await QRCode.toString(text, {
+    type: "svg",
+    errorCorrectionLevel: "M",
+    margin: 2,
+    width: size,
+    color: { dark: "#0b0f14", light: "#ffffff" },
+  });
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
 const api = {
   generateMnemonic: async (n) => generate(n),
   validateMnemonic: async (m) => validate(m),
   deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
-  VERSION: "0.7.0-scure",
+  exportWatchOnly: async (m, p, options) => exportWatchOnly(m, p, options),
+  qrDataUrl: async (text, options) => qrDataUrl(text, options),
+  VERSION: "0.8.0-scure",
 };
 
 const g = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : undefined;

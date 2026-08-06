@@ -204,10 +204,94 @@
     btn.setAttribute("aria-label", "Copy address to clipboard");
     btn.addEventListener("click", () => copyAddress(addr, btn));
 
+    const btnQr = document.createElement("button");
+    btnQr.type = "button";
+    btnQr.className = "btn-copy";
+    btnQr.textContent = "QR";
+    btnQr.setAttribute("aria-label", "Show address QR code");
+    btnQr.addEventListener("click", () => showQr(addr, "Receive address · " + col).catch(console.error));
+
     wrap.appendChild(span);
     wrap.appendChild(btn);
+    wrap.appendChild(btnQr);
     td.appendChild(wrap);
     return td;
+  }
+
+  async function showQr(text, label) {
+    if (!text) return;
+    if (!BIP39Lab.qrDataUrl) {
+      setStatus("QR not available in this build.", "err");
+      return;
+    }
+    const url = await BIP39Lab.qrDataUrl(text, { width: 220 });
+    $("qrModalLabel").textContent = label || "QR";
+    $("qrModalText").textContent = text;
+    $("qrModalImg").src = url;
+    $("qrModal").hidden = false;
+  }
+
+  function hideQr() {
+    $("qrModal").hidden = true;
+    $("qrModalImg").removeAttribute("src");
+  }
+
+  async function refreshWatchOnly() {
+    const list = $("watchOnlyList");
+    if (!list) return;
+    const m = $("mnemonic").value.trim();
+    const pp = $("passphrase").value;
+    const account = getDeriveOptions().account;
+    if (!m) {
+      list.innerHTML = "<p class=\"control-help\">Generate or paste a valid phrase, then refresh.</p>";
+      return;
+    }
+    if (!BIP39Lab.exportWatchOnly) {
+      list.innerHTML = "<p class=\"control-help\">Watch-only export not available in this build.</p>";
+      return;
+    }
+    try {
+      const ok = await BIP39Lab.validateMnemonic(m);
+      if (!ok) {
+        list.innerHTML = "<p class=\"control-help\">Invalid recovery phrase — cannot export watch-only keys.</p>";
+        return;
+      }
+      const exp = await BIP39Lab.exportWatchOnly(m, pp, { account });
+      list.innerHTML = "";
+      for (const k of exp.keys) {
+        const item = document.createElement("div");
+        item.className = "watch-item";
+        item.innerHTML =
+          "<div class=\"watch-item-title\"></div>" +
+          "<div class=\"watch-item-path\"></div>" +
+          "<div class=\"watch-item-key\"></div>" +
+          "<p class=\"watch-item-note\"></p>" +
+          "<div class=\"row\"></div>";
+        item.querySelector(".watch-item-title").textContent = k.label;
+        item.querySelector(".watch-item-path").textContent = k.path + " · account " + exp.account;
+        item.querySelector(".watch-item-key").textContent = k.key;
+        item.querySelector(".watch-item-note").textContent = k.note;
+        const row = item.querySelector(".row");
+        const bCopy = document.createElement("button");
+        bCopy.type = "button";
+        bCopy.className = "btn-copy";
+        bCopy.textContent = "Copy key";
+        bCopy.addEventListener("click", () => copyAddress(k.key, bCopy));
+        const bQr = document.createElement("button");
+        bQr.type = "button";
+        bQr.className = "btn-copy";
+        bQr.textContent = "QR";
+        bQr.addEventListener("click", () => showQr(k.key, k.label + " · " + k.path).catch(console.error));
+        row.appendChild(bCopy);
+        row.appendChild(bQr);
+        list.appendChild(item);
+      }
+    } catch (e) {
+      list.innerHTML =
+        "<p class=\"control-help\">Export failed: " +
+        (e && e.message ? e.message : e) +
+        "</p>";
+    }
   }
 
   function clearAddressTable(message) {
@@ -334,6 +418,7 @@
       }
       await refreshMnemonicEntropy();
       refreshPassphraseEntropy();
+      await refreshWatchOnly();
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
       clearAddressTable("Derivation failed.");
@@ -427,6 +512,25 @@
       });
     });
 
+    const btnWo = $("btnWatchOnly");
+    if (btnWo) btnWo.addEventListener("click", () => refreshWatchOnly().catch(console.error));
+
+    const btnQrClose = $("btnQrClose");
+    if (btnQrClose) btnQrClose.addEventListener("click", hideQr);
+    const btnQrCopy = $("btnQrCopy");
+    if (btnQrCopy) {
+      btnQrCopy.addEventListener("click", () => {
+        const t = $("qrModalText").textContent;
+        copyAddress(t, btnQrCopy);
+      });
+    }
+    const qrModal = $("qrModal");
+    if (qrModal) {
+      qrModal.addEventListener("click", (e) => {
+        if (e.target === qrModal) hideQr();
+      });
+    }
+
     document.querySelectorAll(".nav-item[data-tab]").forEach((btn) => {
       btn.addEventListener("click", () => showTab(btn.getAttribute("data-tab")));
     });
@@ -434,7 +538,7 @@
     const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
     setStatus("Ready (offline lab v" + ver + "). Generate fills the address table automatically.", "");
     setPlainStatus(
-      "Tip: Generate a phrase to fill the table. Taproot and native segwit show by default; turn on nested/legacy only if you need them.",
+      "Tip: Generate a phrase to fill the table. Use Copy / QR on addresses; watch-only keys appear below (no private keys).",
       ""
     );
     clearEntropyFields();

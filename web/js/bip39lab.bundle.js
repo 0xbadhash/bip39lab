@@ -1,5 +1,2113 @@
 (() => {
-  // node_modules/@noble/hashes/utils.js
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __commonJS = (cb, mod2) => function __require() {
+    try {
+      return mod2 || (0, cb[__getOwnPropNames(cb)[0]])((mod2 = { exports: {} }).exports, mod2), mod2.exports;
+    } catch (e) {
+      throw mod2 = 0, e;
+    }
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__getProtoOf(mod2)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod2 || !mod2.__esModule ? __defProp(target, "default", { value: mod2, enumerable: true }) : target,
+    mod2
+  ));
+
+  // node_modules/qrcode/lib/can-promise.js
+  var require_can_promise = __commonJS({
+    "node_modules/qrcode/lib/can-promise.js"(exports, module) {
+      module.exports = function() {
+        return typeof Promise === "function" && Promise.prototype && Promise.prototype.then;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/utils.js
+  var require_utils = __commonJS({
+    "node_modules/qrcode/lib/core/utils.js"(exports) {
+      var toSJISFunction;
+      var CODEWORDS_COUNT = [
+        0,
+        // Not used
+        26,
+        44,
+        70,
+        100,
+        134,
+        172,
+        196,
+        242,
+        292,
+        346,
+        404,
+        466,
+        532,
+        581,
+        655,
+        733,
+        815,
+        901,
+        991,
+        1085,
+        1156,
+        1258,
+        1364,
+        1474,
+        1588,
+        1706,
+        1828,
+        1921,
+        2051,
+        2185,
+        2323,
+        2465,
+        2611,
+        2761,
+        2876,
+        3034,
+        3196,
+        3362,
+        3532,
+        3706
+      ];
+      exports.getSymbolSize = function getSymbolSize(version) {
+        if (!version) throw new Error('"version" cannot be null or undefined');
+        if (version < 1 || version > 40) throw new Error('"version" should be in range from 1 to 40');
+        return version * 4 + 17;
+      };
+      exports.getSymbolTotalCodewords = function getSymbolTotalCodewords(version) {
+        return CODEWORDS_COUNT[version];
+      };
+      exports.getBCHDigit = function(data) {
+        let digit = 0;
+        while (data !== 0) {
+          digit++;
+          data >>>= 1;
+        }
+        return digit;
+      };
+      exports.setToSJISFunction = function setToSJISFunction(f) {
+        if (typeof f !== "function") {
+          throw new Error('"toSJISFunc" is not a valid function.');
+        }
+        toSJISFunction = f;
+      };
+      exports.isKanjiModeEnabled = function() {
+        return typeof toSJISFunction !== "undefined";
+      };
+      exports.toSJIS = function toSJIS(kanji) {
+        return toSJISFunction(kanji);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/error-correction-level.js
+  var require_error_correction_level = __commonJS({
+    "node_modules/qrcode/lib/core/error-correction-level.js"(exports) {
+      exports.L = { bit: 1 };
+      exports.M = { bit: 0 };
+      exports.Q = { bit: 3 };
+      exports.H = { bit: 2 };
+      function fromString(string) {
+        if (typeof string !== "string") {
+          throw new Error("Param is not a string");
+        }
+        const lcStr = string.toLowerCase();
+        switch (lcStr) {
+          case "l":
+          case "low":
+            return exports.L;
+          case "m":
+          case "medium":
+            return exports.M;
+          case "q":
+          case "quartile":
+            return exports.Q;
+          case "h":
+          case "high":
+            return exports.H;
+          default:
+            throw new Error("Unknown EC Level: " + string);
+        }
+      }
+      exports.isValid = function isValid(level) {
+        return level && typeof level.bit !== "undefined" && level.bit >= 0 && level.bit < 4;
+      };
+      exports.from = function from(value, defaultValue) {
+        if (exports.isValid(value)) {
+          return value;
+        }
+        try {
+          return fromString(value);
+        } catch (e) {
+          return defaultValue;
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/bit-buffer.js
+  var require_bit_buffer = __commonJS({
+    "node_modules/qrcode/lib/core/bit-buffer.js"(exports, module) {
+      function BitBuffer() {
+        this.buffer = [];
+        this.length = 0;
+      }
+      BitBuffer.prototype = {
+        get: function(index) {
+          const bufIndex = Math.floor(index / 8);
+          return (this.buffer[bufIndex] >>> 7 - index % 8 & 1) === 1;
+        },
+        put: function(num2, length) {
+          for (let i = 0; i < length; i++) {
+            this.putBit((num2 >>> length - i - 1 & 1) === 1);
+          }
+        },
+        getLengthInBits: function() {
+          return this.length;
+        },
+        putBit: function(bit) {
+          const bufIndex = Math.floor(this.length / 8);
+          if (this.buffer.length <= bufIndex) {
+            this.buffer.push(0);
+          }
+          if (bit) {
+            this.buffer[bufIndex] |= 128 >>> this.length % 8;
+          }
+          this.length++;
+        }
+      };
+      module.exports = BitBuffer;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/bit-matrix.js
+  var require_bit_matrix = __commonJS({
+    "node_modules/qrcode/lib/core/bit-matrix.js"(exports, module) {
+      function BitMatrix(size) {
+        if (!size || size < 1) {
+          throw new Error("BitMatrix size must be defined and greater than 0");
+        }
+        this.size = size;
+        this.data = new Uint8Array(size * size);
+        this.reservedBit = new Uint8Array(size * size);
+      }
+      BitMatrix.prototype.set = function(row, col, value, reserved) {
+        const index = row * this.size + col;
+        this.data[index] = value;
+        if (reserved) this.reservedBit[index] = true;
+      };
+      BitMatrix.prototype.get = function(row, col) {
+        return this.data[row * this.size + col];
+      };
+      BitMatrix.prototype.xor = function(row, col, value) {
+        this.data[row * this.size + col] ^= value;
+      };
+      BitMatrix.prototype.isReserved = function(row, col) {
+        return this.reservedBit[row * this.size + col];
+      };
+      module.exports = BitMatrix;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/alignment-pattern.js
+  var require_alignment_pattern = __commonJS({
+    "node_modules/qrcode/lib/core/alignment-pattern.js"(exports) {
+      var getSymbolSize = require_utils().getSymbolSize;
+      exports.getRowColCoords = function getRowColCoords(version) {
+        if (version === 1) return [];
+        const posCount = Math.floor(version / 7) + 2;
+        const size = getSymbolSize(version);
+        const intervals = size === 145 ? 26 : Math.ceil((size - 13) / (2 * posCount - 2)) * 2;
+        const positions = [size - 7];
+        for (let i = 1; i < posCount - 1; i++) {
+          positions[i] = positions[i - 1] - intervals;
+        }
+        positions.push(6);
+        return positions.reverse();
+      };
+      exports.getPositions = function getPositions(version) {
+        const coords = [];
+        const pos = exports.getRowColCoords(version);
+        const posLength = pos.length;
+        for (let i = 0; i < posLength; i++) {
+          for (let j = 0; j < posLength; j++) {
+            if (i === 0 && j === 0 || // top-left
+            i === 0 && j === posLength - 1 || // bottom-left
+            i === posLength - 1 && j === 0) {
+              continue;
+            }
+            coords.push([pos[i], pos[j]]);
+          }
+        }
+        return coords;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/finder-pattern.js
+  var require_finder_pattern = __commonJS({
+    "node_modules/qrcode/lib/core/finder-pattern.js"(exports) {
+      var getSymbolSize = require_utils().getSymbolSize;
+      var FINDER_PATTERN_SIZE = 7;
+      exports.getPositions = function getPositions(version) {
+        const size = getSymbolSize(version);
+        return [
+          // top-left
+          [0, 0],
+          // top-right
+          [size - FINDER_PATTERN_SIZE, 0],
+          // bottom-left
+          [0, size - FINDER_PATTERN_SIZE]
+        ];
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/mask-pattern.js
+  var require_mask_pattern = __commonJS({
+    "node_modules/qrcode/lib/core/mask-pattern.js"(exports) {
+      exports.Patterns = {
+        PATTERN000: 0,
+        PATTERN001: 1,
+        PATTERN010: 2,
+        PATTERN011: 3,
+        PATTERN100: 4,
+        PATTERN101: 5,
+        PATTERN110: 6,
+        PATTERN111: 7
+      };
+      var PenaltyScores = {
+        N1: 3,
+        N2: 3,
+        N3: 40,
+        N4: 10
+      };
+      exports.isValid = function isValid(mask) {
+        return mask != null && mask !== "" && !isNaN(mask) && mask >= 0 && mask <= 7;
+      };
+      exports.from = function from(value) {
+        return exports.isValid(value) ? parseInt(value, 10) : void 0;
+      };
+      exports.getPenaltyN1 = function getPenaltyN1(data) {
+        const size = data.size;
+        let points = 0;
+        let sameCountCol = 0;
+        let sameCountRow = 0;
+        let lastCol = null;
+        let lastRow = null;
+        for (let row = 0; row < size; row++) {
+          sameCountCol = sameCountRow = 0;
+          lastCol = lastRow = null;
+          for (let col = 0; col < size; col++) {
+            let module2 = data.get(row, col);
+            if (module2 === lastCol) {
+              sameCountCol++;
+            } else {
+              if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
+              lastCol = module2;
+              sameCountCol = 1;
+            }
+            module2 = data.get(col, row);
+            if (module2 === lastRow) {
+              sameCountRow++;
+            } else {
+              if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
+              lastRow = module2;
+              sameCountRow = 1;
+            }
+          }
+          if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
+          if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
+        }
+        return points;
+      };
+      exports.getPenaltyN2 = function getPenaltyN2(data) {
+        const size = data.size;
+        let points = 0;
+        for (let row = 0; row < size - 1; row++) {
+          for (let col = 0; col < size - 1; col++) {
+            const last = data.get(row, col) + data.get(row, col + 1) + data.get(row + 1, col) + data.get(row + 1, col + 1);
+            if (last === 4 || last === 0) points++;
+          }
+        }
+        return points * PenaltyScores.N2;
+      };
+      exports.getPenaltyN3 = function getPenaltyN3(data) {
+        const size = data.size;
+        let points = 0;
+        let bitsCol = 0;
+        let bitsRow = 0;
+        for (let row = 0; row < size; row++) {
+          bitsCol = bitsRow = 0;
+          for (let col = 0; col < size; col++) {
+            bitsCol = bitsCol << 1 & 2047 | data.get(row, col);
+            if (col >= 10 && (bitsCol === 1488 || bitsCol === 93)) points++;
+            bitsRow = bitsRow << 1 & 2047 | data.get(col, row);
+            if (col >= 10 && (bitsRow === 1488 || bitsRow === 93)) points++;
+          }
+        }
+        return points * PenaltyScores.N3;
+      };
+      exports.getPenaltyN4 = function getPenaltyN4(data) {
+        let darkCount = 0;
+        const modulesCount = data.data.length;
+        for (let i = 0; i < modulesCount; i++) darkCount += data.data[i];
+        const k = Math.abs(Math.ceil(darkCount * 100 / modulesCount / 5) - 10);
+        return k * PenaltyScores.N4;
+      };
+      function getMaskAt(maskPattern, i, j) {
+        switch (maskPattern) {
+          case exports.Patterns.PATTERN000:
+            return (i + j) % 2 === 0;
+          case exports.Patterns.PATTERN001:
+            return i % 2 === 0;
+          case exports.Patterns.PATTERN010:
+            return j % 3 === 0;
+          case exports.Patterns.PATTERN011:
+            return (i + j) % 3 === 0;
+          case exports.Patterns.PATTERN100:
+            return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
+          case exports.Patterns.PATTERN101:
+            return i * j % 2 + i * j % 3 === 0;
+          case exports.Patterns.PATTERN110:
+            return (i * j % 2 + i * j % 3) % 2 === 0;
+          case exports.Patterns.PATTERN111:
+            return (i * j % 3 + (i + j) % 2) % 2 === 0;
+          default:
+            throw new Error("bad maskPattern:" + maskPattern);
+        }
+      }
+      exports.applyMask = function applyMask(pattern, data) {
+        const size = data.size;
+        for (let col = 0; col < size; col++) {
+          for (let row = 0; row < size; row++) {
+            if (data.isReserved(row, col)) continue;
+            data.xor(row, col, getMaskAt(pattern, row, col));
+          }
+        }
+      };
+      exports.getBestMask = function getBestMask(data, setupFormatFunc) {
+        const numPatterns = Object.keys(exports.Patterns).length;
+        let bestPattern = 0;
+        let lowerPenalty = Infinity;
+        for (let p = 0; p < numPatterns; p++) {
+          setupFormatFunc(p);
+          exports.applyMask(p, data);
+          const penalty = exports.getPenaltyN1(data) + exports.getPenaltyN2(data) + exports.getPenaltyN3(data) + exports.getPenaltyN4(data);
+          exports.applyMask(p, data);
+          if (penalty < lowerPenalty) {
+            lowerPenalty = penalty;
+            bestPattern = p;
+          }
+        }
+        return bestPattern;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/error-correction-code.js
+  var require_error_correction_code = __commonJS({
+    "node_modules/qrcode/lib/core/error-correction-code.js"(exports) {
+      var ECLevel = require_error_correction_level();
+      var EC_BLOCKS_TABLE = [
+        // L  M  Q  H
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        1,
+        2,
+        2,
+        4,
+        1,
+        2,
+        4,
+        4,
+        2,
+        4,
+        4,
+        4,
+        2,
+        4,
+        6,
+        5,
+        2,
+        4,
+        6,
+        6,
+        2,
+        5,
+        8,
+        8,
+        4,
+        5,
+        8,
+        8,
+        4,
+        5,
+        8,
+        11,
+        4,
+        8,
+        10,
+        11,
+        4,
+        9,
+        12,
+        16,
+        4,
+        9,
+        16,
+        16,
+        6,
+        10,
+        12,
+        18,
+        6,
+        10,
+        17,
+        16,
+        6,
+        11,
+        16,
+        19,
+        6,
+        13,
+        18,
+        21,
+        7,
+        14,
+        21,
+        25,
+        8,
+        16,
+        20,
+        25,
+        8,
+        17,
+        23,
+        25,
+        9,
+        17,
+        23,
+        34,
+        9,
+        18,
+        25,
+        30,
+        10,
+        20,
+        27,
+        32,
+        12,
+        21,
+        29,
+        35,
+        12,
+        23,
+        34,
+        37,
+        12,
+        25,
+        34,
+        40,
+        13,
+        26,
+        35,
+        42,
+        14,
+        28,
+        38,
+        45,
+        15,
+        29,
+        40,
+        48,
+        16,
+        31,
+        43,
+        51,
+        17,
+        33,
+        45,
+        54,
+        18,
+        35,
+        48,
+        57,
+        19,
+        37,
+        51,
+        60,
+        19,
+        38,
+        53,
+        63,
+        20,
+        40,
+        56,
+        66,
+        21,
+        43,
+        59,
+        70,
+        22,
+        45,
+        62,
+        74,
+        24,
+        47,
+        65,
+        77,
+        25,
+        49,
+        68,
+        81
+      ];
+      var EC_CODEWORDS_TABLE = [
+        // L  M  Q  H
+        7,
+        10,
+        13,
+        17,
+        10,
+        16,
+        22,
+        28,
+        15,
+        26,
+        36,
+        44,
+        20,
+        36,
+        52,
+        64,
+        26,
+        48,
+        72,
+        88,
+        36,
+        64,
+        96,
+        112,
+        40,
+        72,
+        108,
+        130,
+        48,
+        88,
+        132,
+        156,
+        60,
+        110,
+        160,
+        192,
+        72,
+        130,
+        192,
+        224,
+        80,
+        150,
+        224,
+        264,
+        96,
+        176,
+        260,
+        308,
+        104,
+        198,
+        288,
+        352,
+        120,
+        216,
+        320,
+        384,
+        132,
+        240,
+        360,
+        432,
+        144,
+        280,
+        408,
+        480,
+        168,
+        308,
+        448,
+        532,
+        180,
+        338,
+        504,
+        588,
+        196,
+        364,
+        546,
+        650,
+        224,
+        416,
+        600,
+        700,
+        224,
+        442,
+        644,
+        750,
+        252,
+        476,
+        690,
+        816,
+        270,
+        504,
+        750,
+        900,
+        300,
+        560,
+        810,
+        960,
+        312,
+        588,
+        870,
+        1050,
+        336,
+        644,
+        952,
+        1110,
+        360,
+        700,
+        1020,
+        1200,
+        390,
+        728,
+        1050,
+        1260,
+        420,
+        784,
+        1140,
+        1350,
+        450,
+        812,
+        1200,
+        1440,
+        480,
+        868,
+        1290,
+        1530,
+        510,
+        924,
+        1350,
+        1620,
+        540,
+        980,
+        1440,
+        1710,
+        570,
+        1036,
+        1530,
+        1800,
+        570,
+        1064,
+        1590,
+        1890,
+        600,
+        1120,
+        1680,
+        1980,
+        630,
+        1204,
+        1770,
+        2100,
+        660,
+        1260,
+        1860,
+        2220,
+        720,
+        1316,
+        1950,
+        2310,
+        750,
+        1372,
+        2040,
+        2430
+      ];
+      exports.getBlocksCount = function getBlocksCount(version, errorCorrectionLevel) {
+        switch (errorCorrectionLevel) {
+          case ECLevel.L:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 0];
+          case ECLevel.M:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 1];
+          case ECLevel.Q:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 2];
+          case ECLevel.H:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 3];
+          default:
+            return void 0;
+        }
+      };
+      exports.getTotalCodewordsCount = function getTotalCodewordsCount(version, errorCorrectionLevel) {
+        switch (errorCorrectionLevel) {
+          case ECLevel.L:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 0];
+          case ECLevel.M:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 1];
+          case ECLevel.Q:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 2];
+          case ECLevel.H:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 3];
+          default:
+            return void 0;
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/galois-field.js
+  var require_galois_field = __commonJS({
+    "node_modules/qrcode/lib/core/galois-field.js"(exports) {
+      var EXP_TABLE = new Uint8Array(512);
+      var LOG_TABLE = new Uint8Array(256);
+      (function initTables() {
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+          EXP_TABLE[i] = x;
+          LOG_TABLE[x] = i;
+          x <<= 1;
+          if (x & 256) {
+            x ^= 285;
+          }
+        }
+        for (let i = 255; i < 512; i++) {
+          EXP_TABLE[i] = EXP_TABLE[i - 255];
+        }
+      })();
+      exports.log = function log(n) {
+        if (n < 1) throw new Error("log(" + n + ")");
+        return LOG_TABLE[n];
+      };
+      exports.exp = function exp(n) {
+        return EXP_TABLE[n];
+      };
+      exports.mul = function mul(x, y) {
+        if (x === 0 || y === 0) return 0;
+        return EXP_TABLE[LOG_TABLE[x] + LOG_TABLE[y]];
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/polynomial.js
+  var require_polynomial = __commonJS({
+    "node_modules/qrcode/lib/core/polynomial.js"(exports) {
+      var GF = require_galois_field();
+      exports.mul = function mul(p1, p2) {
+        const coeff = new Uint8Array(p1.length + p2.length - 1);
+        for (let i = 0; i < p1.length; i++) {
+          for (let j = 0; j < p2.length; j++) {
+            coeff[i + j] ^= GF.mul(p1[i], p2[j]);
+          }
+        }
+        return coeff;
+      };
+      exports.mod = function mod2(divident, divisor) {
+        let result = new Uint8Array(divident);
+        while (result.length - divisor.length >= 0) {
+          const coeff = result[0];
+          for (let i = 0; i < divisor.length; i++) {
+            result[i] ^= GF.mul(divisor[i], coeff);
+          }
+          let offset = 0;
+          while (offset < result.length && result[offset] === 0) offset++;
+          result = result.slice(offset);
+        }
+        return result;
+      };
+      exports.generateECPolynomial = function generateECPolynomial(degree) {
+        let poly = new Uint8Array([1]);
+        for (let i = 0; i < degree; i++) {
+          poly = exports.mul(poly, new Uint8Array([1, GF.exp(i)]));
+        }
+        return poly;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/reed-solomon-encoder.js
+  var require_reed_solomon_encoder = __commonJS({
+    "node_modules/qrcode/lib/core/reed-solomon-encoder.js"(exports, module) {
+      var Polynomial = require_polynomial();
+      function ReedSolomonEncoder(degree) {
+        this.genPoly = void 0;
+        this.degree = degree;
+        if (this.degree) this.initialize(this.degree);
+      }
+      ReedSolomonEncoder.prototype.initialize = function initialize(degree) {
+        this.degree = degree;
+        this.genPoly = Polynomial.generateECPolynomial(this.degree);
+      };
+      ReedSolomonEncoder.prototype.encode = function encode(data) {
+        if (!this.genPoly) {
+          throw new Error("Encoder not initialized");
+        }
+        const paddedData = new Uint8Array(data.length + this.degree);
+        paddedData.set(data);
+        const remainder = Polynomial.mod(paddedData, this.genPoly);
+        const start = this.degree - remainder.length;
+        if (start > 0) {
+          const buff = new Uint8Array(this.degree);
+          buff.set(remainder, start);
+          return buff;
+        }
+        return remainder;
+      };
+      module.exports = ReedSolomonEncoder;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/version-check.js
+  var require_version_check = __commonJS({
+    "node_modules/qrcode/lib/core/version-check.js"(exports) {
+      exports.isValid = function isValid(version) {
+        return !isNaN(version) && version >= 1 && version <= 40;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/regex.js
+  var require_regex = __commonJS({
+    "node_modules/qrcode/lib/core/regex.js"(exports) {
+      var numeric = "[0-9]+";
+      var alphanumeric = "[A-Z $%*+\\-./:]+";
+      var kanji = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
+      kanji = kanji.replace(/u/g, "\\u");
+      var byte = "(?:(?![A-Z0-9 $%*+\\-./:]|" + kanji + ")(?:.|[\r\n]))+";
+      exports.KANJI = new RegExp(kanji, "g");
+      exports.BYTE_KANJI = new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g");
+      exports.BYTE = new RegExp(byte, "g");
+      exports.NUMERIC = new RegExp(numeric, "g");
+      exports.ALPHANUMERIC = new RegExp(alphanumeric, "g");
+      var TEST_KANJI = new RegExp("^" + kanji + "$");
+      var TEST_NUMERIC = new RegExp("^" + numeric + "$");
+      var TEST_ALPHANUMERIC = new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
+      exports.testKanji = function testKanji(str) {
+        return TEST_KANJI.test(str);
+      };
+      exports.testNumeric = function testNumeric(str) {
+        return TEST_NUMERIC.test(str);
+      };
+      exports.testAlphanumeric = function testAlphanumeric(str) {
+        return TEST_ALPHANUMERIC.test(str);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/mode.js
+  var require_mode = __commonJS({
+    "node_modules/qrcode/lib/core/mode.js"(exports) {
+      var VersionCheck = require_version_check();
+      var Regex = require_regex();
+      exports.NUMERIC = {
+        id: "Numeric",
+        bit: 1 << 0,
+        ccBits: [10, 12, 14]
+      };
+      exports.ALPHANUMERIC = {
+        id: "Alphanumeric",
+        bit: 1 << 1,
+        ccBits: [9, 11, 13]
+      };
+      exports.BYTE = {
+        id: "Byte",
+        bit: 1 << 2,
+        ccBits: [8, 16, 16]
+      };
+      exports.KANJI = {
+        id: "Kanji",
+        bit: 1 << 3,
+        ccBits: [8, 10, 12]
+      };
+      exports.MIXED = {
+        bit: -1
+      };
+      exports.getCharCountIndicator = function getCharCountIndicator(mode, version) {
+        if (!mode.ccBits) throw new Error("Invalid mode: " + mode);
+        if (!VersionCheck.isValid(version)) {
+          throw new Error("Invalid version: " + version);
+        }
+        if (version >= 1 && version < 10) return mode.ccBits[0];
+        else if (version < 27) return mode.ccBits[1];
+        return mode.ccBits[2];
+      };
+      exports.getBestModeForData = function getBestModeForData(dataStr) {
+        if (Regex.testNumeric(dataStr)) return exports.NUMERIC;
+        else if (Regex.testAlphanumeric(dataStr)) return exports.ALPHANUMERIC;
+        else if (Regex.testKanji(dataStr)) return exports.KANJI;
+        else return exports.BYTE;
+      };
+      exports.toString = function toString(mode) {
+        if (mode && mode.id) return mode.id;
+        throw new Error("Invalid mode");
+      };
+      exports.isValid = function isValid(mode) {
+        return mode && mode.bit && mode.ccBits;
+      };
+      function fromString(string) {
+        if (typeof string !== "string") {
+          throw new Error("Param is not a string");
+        }
+        const lcStr = string.toLowerCase();
+        switch (lcStr) {
+          case "numeric":
+            return exports.NUMERIC;
+          case "alphanumeric":
+            return exports.ALPHANUMERIC;
+          case "kanji":
+            return exports.KANJI;
+          case "byte":
+            return exports.BYTE;
+          default:
+            throw new Error("Unknown mode: " + string);
+        }
+      }
+      exports.from = function from(value, defaultValue) {
+        if (exports.isValid(value)) {
+          return value;
+        }
+        try {
+          return fromString(value);
+        } catch (e) {
+          return defaultValue;
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/version.js
+  var require_version = __commonJS({
+    "node_modules/qrcode/lib/core/version.js"(exports) {
+      var Utils = require_utils();
+      var ECCode = require_error_correction_code();
+      var ECLevel = require_error_correction_level();
+      var Mode = require_mode();
+      var VersionCheck = require_version_check();
+      var G18 = 1 << 12 | 1 << 11 | 1 << 10 | 1 << 9 | 1 << 8 | 1 << 5 | 1 << 2 | 1 << 0;
+      var G18_BCH = Utils.getBCHDigit(G18);
+      function getBestVersionForDataLength(mode, length, errorCorrectionLevel) {
+        for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+          if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, mode)) {
+            return currentVersion;
+          }
+        }
+        return void 0;
+      }
+      function getReservedBitsCount(mode, version) {
+        return Mode.getCharCountIndicator(mode, version) + 4;
+      }
+      function getTotalBitsFromDataArray(segments, version) {
+        let totalBits = 0;
+        segments.forEach(function(data) {
+          const reservedBits = getReservedBitsCount(data.mode, version);
+          totalBits += reservedBits + data.getBitsLength();
+        });
+        return totalBits;
+      }
+      function getBestVersionForMixedData(segments, errorCorrectionLevel) {
+        for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+          const length = getTotalBitsFromDataArray(segments, currentVersion);
+          if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, Mode.MIXED)) {
+            return currentVersion;
+          }
+        }
+        return void 0;
+      }
+      exports.from = function from(value, defaultValue) {
+        if (VersionCheck.isValid(value)) {
+          return parseInt(value, 10);
+        }
+        return defaultValue;
+      };
+      exports.getCapacity = function getCapacity(version, errorCorrectionLevel, mode) {
+        if (!VersionCheck.isValid(version)) {
+          throw new Error("Invalid QR Code version");
+        }
+        if (typeof mode === "undefined") mode = Mode.BYTE;
+        const totalCodewords = Utils.getSymbolTotalCodewords(version);
+        const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+        const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8;
+        if (mode === Mode.MIXED) return dataTotalCodewordsBits;
+        const usableBits = dataTotalCodewordsBits - getReservedBitsCount(mode, version);
+        switch (mode) {
+          case Mode.NUMERIC:
+            return Math.floor(usableBits / 10 * 3);
+          case Mode.ALPHANUMERIC:
+            return Math.floor(usableBits / 11 * 2);
+          case Mode.KANJI:
+            return Math.floor(usableBits / 13);
+          case Mode.BYTE:
+          default:
+            return Math.floor(usableBits / 8);
+        }
+      };
+      exports.getBestVersionForData = function getBestVersionForData(data, errorCorrectionLevel) {
+        let seg;
+        const ecl = ECLevel.from(errorCorrectionLevel, ECLevel.M);
+        if (Array.isArray(data)) {
+          if (data.length > 1) {
+            return getBestVersionForMixedData(data, ecl);
+          }
+          if (data.length === 0) {
+            return 1;
+          }
+          seg = data[0];
+        } else {
+          seg = data;
+        }
+        return getBestVersionForDataLength(seg.mode, seg.getLength(), ecl);
+      };
+      exports.getEncodedBits = function getEncodedBits(version) {
+        if (!VersionCheck.isValid(version) || version < 7) {
+          throw new Error("Invalid QR Code version");
+        }
+        let d = version << 12;
+        while (Utils.getBCHDigit(d) - G18_BCH >= 0) {
+          d ^= G18 << Utils.getBCHDigit(d) - G18_BCH;
+        }
+        return version << 12 | d;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/format-info.js
+  var require_format_info = __commonJS({
+    "node_modules/qrcode/lib/core/format-info.js"(exports) {
+      var Utils = require_utils();
+      var G15 = 1 << 10 | 1 << 8 | 1 << 5 | 1 << 4 | 1 << 2 | 1 << 1 | 1 << 0;
+      var G15_MASK = 1 << 14 | 1 << 12 | 1 << 10 | 1 << 4 | 1 << 1;
+      var G15_BCH = Utils.getBCHDigit(G15);
+      exports.getEncodedBits = function getEncodedBits(errorCorrectionLevel, mask) {
+        const data = errorCorrectionLevel.bit << 3 | mask;
+        let d = data << 10;
+        while (Utils.getBCHDigit(d) - G15_BCH >= 0) {
+          d ^= G15 << Utils.getBCHDigit(d) - G15_BCH;
+        }
+        return (data << 10 | d) ^ G15_MASK;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/numeric-data.js
+  var require_numeric_data = __commonJS({
+    "node_modules/qrcode/lib/core/numeric-data.js"(exports, module) {
+      var Mode = require_mode();
+      function NumericData(data) {
+        this.mode = Mode.NUMERIC;
+        this.data = data.toString();
+      }
+      NumericData.getBitsLength = function getBitsLength(length) {
+        return 10 * Math.floor(length / 3) + (length % 3 ? length % 3 * 3 + 1 : 0);
+      };
+      NumericData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      NumericData.prototype.getBitsLength = function getBitsLength() {
+        return NumericData.getBitsLength(this.data.length);
+      };
+      NumericData.prototype.write = function write(bitBuffer) {
+        let i, group, value;
+        for (i = 0; i + 3 <= this.data.length; i += 3) {
+          group = this.data.substr(i, 3);
+          value = parseInt(group, 10);
+          bitBuffer.put(value, 10);
+        }
+        const remainingNum = this.data.length - i;
+        if (remainingNum > 0) {
+          group = this.data.substr(i);
+          value = parseInt(group, 10);
+          bitBuffer.put(value, remainingNum * 3 + 1);
+        }
+      };
+      module.exports = NumericData;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/alphanumeric-data.js
+  var require_alphanumeric_data = __commonJS({
+    "node_modules/qrcode/lib/core/alphanumeric-data.js"(exports, module) {
+      var Mode = require_mode();
+      var ALPHA_NUM_CHARS = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+        " ",
+        "$",
+        "%",
+        "*",
+        "+",
+        "-",
+        ".",
+        "/",
+        ":"
+      ];
+      function AlphanumericData(data) {
+        this.mode = Mode.ALPHANUMERIC;
+        this.data = data;
+      }
+      AlphanumericData.getBitsLength = function getBitsLength(length) {
+        return 11 * Math.floor(length / 2) + 6 * (length % 2);
+      };
+      AlphanumericData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      AlphanumericData.prototype.getBitsLength = function getBitsLength() {
+        return AlphanumericData.getBitsLength(this.data.length);
+      };
+      AlphanumericData.prototype.write = function write(bitBuffer) {
+        let i;
+        for (i = 0; i + 2 <= this.data.length; i += 2) {
+          let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
+          value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
+          bitBuffer.put(value, 11);
+        }
+        if (this.data.length % 2) {
+          bitBuffer.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6);
+        }
+      };
+      module.exports = AlphanumericData;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/byte-data.js
+  var require_byte_data = __commonJS({
+    "node_modules/qrcode/lib/core/byte-data.js"(exports, module) {
+      var Mode = require_mode();
+      function ByteData(data) {
+        this.mode = Mode.BYTE;
+        if (typeof data === "string") {
+          this.data = new TextEncoder().encode(data);
+        } else {
+          this.data = new Uint8Array(data);
+        }
+      }
+      ByteData.getBitsLength = function getBitsLength(length) {
+        return length * 8;
+      };
+      ByteData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      ByteData.prototype.getBitsLength = function getBitsLength() {
+        return ByteData.getBitsLength(this.data.length);
+      };
+      ByteData.prototype.write = function(bitBuffer) {
+        for (let i = 0, l = this.data.length; i < l; i++) {
+          bitBuffer.put(this.data[i], 8);
+        }
+      };
+      module.exports = ByteData;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/kanji-data.js
+  var require_kanji_data = __commonJS({
+    "node_modules/qrcode/lib/core/kanji-data.js"(exports, module) {
+      var Mode = require_mode();
+      var Utils = require_utils();
+      function KanjiData(data) {
+        this.mode = Mode.KANJI;
+        this.data = data;
+      }
+      KanjiData.getBitsLength = function getBitsLength(length) {
+        return length * 13;
+      };
+      KanjiData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      KanjiData.prototype.getBitsLength = function getBitsLength() {
+        return KanjiData.getBitsLength(this.data.length);
+      };
+      KanjiData.prototype.write = function(bitBuffer) {
+        let i;
+        for (i = 0; i < this.data.length; i++) {
+          let value = Utils.toSJIS(this.data[i]);
+          if (value >= 33088 && value <= 40956) {
+            value -= 33088;
+          } else if (value >= 57408 && value <= 60351) {
+            value -= 49472;
+          } else {
+            throw new Error(
+              "Invalid SJIS character: " + this.data[i] + "\nMake sure your charset is UTF-8"
+            );
+          }
+          value = (value >>> 8 & 255) * 192 + (value & 255);
+          bitBuffer.put(value, 13);
+        }
+      };
+      module.exports = KanjiData;
+    }
+  });
+
+  // node_modules/dijkstrajs/dijkstra.js
+  var require_dijkstra = __commonJS({
+    "node_modules/dijkstrajs/dijkstra.js"(exports, module) {
+      "use strict";
+      var dijkstra = {
+        single_source_shortest_paths: function(graph, s, d) {
+          var predecessors = {};
+          var costs = {};
+          costs[s] = 0;
+          var open = dijkstra.PriorityQueue.make();
+          open.push(s, 0);
+          var closest, u, v, cost_of_s_to_u, adjacent_nodes, cost_of_e, cost_of_s_to_u_plus_cost_of_e, cost_of_s_to_v, first_visit;
+          while (!open.empty()) {
+            closest = open.pop();
+            u = closest.value;
+            cost_of_s_to_u = closest.cost;
+            adjacent_nodes = graph[u] || {};
+            for (v in adjacent_nodes) {
+              if (adjacent_nodes.hasOwnProperty(v)) {
+                cost_of_e = adjacent_nodes[v];
+                cost_of_s_to_u_plus_cost_of_e = cost_of_s_to_u + cost_of_e;
+                cost_of_s_to_v = costs[v];
+                first_visit = typeof costs[v] === "undefined";
+                if (first_visit || cost_of_s_to_v > cost_of_s_to_u_plus_cost_of_e) {
+                  costs[v] = cost_of_s_to_u_plus_cost_of_e;
+                  open.push(v, cost_of_s_to_u_plus_cost_of_e);
+                  predecessors[v] = u;
+                }
+              }
+            }
+          }
+          if (typeof d !== "undefined" && typeof costs[d] === "undefined") {
+            var msg = ["Could not find a path from ", s, " to ", d, "."].join("");
+            throw new Error(msg);
+          }
+          return predecessors;
+        },
+        extract_shortest_path_from_predecessor_list: function(predecessors, d) {
+          var nodes = [];
+          var u = d;
+          var predecessor;
+          while (u) {
+            nodes.push(u);
+            predecessor = predecessors[u];
+            u = predecessors[u];
+          }
+          nodes.reverse();
+          return nodes;
+        },
+        find_path: function(graph, s, d) {
+          var predecessors = dijkstra.single_source_shortest_paths(graph, s, d);
+          return dijkstra.extract_shortest_path_from_predecessor_list(
+            predecessors,
+            d
+          );
+        },
+        /**
+         * A very naive priority queue implementation.
+         */
+        PriorityQueue: {
+          make: function(opts) {
+            var T = dijkstra.PriorityQueue, t = {}, key;
+            opts = opts || {};
+            for (key in T) {
+              if (T.hasOwnProperty(key)) {
+                t[key] = T[key];
+              }
+            }
+            t.queue = [];
+            t.sorter = opts.sorter || T.default_sorter;
+            return t;
+          },
+          default_sorter: function(a, b) {
+            return a.cost - b.cost;
+          },
+          /**
+           * Add a new item to the queue and ensure the highest priority element
+           * is at the front of the queue.
+           */
+          push: function(value, cost) {
+            var item = { value, cost };
+            this.queue.push(item);
+            this.queue.sort(this.sorter);
+          },
+          /**
+           * Return the highest priority element in the queue.
+           */
+          pop: function() {
+            return this.queue.shift();
+          },
+          empty: function() {
+            return this.queue.length === 0;
+          }
+        }
+      };
+      if (typeof module !== "undefined") {
+        module.exports = dijkstra;
+      }
+    }
+  });
+
+  // node_modules/qrcode/lib/core/segments.js
+  var require_segments = __commonJS({
+    "node_modules/qrcode/lib/core/segments.js"(exports) {
+      var Mode = require_mode();
+      var NumericData = require_numeric_data();
+      var AlphanumericData = require_alphanumeric_data();
+      var ByteData = require_byte_data();
+      var KanjiData = require_kanji_data();
+      var Regex = require_regex();
+      var Utils = require_utils();
+      var dijkstra = require_dijkstra();
+      function getStringByteLength(str) {
+        return unescape(encodeURIComponent(str)).length;
+      }
+      function getSegments(regex, mode, str) {
+        const segments = [];
+        let result;
+        while ((result = regex.exec(str)) !== null) {
+          segments.push({
+            data: result[0],
+            index: result.index,
+            mode,
+            length: result[0].length
+          });
+        }
+        return segments;
+      }
+      function getSegmentsFromString(dataStr) {
+        const numSegs = getSegments(Regex.NUMERIC, Mode.NUMERIC, dataStr);
+        const alphaNumSegs = getSegments(Regex.ALPHANUMERIC, Mode.ALPHANUMERIC, dataStr);
+        let byteSegs;
+        let kanjiSegs;
+        if (Utils.isKanjiModeEnabled()) {
+          byteSegs = getSegments(Regex.BYTE, Mode.BYTE, dataStr);
+          kanjiSegs = getSegments(Regex.KANJI, Mode.KANJI, dataStr);
+        } else {
+          byteSegs = getSegments(Regex.BYTE_KANJI, Mode.BYTE, dataStr);
+          kanjiSegs = [];
+        }
+        const segs = numSegs.concat(alphaNumSegs, byteSegs, kanjiSegs);
+        return segs.sort(function(s1, s2) {
+          return s1.index - s2.index;
+        }).map(function(obj) {
+          return {
+            data: obj.data,
+            mode: obj.mode,
+            length: obj.length
+          };
+        });
+      }
+      function getSegmentBitsLength(length, mode) {
+        switch (mode) {
+          case Mode.NUMERIC:
+            return NumericData.getBitsLength(length);
+          case Mode.ALPHANUMERIC:
+            return AlphanumericData.getBitsLength(length);
+          case Mode.KANJI:
+            return KanjiData.getBitsLength(length);
+          case Mode.BYTE:
+            return ByteData.getBitsLength(length);
+        }
+      }
+      function mergeSegments(segs) {
+        return segs.reduce(function(acc, curr) {
+          const prevSeg = acc.length - 1 >= 0 ? acc[acc.length - 1] : null;
+          if (prevSeg && prevSeg.mode === curr.mode) {
+            acc[acc.length - 1].data += curr.data;
+            return acc;
+          }
+          acc.push(curr);
+          return acc;
+        }, []);
+      }
+      function buildNodes(segs) {
+        const nodes = [];
+        for (let i = 0; i < segs.length; i++) {
+          const seg = segs[i];
+          switch (seg.mode) {
+            case Mode.NUMERIC:
+              nodes.push([
+                seg,
+                { data: seg.data, mode: Mode.ALPHANUMERIC, length: seg.length },
+                { data: seg.data, mode: Mode.BYTE, length: seg.length }
+              ]);
+              break;
+            case Mode.ALPHANUMERIC:
+              nodes.push([
+                seg,
+                { data: seg.data, mode: Mode.BYTE, length: seg.length }
+              ]);
+              break;
+            case Mode.KANJI:
+              nodes.push([
+                seg,
+                { data: seg.data, mode: Mode.BYTE, length: getStringByteLength(seg.data) }
+              ]);
+              break;
+            case Mode.BYTE:
+              nodes.push([
+                { data: seg.data, mode: Mode.BYTE, length: getStringByteLength(seg.data) }
+              ]);
+          }
+        }
+        return nodes;
+      }
+      function buildGraph(nodes, version) {
+        const table = {};
+        const graph = { start: {} };
+        let prevNodeIds = ["start"];
+        for (let i = 0; i < nodes.length; i++) {
+          const nodeGroup = nodes[i];
+          const currentNodeIds = [];
+          for (let j = 0; j < nodeGroup.length; j++) {
+            const node = nodeGroup[j];
+            const key = "" + i + j;
+            currentNodeIds.push(key);
+            table[key] = { node, lastCount: 0 };
+            graph[key] = {};
+            for (let n = 0; n < prevNodeIds.length; n++) {
+              const prevNodeId = prevNodeIds[n];
+              if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
+                graph[prevNodeId][key] = getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node.mode);
+                table[prevNodeId].lastCount += node.length;
+              } else {
+                if (table[prevNodeId]) table[prevNodeId].lastCount = node.length;
+                graph[prevNodeId][key] = getSegmentBitsLength(node.length, node.mode) + 4 + Mode.getCharCountIndicator(node.mode, version);
+              }
+            }
+          }
+          prevNodeIds = currentNodeIds;
+        }
+        for (let n = 0; n < prevNodeIds.length; n++) {
+          graph[prevNodeIds[n]].end = 0;
+        }
+        return { map: graph, table };
+      }
+      function buildSingleSegment(data, modesHint) {
+        let mode;
+        const bestMode = Mode.getBestModeForData(data);
+        mode = Mode.from(modesHint, bestMode);
+        if (mode !== Mode.BYTE && mode.bit < bestMode.bit) {
+          throw new Error('"' + data + '" cannot be encoded with mode ' + Mode.toString(mode) + ".\n Suggested mode is: " + Mode.toString(bestMode));
+        }
+        if (mode === Mode.KANJI && !Utils.isKanjiModeEnabled()) {
+          mode = Mode.BYTE;
+        }
+        switch (mode) {
+          case Mode.NUMERIC:
+            return new NumericData(data);
+          case Mode.ALPHANUMERIC:
+            return new AlphanumericData(data);
+          case Mode.KANJI:
+            return new KanjiData(data);
+          case Mode.BYTE:
+            return new ByteData(data);
+        }
+      }
+      exports.fromArray = function fromArray(array) {
+        return array.reduce(function(acc, seg) {
+          if (typeof seg === "string") {
+            acc.push(buildSingleSegment(seg, null));
+          } else if (seg.data) {
+            acc.push(buildSingleSegment(seg.data, seg.mode));
+          }
+          return acc;
+        }, []);
+      };
+      exports.fromString = function fromString(data, version) {
+        const segs = getSegmentsFromString(data, Utils.isKanjiModeEnabled());
+        const nodes = buildNodes(segs);
+        const graph = buildGraph(nodes, version);
+        const path = dijkstra.find_path(graph.map, "start", "end");
+        const optimizedSegs = [];
+        for (let i = 1; i < path.length - 1; i++) {
+          optimizedSegs.push(graph.table[path[i]].node);
+        }
+        return exports.fromArray(mergeSegments(optimizedSegs));
+      };
+      exports.rawSplit = function rawSplit(data) {
+        return exports.fromArray(
+          getSegmentsFromString(data, Utils.isKanjiModeEnabled())
+        );
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/qrcode.js
+  var require_qrcode = __commonJS({
+    "node_modules/qrcode/lib/core/qrcode.js"(exports) {
+      var Utils = require_utils();
+      var ECLevel = require_error_correction_level();
+      var BitBuffer = require_bit_buffer();
+      var BitMatrix = require_bit_matrix();
+      var AlignmentPattern = require_alignment_pattern();
+      var FinderPattern = require_finder_pattern();
+      var MaskPattern = require_mask_pattern();
+      var ECCode = require_error_correction_code();
+      var ReedSolomonEncoder = require_reed_solomon_encoder();
+      var Version = require_version();
+      var FormatInfo = require_format_info();
+      var Mode = require_mode();
+      var Segments = require_segments();
+      function setupFinderPattern(matrix, version) {
+        const size = matrix.size;
+        const pos = FinderPattern.getPositions(version);
+        for (let i = 0; i < pos.length; i++) {
+          const row = pos[i][0];
+          const col = pos[i][1];
+          for (let r = -1; r <= 7; r++) {
+            if (row + r <= -1 || size <= row + r) continue;
+            for (let c = -1; c <= 7; c++) {
+              if (col + c <= -1 || size <= col + c) continue;
+              if (r >= 0 && r <= 6 && (c === 0 || c === 6) || c >= 0 && c <= 6 && (r === 0 || r === 6) || r >= 2 && r <= 4 && c >= 2 && c <= 4) {
+                matrix.set(row + r, col + c, true, true);
+              } else {
+                matrix.set(row + r, col + c, false, true);
+              }
+            }
+          }
+        }
+      }
+      function setupTimingPattern(matrix) {
+        const size = matrix.size;
+        for (let r = 8; r < size - 8; r++) {
+          const value = r % 2 === 0;
+          matrix.set(r, 6, value, true);
+          matrix.set(6, r, value, true);
+        }
+      }
+      function setupAlignmentPattern(matrix, version) {
+        const pos = AlignmentPattern.getPositions(version);
+        for (let i = 0; i < pos.length; i++) {
+          const row = pos[i][0];
+          const col = pos[i][1];
+          for (let r = -2; r <= 2; r++) {
+            for (let c = -2; c <= 2; c++) {
+              if (r === -2 || r === 2 || c === -2 || c === 2 || r === 0 && c === 0) {
+                matrix.set(row + r, col + c, true, true);
+              } else {
+                matrix.set(row + r, col + c, false, true);
+              }
+            }
+          }
+        }
+      }
+      function setupVersionInfo(matrix, version) {
+        const size = matrix.size;
+        const bits = Version.getEncodedBits(version);
+        let row, col, mod2;
+        for (let i = 0; i < 18; i++) {
+          row = Math.floor(i / 3);
+          col = i % 3 + size - 8 - 3;
+          mod2 = (bits >> i & 1) === 1;
+          matrix.set(row, col, mod2, true);
+          matrix.set(col, row, mod2, true);
+        }
+      }
+      function setupFormatInfo(matrix, errorCorrectionLevel, maskPattern) {
+        const size = matrix.size;
+        const bits = FormatInfo.getEncodedBits(errorCorrectionLevel, maskPattern);
+        let i, mod2;
+        for (i = 0; i < 15; i++) {
+          mod2 = (bits >> i & 1) === 1;
+          if (i < 6) {
+            matrix.set(i, 8, mod2, true);
+          } else if (i < 8) {
+            matrix.set(i + 1, 8, mod2, true);
+          } else {
+            matrix.set(size - 15 + i, 8, mod2, true);
+          }
+          if (i < 8) {
+            matrix.set(8, size - i - 1, mod2, true);
+          } else if (i < 9) {
+            matrix.set(8, 15 - i - 1 + 1, mod2, true);
+          } else {
+            matrix.set(8, 15 - i - 1, mod2, true);
+          }
+        }
+        matrix.set(size - 8, 8, 1, true);
+      }
+      function setupData(matrix, data) {
+        const size = matrix.size;
+        let inc = -1;
+        let row = size - 1;
+        let bitIndex = 7;
+        let byteIndex = 0;
+        for (let col = size - 1; col > 0; col -= 2) {
+          if (col === 6) col--;
+          while (true) {
+            for (let c = 0; c < 2; c++) {
+              if (!matrix.isReserved(row, col - c)) {
+                let dark = false;
+                if (byteIndex < data.length) {
+                  dark = (data[byteIndex] >>> bitIndex & 1) === 1;
+                }
+                matrix.set(row, col - c, dark);
+                bitIndex--;
+                if (bitIndex === -1) {
+                  byteIndex++;
+                  bitIndex = 7;
+                }
+              }
+            }
+            row += inc;
+            if (row < 0 || size <= row) {
+              row -= inc;
+              inc = -inc;
+              break;
+            }
+          }
+        }
+      }
+      function createData(version, errorCorrectionLevel, segments) {
+        const buffer = new BitBuffer();
+        segments.forEach(function(data) {
+          buffer.put(data.mode.bit, 4);
+          buffer.put(data.getLength(), Mode.getCharCountIndicator(data.mode, version));
+          data.write(buffer);
+        });
+        const totalCodewords = Utils.getSymbolTotalCodewords(version);
+        const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+        const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8;
+        if (buffer.getLengthInBits() + 4 <= dataTotalCodewordsBits) {
+          buffer.put(0, 4);
+        }
+        while (buffer.getLengthInBits() % 8 !== 0) {
+          buffer.putBit(0);
+        }
+        const remainingByte = (dataTotalCodewordsBits - buffer.getLengthInBits()) / 8;
+        for (let i = 0; i < remainingByte; i++) {
+          buffer.put(i % 2 ? 17 : 236, 8);
+        }
+        return createCodewords(buffer, version, errorCorrectionLevel);
+      }
+      function createCodewords(bitBuffer, version, errorCorrectionLevel) {
+        const totalCodewords = Utils.getSymbolTotalCodewords(version);
+        const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+        const dataTotalCodewords = totalCodewords - ecTotalCodewords;
+        const ecTotalBlocks = ECCode.getBlocksCount(version, errorCorrectionLevel);
+        const blocksInGroup2 = totalCodewords % ecTotalBlocks;
+        const blocksInGroup1 = ecTotalBlocks - blocksInGroup2;
+        const totalCodewordsInGroup1 = Math.floor(totalCodewords / ecTotalBlocks);
+        const dataCodewordsInGroup1 = Math.floor(dataTotalCodewords / ecTotalBlocks);
+        const dataCodewordsInGroup2 = dataCodewordsInGroup1 + 1;
+        const ecCount = totalCodewordsInGroup1 - dataCodewordsInGroup1;
+        const rs = new ReedSolomonEncoder(ecCount);
+        let offset = 0;
+        const dcData = new Array(ecTotalBlocks);
+        const ecData = new Array(ecTotalBlocks);
+        let maxDataSize = 0;
+        const buffer = new Uint8Array(bitBuffer.buffer);
+        for (let b = 0; b < ecTotalBlocks; b++) {
+          const dataSize = b < blocksInGroup1 ? dataCodewordsInGroup1 : dataCodewordsInGroup2;
+          dcData[b] = buffer.slice(offset, offset + dataSize);
+          ecData[b] = rs.encode(dcData[b]);
+          offset += dataSize;
+          maxDataSize = Math.max(maxDataSize, dataSize);
+        }
+        const data = new Uint8Array(totalCodewords);
+        let index = 0;
+        let i, r;
+        for (i = 0; i < maxDataSize; i++) {
+          for (r = 0; r < ecTotalBlocks; r++) {
+            if (i < dcData[r].length) {
+              data[index++] = dcData[r][i];
+            }
+          }
+        }
+        for (i = 0; i < ecCount; i++) {
+          for (r = 0; r < ecTotalBlocks; r++) {
+            data[index++] = ecData[r][i];
+          }
+        }
+        return data;
+      }
+      function createSymbol(data, version, errorCorrectionLevel, maskPattern) {
+        let segments;
+        if (Array.isArray(data)) {
+          segments = Segments.fromArray(data);
+        } else if (typeof data === "string") {
+          let estimatedVersion = version;
+          if (!estimatedVersion) {
+            const rawSegments = Segments.rawSplit(data);
+            estimatedVersion = Version.getBestVersionForData(rawSegments, errorCorrectionLevel);
+          }
+          segments = Segments.fromString(data, estimatedVersion || 40);
+        } else {
+          throw new Error("Invalid data");
+        }
+        const bestVersion = Version.getBestVersionForData(segments, errorCorrectionLevel);
+        if (!bestVersion) {
+          throw new Error("The amount of data is too big to be stored in a QR Code");
+        }
+        if (!version) {
+          version = bestVersion;
+        } else if (version < bestVersion) {
+          throw new Error(
+            "\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: " + bestVersion + ".\n"
+          );
+        }
+        const dataBits = createData(version, errorCorrectionLevel, segments);
+        const moduleCount = Utils.getSymbolSize(version);
+        const modules = new BitMatrix(moduleCount);
+        setupFinderPattern(modules, version);
+        setupTimingPattern(modules);
+        setupAlignmentPattern(modules, version);
+        setupFormatInfo(modules, errorCorrectionLevel, 0);
+        if (version >= 7) {
+          setupVersionInfo(modules, version);
+        }
+        setupData(modules, dataBits);
+        if (isNaN(maskPattern)) {
+          maskPattern = MaskPattern.getBestMask(
+            modules,
+            setupFormatInfo.bind(null, modules, errorCorrectionLevel)
+          );
+        }
+        MaskPattern.applyMask(maskPattern, modules);
+        setupFormatInfo(modules, errorCorrectionLevel, maskPattern);
+        return {
+          modules,
+          version,
+          errorCorrectionLevel,
+          maskPattern,
+          segments
+        };
+      }
+      exports.create = function create(data, options) {
+        if (typeof data === "undefined" || data === "") {
+          throw new Error("No input text");
+        }
+        let errorCorrectionLevel = ECLevel.M;
+        let version;
+        let mask;
+        if (typeof options !== "undefined") {
+          errorCorrectionLevel = ECLevel.from(options.errorCorrectionLevel, ECLevel.M);
+          version = Version.from(options.version);
+          mask = MaskPattern.from(options.maskPattern);
+          if (options.toSJISFunc) {
+            Utils.setToSJISFunction(options.toSJISFunc);
+          }
+        }
+        return createSymbol(data, version, errorCorrectionLevel, mask);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/renderer/utils.js
+  var require_utils2 = __commonJS({
+    "node_modules/qrcode/lib/renderer/utils.js"(exports) {
+      function hex2rgba(hex) {
+        if (typeof hex === "number") {
+          hex = hex.toString();
+        }
+        if (typeof hex !== "string") {
+          throw new Error("Color should be defined as hex string");
+        }
+        let hexCode = hex.slice().replace("#", "").split("");
+        if (hexCode.length < 3 || hexCode.length === 5 || hexCode.length > 8) {
+          throw new Error("Invalid hex color: " + hex);
+        }
+        if (hexCode.length === 3 || hexCode.length === 4) {
+          hexCode = Array.prototype.concat.apply([], hexCode.map(function(c) {
+            return [c, c];
+          }));
+        }
+        if (hexCode.length === 6) hexCode.push("F", "F");
+        const hexValue = parseInt(hexCode.join(""), 16);
+        return {
+          r: hexValue >> 24 & 255,
+          g: hexValue >> 16 & 255,
+          b: hexValue >> 8 & 255,
+          a: hexValue & 255,
+          hex: "#" + hexCode.slice(0, 6).join("")
+        };
+      }
+      exports.getOptions = function getOptions(options) {
+        if (!options) options = {};
+        if (!options.color) options.color = {};
+        const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
+        const width = options.width && options.width >= 21 ? options.width : void 0;
+        const scale = options.scale || 4;
+        return {
+          width,
+          scale: width ? 4 : scale,
+          margin,
+          color: {
+            dark: hex2rgba(options.color.dark || "#000000ff"),
+            light: hex2rgba(options.color.light || "#ffffffff")
+          },
+          type: options.type,
+          rendererOpts: options.rendererOpts || {}
+        };
+      };
+      exports.getScale = function getScale(qrSize, opts) {
+        return opts.width && opts.width >= qrSize + opts.margin * 2 ? opts.width / (qrSize + opts.margin * 2) : opts.scale;
+      };
+      exports.getImageWidth = function getImageWidth(qrSize, opts) {
+        const scale = exports.getScale(qrSize, opts);
+        return Math.floor((qrSize + opts.margin * 2) * scale);
+      };
+      exports.qrToImageData = function qrToImageData(imgData, qr, opts) {
+        const size = qr.modules.size;
+        const data = qr.modules.data;
+        const scale = exports.getScale(size, opts);
+        const symbolSize = Math.floor((size + opts.margin * 2) * scale);
+        const scaledMargin = opts.margin * scale;
+        const palette = [opts.color.light, opts.color.dark];
+        for (let i = 0; i < symbolSize; i++) {
+          for (let j = 0; j < symbolSize; j++) {
+            let posDst = (i * symbolSize + j) * 4;
+            let pxColor = opts.color.light;
+            if (i >= scaledMargin && j >= scaledMargin && i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
+              const iSrc = Math.floor((i - scaledMargin) / scale);
+              const jSrc = Math.floor((j - scaledMargin) / scale);
+              pxColor = palette[data[iSrc * size + jSrc] ? 1 : 0];
+            }
+            imgData[posDst++] = pxColor.r;
+            imgData[posDst++] = pxColor.g;
+            imgData[posDst++] = pxColor.b;
+            imgData[posDst] = pxColor.a;
+          }
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/renderer/canvas.js
+  var require_canvas = __commonJS({
+    "node_modules/qrcode/lib/renderer/canvas.js"(exports) {
+      var Utils = require_utils2();
+      function clearCanvas(ctx, canvas, size) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!canvas.style) canvas.style = {};
+        canvas.height = size;
+        canvas.width = size;
+        canvas.style.height = size + "px";
+        canvas.style.width = size + "px";
+      }
+      function getCanvasElement() {
+        try {
+          return document.createElement("canvas");
+        } catch (e) {
+          throw new Error("You need to specify a canvas element");
+        }
+      }
+      exports.render = function render(qrData, canvas, options) {
+        let opts = options;
+        let canvasEl = canvas;
+        if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
+          opts = canvas;
+          canvas = void 0;
+        }
+        if (!canvas) {
+          canvasEl = getCanvasElement();
+        }
+        opts = Utils.getOptions(opts);
+        const size = Utils.getImageWidth(qrData.modules.size, opts);
+        const ctx = canvasEl.getContext("2d");
+        const image = ctx.createImageData(size, size);
+        Utils.qrToImageData(image.data, qrData, opts);
+        clearCanvas(ctx, canvasEl, size);
+        ctx.putImageData(image, 0, 0);
+        return canvasEl;
+      };
+      exports.renderToDataURL = function renderToDataURL(qrData, canvas, options) {
+        let opts = options;
+        if (typeof opts === "undefined" && (!canvas || !canvas.getContext)) {
+          opts = canvas;
+          canvas = void 0;
+        }
+        if (!opts) opts = {};
+        const canvasEl = exports.render(qrData, canvas, opts);
+        const type = opts.type || "image/png";
+        const rendererOpts = opts.rendererOpts || {};
+        return canvasEl.toDataURL(type, rendererOpts.quality);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/renderer/svg-tag.js
+  var require_svg_tag = __commonJS({
+    "node_modules/qrcode/lib/renderer/svg-tag.js"(exports) {
+      var Utils = require_utils2();
+      function getColorAttrib(color, attrib) {
+        const alpha = color.a / 255;
+        const str = attrib + '="' + color.hex + '"';
+        return alpha < 1 ? str + " " + attrib + '-opacity="' + alpha.toFixed(2).slice(1) + '"' : str;
+      }
+      function svgCmd(cmd, x, y) {
+        let str = cmd + x;
+        if (typeof y !== "undefined") str += " " + y;
+        return str;
+      }
+      function qrToPath(data, size, margin) {
+        let path = "";
+        let moveBy = 0;
+        let newRow = false;
+        let lineLength = 0;
+        for (let i = 0; i < data.length; i++) {
+          const col = Math.floor(i % size);
+          const row = Math.floor(i / size);
+          if (!col && !newRow) newRow = true;
+          if (data[i]) {
+            lineLength++;
+            if (!(i > 0 && col > 0 && data[i - 1])) {
+              path += newRow ? svgCmd("M", col + margin, 0.5 + row + margin) : svgCmd("m", moveBy, 0);
+              moveBy = 0;
+              newRow = false;
+            }
+            if (!(col + 1 < size && data[i + 1])) {
+              path += svgCmd("h", lineLength);
+              lineLength = 0;
+            }
+          } else {
+            moveBy++;
+          }
+        }
+        return path;
+      }
+      exports.render = function render(qrData, options, cb) {
+        const opts = Utils.getOptions(options);
+        const size = qrData.modules.size;
+        const data = qrData.modules.data;
+        const qrcodesize = size + opts.margin * 2;
+        const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + ' d="M0 0h' + qrcodesize + "v" + qrcodesize + 'H0z"/>';
+        const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + ' d="' + qrToPath(data, size, opts.margin) + '"/>';
+        const viewBox = 'viewBox="0 0 ' + qrcodesize + " " + qrcodesize + '"';
+        const width = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
+        const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
+        if (typeof cb === "function") {
+          cb(null, svgTag);
+        }
+        return svgTag;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/browser.js
+  var require_browser = __commonJS({
+    "node_modules/qrcode/lib/browser.js"(exports) {
+      var canPromise = require_can_promise();
+      var QRCode2 = require_qrcode();
+      var CanvasRenderer = require_canvas();
+      var SvgRenderer = require_svg_tag();
+      function renderCanvas(renderFunc, canvas, text, opts, cb) {
+        const args = [].slice.call(arguments, 1);
+        const argsNum = args.length;
+        const isLastArgCb = typeof args[argsNum - 1] === "function";
+        if (!isLastArgCb && !canPromise()) {
+          throw new Error("Callback required as last argument");
+        }
+        if (isLastArgCb) {
+          if (argsNum < 2) {
+            throw new Error("Too few arguments provided");
+          }
+          if (argsNum === 2) {
+            cb = text;
+            text = canvas;
+            canvas = opts = void 0;
+          } else if (argsNum === 3) {
+            if (canvas.getContext && typeof cb === "undefined") {
+              cb = opts;
+              opts = void 0;
+            } else {
+              cb = opts;
+              opts = text;
+              text = canvas;
+              canvas = void 0;
+            }
+          }
+        } else {
+          if (argsNum < 1) {
+            throw new Error("Too few arguments provided");
+          }
+          if (argsNum === 1) {
+            text = canvas;
+            canvas = opts = void 0;
+          } else if (argsNum === 2 && !canvas.getContext) {
+            opts = text;
+            text = canvas;
+            canvas = void 0;
+          }
+          return new Promise(function(resolve, reject) {
+            try {
+              const data = QRCode2.create(text, opts);
+              resolve(renderFunc(data, canvas, opts));
+            } catch (e) {
+              reject(e);
+            }
+          });
+        }
+        try {
+          const data = QRCode2.create(text, opts);
+          cb(null, renderFunc(data, canvas, opts));
+        } catch (e) {
+          cb(e);
+        }
+      }
+      exports.create = QRCode2.create;
+      exports.toCanvas = renderCanvas.bind(null, CanvasRenderer.render);
+      exports.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL);
+      exports.toString = renderCanvas.bind(null, function(data, _, opts) {
+        return SvgRenderer.render(data, opts);
+      });
+    }
+  });
+
+  // node_modules/@scure/bip39/node_modules/@noble/hashes/utils.js
   function isBytes(a) {
     return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
   }
@@ -62,62 +2170,6 @@
   function rotr(word, shift) {
     return word << 32 - shift | word >>> shift;
   }
-  function rotl(word, shift) {
-    return word << shift | word >>> 32 - shift >>> 0;
-  }
-  var hasHexBuiltin = /* @__PURE__ */ (() => (
-    // @ts-ignore
-    typeof Uint8Array.from([]).toHex === "function" && typeof Uint8Array.fromHex === "function"
-  ))();
-  var hexes = /* @__PURE__ */ Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, "0"));
-  function bytesToHex(bytes) {
-    abytes(bytes);
-    if (hasHexBuiltin)
-      return bytes.toHex();
-    let hex = "";
-    for (let i = 0; i < bytes.length; i++) {
-      hex += hexes[bytes[i]];
-    }
-    return hex;
-  }
-  var asciis = { _0: 48, _9: 57, A: 65, F: 70, a: 97, f: 102 };
-  function asciiToBase16(ch) {
-    if (ch >= asciis._0 && ch <= asciis._9)
-      return ch - asciis._0;
-    if (ch >= asciis.A && ch <= asciis.F)
-      return ch - (asciis.A - 10);
-    if (ch >= asciis.a && ch <= asciis.f)
-      return ch - (asciis.a - 10);
-    return;
-  }
-  function hexToBytes(hex) {
-    if (typeof hex !== "string")
-      throw new TypeError("hex string expected, got " + typeof hex);
-    if (hasHexBuiltin) {
-      try {
-        return Uint8Array.fromHex(hex);
-      } catch (error) {
-        if (error instanceof SyntaxError)
-          throw new RangeError(error.message);
-        throw error;
-      }
-    }
-    const hl = hex.length;
-    const al = hl / 2;
-    if (hl % 2)
-      throw new RangeError("hex string expected, got unpadded hex of length " + hl);
-    const array = new Uint8Array(al);
-    for (let ai = 0, hi = 0; ai < al; ai++, hi += 2) {
-      const n1 = asciiToBase16(hex.charCodeAt(hi));
-      const n2 = asciiToBase16(hex.charCodeAt(hi + 1));
-      if (n1 === void 0 || n2 === void 0) {
-        const char = hex[hi] + hex[hi + 1];
-        throw new RangeError('hex string expected, got non-hex character "' + char + '" at index ' + hi);
-      }
-      array[ai] = n1 * 16 + n2;
-    }
-    return array;
-  }
   function utf8ToBytes(str) {
     if (typeof str !== "string")
       throw new TypeError("string expected");
@@ -127,21 +2179,6 @@
     if (typeof data === "string")
       return utf8ToBytes(data);
     return abytes(data, void 0, errorTitle);
-  }
-  function concatBytes(...arrays) {
-    let sum = 0;
-    for (let i = 0; i < arrays.length; i++) {
-      const a = arrays[i];
-      abytes(a);
-      sum += a.length;
-    }
-    const res = new Uint8Array(sum);
-    for (let i = 0, pad = 0; i < arrays.length; i++) {
-      const a = arrays[i];
-      res.set(a, pad);
-      pad += a.length;
-    }
-    return res;
   }
   function checkOpts(defaults, opts) {
     if (opts !== void 0 && {}.toString.call(opts) !== "[object Object]")
@@ -174,7 +2211,7 @@
     oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
   });
 
-  // node_modules/@noble/hashes/hmac.js
+  // node_modules/@scure/bip39/node_modules/@noble/hashes/hmac.js
   var _HMAC = class {
     oHash;
     iHash;
@@ -250,7 +2287,7 @@
     return hmac_;
   })();
 
-  // node_modules/@noble/hashes/pbkdf2.js
+  // node_modules/@scure/bip39/node_modules/@noble/hashes/pbkdf2.js
   function pbkdf2Init(hash, _password, _salt, _opts) {
     ahash(hash);
     const opts = checkOpts({ dkLen: 32, asyncTick: 10 }, _opts);
@@ -299,7 +2336,7 @@
     return pbkdf2Output(PRF, PRFSalt, DK, prfW, u);
   }
 
-  // node_modules/@noble/hashes/_md.js
+  // node_modules/@scure/bip39/node_modules/@noble/hashes/_md.js
   function Chi(a, b, c) {
     return a & b ^ ~a & c;
   }
@@ -431,7 +2468,7 @@
     327033209
   ]);
 
-  // node_modules/@noble/hashes/_u64.js
+  // node_modules/@scure/bip39/node_modules/@noble/hashes/_u64.js
   var U32_MASK64 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
   var _32n = /* @__PURE__ */ BigInt(32);
   function fromBig(n, le = false) {
@@ -466,7 +2503,7 @@
   var add5L = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
   var add5H = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
 
-  // node_modules/@noble/hashes/sha2.js
+  // node_modules/@scure/bip39/node_modules/@noble/hashes/sha2.js
   var SHA256_K = /* @__PURE__ */ Uint32Array.from([
     1116352408,
     1899447441,
@@ -1113,9 +3150,9 @@
   });
   var genBase58 = /* @__NO_SIDE_EFFECTS__ */ (abc) => /* @__PURE__ */ chain(/* @__PURE__ */ radix(58), /* @__PURE__ */ alphabet(abc), /* @__PURE__ */ join(""));
   var base58 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ genBase58("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"));
-  var createBase58check = (sha2562) => {
-    afn(sha2562);
-    const _sha256 = sha2562;
+  var createBase58check = (sha2565) => {
+    afn(sha2565);
+    const _sha256 = sha2565;
     return /* @__PURE__ */ chain(checksum(4, (data) => _sha256(_sha256(data))), base58);
   };
 
@@ -3234,14 +5271,435 @@ zero
 zone
 zoo`.split("\n"));
 
+  // node_modules/@noble/curves/node_modules/@noble/hashes/utils.js
+  function isBytes3(a) {
+    return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
+  }
+  function anumber3(n, title = "") {
+    if (typeof n !== "number") {
+      const prefix = title && `"${title}" `;
+      throw new TypeError(`${prefix}expected number, got ${typeof n}`);
+    }
+    if (!Number.isSafeInteger(n) || n < 0) {
+      const prefix = title && `"${title}" `;
+      throw new RangeError(`${prefix}expected integer >= 0, got ${n}`);
+    }
+  }
+  function abytes2(value, length, title = "") {
+    const bytes = isBytes3(value);
+    const len = value?.length;
+    const needsLen = length !== void 0;
+    if (!bytes || needsLen && len !== length) {
+      const prefix = title && `"${title}" `;
+      const ofLen = needsLen ? ` of length ${length}` : "";
+      const got = bytes ? `length=${len}` : `type=${typeof value}`;
+      const message = prefix + "expected Uint8Array" + ofLen + ", got " + got;
+      if (!bytes)
+        throw new TypeError(message);
+      throw new RangeError(message);
+    }
+    return value;
+  }
+  function ahash2(h) {
+    if (typeof h !== "function" || typeof h.create !== "function")
+      throw new TypeError("Hash must wrapped by utils.createHasher");
+    anumber3(h.outputLen);
+    anumber3(h.blockLen);
+    if (h.outputLen < 1)
+      throw new Error('"outputLen" must be >= 1');
+    if (h.blockLen < 1)
+      throw new Error('"blockLen" must be >= 1');
+  }
+  function aexists2(instance, checkFinished = true) {
+    if (instance.destroyed)
+      throw new Error("Hash instance has been destroyed");
+    if (checkFinished && instance.finished)
+      throw new Error("Hash#digest() has already been called");
+  }
+  function aoutput2(out, instance) {
+    abytes2(out, void 0, "digestInto() output");
+    const min = instance.outputLen;
+    if (out.length < min) {
+      throw new RangeError('"digestInto() output" expected to be of length >=' + min);
+    }
+  }
+  function clean2(...arrays) {
+    for (let i = 0; i < arrays.length; i++) {
+      arrays[i].fill(0);
+    }
+  }
+  function createView2(arr) {
+    return new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+  }
+  function rotr2(word, shift) {
+    return word << 32 - shift | word >>> shift;
+  }
+  var hasHexBuiltin = /* @__PURE__ */ (() => (
+    // @ts-ignore
+    typeof Uint8Array.from([]).toHex === "function" && typeof Uint8Array.fromHex === "function"
+  ))();
+  var hexes = /* @__PURE__ */ Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, "0"));
+  function bytesToHex(bytes) {
+    abytes2(bytes);
+    if (hasHexBuiltin)
+      return bytes.toHex();
+    let hex = "";
+    for (let i = 0; i < bytes.length; i++) {
+      hex += hexes[bytes[i]];
+    }
+    return hex;
+  }
+  var asciis = { _0: 48, _9: 57, A: 65, F: 70, a: 97, f: 102 };
+  function asciiToBase16(ch) {
+    if (ch >= asciis._0 && ch <= asciis._9)
+      return ch - asciis._0;
+    if (ch >= asciis.A && ch <= asciis.F)
+      return ch - (asciis.A - 10);
+    if (ch >= asciis.a && ch <= asciis.f)
+      return ch - (asciis.a - 10);
+    return;
+  }
+  function hexToBytes(hex) {
+    if (typeof hex !== "string")
+      throw new TypeError("hex string expected, got " + typeof hex);
+    if (hasHexBuiltin) {
+      try {
+        return Uint8Array.fromHex(hex);
+      } catch (error) {
+        if (error instanceof SyntaxError)
+          throw new RangeError(error.message);
+        throw error;
+      }
+    }
+    const hl = hex.length;
+    const al = hl / 2;
+    if (hl % 2)
+      throw new RangeError("hex string expected, got unpadded hex of length " + hl);
+    const array = new Uint8Array(al);
+    for (let ai = 0, hi = 0; ai < al; ai++, hi += 2) {
+      const n1 = asciiToBase16(hex.charCodeAt(hi));
+      const n2 = asciiToBase16(hex.charCodeAt(hi + 1));
+      if (n1 === void 0 || n2 === void 0) {
+        const char = hex[hi] + hex[hi + 1];
+        throw new RangeError('hex string expected, got non-hex character "' + char + '" at index ' + hi);
+      }
+      array[ai] = n1 * 16 + n2;
+    }
+    return array;
+  }
+  function concatBytes(...arrays) {
+    let sum = 0;
+    for (let i = 0; i < arrays.length; i++) {
+      const a = arrays[i];
+      abytes2(a);
+      sum += a.length;
+    }
+    const res = new Uint8Array(sum);
+    for (let i = 0, pad = 0; i < arrays.length; i++) {
+      const a = arrays[i];
+      res.set(a, pad);
+      pad += a.length;
+    }
+    return res;
+  }
+  function createHasher2(hashCons, info = {}) {
+    const hashC = (msg, opts) => hashCons(opts).update(msg).digest();
+    const tmp = hashCons(void 0);
+    hashC.outputLen = tmp.outputLen;
+    hashC.blockLen = tmp.blockLen;
+    hashC.canXOF = tmp.canXOF;
+    hashC.create = (opts) => hashCons(opts);
+    Object.assign(hashC, info);
+    return Object.freeze(hashC);
+  }
+  function randomBytes2(bytesLength = 32) {
+    anumber3(bytesLength, "bytesLength");
+    const cr = typeof globalThis === "object" ? globalThis.crypto : null;
+    if (typeof cr?.getRandomValues !== "function")
+      throw new Error("crypto.getRandomValues must be defined");
+    if (bytesLength > 65536)
+      throw new RangeError(`"bytesLength" expected <= 65536, got ${bytesLength}`);
+    return cr.getRandomValues(new Uint8Array(bytesLength));
+  }
+  var oidNist2 = (suffix) => ({
+    // Current NIST hashAlgs suffixes used here fit in one DER subidentifier octet.
+    // Larger suffix values would need base-128 OID encoding and a different length byte.
+    oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
+  });
+
+  // node_modules/@noble/curves/node_modules/@noble/hashes/_md.js
+  function Chi2(a, b, c) {
+    return a & b ^ ~a & c;
+  }
+  function Maj2(a, b, c) {
+    return a & b ^ a & c ^ b & c;
+  }
+  var HashMD2 = class {
+    blockLen;
+    outputLen;
+    canXOF = false;
+    padOffset;
+    isLE;
+    // For partial updates less than block size
+    buffer;
+    view;
+    finished = false;
+    length = 0;
+    pos = 0;
+    destroyed = false;
+    constructor(blockLen, outputLen, padOffset, isLE) {
+      this.blockLen = blockLen;
+      this.outputLen = outputLen;
+      this.padOffset = padOffset;
+      this.isLE = isLE;
+      this.buffer = new Uint8Array(blockLen);
+      this.view = createView2(this.buffer);
+    }
+    update(data) {
+      aexists2(this);
+      abytes2(data);
+      const { view, buffer, blockLen } = this;
+      const len = data.length;
+      for (let pos = 0; pos < len; ) {
+        const take = Math.min(blockLen - this.pos, len - pos);
+        if (take === blockLen) {
+          const dataView = createView2(data);
+          for (; blockLen <= len - pos; pos += blockLen)
+            this.process(dataView, pos);
+          continue;
+        }
+        buffer.set(data.subarray(pos, pos + take), this.pos);
+        this.pos += take;
+        pos += take;
+        if (this.pos === blockLen) {
+          this.process(view, 0);
+          this.pos = 0;
+        }
+      }
+      this.length += data.length;
+      this.roundClean();
+      return this;
+    }
+    digestInto(out) {
+      aexists2(this);
+      aoutput2(out, this);
+      this.finished = true;
+      const { buffer, view, blockLen, isLE } = this;
+      let { pos } = this;
+      buffer[pos++] = 128;
+      clean2(this.buffer.subarray(pos));
+      if (this.padOffset > blockLen - pos) {
+        this.process(view, 0);
+        pos = 0;
+      }
+      for (let i = pos; i < blockLen; i++)
+        buffer[i] = 0;
+      view.setBigUint64(blockLen - 8, BigInt(this.length * 8), isLE);
+      this.process(view, 0);
+      const oview = createView2(out);
+      const len = this.outputLen;
+      if (len % 4)
+        throw new Error("_sha2: outputLen must be aligned to 32bit");
+      const outLen = len / 4;
+      const state = this.get();
+      if (outLen > state.length)
+        throw new Error("_sha2: outputLen bigger than state");
+      for (let i = 0; i < outLen; i++)
+        oview.setUint32(4 * i, state[i], isLE);
+    }
+    digest() {
+      const { buffer, outputLen } = this;
+      this.digestInto(buffer);
+      const res = buffer.slice(0, outputLen);
+      this.destroy();
+      return res;
+    }
+    _cloneInto(to) {
+      to ||= new this.constructor();
+      to.set(...this.get());
+      const { blockLen, buffer, length, finished, destroyed, pos } = this;
+      to.destroyed = destroyed;
+      to.finished = finished;
+      to.length = length;
+      to.pos = pos;
+      if (length % blockLen)
+        to.buffer.set(buffer);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+  };
+  var SHA256_IV2 = /* @__PURE__ */ Uint32Array.from([
+    1779033703,
+    3144134277,
+    1013904242,
+    2773480762,
+    1359893119,
+    2600822924,
+    528734635,
+    1541459225
+  ]);
+
+  // node_modules/@noble/curves/node_modules/@noble/hashes/sha2.js
+  var SHA256_K2 = /* @__PURE__ */ Uint32Array.from([
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ]);
+  var SHA256_W2 = /* @__PURE__ */ new Uint32Array(64);
+  var SHA2_32B2 = class extends HashMD2 {
+    constructor(outputLen) {
+      super(64, outputLen, 8, false);
+    }
+    get() {
+      const { A, B, C, D, E, F, G, H } = this;
+      return [A, B, C, D, E, F, G, H];
+    }
+    // prettier-ignore
+    set(A, B, C, D, E, F, G, H) {
+      this.A = A | 0;
+      this.B = B | 0;
+      this.C = C | 0;
+      this.D = D | 0;
+      this.E = E | 0;
+      this.F = F | 0;
+      this.G = G | 0;
+      this.H = H | 0;
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        SHA256_W2[i] = view.getUint32(offset, false);
+      for (let i = 16; i < 64; i++) {
+        const W15 = SHA256_W2[i - 15];
+        const W2 = SHA256_W2[i - 2];
+        const s0 = rotr2(W15, 7) ^ rotr2(W15, 18) ^ W15 >>> 3;
+        const s1 = rotr2(W2, 17) ^ rotr2(W2, 19) ^ W2 >>> 10;
+        SHA256_W2[i] = s1 + SHA256_W2[i - 7] + s0 + SHA256_W2[i - 16] | 0;
+      }
+      let { A, B, C, D, E, F, G, H } = this;
+      for (let i = 0; i < 64; i++) {
+        const sigma1 = rotr2(E, 6) ^ rotr2(E, 11) ^ rotr2(E, 25);
+        const T1 = H + sigma1 + Chi2(E, F, G) + SHA256_K2[i] + SHA256_W2[i] | 0;
+        const sigma0 = rotr2(A, 2) ^ rotr2(A, 13) ^ rotr2(A, 22);
+        const T2 = sigma0 + Maj2(A, B, C) | 0;
+        H = G;
+        G = F;
+        F = E;
+        E = D + T1 | 0;
+        D = C;
+        C = B;
+        B = A;
+        A = T1 + T2 | 0;
+      }
+      A = A + this.A | 0;
+      B = B + this.B | 0;
+      C = C + this.C | 0;
+      D = D + this.D | 0;
+      E = E + this.E | 0;
+      F = F + this.F | 0;
+      G = G + this.G | 0;
+      H = H + this.H | 0;
+      this.set(A, B, C, D, E, F, G, H);
+    }
+    roundClean() {
+      clean2(SHA256_W2);
+    }
+    destroy() {
+      this.destroyed = true;
+      this.set(0, 0, 0, 0, 0, 0, 0, 0);
+      clean2(this.buffer);
+    }
+  };
+  var _SHA2562 = class extends SHA2_32B2 {
+    // We cannot use array here since array allows indexing by variable
+    // which means optimizer/compiler cannot use registers.
+    A = SHA256_IV2[0] | 0;
+    B = SHA256_IV2[1] | 0;
+    C = SHA256_IV2[2] | 0;
+    D = SHA256_IV2[3] | 0;
+    E = SHA256_IV2[4] | 0;
+    F = SHA256_IV2[5] | 0;
+    G = SHA256_IV2[6] | 0;
+    H = SHA256_IV2[7] | 0;
+    constructor() {
+      super(32);
+    }
+  };
+  var sha2562 = /* @__PURE__ */ createHasher2(
+    () => new _SHA2562(),
+    /* @__PURE__ */ oidNist2(1)
+  );
+
   // node_modules/@noble/curves/utils.js
-  var abytes2 = (value, length, title) => abytes(value, length, title);
-  var anumber3 = anumber;
+  var abytes3 = (value, length, title) => abytes2(value, length, title);
+  var anumber4 = anumber3;
   var bytesToHex2 = bytesToHex;
   var concatBytes2 = (...arrays) => concatBytes(...arrays);
   var hexToBytes2 = (hex) => hexToBytes(hex);
-  var isBytes3 = isBytes;
-  var randomBytes2 = (bytesLength) => randomBytes(bytesLength);
+  var isBytes4 = isBytes3;
+  var randomBytes3 = (bytesLength) => randomBytes2(bytesLength);
   var _0n = /* @__PURE__ */ BigInt(0);
   var _1n = /* @__PURE__ */ BigInt(1);
   function abool(value, title = "") {
@@ -3256,7 +5714,7 @@ zoo`.split("\n"));
       if (!isPosBig(n))
         throw new RangeError("positive bigint expected, got " + n);
     } else
-      anumber3(n);
+      anumber4(n);
     return n;
   }
   function asafenumber(value, title = "") {
@@ -3282,10 +5740,10 @@ zoo`.split("\n"));
     return hexToNumber(bytesToHex(bytes));
   }
   function bytesToNumberLE(bytes) {
-    return hexToNumber(bytesToHex(copyBytes(abytes(bytes)).reverse()));
+    return hexToNumber(bytesToHex(copyBytes(abytes2(bytes)).reverse()));
   }
   function numberToBytesBE(n, len) {
-    anumber(len);
+    anumber3(len);
     if (len === 0)
       throw new RangeError("zero length");
     n = abignumber(n);
@@ -3298,7 +5756,7 @@ zoo`.split("\n"));
     return numberToBytesBE(n, len).reverse();
   }
   function copyBytes(bytes) {
-    return Uint8Array.from(abytes2(bytes));
+    return Uint8Array.from(abytes3(bytes));
   }
   function asciiToBytes(ascii) {
     if (typeof ascii !== "string")
@@ -3329,8 +5787,8 @@ zoo`.split("\n"));
   }
   var bitMask = (n) => (_1n << BigInt(n)) - _1n;
   function createHmacDrbg(hashLen, qByteLen, hmacFn) {
-    anumber(hashLen, "hashLen");
-    anumber(qByteLen, "qByteLen");
+    anumber3(hashLen, "hashLen");
+    anumber3(qByteLen, "qByteLen");
     if (typeof hmacFn !== "function")
       throw new TypeError("hmacFn must be a function");
     const u8n = (len) => new Uint8Array(len);
@@ -3636,7 +6094,7 @@ zoo`.split("\n"));
   }
   function nLength(n, nBitLength) {
     if (nBitLength !== void 0)
-      anumber3(nBitLength);
+      anumber4(nBitLength);
     if (n <= _0n2)
       throw new Error("invalid n length: expected positive n, got " + n);
     if (nBitLength !== void 0 && nBitLength < 1)
@@ -3751,7 +6209,7 @@ zoo`.split("\n"));
       return this.isLE ? numberToBytesLE(num2, this.BYTES) : numberToBytesBE(num2, this.BYTES);
     }
     fromBytes(bytes, skipValidation = false) {
-      abytes2(bytes);
+      abytes3(bytes);
       const { _lengths: allowedLengths, BYTES, isLE, ORDER, _mod: modFromBytes } = this;
       if (allowedLengths) {
         if (bytes.length < 1 || !allowedLengths.includes(bytes.length) || bytes.length > BYTES) {
@@ -3800,7 +6258,7 @@ zoo`.split("\n"));
     return length + Math.ceil(length / 2);
   }
   function mapHashToField(key, fieldOrder, isLE = false) {
-    abytes2(key);
+    abytes3(key);
     const len = key.length;
     const fieldLen = getFieldBytesLength(fieldOrder);
     const minLen = Math.max(getMinHashLength(fieldOrder), 16);
@@ -4045,6 +6503,82 @@ zoo`.split("\n"));
     };
   }
 
+  // node_modules/@noble/curves/node_modules/@noble/hashes/hmac.js
+  var _HMAC2 = class {
+    oHash;
+    iHash;
+    blockLen;
+    outputLen;
+    canXOF = false;
+    finished = false;
+    destroyed = false;
+    constructor(hash, key) {
+      ahash2(hash);
+      abytes2(key, void 0, "key");
+      this.iHash = hash.create();
+      if (typeof this.iHash.update !== "function")
+        throw new Error("Expected instance of class which extends utils.Hash");
+      this.blockLen = this.iHash.blockLen;
+      this.outputLen = this.iHash.outputLen;
+      const blockLen = this.blockLen;
+      const pad = new Uint8Array(blockLen);
+      pad.set(key.length > blockLen ? hash.create().update(key).digest() : key);
+      for (let i = 0; i < pad.length; i++)
+        pad[i] ^= 54;
+      this.iHash.update(pad);
+      this.oHash = hash.create();
+      for (let i = 0; i < pad.length; i++)
+        pad[i] ^= 54 ^ 92;
+      this.oHash.update(pad);
+      clean2(pad);
+    }
+    update(buf) {
+      aexists2(this);
+      this.iHash.update(buf);
+      return this;
+    }
+    digestInto(out) {
+      aexists2(this);
+      aoutput2(out, this);
+      this.finished = true;
+      const buf = out.subarray(0, this.outputLen);
+      this.iHash.digestInto(buf);
+      this.oHash.update(buf);
+      this.oHash.digestInto(buf);
+      this.destroy();
+    }
+    digest() {
+      const out = new Uint8Array(this.oHash.outputLen);
+      this.digestInto(out);
+      return out;
+    }
+    _cloneInto(to) {
+      to ||= Object.create(Object.getPrototypeOf(this), {});
+      const { oHash, iHash, finished, destroyed, blockLen, outputLen } = this;
+      to = to;
+      to.finished = finished;
+      to.destroyed = destroyed;
+      to.blockLen = blockLen;
+      to.outputLen = outputLen;
+      to.oHash = oHash._cloneInto(to.oHash);
+      to.iHash = iHash._cloneInto(to.iHash);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+    destroy() {
+      this.destroyed = true;
+      this.oHash.destroy();
+      this.iHash.destroy();
+    }
+  };
+  var hmac2 = /* @__PURE__ */ (() => {
+    const hmac_ = ((hash, key, message) => new _HMAC2(hash, key).update(message).digest());
+    hmac_.create = (hash, key) => new _HMAC2(hash, key);
+    return hmac_;
+  })();
+
   // node_modules/@noble/curves/abstract/weierstrass.js
   var divNearest = (num2, den) => (num2 + (num2 >= 0 ? den : -den) / _2n2) / den;
   function _splitEndoScalar(k, basis, n) {
@@ -4113,7 +6647,7 @@ zoo`.split("\n"));
       // v - value, l - left bytes (unparsed)
       decode(tag, data) {
         const { Err: E } = DER;
-        data = abytes2(data, void 0, "DER data");
+        data = abytes3(data, void 0, "DER data");
         let pos = 0;
         if (tag < 0 || tag > 255)
           throw new E("tlv.encode: wrong tag");
@@ -4177,7 +6711,7 @@ zoo`.split("\n"));
     },
     toSig(bytes) {
       const { Err: E, _int: int, _tlv: tlv } = DER;
-      const data = abytes2(bytes, void 0, "signature");
+      const data = abytes3(bytes, void 0, "signature");
       const { v: seqBytes, l: seqLeftBytes } = tlv.decode(48, data);
       if (seqLeftBytes.length)
         throw new E("invalid signature: left bytes after parsing");
@@ -4243,7 +6777,7 @@ zoo`.split("\n"));
       }
     }
     function pointFromBytes(bytes) {
-      abytes2(bytes, void 0, "Point");
+      abytes3(bytes, void 0, "Point");
       const { publicKey: comp, publicKeyUncompressed: uncomp } = lengths;
       const length = bytes.length;
       const head = bytes[0];
@@ -4352,7 +6886,7 @@ zoo`.split("\n"));
         return new Point2(x, y, Fp.ONE);
       }
       static fromBytes(bytes) {
-        const P = Point2.fromAffine(decodePoint(abytes2(bytes, void 0, "point")));
+        const P = Point2.fromAffine(decodePoint(abytes3(bytes, void 0, "point")));
         P.assertValidity();
         return P;
       }
@@ -4652,7 +7186,7 @@ zoo`.split("\n"));
   }
   function ecdh(Point2, ecdhOpts = {}) {
     const { Fn: Fn2 } = Point2;
-    const randomBytes_ = ecdhOpts.randomBytes === void 0 ? randomBytes2 : ecdhOpts.randomBytes;
+    const randomBytes_ = ecdhOpts.randomBytes === void 0 ? randomBytes3 : ecdhOpts.randomBytes;
     const lengths = Object.assign(getWLengths(Point2.Fp, Fn2), {
       seed: Math.max(getMinHashLength(Fn2.ORDER), 16)
     });
@@ -4679,7 +7213,7 @@ zoo`.split("\n"));
     }
     function randomSecretKey(seed) {
       seed = seed === void 0 ? randomBytes_(lengths.seed) : seed;
-      return mapHashToField(abytes2(seed, lengths.seed, "seed"), Fn2.ORDER);
+      return mapHashToField(abytes3(seed, lengths.seed, "seed"), Fn2.ORDER);
     }
     function getPublicKey(secretKey, isCompressed = true) {
       return Point2.BASE.multiply(Fn2.fromBytes(secretKey)).toBytes(isCompressed);
@@ -4687,9 +7221,9 @@ zoo`.split("\n"));
     function isProbPub(item) {
       const { secretKey, publicKey, publicKeyUncompressed } = lengths;
       const allowedLengths = Fn2._lengths;
-      if (!isBytes3(item))
+      if (!isBytes4(item))
         return void 0;
-      const l = abytes2(item, void 0, "key").length;
+      const l = abytes3(item, void 0, "key").length;
       const isPub = l === publicKey || l === publicKeyUncompressed;
       const isSec = l === secretKey || !!allowedLengths?.includes(l);
       if (isPub && isSec)
@@ -4717,7 +7251,7 @@ zoo`.split("\n"));
   }
   function ecdsa(Point2, hash, ecdsaOpts = {}) {
     const hash_ = hash;
-    ahash(hash_);
+    ahash2(hash_);
     validateObject(ecdsaOpts, {}, {
       hmac: "function",
       lowS: "boolean",
@@ -4726,8 +7260,8 @@ zoo`.split("\n"));
       bits2int_modN: "function"
     });
     ecdsaOpts = Object.assign({}, ecdsaOpts);
-    const randomBytes3 = ecdsaOpts.randomBytes === void 0 ? randomBytes2 : ecdsaOpts.randomBytes;
-    const hmac2 = ecdsaOpts.hmac === void 0 ? (key, msg) => hmac(hash_, key, msg) : ecdsaOpts.hmac;
+    const randomBytes4 = ecdsaOpts.randomBytes === void 0 ? randomBytes3 : ecdsaOpts.randomBytes;
+    const hmac4 = ecdsaOpts.hmac === void 0 ? (key, msg) => hmac2(hash_, key, msg) : ecdsaOpts.hmac;
     const { Fp, Fn: Fn2 } = Point2;
     const { ORDER: CURVE_ORDER, BITS: fnBits } = Fn2;
     const { keygen, getPublicKey, getSharedSecret, utils: utils2, lengths } = ecdh(Point2, ecdsaOpts);
@@ -4755,7 +7289,7 @@ zoo`.split("\n"));
       validateSigFormat(format);
       const size = lengths.signature;
       const sizer = format === "compact" ? size : format === "recovered" ? size + 1 : void 0;
-      return abytes2(bytes, sizer);
+      return abytes3(bytes, sizer);
     }
     class Signature {
       r;
@@ -4776,7 +7310,7 @@ zoo`.split("\n"));
         validateSigLength(bytes, format);
         let recid;
         if (format === "der") {
-          const { r: r2, s: s2 } = DER.toSig(abytes2(bytes));
+          const { r: r2, s: s2 } = DER.toSig(abytes3(bytes));
           return new Signature(r2, s2);
         }
         if (format === "recovered") {
@@ -4812,7 +7346,7 @@ zoo`.split("\n"));
         const x = Fp.toBytes(radj);
         const R = Point2.fromBytes(concatBytes2(pprefix((recovery & 1) === 0), x));
         const ir = Fn2.inv(radj);
-        const h = bits2int_modN(abytes2(messageHash, void 0, "msgHash"));
+        const h = bits2int_modN(abytes3(messageHash, void 0, "msgHash"));
         const u1 = Fn2.create(-h * ir);
         const u2 = Fn2.create(s * ir);
         const Q = Point2.BASE.multiplyUnsafe(u1).add(R.multiplyUnsafe(u2));
@@ -4860,8 +7394,8 @@ zoo`.split("\n"));
       return Fn2.toBytes(num2);
     }
     function validateMsgAndHash(message, prehash) {
-      abytes2(message, void 0, "message");
-      return prehash ? abytes2(hash_(message), void 0, "prehashed message") : message;
+      abytes3(message, void 0, "message");
+      return prehash ? abytes3(hash_(message), void 0, "prehashed message") : message;
     }
     function prepSig(message, secretKey, opts) {
       const { lowS, prehash, extraEntropy } = validateSigOpts(opts, defaultSigOpts);
@@ -4872,8 +7406,8 @@ zoo`.split("\n"));
         throw new Error("invalid private key");
       const seedArgs = [int2octets(d), int2octets(h1int)];
       if (extraEntropy != null && extraEntropy !== false) {
-        const e = extraEntropy === true ? randomBytes3(lengths.secretKey) : extraEntropy;
-        seedArgs.push(abytes2(e, void 0, "extraEntropy"));
+        const e = extraEntropy === true ? randomBytes4(lengths.secretKey) : extraEntropy;
+        seedArgs.push(abytes3(e, void 0, "extraEntropy"));
       }
       const seed = concatBytes2(...seedArgs);
       const m = h1int;
@@ -4901,15 +7435,15 @@ zoo`.split("\n"));
     }
     function sign(message, secretKey, opts = {}) {
       const { seed, k2sig } = prepSig(message, secretKey, opts);
-      const drbg = createHmacDrbg(hash_.outputLen, Fn2.BYTES, hmac2);
+      const drbg = createHmacDrbg(hash_.outputLen, Fn2.BYTES, hmac4);
       const sig = drbg(seed, k2sig);
       return sig.toBytes(opts.format);
     }
     function verify(signature, message, publicKey, opts = {}) {
       const { lowS, prehash, format } = validateSigOpts(opts, defaultSigOpts);
-      publicKey = abytes2(publicKey, void 0, "publicKey");
+      publicKey = abytes3(publicKey, void 0, "publicKey");
       message = validateMsgAndHash(message, prehash);
-      if (!isBytes3(signature)) {
+      if (!isBytes4(signature)) {
         const end = signature instanceof Signature ? ", use sig.toBytes()" : "";
         throw new Error("verify expects Uint8Array signature" + end);
       }
@@ -4999,16 +7533,16 @@ zoo`.split("\n"));
     Fp: Fpk1,
     endo: secp256k1_ENDO
   });
-  var secp256k1 = /* @__PURE__ */ ecdsa(Pointk1, sha256);
+  var secp256k1 = /* @__PURE__ */ ecdsa(Pointk1, sha2562);
   var TAGGED_HASH_PREFIXES = {};
   function taggedHash(tag, ...messages) {
     let tagP = TAGGED_HASH_PREFIXES[tag];
     if (tagP === void 0) {
-      const tagH = sha256(asciiToBytes(tag));
+      const tagH = sha2562(asciiToBytes(tag));
       tagP = concatBytes2(tagH, tagH);
       TAGGED_HASH_PREFIXES[tag] = tagP;
     }
-    return sha256(concatBytes2(tagP, ...messages));
+    return sha2562(concatBytes2(tagP, ...messages));
   }
   var pointToBytes = (point) => point.toBytes(true).slice(1);
   var hasEven = (y) => y % _2n3 === _0n5;
@@ -5039,11 +7573,11 @@ zoo`.split("\n"));
   function schnorrGetPublicKey(secretKey) {
     return schnorrGetExtPubKey(secretKey).bytes;
   }
-  function schnorrSign(message, secretKey, auxRand = randomBytes(32)) {
+  function schnorrSign(message, secretKey, auxRand = randomBytes2(32)) {
     const { Fn: Fn2, BASE } = Pointk1;
-    const m = abytes2(message, void 0, "message");
+    const m = abytes3(message, void 0, "message");
     const { bytes: px, scalar: d } = schnorrGetExtPubKey(secretKey);
-    const a = abytes2(auxRand, 32, "auxRand");
+    const a = abytes3(auxRand, 32, "auxRand");
     const t = Fn2.toBytes(d ^ num(taggedHash("BIP0340/aux", a)));
     const rand = taggedHash("BIP0340/nonce", t, px, m);
     const k_ = Fn2.create(num(rand));
@@ -5062,9 +7596,9 @@ zoo`.split("\n"));
   }
   function schnorrVerify(signature, message, publicKey) {
     const { Fp, Fn: Fn2, BASE } = Pointk1;
-    const sig = abytes2(signature, 64, "signature");
-    const m = abytes2(message, void 0, "message");
-    const pub = abytes2(publicKey, 32, "publicKey");
+    const sig = abytes3(signature, 64, "signature");
+    const m = abytes3(message, void 0, "message");
+    const pub = abytes3(publicKey, 32, "publicKey");
     try {
       const P = lift_x(num(pub));
       const r = num(sig.subarray(0, 32));
@@ -5087,7 +7621,7 @@ zoo`.split("\n"));
     const size = 32;
     const seedLength = 48;
     const randomSecretKey = (seed) => {
-      seed = seed === void 0 ? randomBytes(seedLength) : seed;
+      seed = seed === void 0 ? randomBytes2(seedLength) : seed;
       return mapHashToField(seed, secp256k1_CURVE.n);
     };
     return Object.freeze({
@@ -5112,7 +7646,312 @@ zoo`.split("\n"));
     });
   })();
 
-  // node_modules/@noble/hashes/legacy.js
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/utils.js
+  function isBytes5(a) {
+    return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
+  }
+  function anumber5(n, title = "") {
+    if (typeof n !== "number") {
+      const prefix = title && `"${title}" `;
+      throw new TypeError(`${prefix}expected number, got ${typeof n}`);
+    }
+    if (!Number.isSafeInteger(n) || n < 0) {
+      const prefix = title && `"${title}" `;
+      throw new RangeError(`${prefix}expected integer >= 0, got ${n}`);
+    }
+  }
+  function abytes4(value, length, title = "") {
+    const bytes = isBytes5(value);
+    const len = value?.length;
+    const needsLen = length !== void 0;
+    if (!bytes || needsLen && len !== length) {
+      const prefix = title && `"${title}" `;
+      const ofLen = needsLen ? ` of length ${length}` : "";
+      const got = bytes ? `length=${len}` : `type=${typeof value}`;
+      const message = prefix + "expected Uint8Array" + ofLen + ", got " + got;
+      if (!bytes)
+        throw new TypeError(message);
+      throw new RangeError(message);
+    }
+    return value;
+  }
+  function ahash3(h) {
+    if (typeof h !== "function" || typeof h.create !== "function")
+      throw new TypeError("Hash must wrapped by utils.createHasher");
+    anumber5(h.outputLen);
+    anumber5(h.blockLen);
+    if (h.outputLen < 1)
+      throw new Error('"outputLen" must be >= 1');
+    if (h.blockLen < 1)
+      throw new Error('"blockLen" must be >= 1');
+  }
+  function aexists3(instance, checkFinished = true) {
+    if (instance.destroyed)
+      throw new Error("Hash instance has been destroyed");
+    if (checkFinished && instance.finished)
+      throw new Error("Hash#digest() has already been called");
+  }
+  function aoutput3(out, instance) {
+    abytes4(out, void 0, "digestInto() output");
+    const min = instance.outputLen;
+    if (out.length < min) {
+      throw new RangeError('"digestInto() output" expected to be of length >=' + min);
+    }
+  }
+  function clean3(...arrays) {
+    for (let i = 0; i < arrays.length; i++) {
+      arrays[i].fill(0);
+    }
+  }
+  function createView3(arr) {
+    return new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+  }
+  function rotr3(word, shift) {
+    return word << 32 - shift | word >>> shift;
+  }
+  function rotl(word, shift) {
+    return word << shift | word >>> 32 - shift >>> 0;
+  }
+  function concatBytes3(...arrays) {
+    let sum = 0;
+    for (let i = 0; i < arrays.length; i++) {
+      const a = arrays[i];
+      abytes4(a);
+      sum += a.length;
+    }
+    const res = new Uint8Array(sum);
+    for (let i = 0, pad = 0; i < arrays.length; i++) {
+      const a = arrays[i];
+      res.set(a, pad);
+      pad += a.length;
+    }
+    return res;
+  }
+  function createHasher3(hashCons, info = {}) {
+    const hashC = (msg, opts) => hashCons(opts).update(msg).digest();
+    const tmp = hashCons(void 0);
+    hashC.outputLen = tmp.outputLen;
+    hashC.blockLen = tmp.blockLen;
+    hashC.canXOF = tmp.canXOF;
+    hashC.create = (opts) => hashCons(opts);
+    Object.assign(hashC, info);
+    return Object.freeze(hashC);
+  }
+  var oidNist3 = (suffix) => ({
+    // Current NIST hashAlgs suffixes used here fit in one DER subidentifier octet.
+    // Larger suffix values would need base-128 OID encoding and a different length byte.
+    oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
+  });
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/hmac.js
+  var _HMAC3 = class {
+    oHash;
+    iHash;
+    blockLen;
+    outputLen;
+    canXOF = false;
+    finished = false;
+    destroyed = false;
+    constructor(hash, key) {
+      ahash3(hash);
+      abytes4(key, void 0, "key");
+      this.iHash = hash.create();
+      if (typeof this.iHash.update !== "function")
+        throw new Error("Expected instance of class which extends utils.Hash");
+      this.blockLen = this.iHash.blockLen;
+      this.outputLen = this.iHash.outputLen;
+      const blockLen = this.blockLen;
+      const pad = new Uint8Array(blockLen);
+      pad.set(key.length > blockLen ? hash.create().update(key).digest() : key);
+      for (let i = 0; i < pad.length; i++)
+        pad[i] ^= 54;
+      this.iHash.update(pad);
+      this.oHash = hash.create();
+      for (let i = 0; i < pad.length; i++)
+        pad[i] ^= 54 ^ 92;
+      this.oHash.update(pad);
+      clean3(pad);
+    }
+    update(buf) {
+      aexists3(this);
+      this.iHash.update(buf);
+      return this;
+    }
+    digestInto(out) {
+      aexists3(this);
+      aoutput3(out, this);
+      this.finished = true;
+      const buf = out.subarray(0, this.outputLen);
+      this.iHash.digestInto(buf);
+      this.oHash.update(buf);
+      this.oHash.digestInto(buf);
+      this.destroy();
+    }
+    digest() {
+      const out = new Uint8Array(this.oHash.outputLen);
+      this.digestInto(out);
+      return out;
+    }
+    _cloneInto(to) {
+      to ||= Object.create(Object.getPrototypeOf(this), {});
+      const { oHash, iHash, finished, destroyed, blockLen, outputLen } = this;
+      to = to;
+      to.finished = finished;
+      to.destroyed = destroyed;
+      to.blockLen = blockLen;
+      to.outputLen = outputLen;
+      to.oHash = oHash._cloneInto(to.oHash);
+      to.iHash = iHash._cloneInto(to.iHash);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+    destroy() {
+      this.destroyed = true;
+      this.oHash.destroy();
+      this.iHash.destroy();
+    }
+  };
+  var hmac3 = /* @__PURE__ */ (() => {
+    const hmac_ = ((hash, key, message) => new _HMAC3(hash, key).update(message).digest());
+    hmac_.create = (hash, key) => new _HMAC3(hash, key);
+    return hmac_;
+  })();
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/_md.js
+  function Chi3(a, b, c) {
+    return a & b ^ ~a & c;
+  }
+  function Maj3(a, b, c) {
+    return a & b ^ a & c ^ b & c;
+  }
+  var HashMD3 = class {
+    blockLen;
+    outputLen;
+    canXOF = false;
+    padOffset;
+    isLE;
+    // For partial updates less than block size
+    buffer;
+    view;
+    finished = false;
+    length = 0;
+    pos = 0;
+    destroyed = false;
+    constructor(blockLen, outputLen, padOffset, isLE) {
+      this.blockLen = blockLen;
+      this.outputLen = outputLen;
+      this.padOffset = padOffset;
+      this.isLE = isLE;
+      this.buffer = new Uint8Array(blockLen);
+      this.view = createView3(this.buffer);
+    }
+    update(data) {
+      aexists3(this);
+      abytes4(data);
+      const { view, buffer, blockLen } = this;
+      const len = data.length;
+      for (let pos = 0; pos < len; ) {
+        const take = Math.min(blockLen - this.pos, len - pos);
+        if (take === blockLen) {
+          const dataView = createView3(data);
+          for (; blockLen <= len - pos; pos += blockLen)
+            this.process(dataView, pos);
+          continue;
+        }
+        buffer.set(data.subarray(pos, pos + take), this.pos);
+        this.pos += take;
+        pos += take;
+        if (this.pos === blockLen) {
+          this.process(view, 0);
+          this.pos = 0;
+        }
+      }
+      this.length += data.length;
+      this.roundClean();
+      return this;
+    }
+    digestInto(out) {
+      aexists3(this);
+      aoutput3(out, this);
+      this.finished = true;
+      const { buffer, view, blockLen, isLE } = this;
+      let { pos } = this;
+      buffer[pos++] = 128;
+      clean3(this.buffer.subarray(pos));
+      if (this.padOffset > blockLen - pos) {
+        this.process(view, 0);
+        pos = 0;
+      }
+      for (let i = pos; i < blockLen; i++)
+        buffer[i] = 0;
+      view.setBigUint64(blockLen - 8, BigInt(this.length * 8), isLE);
+      this.process(view, 0);
+      const oview = createView3(out);
+      const len = this.outputLen;
+      if (len % 4)
+        throw new Error("_sha2: outputLen must be aligned to 32bit");
+      const outLen = len / 4;
+      const state = this.get();
+      if (outLen > state.length)
+        throw new Error("_sha2: outputLen bigger than state");
+      for (let i = 0; i < outLen; i++)
+        oview.setUint32(4 * i, state[i], isLE);
+    }
+    digest() {
+      const { buffer, outputLen } = this;
+      this.digestInto(buffer);
+      const res = buffer.slice(0, outputLen);
+      this.destroy();
+      return res;
+    }
+    _cloneInto(to) {
+      to ||= new this.constructor();
+      to.set(...this.get());
+      const { blockLen, buffer, length, finished, destroyed, pos } = this;
+      to.destroyed = destroyed;
+      to.finished = finished;
+      to.length = length;
+      to.pos = pos;
+      if (length % blockLen)
+        to.buffer.set(buffer);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+  };
+  var SHA256_IV3 = /* @__PURE__ */ Uint32Array.from([
+    1779033703,
+    3144134277,
+    1013904242,
+    2773480762,
+    1359893119,
+    2600822924,
+    528734635,
+    1541459225
+  ]);
+  var SHA512_IV3 = /* @__PURE__ */ Uint32Array.from([
+    1779033703,
+    4089235720,
+    3144134277,
+    2227873595,
+    1013904242,
+    4271175723,
+    2773480762,
+    1595750129,
+    1359893119,
+    2917565137,
+    2600822924,
+    725511199,
+    528734635,
+    4215389547,
+    1541459225,
+    327033209
+  ]);
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/legacy.js
   var Rho160 = /* @__PURE__ */ Uint8Array.from([
     7,
     4,
@@ -5179,7 +8018,7 @@ zoo`.split("\n"));
     return x ^ (y | ~z);
   }
   var BUF_160 = /* @__PURE__ */ new Uint32Array(16);
-  var _RIPEMD160 = class extends HashMD {
+  var _RIPEMD160 = class extends HashMD3 {
     h0 = 1732584193 | 0;
     h1 = 4023233417 | 0;
     h2 = 2562383102 | 0;
@@ -5220,34 +8059,427 @@ zoo`.split("\n"));
       this.set(this.h1 + cl + dr | 0, this.h2 + dl + er | 0, this.h3 + el + ar | 0, this.h4 + al + br | 0, this.h0 + bl + cr | 0);
     }
     roundClean() {
-      clean(BUF_160);
+      clean3(BUF_160);
     }
     destroy() {
       this.destroyed = true;
-      clean(this.buffer);
+      clean3(this.buffer);
       this.set(0, 0, 0, 0, 0);
     }
   };
-  var ripemd160 = /* @__PURE__ */ createHasher(() => new _RIPEMD160());
+  var ripemd160 = /* @__PURE__ */ createHasher3(() => new _RIPEMD160());
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/_u64.js
+  var U32_MASK642 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
+  var _32n2 = /* @__PURE__ */ BigInt(32);
+  function fromBig2(n, le = false) {
+    if (le)
+      return { h: Number(n & U32_MASK642), l: Number(n >> _32n2 & U32_MASK642) };
+    return { h: Number(n >> _32n2 & U32_MASK642) | 0, l: Number(n & U32_MASK642) | 0 };
+  }
+  function split2(lst, le = false) {
+    const len = lst.length;
+    let Ah = new Uint32Array(len);
+    let Al = new Uint32Array(len);
+    for (let i = 0; i < len; i++) {
+      const { h, l } = fromBig2(lst[i], le);
+      [Ah[i], Al[i]] = [h, l];
+    }
+    return [Ah, Al];
+  }
+  var shrSH2 = (h, _l, s) => h >>> s;
+  var shrSL2 = (h, l, s) => h << 32 - s | l >>> s;
+  var rotrSH2 = (h, l, s) => h >>> s | l << 32 - s;
+  var rotrSL2 = (h, l, s) => h << 32 - s | l >>> s;
+  var rotrBH2 = (h, l, s) => h << 64 - s | l >>> s - 32;
+  var rotrBL2 = (h, l, s) => h >>> s - 32 | l << 64 - s;
+  function add2(Ah, Al, Bh, Bl) {
+    const l = (Al >>> 0) + (Bl >>> 0);
+    return { h: Ah + Bh + (l / 2 ** 32 | 0) | 0, l: l | 0 };
+  }
+  var add3L2 = (Al, Bl, Cl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0);
+  var add3H2 = (low, Ah, Bh, Ch) => Ah + Bh + Ch + (low / 2 ** 32 | 0) | 0;
+  var add4L2 = (Al, Bl, Cl, Dl) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0);
+  var add4H2 = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 0;
+  var add5L2 = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
+  var add5H2 = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
+
+  // node_modules/@scure/bip32/node_modules/@noble/hashes/sha2.js
+  var SHA256_K3 = /* @__PURE__ */ Uint32Array.from([
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ]);
+  var SHA256_W3 = /* @__PURE__ */ new Uint32Array(64);
+  var SHA2_32B3 = class extends HashMD3 {
+    constructor(outputLen) {
+      super(64, outputLen, 8, false);
+    }
+    get() {
+      const { A, B, C, D, E, F, G, H } = this;
+      return [A, B, C, D, E, F, G, H];
+    }
+    // prettier-ignore
+    set(A, B, C, D, E, F, G, H) {
+      this.A = A | 0;
+      this.B = B | 0;
+      this.C = C | 0;
+      this.D = D | 0;
+      this.E = E | 0;
+      this.F = F | 0;
+      this.G = G | 0;
+      this.H = H | 0;
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        SHA256_W3[i] = view.getUint32(offset, false);
+      for (let i = 16; i < 64; i++) {
+        const W15 = SHA256_W3[i - 15];
+        const W2 = SHA256_W3[i - 2];
+        const s0 = rotr3(W15, 7) ^ rotr3(W15, 18) ^ W15 >>> 3;
+        const s1 = rotr3(W2, 17) ^ rotr3(W2, 19) ^ W2 >>> 10;
+        SHA256_W3[i] = s1 + SHA256_W3[i - 7] + s0 + SHA256_W3[i - 16] | 0;
+      }
+      let { A, B, C, D, E, F, G, H } = this;
+      for (let i = 0; i < 64; i++) {
+        const sigma1 = rotr3(E, 6) ^ rotr3(E, 11) ^ rotr3(E, 25);
+        const T1 = H + sigma1 + Chi3(E, F, G) + SHA256_K3[i] + SHA256_W3[i] | 0;
+        const sigma0 = rotr3(A, 2) ^ rotr3(A, 13) ^ rotr3(A, 22);
+        const T2 = sigma0 + Maj3(A, B, C) | 0;
+        H = G;
+        G = F;
+        F = E;
+        E = D + T1 | 0;
+        D = C;
+        C = B;
+        B = A;
+        A = T1 + T2 | 0;
+      }
+      A = A + this.A | 0;
+      B = B + this.B | 0;
+      C = C + this.C | 0;
+      D = D + this.D | 0;
+      E = E + this.E | 0;
+      F = F + this.F | 0;
+      G = G + this.G | 0;
+      H = H + this.H | 0;
+      this.set(A, B, C, D, E, F, G, H);
+    }
+    roundClean() {
+      clean3(SHA256_W3);
+    }
+    destroy() {
+      this.destroyed = true;
+      this.set(0, 0, 0, 0, 0, 0, 0, 0);
+      clean3(this.buffer);
+    }
+  };
+  var _SHA2563 = class extends SHA2_32B3 {
+    // We cannot use array here since array allows indexing by variable
+    // which means optimizer/compiler cannot use registers.
+    A = SHA256_IV3[0] | 0;
+    B = SHA256_IV3[1] | 0;
+    C = SHA256_IV3[2] | 0;
+    D = SHA256_IV3[3] | 0;
+    E = SHA256_IV3[4] | 0;
+    F = SHA256_IV3[5] | 0;
+    G = SHA256_IV3[6] | 0;
+    H = SHA256_IV3[7] | 0;
+    constructor() {
+      super(32);
+    }
+  };
+  var K5122 = /* @__PURE__ */ (() => split2([
+    "0x428a2f98d728ae22",
+    "0x7137449123ef65cd",
+    "0xb5c0fbcfec4d3b2f",
+    "0xe9b5dba58189dbbc",
+    "0x3956c25bf348b538",
+    "0x59f111f1b605d019",
+    "0x923f82a4af194f9b",
+    "0xab1c5ed5da6d8118",
+    "0xd807aa98a3030242",
+    "0x12835b0145706fbe",
+    "0x243185be4ee4b28c",
+    "0x550c7dc3d5ffb4e2",
+    "0x72be5d74f27b896f",
+    "0x80deb1fe3b1696b1",
+    "0x9bdc06a725c71235",
+    "0xc19bf174cf692694",
+    "0xe49b69c19ef14ad2",
+    "0xefbe4786384f25e3",
+    "0x0fc19dc68b8cd5b5",
+    "0x240ca1cc77ac9c65",
+    "0x2de92c6f592b0275",
+    "0x4a7484aa6ea6e483",
+    "0x5cb0a9dcbd41fbd4",
+    "0x76f988da831153b5",
+    "0x983e5152ee66dfab",
+    "0xa831c66d2db43210",
+    "0xb00327c898fb213f",
+    "0xbf597fc7beef0ee4",
+    "0xc6e00bf33da88fc2",
+    "0xd5a79147930aa725",
+    "0x06ca6351e003826f",
+    "0x142929670a0e6e70",
+    "0x27b70a8546d22ffc",
+    "0x2e1b21385c26c926",
+    "0x4d2c6dfc5ac42aed",
+    "0x53380d139d95b3df",
+    "0x650a73548baf63de",
+    "0x766a0abb3c77b2a8",
+    "0x81c2c92e47edaee6",
+    "0x92722c851482353b",
+    "0xa2bfe8a14cf10364",
+    "0xa81a664bbc423001",
+    "0xc24b8b70d0f89791",
+    "0xc76c51a30654be30",
+    "0xd192e819d6ef5218",
+    "0xd69906245565a910",
+    "0xf40e35855771202a",
+    "0x106aa07032bbd1b8",
+    "0x19a4c116b8d2d0c8",
+    "0x1e376c085141ab53",
+    "0x2748774cdf8eeb99",
+    "0x34b0bcb5e19b48a8",
+    "0x391c0cb3c5c95a63",
+    "0x4ed8aa4ae3418acb",
+    "0x5b9cca4f7763e373",
+    "0x682e6ff3d6b2b8a3",
+    "0x748f82ee5defb2fc",
+    "0x78a5636f43172f60",
+    "0x84c87814a1f0ab72",
+    "0x8cc702081a6439ec",
+    "0x90befffa23631e28",
+    "0xa4506cebde82bde9",
+    "0xbef9a3f7b2c67915",
+    "0xc67178f2e372532b",
+    "0xca273eceea26619c",
+    "0xd186b8c721c0c207",
+    "0xeada7dd6cde0eb1e",
+    "0xf57d4f7fee6ed178",
+    "0x06f067aa72176fba",
+    "0x0a637dc5a2c898a6",
+    "0x113f9804bef90dae",
+    "0x1b710b35131c471b",
+    "0x28db77f523047d84",
+    "0x32caab7b40c72493",
+    "0x3c9ebe0a15c9bebc",
+    "0x431d67c49c100d4c",
+    "0x4cc5d4becb3e42b6",
+    "0x597f299cfc657e2a",
+    "0x5fcb6fab3ad6faec",
+    "0x6c44198c4a475817"
+  ].map((n) => BigInt(n))))();
+  var SHA512_Kh2 = /* @__PURE__ */ (() => K5122[0])();
+  var SHA512_Kl2 = /* @__PURE__ */ (() => K5122[1])();
+  var SHA512_W_H2 = /* @__PURE__ */ new Uint32Array(80);
+  var SHA512_W_L2 = /* @__PURE__ */ new Uint32Array(80);
+  var SHA2_64B2 = class extends HashMD3 {
+    constructor(outputLen) {
+      super(128, outputLen, 16, false);
+    }
+    // prettier-ignore
+    get() {
+      const { Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl } = this;
+      return [Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl];
+    }
+    // prettier-ignore
+    set(Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl) {
+      this.Ah = Ah | 0;
+      this.Al = Al | 0;
+      this.Bh = Bh | 0;
+      this.Bl = Bl | 0;
+      this.Ch = Ch | 0;
+      this.Cl = Cl | 0;
+      this.Dh = Dh | 0;
+      this.Dl = Dl | 0;
+      this.Eh = Eh | 0;
+      this.El = El | 0;
+      this.Fh = Fh | 0;
+      this.Fl = Fl | 0;
+      this.Gh = Gh | 0;
+      this.Gl = Gl | 0;
+      this.Hh = Hh | 0;
+      this.Hl = Hl | 0;
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4) {
+        SHA512_W_H2[i] = view.getUint32(offset);
+        SHA512_W_L2[i] = view.getUint32(offset += 4);
+      }
+      for (let i = 16; i < 80; i++) {
+        const W15h = SHA512_W_H2[i - 15] | 0;
+        const W15l = SHA512_W_L2[i - 15] | 0;
+        const s0h = rotrSH2(W15h, W15l, 1) ^ rotrSH2(W15h, W15l, 8) ^ shrSH2(W15h, W15l, 7);
+        const s0l = rotrSL2(W15h, W15l, 1) ^ rotrSL2(W15h, W15l, 8) ^ shrSL2(W15h, W15l, 7);
+        const W2h = SHA512_W_H2[i - 2] | 0;
+        const W2l = SHA512_W_L2[i - 2] | 0;
+        const s1h = rotrSH2(W2h, W2l, 19) ^ rotrBH2(W2h, W2l, 61) ^ shrSH2(W2h, W2l, 6);
+        const s1l = rotrSL2(W2h, W2l, 19) ^ rotrBL2(W2h, W2l, 61) ^ shrSL2(W2h, W2l, 6);
+        const SUMl = add4L2(s0l, s1l, SHA512_W_L2[i - 7], SHA512_W_L2[i - 16]);
+        const SUMh = add4H2(SUMl, s0h, s1h, SHA512_W_H2[i - 7], SHA512_W_H2[i - 16]);
+        SHA512_W_H2[i] = SUMh | 0;
+        SHA512_W_L2[i] = SUMl | 0;
+      }
+      let { Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl } = this;
+      for (let i = 0; i < 80; i++) {
+        const sigma1h = rotrSH2(Eh, El, 14) ^ rotrSH2(Eh, El, 18) ^ rotrBH2(Eh, El, 41);
+        const sigma1l = rotrSL2(Eh, El, 14) ^ rotrSL2(Eh, El, 18) ^ rotrBL2(Eh, El, 41);
+        const CHIh = Eh & Fh ^ ~Eh & Gh;
+        const CHIl = El & Fl ^ ~El & Gl;
+        const T1ll = add5L2(Hl, sigma1l, CHIl, SHA512_Kl2[i], SHA512_W_L2[i]);
+        const T1h = add5H2(T1ll, Hh, sigma1h, CHIh, SHA512_Kh2[i], SHA512_W_H2[i]);
+        const T1l = T1ll | 0;
+        const sigma0h = rotrSH2(Ah, Al, 28) ^ rotrBH2(Ah, Al, 34) ^ rotrBH2(Ah, Al, 39);
+        const sigma0l = rotrSL2(Ah, Al, 28) ^ rotrBL2(Ah, Al, 34) ^ rotrBL2(Ah, Al, 39);
+        const MAJh = Ah & Bh ^ Ah & Ch ^ Bh & Ch;
+        const MAJl = Al & Bl ^ Al & Cl ^ Bl & Cl;
+        Hh = Gh | 0;
+        Hl = Gl | 0;
+        Gh = Fh | 0;
+        Gl = Fl | 0;
+        Fh = Eh | 0;
+        Fl = El | 0;
+        ({ h: Eh, l: El } = add2(Dh | 0, Dl | 0, T1h | 0, T1l | 0));
+        Dh = Ch | 0;
+        Dl = Cl | 0;
+        Ch = Bh | 0;
+        Cl = Bl | 0;
+        Bh = Ah | 0;
+        Bl = Al | 0;
+        const All = add3L2(T1l, sigma0l, MAJl);
+        Ah = add3H2(All, T1h, sigma0h, MAJh);
+        Al = All | 0;
+      }
+      ({ h: Ah, l: Al } = add2(this.Ah | 0, this.Al | 0, Ah | 0, Al | 0));
+      ({ h: Bh, l: Bl } = add2(this.Bh | 0, this.Bl | 0, Bh | 0, Bl | 0));
+      ({ h: Ch, l: Cl } = add2(this.Ch | 0, this.Cl | 0, Ch | 0, Cl | 0));
+      ({ h: Dh, l: Dl } = add2(this.Dh | 0, this.Dl | 0, Dh | 0, Dl | 0));
+      ({ h: Eh, l: El } = add2(this.Eh | 0, this.El | 0, Eh | 0, El | 0));
+      ({ h: Fh, l: Fl } = add2(this.Fh | 0, this.Fl | 0, Fh | 0, Fl | 0));
+      ({ h: Gh, l: Gl } = add2(this.Gh | 0, this.Gl | 0, Gh | 0, Gl | 0));
+      ({ h: Hh, l: Hl } = add2(this.Hh | 0, this.Hl | 0, Hh | 0, Hl | 0));
+      this.set(Ah, Al, Bh, Bl, Ch, Cl, Dh, Dl, Eh, El, Fh, Fl, Gh, Gl, Hh, Hl);
+    }
+    roundClean() {
+      clean3(SHA512_W_H2, SHA512_W_L2);
+    }
+    destroy() {
+      this.destroyed = true;
+      clean3(this.buffer);
+      this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+  };
+  var _SHA5122 = class extends SHA2_64B2 {
+    Ah = SHA512_IV3[0] | 0;
+    Al = SHA512_IV3[1] | 0;
+    Bh = SHA512_IV3[2] | 0;
+    Bl = SHA512_IV3[3] | 0;
+    Ch = SHA512_IV3[4] | 0;
+    Cl = SHA512_IV3[5] | 0;
+    Dh = SHA512_IV3[6] | 0;
+    Dl = SHA512_IV3[7] | 0;
+    Eh = SHA512_IV3[8] | 0;
+    El = SHA512_IV3[9] | 0;
+    Fh = SHA512_IV3[10] | 0;
+    Fl = SHA512_IV3[11] | 0;
+    Gh = SHA512_IV3[12] | 0;
+    Gl = SHA512_IV3[13] | 0;
+    Hh = SHA512_IV3[14] | 0;
+    Hl = SHA512_IV3[15] | 0;
+    constructor() {
+      super(64);
+    }
+  };
+  var sha2563 = /* @__PURE__ */ createHasher3(
+    () => new _SHA2563(),
+    /* @__PURE__ */ oidNist3(1)
+  );
+  var sha5122 = /* @__PURE__ */ createHasher3(
+    () => new _SHA5122(),
+    /* @__PURE__ */ oidNist3(3)
+  );
 
   // node_modules/@scure/bip32/index.js
   var Point = /* @__PURE__ */ (() => secp256k1.Point)();
   var Fn = /* @__PURE__ */ (() => Point.Fn)();
-  var base58check = /* @__PURE__ */ createBase58check(sha256);
+  var base58check = /* @__PURE__ */ createBase58check(sha2563);
   var MASTER_SECRET = /* @__PURE__ */ (() => {
     return Uint8Array.from("Bitcoin seed".split(""), (char) => char.charCodeAt(0));
   })();
   var BITCOIN_VERSIONS = { private: 76066276, public: 76067358 };
   var HARDENED_OFFSET = 2147483648;
-  var hash160 = (data) => ripemd160(sha256(data));
-  var fromU32 = (data) => createView(data).getUint32(0, false);
+  var hash160 = (data) => ripemd160(sha2563(data));
+  var fromU32 = (data) => createView3(data).getUint32(0, false);
   var toU32 = (n) => {
     if (typeof n !== "number")
       throw new TypeError("invalid number, should be from 0 to 2**32-1, got " + n);
     if (!Number.isSafeInteger(n) || n < 0 || n > 2 ** 32 - 1)
       throw new RangeError("invalid number, should be from 0 to 2**32-1, got " + n);
     const buf = new Uint8Array(4);
-    createView(buf).setUint32(0, n, false);
+    createView3(buf).setUint32(0, n, false);
     return buf;
   };
   var HDKey = class _HDKey {
@@ -5276,7 +8508,7 @@ zoo`.split("\n"));
       if (!priv) {
         throw new Error("No private key");
       }
-      return base58check.encode(this.serialize(this.versions.private, concatBytes(Uint8Array.of(0), priv)));
+      return base58check.encode(this.serialize(this.versions.private, concatBytes3(Uint8Array.of(0), priv)));
     }
     get publicExtendedKey() {
       if (!this._publicKey) {
@@ -5285,18 +8517,18 @@ zoo`.split("\n"));
       return base58check.encode(this.serialize(this.versions.public, this._publicKey));
     }
     static fromMasterSeed(seed, versions = BITCOIN_VERSIONS) {
-      abytes(seed);
+      abytes4(seed);
       if (8 * seed.length < 128 || 8 * seed.length > 512) {
         throw new RangeError("HDKey: seed length must be between 128 and 512 bits; 256 bits is advised, got " + seed.length);
       }
-      const I = hmac(sha512, MASTER_SECRET, seed);
+      const I = hmac3(sha5122, MASTER_SECRET, seed);
       const privateKey = I.slice(0, 32);
       const chainCode = I.slice(32);
       return new _HDKey({ versions, chainCode, privateKey });
     }
     static fromExtendedKey(base58key, versions = BITCOIN_VERSIONS) {
       const keyBuffer = base58check.decode(base58key);
-      const keyView = createView(keyBuffer);
+      const keyView = createView3(keyBuffer);
       const version = keyView.getUint32(0, false);
       const opt = {
         versions,
@@ -5397,12 +8629,12 @@ zoo`.split("\n"));
         if (!priv) {
           throw new Error("Could not derive hardened child key");
         }
-        data = concatBytes(Uint8Array.of(0), priv, data);
+        data = concatBytes3(Uint8Array.of(0), priv, data);
       } else {
-        data = concatBytes(this._publicKey, data);
+        data = concatBytes3(this._publicKey, data);
       }
-      const out = _I || hmac(sha512, this.chainCode, data);
-      abytes(out, 64);
+      const out = _I || hmac3(sha5122, this.chainCode, data);
+      abytes4(out, 64);
       const childTweak = out.slice(0, 32);
       const chainCode = out.slice(32);
       const opt = {
@@ -5440,12 +8672,12 @@ zoo`.split("\n"));
       if (!this._privateKey) {
         throw new Error("No privateKey set!");
       }
-      abytes(hash, 32);
+      abytes4(hash, 32);
       return secp256k1.sign(hash, this._privateKey, { prehash: false });
     }
     verify(hash, signature) {
-      abytes(hash, 32);
-      abytes(signature, 64);
+      abytes4(hash, 32);
+      abytes4(signature, 64);
       if (!this._publicKey) {
         throw new Error("No publicKey set!");
       }
@@ -5468,18 +8700,511 @@ zoo`.split("\n"));
       if (!this.chainCode) {
         throw new Error("No chainCode set");
       }
-      abytes(key, 33);
-      return concatBytes(toU32(version), new Uint8Array([this.depth]), toU32(this.parentFingerprint), toU32(this.index), this.chainCode, key);
+      abytes4(key, 33);
+      return concatBytes3(toU32(version), new Uint8Array([this.depth]), toU32(this.parentFingerprint), toU32(this.index), this.chainCode, key);
     }
   };
 
+  // node_modules/@noble/hashes/_u64.js
+  var fromNumH = (n) => n / 2 ** 32 | 0;
+  var fromNumL = (n) => n >>> 0;
+  function setU64FromNum(view, byteOffset, n, isLE) {
+    const h = fromNumH(n);
+    const l = fromNumL(n);
+    view.setUint32(byteOffset, isLE ? l : h, isLE);
+    view.setUint32(byteOffset + 4, isLE ? h : l, isLE);
+  }
+
+  // node_modules/@noble/hashes/utils.js
+  function isBytes6(a) {
+    return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
+  }
+  var atitle = (title) => title ? `"${title}" ` : "";
+  function anumber6(n, title = "") {
+    if (typeof n !== "number")
+      throw new TypeError(atitle(title) + "expected number, got " + typeof n);
+    if (!Number.isSafeInteger(n) || n < 0)
+      throw new RangeError(atitle(title) + "expected integer >= 0, got " + n);
+    return n;
+  }
+  function abytes5(value, length, title = "") {
+    if (isBytes6(value) && (length === void 0 || value.length === length))
+      return value;
+    if (length !== void 0)
+      anumber6(length, "length");
+    const bytes = isBytes6(value);
+    const ofLen = length !== void 0 ? ` of length ${length}` : "";
+    const got = bytes ? `length=${value.length}` : `type=${typeof value}`;
+    const message = atitle(title) + "expected Uint8Array" + ofLen + ", got " + got;
+    if (!bytes)
+      throw new TypeError(message);
+    throw new RangeError(message);
+  }
+  var aobject = (value, label) => {
+    if (value === null || typeof value !== "object" || Array.isArray(value))
+      throw new TypeError((label === "object" ? "" : `"${label}" `) + "expected object, got type=" + typeof value);
+  };
+  function aexists4(instance, checkFinished = true) {
+    if (instance.destroyed)
+      throw new Error("hash was destroyed");
+    if (checkFinished && instance.finished)
+      throw new Error("digest() was already called");
+  }
+  function aoutput4(out, instance) {
+    abytes5(out, void 0, "output");
+    const min = instance.outputLen;
+    if (!(out.length >= min)) {
+      throw new RangeError('"output" expected length >= ' + min);
+    }
+  }
+  function clean4(...arrays) {
+    for (let i = 0; i < arrays.length; i++) {
+      arrays[i].fill(0);
+    }
+  }
+  function createView4(arr) {
+    return new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+  }
+  function rotr4(word, shift) {
+    return word << 32 - shift | word >>> shift;
+  }
+  function rotl2(word, shift) {
+    return word << shift | word >>> 32 - shift >>> 0;
+  }
+  function checkOpts2(defaults, opts, title = "opts") {
+    aobject(defaults, "defaults");
+    if (opts !== void 0)
+      aobject(opts, title);
+    const merged = Object.assign(defaults, opts);
+    return merged;
+  }
+  function createHasher4(hashCons, info = {}) {
+    if (typeof hashCons !== "function")
+      throw new TypeError('"hashCons" expected function, got type=' + typeof hashCons);
+    info = checkOpts2({}, info, "info");
+    const hashC = (msg, opts) => hashCons(opts).update(msg).digest();
+    const tmp = hashCons(void 0);
+    hashC.outputLen = tmp.outputLen;
+    hashC.blockLen = tmp.blockLen;
+    hashC.canXOF = tmp.canXOF;
+    hashC.create = (opts) => hashCons(opts);
+    Object.assign(hashC, info);
+    return Object.freeze(hashC);
+  }
+  var oidNist4 = (suffix) => ({
+    // Current NIST hashAlgs suffixes used here fit in one DER subidentifier octet.
+    // Larger suffix values would need base-128 OID encoding and a different length byte.
+    oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
+  });
+
+  // node_modules/@noble/hashes/_md.js
+  function Chi4(a, b, c) {
+    return a & b ^ ~a & c;
+  }
+  function Maj4(a, b, c) {
+    return a & b ^ a & c ^ b & c;
+  }
+  var HashMD4 = class {
+    blockLen;
+    outputLen;
+    canXOF = false;
+    padOffset;
+    isLE;
+    // For partial updates less than block size
+    buffer;
+    view;
+    finished = false;
+    length = 0;
+    pos = 0;
+    destroyed = false;
+    constructor(blockLen, outputLen, padOffset, isLE) {
+      this.blockLen = blockLen;
+      this.outputLen = outputLen;
+      this.padOffset = padOffset;
+      this.isLE = isLE;
+      this.buffer = new Uint8Array(blockLen);
+      this.view = createView4(this.buffer);
+    }
+    update(data) {
+      aexists4(this);
+      abytes5(data);
+      const { view, buffer, blockLen } = this;
+      const len = data.length;
+      let processed = false;
+      for (let pos = 0; pos < len; ) {
+        const take = Math.min(blockLen - this.pos, len - pos);
+        if (take === blockLen) {
+          const dataView = createView4(data);
+          for (; blockLen <= len - pos; pos += blockLen)
+            this.process(dataView, pos);
+          processed = true;
+          continue;
+        }
+        buffer.set(pos === 0 && take === len ? data : data.subarray(pos, pos + take), this.pos);
+        this.pos += take;
+        pos += take;
+        if (this.pos === blockLen) {
+          this.process(view, 0);
+          this.pos = 0;
+          processed = true;
+        }
+      }
+      this.length += data.length;
+      if (processed)
+        this.roundClean();
+      return this;
+    }
+    digestInto(out) {
+      aexists4(this);
+      aoutput4(out, this);
+      this.finished = true;
+      const { buffer, view, blockLen, isLE } = this;
+      let { pos } = this;
+      buffer[pos++] = 128;
+      buffer.fill(0, pos);
+      if (this.padOffset > blockLen - pos) {
+        this.process(view, 0);
+        buffer.fill(0);
+      }
+      setU64FromNum(view, blockLen - 8, this.length * 8, isLE);
+      this.process(view, 0);
+      this.roundClean();
+      const oview = out === buffer ? view : createView4(out);
+      const len = this.outputLen;
+      const outLen = len / 4;
+      const state = this.get();
+      if (len % 4 || outLen > state.length)
+        throw new Error("invalid outputLen");
+      for (let i = 0; i < outLen; i++)
+        oview.setUint32(4 * i, state[i], isLE);
+    }
+    digest() {
+      const { buffer, outputLen } = this;
+      this.digestInto(buffer);
+      const res = buffer.slice(0, outputLen);
+      this.destroy();
+      return res;
+    }
+    _cloneIntoMeta(to) {
+      const { buffer, length, finished, destroyed, pos } = this;
+      to.destroyed = destroyed;
+      to.finished = finished;
+      to.length = length;
+      to.pos = pos;
+      if (pos)
+        to.buffer.set(buffer);
+      return to;
+    }
+    clone() {
+      return this._cloneInto();
+    }
+  };
+  var SHA256_IV4 = /* @__PURE__ */ Uint32Array.from([
+    1779033703,
+    3144134277,
+    1013904242,
+    2773480762,
+    1359893119,
+    2600822924,
+    528734635,
+    1541459225
+  ]);
+
+  // node_modules/@noble/hashes/sha2.js
+  var SHA256_K4 = /* @__PURE__ */ Uint32Array.from([
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ]);
+  var SHA256_W4 = /* @__PURE__ */ new Uint32Array(64);
+  var SHA2_32B4 = class extends HashMD4 {
+    // We cannot use array here since array allows indexing by variable
+    // which means optimizer/compiler cannot use registers.
+    // Numeric initializers matter: starting the fields as `undefined` changes
+    // V8's field representation and makes sha256 3x slower (measured).
+    A = 0;
+    B = 0;
+    C = 0;
+    D = 0;
+    E = 0;
+    F = 0;
+    G = 0;
+    H = 0;
+    constructor(outputLen, IV) {
+      super(64, outputLen, 8, false);
+      this.A = IV[0] | 0;
+      this.B = IV[1] | 0;
+      this.C = IV[2] | 0;
+      this.D = IV[3] | 0;
+      this.E = IV[4] | 0;
+      this.F = IV[5] | 0;
+      this.G = IV[6] | 0;
+      this.H = IV[7] | 0;
+    }
+    get() {
+      const { A, B, C, D, E, F, G, H } = this;
+      return [A, B, C, D, E, F, G, H];
+    }
+    // prettier-ignore
+    set(A, B, C, D, E, F, G, H) {
+      this.A = A | 0;
+      this.B = B | 0;
+      this.C = C | 0;
+      this.D = D | 0;
+      this.E = E | 0;
+      this.F = F | 0;
+      this.G = G | 0;
+      this.H = H | 0;
+    }
+    _cloneInto(to) {
+      (to ||= new this.constructor()).set(...this.get());
+      return this._cloneIntoMeta(to);
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        SHA256_W4[i] = view.getUint32(offset, false);
+      for (let i = 16; i < 64; i++) {
+        const W15 = SHA256_W4[i - 15];
+        const W2 = SHA256_W4[i - 2];
+        const s0 = rotr4(W15, 7) ^ rotr4(W15, 18) ^ W15 >>> 3;
+        const s1 = rotr4(W2, 17) ^ rotr4(W2, 19) ^ W2 >>> 10;
+        SHA256_W4[i] = s1 + SHA256_W4[i - 7] + s0 + SHA256_W4[i - 16] | 0;
+      }
+      let { A, B, C, D, E, F, G, H } = this;
+      for (let i = 0; i < 64; i++) {
+        const sigma1 = rotr4(E, 6) ^ rotr4(E, 11) ^ rotr4(E, 25);
+        const T1 = H + sigma1 + Chi4(E, F, G) + SHA256_K4[i] + SHA256_W4[i] | 0;
+        const sigma0 = rotr4(A, 2) ^ rotr4(A, 13) ^ rotr4(A, 22);
+        const T2 = sigma0 + Maj4(A, B, C) | 0;
+        H = G;
+        G = F;
+        F = E;
+        E = D + T1 | 0;
+        D = C;
+        C = B;
+        B = A;
+        A = T1 + T2 | 0;
+      }
+      A = A + this.A | 0;
+      B = B + this.B | 0;
+      C = C + this.C | 0;
+      D = D + this.D | 0;
+      E = E + this.E | 0;
+      F = F + this.F | 0;
+      G = G + this.G | 0;
+      H = H + this.H | 0;
+      this.set(A, B, C, D, E, F, G, H);
+    }
+    roundClean() {
+      clean4(SHA256_W4);
+    }
+    destroy() {
+      this.destroyed = true;
+      this.set(0, 0, 0, 0, 0, 0, 0, 0);
+      clean4(this.buffer);
+    }
+  };
+  var _SHA2564 = class extends SHA2_32B4 {
+    constructor() {
+      super(32, SHA256_IV4);
+    }
+  };
+  var sha2564 = /* @__PURE__ */ createHasher4(
+    () => new _SHA2564(),
+    /* @__PURE__ */ oidNist4(1)
+  );
+
+  // node_modules/@noble/hashes/legacy.js
+  var Rho1602 = /* @__PURE__ */ Uint8Array.from([
+    7,
+    4,
+    13,
+    1,
+    10,
+    6,
+    15,
+    3,
+    12,
+    0,
+    9,
+    5,
+    2,
+    14,
+    11,
+    8
+  ]);
+  var Id1602 = /* @__PURE__ */ (() => Uint8Array.from(new Array(16).fill(0).map((_, i) => i)))();
+  var Pi1602 = /* @__PURE__ */ (() => Id1602.map((i) => (9 * i + 5) % 16))();
+  var idxLR2 = /* @__PURE__ */ (() => {
+    const L = [Id1602];
+    const R = [Pi1602];
+    const res = [L, R];
+    for (let i = 0; i < 4; i++)
+      for (let j of res)
+        j.push(j[i].map((k) => Rho1602[k]));
+    return res;
+  })();
+  var idxL2 = /* @__PURE__ */ (() => idxLR2[0])();
+  var idxR2 = /* @__PURE__ */ (() => idxLR2[1])();
+  var shifts1602 = /* @__PURE__ */ [
+    [11, 14, 15, 12, 5, 8, 7, 9, 11, 13, 14, 15, 6, 7, 9, 8],
+    [12, 13, 11, 15, 6, 9, 9, 7, 12, 15, 11, 13, 7, 8, 7, 7],
+    [13, 15, 14, 11, 7, 7, 6, 8, 13, 14, 13, 12, 5, 5, 6, 9],
+    [14, 11, 12, 14, 8, 6, 5, 5, 15, 12, 15, 14, 9, 9, 8, 6],
+    [15, 12, 13, 13, 9, 5, 8, 6, 14, 11, 12, 11, 8, 6, 5, 5]
+  ].map((i) => Uint8Array.from(i));
+  var shiftsL1602 = /* @__PURE__ */ idxL2.map((idx, i) => idx.map((j) => shifts1602[i][j]));
+  var shiftsR1602 = /* @__PURE__ */ idxR2.map((idx, i) => idx.map((j) => shifts1602[i][j]));
+  var Kl1602 = /* @__PURE__ */ Uint32Array.from([
+    0,
+    1518500249,
+    1859775393,
+    2400959708,
+    2840853838
+  ]);
+  var Kr1602 = /* @__PURE__ */ Uint32Array.from([
+    1352829926,
+    1548603684,
+    1836072691,
+    2053994217,
+    0
+  ]);
+  function ripemd_f2(group, x, y, z) {
+    if (group === 0)
+      return x ^ y ^ z;
+    if (group === 1)
+      return x & y | ~x & z;
+    if (group === 2)
+      return (x | ~y) ^ z;
+    if (group === 3)
+      return x & z | y & ~z;
+    return x ^ (y | ~z);
+  }
+  var BUF_1602 = /* @__PURE__ */ new Uint32Array(16);
+  var _RIPEMD1602 = class extends HashMD4 {
+    h0 = 1732584193 | 0;
+    h1 = 4023233417 | 0;
+    h2 = 2562383102 | 0;
+    h3 = 271733878 | 0;
+    h4 = 3285377520 | 0;
+    constructor() {
+      super(64, 20, 8, true);
+    }
+    get() {
+      const { h0, h1, h2, h3, h4 } = this;
+      return [h0, h1, h2, h3, h4];
+    }
+    set(h0, h1, h2, h3, h4) {
+      this.h0 = h0 | 0;
+      this.h1 = h1 | 0;
+      this.h2 = h2 | 0;
+      this.h3 = h3 | 0;
+      this.h4 = h4 | 0;
+    }
+    _cloneInto(to) {
+      (to ||= new this.constructor()).set(...this.get());
+      return this._cloneIntoMeta(to);
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        BUF_1602[i] = view.getUint32(offset, true);
+      let al = this.h0 | 0, ar = al, bl = this.h1 | 0, br = bl, cl = this.h2 | 0, cr = cl, dl = this.h3 | 0, dr = dl, el = this.h4 | 0, er = el;
+      for (let group = 0; group < 5; group++) {
+        const rGroup = 4 - group;
+        const hbl = Kl1602[group], hbr = Kr1602[group];
+        const rl = idxL2[group], rr = idxR2[group];
+        const sl = shiftsL1602[group], sr = shiftsR1602[group];
+        for (let i = 0; i < 16; i++) {
+          const tl = rotl2(al + ripemd_f2(group, bl, cl, dl) + BUF_1602[rl[i]] + hbl, sl[i]) + el | 0;
+          al = el, el = dl, dl = rotl2(cl, 10) | 0, cl = bl, bl = tl;
+        }
+        for (let i = 0; i < 16; i++) {
+          const tr = rotl2(ar + ripemd_f2(rGroup, br, cr, dr) + BUF_1602[rr[i]] + hbr, sr[i]) + er | 0;
+          ar = er, er = dr, dr = rotl2(cr, 10) | 0, cr = br, br = tr;
+        }
+      }
+      this.set(this.h1 + cl + dr | 0, this.h2 + dl + er | 0, this.h3 + el + ar | 0, this.h4 + al + br | 0, this.h0 + bl + cr | 0);
+    }
+    roundClean() {
+      clean4(BUF_1602);
+    }
+    destroy() {
+      this.destroyed = true;
+      clean4(this.buffer);
+      this.set(0, 0, 0, 0, 0);
+    }
+  };
+  var ripemd1602 = /* @__PURE__ */ createHasher4(() => new _RIPEMD1602());
+
   // web/js/build-entry.mjs
+  var import_qrcode = __toESM(require_browser(), 1);
   function hash1602(data) {
-    return ripemd160(sha256(data));
+    return ripemd1602(sha2564(data));
   }
   function base58check2(payload) {
     const alphabet2 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-    const checksum2 = sha256(sha256(payload)).slice(0, 4);
+    const checksum2 = sha2564(sha2564(payload)).slice(0, 4);
     const data = new Uint8Array(payload.length + 4);
     data.set(payload);
     data.set(checksum2, payload.length);
@@ -5610,11 +9335,146 @@ zoo`.split("\n"));
   function validate(m) {
     return validateMnemonic(m, wordlist);
   }
+  function b58decode(s) {
+    const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    let n = 0n;
+    for (const c of s) {
+      const i = ALPH.indexOf(c);
+      if (i < 0) throw new Error("invalid base58");
+      n = n * 58n + BigInt(i);
+    }
+    let hex = n.toString(16);
+    if (hex.length % 2) hex = "0" + hex;
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+    let leading = 0;
+    for (const c of s) {
+      if (c === "1") leading++;
+      else break;
+    }
+    const out = new Uint8Array(leading + bytes.length);
+    out.set(bytes, leading);
+    return out;
+  }
+  function b58encode(bytes) {
+    const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    let n = 0n;
+    for (const b of bytes) n = (n << 8n) + BigInt(b);
+    let res = "";
+    while (n > 0n) {
+      res = ALPH[Number(n % 58n)] + res;
+      n /= 58n;
+    }
+    for (const b of bytes) {
+      if (b === 0) res = "1" + res;
+      else break;
+    }
+    return res || "1";
+  }
+  function b58checkDecode(s) {
+    const raw = b58decode(s);
+    if (raw.length < 5) throw new Error("invalid base58check");
+    const data = raw.slice(0, -4);
+    const chk = raw.slice(-4);
+    const h = sha2564(sha2564(data));
+    if (h[0] !== chk[0] || h[1] !== chk[1] || h[2] !== chk[2] || h[3] !== chk[3]) {
+      throw new Error("base58check checksum");
+    }
+    return data;
+  }
+  function b58checkEncode(data) {
+    const h = sha2564(sha2564(data));
+    const out = new Uint8Array(data.length + 4);
+    out.set(data);
+    out.set(h.slice(0, 4), data.length);
+    return b58encode(out);
+  }
+  var SLIP132 = {
+    xpub: [4, 136, 178, 30],
+    ypub: [4, 157, 124, 178],
+    zpub: [4, 178, 71, 70]
+  };
+  function toVersionedXpub(xpub, versionKey) {
+    const data = b58checkDecode(xpub);
+    if (data.length < 4) throw new Error("xpub too short");
+    const ver = SLIP132[versionKey] || SLIP132.xpub;
+    data[0] = ver[0];
+    data[1] = ver[1];
+    data[2] = ver[2];
+    data[3] = ver[3];
+    return b58checkEncode(data);
+  }
+  function exportWatchOnly(mnemonic, passphrase, options) {
+    if (!validateMnemonic(mnemonic, wordlist)) throw new Error("invalid mnemonic");
+    const seed = mnemonicToSeedSync(mnemonic, passphrase || "");
+    const root = HDKey.fromMasterSeed(seed);
+    const account = Math.max(0, Math.floor(Number(options && options.account || 0)));
+    const specs = [
+      {
+        purpose: 86,
+        path: `m/86'/0'/${account}'`,
+        label: "BIP86 Taproot (xpub)",
+        version: "xpub",
+        note: "Standard BIP32 xpub at account path \u2014 import as watch-only where supported."
+      },
+      {
+        purpose: 84,
+        path: `m/84'/0'/${account}'`,
+        label: "BIP84 native segwit (zpub)",
+        version: "zpub",
+        note: "SLIP-132 zpub for Sparrow / many mobile wallets (P2WPKH)."
+      },
+      {
+        purpose: 49,
+        path: `m/49'/0'/${account}'`,
+        label: "BIP49 nested (ypub)",
+        version: "ypub",
+        note: "SLIP-132 ypub for nested segwit watch-only."
+      },
+      {
+        purpose: 44,
+        path: `m/44'/0'/${account}'`,
+        label: "BIP44 legacy (xpub)",
+        version: "xpub",
+        note: "Classic xpub for legacy P2PKH watch-only."
+      }
+    ];
+    const keys = specs.map((s) => {
+      const node = root.derive(s.path);
+      const xpubStd = node.publicExtendedKey;
+      const key = s.version === "xpub" ? xpubStd : toVersionedXpub(xpubStd, s.version);
+      return {
+        purpose: s.purpose,
+        path: s.path,
+        label: s.label,
+        key,
+        note: s.note
+      };
+    });
+    return { account, keys };
+  }
+  async function qrDataUrl(text, options) {
+    if (!text || typeof text !== "string") throw new Error("empty qr payload");
+    if (/^xprv/i.test(text) || /^yprv/i.test(text) || /^zprv/i.test(text)) {
+      throw new Error("refusing to QR private extended keys");
+    }
+    const size = options && options.width || 220;
+    const svg = await import_qrcode.default.toString(text, {
+      type: "svg",
+      errorCorrectionLevel: "M",
+      margin: 2,
+      width: size,
+      color: { dark: "#0b0f14", light: "#ffffff" }
+    });
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
   var api = {
     generateMnemonic: async (n) => generate(n),
     validateMnemonic: async (m) => validate(m),
     deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
-    VERSION: "0.7.0-scure"
+    exportWatchOnly: async (m, p, options) => exportWatchOnly(m, p, options),
+    qrDataUrl: async (text, options) => qrDataUrl(text, options),
+    VERSION: "0.8.0-scure"
   };
   var g = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : void 0;
   if (g) g.BIP39Lab = api;
