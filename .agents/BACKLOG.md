@@ -15,7 +15,7 @@
 ## Next (product) — see ROADMAP.md
 
 - [x] **Option B** — Watch-only xpub/zpub + offline QR (`v0.8.0`)
-- [ ] **Option C** — Network tab (fees / traffic / address balances)  
+- [ ] **Option C** — Network page (fees / traffic / balances) **P0 / Next**  
   Spec: `.agents/specs/2026-08-06-option-c-network-tab.md` → `/execute_dev`
 - [ ] Electrum server backend (address-only) — future
 - [ ] Dice / hex / binary entropy UI — future

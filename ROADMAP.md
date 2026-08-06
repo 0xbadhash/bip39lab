@@ -181,17 +181,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Offline CSP; tests
 - **Notes:** Inspired by iancoleman.io/multisig but safer/teaching-first — tag `v0.9.0`
 
-### [OPEN] Option C — Network tab (fees / mempool traffic / balances)
+### [OPEN] Option C — Network page (fees / traffic / address balances)
 - **Status:** open
-- **Priority:** P1
+- **Priority:** P0
 - **Spec:** `.agents/specs/2026-08-06-option-c-network-tab.md`
 - **Plan:** `.agents/specs/2026-08-06-option-c-network-tab-plan.md`
 - **Acceptance:**
-  - [ ] Separate network surface; Lab CSP stays offline
-  - [ ] Opt-in fees + traffic metrics
-  - [ ] Address-only balances with leak ack
-- **Smoke:** mock fetch tests + product smoke
-- **Notes:** Spec ready — implement after or independent of B
+  - [ ] `network.html` separate page; Lab/Multisig CSP stay offline
+  - [ ] Opt-in fee + traffic snapshots (mempool.space)
+  - [ ] Address-only balances + leak ack; Lab sessionStorage bridge
+  - [ ] Fail-closed; tests + Comet S13
+- **Smoke:** pytest + e2e network smoke
+- **Notes:** Re-spec 2026-08-06 — **Next:** true → `/execute_dev`
 
 ### [DONE] v0.7.1 — Table polish (UX)
 - **Status:** done
@@ -204,6 +205,6 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Through Multisig explainer (`v0.9.0`).** Options A/B already done earlier. Option **C** still OPEN.
+**Through Multisig (`v0.9.0`).** Next product ship: **Option C Network** (spec ready).
 
-**Next:** `/execute_dev` Option C (network tab) when ready.
+**Next:** `/execute_dev` for Option C.
