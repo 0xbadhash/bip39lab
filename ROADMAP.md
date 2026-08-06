@@ -128,24 +128,24 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [ ] Free `mempool` address-only backend + honest no-public-bitcoind-RPC docs
   - [ ] Local bitcoind RPC setup docs; suite green
 - **Smoke:** product smoke + pytest; manual free mempool call optional
-- **Notes:** Full FSM — **Next:** true (operator DNS for live TLS)
+- **Notes:** Full FSM ship — tag `v0.6.0` (operator DNS for live TLS)
 
 
-### [OPEN] Phase 6 — Lab entropy fields (mnemonic + passphrase)
-- **Status:** open
+### [DONE] Phase 6 — Lab entropy fields (mnemonic + passphrase)
+- **Status:** done
 - **Priority:** P0
 - **Spec:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields.md`
 - **Plan:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields-plan.md`
 - **Acceptance:**
-  - [ ] Mnemonic BIP-39 ENT bits (12→128 … 24→256) on Lab
-  - [ ] Separate passphrase strength estimate field (does not overwrite mnemonic ENT)
-  - [ ] Clear / hide-private / invalid handling; English; offline
+  - [x] Mnemonic BIP-39 ENT bits (12→128 … 24→256) on Lab
+  - [x] Separate passphrase strength estimate field (does not overwrite mnemonic ENT)
+  - [x] Clear / hide-private / invalid handling; English; offline
 - **Smoke:** open Lab on bip39.catalyxt.xyz; pytest green
 - **Notes:** Full FSM — **Next:** true
 
 ## Current focus
 
-**Phases 0–4 shipped** (`v0.1.0`–`v0.5.0`). Pipeline: `init`.
+**Phases 0–6 shipped** (through `v0.6.0`). Pipeline: post-release `/sync_docs` → `init`.
 
-**Next:** Phase 6 Lab entropy fields — `/execute_dev`.
+**Next candidate:** (none open) — `/spec` for next slice.
 

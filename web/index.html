@@ -97,9 +97,22 @@
             <label class="field" data-private for="mnemonic">BIP-39 mnemonic
               <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
             </label>
+            <div class="field-ro" data-private>
+              <span class="field-ro-label">Mnemonic entropy</span>
+              <output id="entropyMnemonic" class="field-ro-value" for="mnemonic" aria-live="polite">—</output>
+            </div>
+
             <label class="field" data-private for="passphrase">Optional passphrase
               <input id="passphrase" type="password" autocomplete="off" />
             </label>
+            <div class="field-ro" data-private>
+              <span class="field-ro-label">Passphrase strength (estimate)</span>
+              <output id="entropyPassphrase" class="field-ro-value" for="passphrase" aria-live="polite">—</output>
+            </div>
+            <p class="hint-tiny" data-private>
+              Mnemonic figure is BIP-39 ENT bits (not Shannon of the words).
+              Passphrase figure is a local estimate only. The BIP-39 seed is always 64 bytes from PBKDF2 — that is output size, not “512 bits of entropy.”
+            </p>
 
             <p id="status" class="status" aria-live="polite"></p>
           </div>

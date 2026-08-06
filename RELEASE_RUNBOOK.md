@@ -1,51 +1,35 @@
-# RELEASE RUNBOOK — v0.5.0 (Phase 4 bitcoind balance)
+# RELEASE RUNBOOK — v0.6.0 (Phase 6 lab entropy fields)
 
 **Date:** 2026-08-06  
-**Pipeline score:** 100 (approved → shipped)  
-**Spec:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance.md`
+**Score:** 100  
+**Spec:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields.md`
 
 ## Smoke
 
-| Step | Command | Exit |
-|------|---------|------|
-| unit | `python -m pytest -q` | 0 |
-| validate | `python scripts/validate.py full` | 0 |
-| product_smoke | `python scripts/product_smoke.py --root .` | 0 |
+| Step | Exit |
+|------|------|
+| pytest -q | 0 |
+| validate full | 0 |
+| live HTML fields on bip39.catalyxt.xyz | present |
 
 ## Infra
 
-None required (CLI library; no VPS).
+Static nginx root — no process restart required.
 
 ## Evidence pack
 
-| Item | Result |
-|------|--------|
-| hard_gates | ok (score 100) |
-| smoke | pytest via product_smoke |
-| pytest | 33 passed |
-| validate | 5/5 gates |
-| CODE-REVIEW / BEHAVIOR / CROSS-REVIEW | local artifacts |
+hard_gates ok · pytest 40 · CODE-REVIEW · BEHAVIOR · CROSS-REVIEW
 
 ## Version
 
-- `VERSION` → `0.5.0`
-- `pyproject.toml` → `0.5.0`
-- Git tag: `v0.5.0`
+VERSION / pyproject → 0.6.0 · tag `v0.6.0`
 
 ## Rollback
 
-```bash
-git checkout v0.4.0
-# or: git revert <release commit range>
-```
+`git checkout v0.5.0` and static files follow.
 
-## §9 Things that look bad but are fine
+## §9
 
-1. No live bitcoind in CI — mocked RPC contract.
-2. scantxoutset is UTXO sum only, not lifetime received.
-3. Public explorer path still present behind leak ack.
-
-## Post
-
-- Tag `v0.5.0` (local). Push tag/branch only when operator approves.
-- `/sync_docs` → pipeline `init`.
+1. Passphrase bits are estimate only.
+2. Python entropy_ui mirrors web for tests.
+3. No separate CDN strength library.

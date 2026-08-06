@@ -407,6 +407,41 @@ button.btn.danger:hover {
   margin: 0.5rem 0 0;
 }
 
+.field-ro {
+  margin: 0.35rem 0 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.field-ro-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+
+.field-ro-value {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  color: var(--focus);
+  word-break: break-word;
+}
+
+.field-ro-value.is-invalid {
+  color: #ff8a80;
+}
+
+.hint-tiny {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 .footer-host {
   margin-top: 1.5rem;
   color: var(--muted);
