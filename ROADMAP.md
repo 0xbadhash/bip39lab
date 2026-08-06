@@ -103,8 +103,21 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-06-phase-3-hardening.md`
 
+### [OPEN] Phase 4 — Local bitcoind address-only balance
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance.md`
+- **Plan:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance-plan.md`
+- **Acceptance:**
+  - [ ] Backend `bitcoind` via library + CLI
+  - [ ] Offline default unchanged; fail-closed RPC
+  - [ ] Address-only; no mnemonic on balance path
+  - [ ] Mocked unit tests; docs prefer local node
+- **Smoke:** product smoke + `pytest -q`
+- **Notes:** Full FSM ship #5 — **Next:** true
+
 ## Current focus
 
-**All roadmap phases 0–3 shipped** (tags `v0.1.0`–`v0.4.0`). Pipeline phase: `init`.
+**Phases 0–3 shipped** (tags `v0.1.0`–`v0.4.0`). Pipeline phase: `init`.
 
-**Next candidate:** local **bitcoind** address-only balance backend (your node, not remote explorers) — start with `/spec`.
+**Next:** Phase 4 local **bitcoind** backend — `/execute_dev` against open OPEN item above.
