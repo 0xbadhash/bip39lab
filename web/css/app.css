@@ -127,6 +127,11 @@ code {
   padding: 0.7rem 0.75rem;
   cursor: pointer;
   transition: background 0.12s ease, border-color 0.12s ease;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+a.nav-item:hover {
+  color: var(--text);
 }
 
 .nav-item:hover {

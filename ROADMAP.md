@@ -168,6 +168,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** pytest + manual QR/export
 - **Notes:** Full FSM — tag `v0.8.0`
 
+
+### [DONE] Multisig explainer (educational M-of-N)
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-06-multisig-explainer.md`
+- **Plan:** `.agents/specs/2026-08-06-multisig-explainer-plan.md`
+- **Acceptance:**
+  - [x] Multisig nav + plain-English explainer
+  - [x] P2SH + P2WSH from public keys only
+  - [x] BIP67 sort; refuse WIF/xprv
+  - [x] Offline CSP; tests
+- **Notes:** Inspired by iancoleman.io/multisig but safer/teaching-first — tag `v0.9.0`
+
 ### [OPEN] Option C — Network tab (fees / mempool traffic / balances)
 - **Status:** open
 - **Priority:** P1
@@ -191,6 +204,6 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Phases 0–7 + Option B shipped** (`v0.8.0`). Option **C** still OPEN.
+**Through Multisig explainer (`v0.9.0`).** Options A/B already done earlier. Option **C** still OPEN.
 
 **Next:** `/execute_dev` Option C (network tab) when ready.

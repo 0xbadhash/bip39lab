@@ -1,8 +1,7 @@
-# RELEASE RUNBOOK — v0.8.0 (Option B watch-only + QR)
+# RELEASE RUNBOOK — v0.9.0 Multisig explainer
 
-Watch-only zpub/ypub/xpub export (no xprv). Offline SVG QR for addresses and public keys.
-CSP img-src allows data: for QR only. Lab remains connect-src none.
+Educational M-of-N lab (public keys only). Options A/B were already shipped (v0.7/v0.8).
 
-Smoke: pytest 41 · validate 5/5
+Smoke: pytest 43 · e2e 13 live
 
-Rollback: git checkout v0.7.1
+URL: https://bip39.catalyxt.xyz/multisig.html

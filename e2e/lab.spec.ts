@@ -212,7 +212,7 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
   });
 
-  test("S10 nav balance and about", async ({ page }) => {
+  test("S10 nav balance about and multisig", async ({ page }) => {
     await page.goto("/");
     await page.locator(".nav-item[data-tab=balance]").click();
     await expect(page.locator("#panel-balance")).toBeVisible();
@@ -224,6 +224,11 @@ test.describe("BIP39 Lab E2E", () => {
 
     await page.locator(".nav-item[data-tab=lab]").click();
     await expect(page.locator("#panel-lab")).toBeVisible();
+
+    await page.locator('a.nav-item[href="multisig.html"]').click();
+    await expect(page).toHaveURL(/multisig\.html/);
+    await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
+    await expect(page.locator("body")).toContainText(/public keys only/i);
   });
 
   test("S11 invalid mnemonic", async ({ page }) => {

@@ -1,27 +1,29 @@
-# PR Draft: Option B — Watch-only xpub/zpub + offline QR
+# PR Draft: Multisig explainer lab
 
-**Range:** `v0.7.1...HEAD`
+**Range:** `v0.8.0...HEAD`
 
 ## What Problem This Solves
 
-Users could not export watch-only account keys or show offline address QRs from the lab.
+Users need an educational M-of-N multisig explanation and offline address builder without pasting private keys (safer than dense Coleman-style tools).
 
 ## Why This Change Was Made
 
-ROADMAP Option B / full FSM after harness reinstall.
+User request: full FSM for A/B (already done) plus explanatory multisig inspired by iancoleman.io/multisig.
 
 ## User Impact
 
-- Watch-only panel: BIP86 xpub, BIP84 zpub, BIP49 ypub, BIP44 xpub (no xprv)
-- Copy + QR on addresses and keys
-- Offline SVG QR; CSP `img-src 'self' data:`
+- New Multisig page + nav from BIP39 Lab
+- Public-key-only M-of-N → P2SH + P2WSH
+- BIP67 sort; refuses WIF/xprv
 
 ## Evidence
 
 ```text
-red_cmd: python -m pytest -q tests/test_web_vectors.py
+red_cmd: python -m pytest -q tests/test_multisig.py
 green_cmd: python -m pytest -q
 ```
+
+43 unit tests; 13 e2e live.
 
 ## Evidence pack
 
@@ -29,58 +31,52 @@ green_cmd: python -m pytest -q
 |------|--------|
 | hard_gates | PR_DRAFT + CODE-REVIEW + BEHAVIOR + red-proof |
 | smoke | pytest |
-| pytest | 41 passed |
-| validate | 5/5 |
+| pytest | 43 passed |
+| e2e | 13 passed |
 
 ## Spec
 
-**Spec:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr.md`
-
-**Plan:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr-plan.md`
+**Spec:** `.agents/specs/2026-08-06-multisig-explainer.md`
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| ACB.1 zpub BIP84 | test_web_js_watch_only_and_qr |
-| ACB.2 BIP86/44 xpub | exportWatchOnly keys list |
-| ACB.3 no xprv | test noXprv + refuse QR xprv |
-| ACB.4 QR offline | qrDataUrl SVG data URL |
-| ACB.5 English help | watch-only panel copy |
-| ACB.6 CSP | connect-src none; img data for QR |
-| ACB.7 tests | 41 passed |
+| ACM.1–6 | multisig.html / multisig-core |
+| ACM.7 | test_multisig.py |
+| A/B already DONE | ROADMAP |
 
 ## Threat notes
 
-- Public keys/addresses only; private extended keys refused in QR.
-- Watch-only is not spending capability.
+- Public keys only; private material rejected
+- No blockchain discovery / no network
 
 ## Red-proof
 
 ```text
-red_cmd: python -m pytest -q tests/test_web_vectors.py::test_web_js_watch_only_and_qr
+red_cmd: python -m pytest -q tests/test_multisig.py
 green_cmd: python -m pytest -q
 ```
 
 ## Cross-review
 
-CODE-REVIEW p0=0; CROSS-REVIEW blockers=0; BEHAVIOR pass.
+blockers=0
 
 ## Things that look bad but are actually fine
 
-1. Bundle ~250KB with qrcode — offline vendor, no CDN.
-2. BIP86 uses standard xpub not a special SLIP-132 (documented).
+1. Not a full PSBT signer — intentional teaching scope.
+2. Options A/B not re-shipped — already complete.
 3. Option C still open.
 
 ```yaml
 things_that_look_bad_but_are_fine:
-  - file: "web/js/bip39lab.bundle.js"
-    concern: "size"
-    why_fine: "offline QR encoder"
-  - file: "web/js/build-entry.mjs"
-    concern: "BIP86 xpub not vpub"
-    why_fine: "no standard SLIP for all wallets"
+  - file: "web/multisig.html"
+    concern: "simpler than Coleman"
+    why_fine: "explanatory product goal"
   - file: "ROADMAP.md"
-    concern: "C still open"
-    why_fine: "separate ship"
+    concern: "A/B not re-run"
+    why_fine: "already shipped"
+  - file: "web/js/multisig-core.mjs"
+    concern: "bare multisig only"
+    why_fine: "education first"
 ```
