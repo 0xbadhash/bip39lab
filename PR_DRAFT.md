@@ -61,7 +61,9 @@ green_cmd: python -m pytest -q
 
 ## Cross-review
 
-(filled by `/code_review` / `/cross_review`)
+**CROSS-REVIEW** (personas): **blockers=0**. Security / Maintainability / Domain: no P0.
+Secrets scan clean on `v0.4.0...HEAD`. See `.agents/artifacts/CROSS_REVIEW.md` (local).
+CODE-REVIEW: accept, p0=0.
 
 ## Test plan
 
