@@ -1,30 +1,51 @@
-# RELEASE_RUNBOOK — v0.1.0 (Phase 0)
+# RELEASE RUNBOOK — v0.5.0 (Phase 4 bitcoind balance)
+
+**Date:** 2026-08-06  
+**Pipeline score:** 100 (approved → shipped)  
+**Spec:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance.md`
 
 ## Smoke
 
-| Step | Command | Result |
-|------|---------|--------|
-| unit | `python -m pytest -q` | exit 0 (17 passed) |
-| product_smoke | `python scripts/product_smoke.py --root .` | exit 0 |
-| compliance | `python scripts/compliance_engine.py` | exit 0 |
+| Step | Command | Exit |
+|------|---------|------|
+| unit | `python -m pytest -q` | 0 |
+| validate | `python scripts/validate.py full` | 0 |
+| product_smoke | `python scripts/product_smoke.py --root .` | 0 |
+
+## Infra
+
+None required (CLI library; no VPS).
 
 ## Evidence pack
 
 | Item | Result |
 |------|--------|
-| hard_gates | ok |
-| smoke | ok |
-| pytest | 17 passed |
-| pr_validator | score 100 → approved |
+| hard_gates | ok (score 100) |
+| smoke | pytest via product_smoke |
+| pytest | 33 passed |
+| validate | 5/5 gates |
+| CODE-REVIEW / BEHAVIOR / CROSS-REVIEW | local artifacts |
 
-## Infra
+## Version
 
-None (offline CLI product).
+- `VERSION` → `0.5.0`
+- `pyproject.toml` → `0.5.0`
+- Git tag: `v0.5.0`
 
 ## Rollback
 
-`git checkout v0.1.0^` or previous tag; remove `src/bip39lab` if needed.
+```bash
+git checkout v0.4.0
+# or: git revert <release commit range>
+```
 
-## §9
+## §9 Things that look bad but are fine
 
-See PR_DRAFT.md things_that_look_bad_but_are_fine (≥3).
+1. No live bitcoind in CI — mocked RPC contract.
+2. scantxoutset is UTXO sum only, not lifetime received.
+3. Public explorer path still present behind leak ack.
+
+## Post
+
+- Tag `v0.5.0` (local). Push tag/branch only when operator approves.
+- `/sync_docs` → pipeline `init`.

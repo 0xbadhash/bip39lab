@@ -10,5 +10,8 @@ def test_security_and_readme():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "bip39lab" in readme
     assert "web/index.html" in readme
-    assert (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "0.4.0"
+    ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    assert ver  # non-empty semver SoT
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert f'version = "{ver}"' in pyproject
     assert (ROOT / "web/REBUILD.md").is_file()

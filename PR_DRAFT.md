@@ -25,6 +25,16 @@ green_cmd: python -m pytest -q
 
 33 tests green after implementation (mocked RPC; no live node in CI).
 
+## Evidence pack
+
+| Item | Result |
+|------|--------|
+| hard_gates | this PR_DRAFT + CODE-REVIEW + BEHAVIOR-REPORT + red-proof |
+| smoke | product_smoke unit (pytest) pass |
+| pytest | 33 passed |
+| validate | `python scripts/validate.py full` 5/5 gates |
+| coverage | config default soft (no fail_under run required) |
+
 ## Spec
 
 **Spec:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance.md`

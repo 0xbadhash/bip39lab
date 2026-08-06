@@ -103,21 +103,21 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-06-phase-3-hardening.md`
 
-### [OPEN] Phase 4 — Local bitcoind address-only balance
-- **Status:** open
+### [DONE] Phase 4 — Local bitcoind address-only balance
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance.md`
 - **Plan:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance-plan.md`
 - **Acceptance:**
-  - [ ] Backend `bitcoind` via library + CLI
-  - [ ] Offline default unchanged; fail-closed RPC
-  - [ ] Address-only; no mnemonic on balance path
-  - [ ] Mocked unit tests; docs prefer local node
+  - [x] Backend `bitcoind` via library + CLI
+  - [x] Offline default unchanged; fail-closed RPC
+  - [x] Address-only; no mnemonic on balance path
+  - [x] Mocked unit tests; docs prefer local node
 - **Smoke:** product smoke + `pytest -q`
-- **Notes:** Full FSM ship #5 — **Next:** true
+- **Notes:** Full FSM ship #5 — tag `v0.5.0`
 
 ## Current focus
 
-**Phases 0–3 shipped** (tags `v0.1.0`–`v0.4.0`). Pipeline phase: `init`.
+**Phases 0–4 shipped** (tags `v0.1.0`–`v0.5.0`). Pipeline phase: post-release `/sync_docs` → `init`.
 
-**Next:** Phase 4 local **bitcoind** backend — `/execute_dev` against open OPEN item above.
+**Next candidate:** (none open) — pick follow-up (regtest integration test, Electrum backend) via `/spec`.
