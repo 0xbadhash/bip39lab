@@ -276,8 +276,12 @@
   --i-understand-address-leak</pre>
             <p style="margin-top:1rem"><strong>Your own node</strong> (preferred when available):</p>
             <pre class="cli-block">python -m bip39lab balance bc1q… \
-  --backend bitcoind \
+  --backend knots \
   --rpc-cookie ~/.bitcoin/.cookie</pre>
+            <p class="control-help">
+              <code>bitcoind</code> and <code>knots</code> are the same RPC path (Bitcoin Core or Bitcoin Knots).
+              Pruned node is enough for current balances via <code>scantxoutset</code> — see <code>docs/BITCOIN_KNOTS.md</code>.
+            </p>
             <p style="margin-top:1rem">
               There is no free public Bitcoin Core JSON-RPC for everyone on the Internet.
               Free checks use explorer REST; real JSON-RPC is your node.

@@ -46,9 +46,12 @@ def _build_parser() -> argparse.ArgumentParser:
     b.add_argument("address", help="Bitcoin address (not a seed phrase)")
     b.add_argument(
         "--backend",
-        choices=["none", "blockstream", "mempool", "bitcoind"],
+        choices=["none", "blockstream", "mempool", "bitcoind", "knots"],
         default="none",
-        help="Balance backend (default none; free review: mempool; prefer bitcoind if you run a node)",
+        help=(
+            "Balance backend (default none; free review: mempool; "
+            "prefer bitcoind/knots for local Bitcoin Core or Bitcoin Knots JSON-RPC)"
+        ),
     )
     b.add_argument(
         "--i-understand-address-leak",

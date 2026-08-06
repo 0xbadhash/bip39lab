@@ -12,7 +12,7 @@ Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by pub
 
 **Not** a funded-wallet brute-force scanner. Legacy unsafe scanner is under `legacy/` only.
 
-**Balance lookups:** prefer a **local Bitcoin node** (`--backend bitcoind`). For free review without a node, use **`--backend mempool`** (mempool.space REST). Public explorers require leak acknowledgment. There is no free public Bitcoin Core JSON-RPC.
+**Balance lookups:** prefer a **local Bitcoin node** — **Bitcoin Core or Bitcoin Knots** (`--backend bitcoind` or `--backend knots`; same JSON-RPC / `scantxoutset`). For free review without a node, use **`--backend mempool`** (mempool.space REST). Public explorers require leak acknowledgment. There is no free public Bitcoin Core/Knots JSON-RPC on the internet.
 
 ## Quick start (CLI)
 
@@ -27,12 +27,15 @@ python -m bip39lab derive abandon abandon abandon abandon abandon abandon abando
 python -m bip39lab balance bc1q... --backend none
 # Free public review (REST — not Core RPC):
 python -m bip39lab balance bc1q... --backend mempool --i-understand-address-leak
-# Prefer your own node (JSON-RPC scantxoutset; cookie or user/pass — never logged):
+# Prefer your own node — Bitcoin Core or Bitcoin Knots (same RPC; cookie never logged):
 python -m bip39lab balance bc1q... --backend bitcoind --rpc-cookie ~/.bitcoin/.cookie
+python -m bip39lab balance bc1q... --backend knots --rpc-cookie ~/.bitcoin/.cookie
 # Or env: BIP39LAB_RPC_URL BIP39LAB_RPC_USER BIP39LAB_RPC_PASSWORD BIP39LAB_RPC_COOKIE
 # Alternate explorer:
 python -m bip39lab balance bc1q... --backend blockstream --i-understand-address-leak
 ```
+
+See **`docs/BITCOIN_KNOTS.md`** for running Knots (pruned is enough for current balances).
 
 ## Quick start (web)
 

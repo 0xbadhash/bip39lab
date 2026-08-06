@@ -118,7 +118,17 @@ def test_bitcoind_zero_balance_ok():
         return {"total_amount": 0}
 
     r = get_address_balance(ADDR, backend="bitcoind", rpc_call=rpc)
-    assert r == BalanceResult("ok", 0, "bitcoind")
+    assert r.status == "ok" and r.satoshis == 0
+    assert "bitcoind" in r.detail
+
+
+def test_knots_backend_alias_same_rpc():
+    def rpc(_m, _p):
+        return {"total_amount": "0.00000050"}
+
+    r = get_address_balance(ADDR, backend="knots", rpc_call=rpc)
+    assert r.status == "ok" and r.satoshis == 50
+    assert "bitcoind" in r.detail or "knots" in r.detail
 
 
 def test_cli_balance_bitcoind_backend(monkeypatch, capsys):

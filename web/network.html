@@ -134,8 +134,9 @@
             </table>
           </div>
           <p class="control-help">
-            Prefer a local node for sensitive checks:
-            <code>python -m bip39lab balance &lt;addr&gt; --backend bitcoind --rpc-cookie ~/.bitcoin/.cookie</code>
+            Prefer a local <strong>Bitcoin Knots</strong> (or Core) node for private checks:
+            <code>python -m bip39lab balance &lt;addr&gt; --backend knots --rpc-cookie ~/.bitcoin/.cookie</code>
+            (pruned node is enough for current UTXO balance — not required for this public fee page)
           </p>
         </div>
 

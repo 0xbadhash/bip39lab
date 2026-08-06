@@ -145,7 +145,10 @@ def fetch_bitcoind(
     rpc_cookie: str | None = None,
     opener: Callable = urlopen,
 ) -> BalanceResult:
-    """Query Bitcoin Core scantxoutset for current UTXO sum (address-only)."""
+    """Query Bitcoin Core / Bitcoin Knots scantxoutset for current UTXO sum (address-only).
+
+    Knots speaks the same JSON-RPC surface for this path — use backend bitcoind or knots.
+    """
     try:
         call = rpc_call
         if call is None:
@@ -175,14 +178,14 @@ def fetch_bitcoind(
         if "total_amount" not in result:
             return BalanceResult("unknown", None, "bitcoind: missing total_amount")
         sats = btc_to_satoshis(result["total_amount"])
-        detail = "bitcoind"
+        detail = "bitcoind/knots"
         if isinstance(detail_host, str) and detail_host.startswith("http") and not _is_loopback_host(
             detail_host
         ):
-            detail = "bitcoind (non-loopback RPC)"
+            detail = "bitcoind/knots (non-loopback RPC)"
         return BalanceResult("ok", sats, detail)
     except (TimeoutError, OSError, ValueError, TypeError, RuntimeError, KeyError) as e:
-        return BalanceResult("unknown", None, f"bitcoind failed: {e}")
+        return BalanceResult("unknown", None, f"bitcoind/knots failed: {e}")
 
 
 def get_address_balance(
@@ -221,7 +224,8 @@ def get_address_balance(
             return fetch_mempool(address, opener=opener)
         return fetch_blockstream(address, opener=opener)
 
-    if backend in ("bitcoind", "bitcoin-core"):
+    # Bitcoin Knots is RPC-compatible with Core for scantxoutset (same backend path)
+    if backend in ("bitcoind", "bitcoin-core", "knots", "bitcoin-knots"):
         return fetch_bitcoind(
             address,
             rpc_call=rpc_call,
