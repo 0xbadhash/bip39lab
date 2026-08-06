@@ -119,47 +119,114 @@
 
           <div class="card card-wide">
             <h2>Receive addresses</h2>
-            <p>
-              Filled automatically on <strong>Generate</strong> and when you change the passphrase or path controls
-              (re-derives the whole set offline).
+            <p class="lead-help">
+              Think of your recovery phrase as the master key to a bank vault.
+              From that one key, wallets create many different “account numbers” (addresses)
+              so you can receive bitcoin without reusing the same number every time.
+              Everything below is calculated <strong>offline on this page</strong> — nothing is sent to a bank or the internet.
             </p>
+
             <div class="derive-controls" role="group" aria-label="Derivation path">
-              <label class="field inline" for="deriveAccount">Account
-                <input id="deriveAccount" type="number" min="0" max="2147483647" value="0" step="1" />
+              <div class="control-block">
+                <label class="field inline" for="deriveAccount">Account
+                  <input id="deriveAccount" type="number" min="0" max="2147483647" value="0" step="1" />
+                </label>
+                <p class="control-help">
+                  Like having several bank accounts under the same login (0 = first account, 1 = second, …).
+                  Most people only ever use account <strong>0</strong>. Changing it creates a completely different set of addresses.
+                </p>
+              </div>
+              <div class="control-block">
+                <label class="field inline" for="deriveChange">Change
+                  <select id="deriveChange">
+                    <option value="0" selected>0 · receive</option>
+                    <option value="1">1 · change</option>
+                  </select>
+                </label>
+                <p class="control-help">
+                  <strong>Receive (0)</strong> = numbers you share so others can pay you (like your IBAN on an invoice).<br />
+                  <strong>Change (1)</strong> = internal numbers wallets use for leftover coins after a payment (like a till drawer, not for customers).
+                </p>
+              </div>
+              <div class="control-block">
+                <label class="field inline" for="deriveCount">Indices
+                  <select id="deriveCount">
+                    <option value="5" selected>5 (0–4)</option>
+                    <option value="10">10 (0–9)</option>
+                    <option value="20">20 (0–19)</option>
+                  </select>
+                </label>
+                <p class="control-help">
+                  How many addresses in a row to list (starting at 0). Like printing the first 5 cheque numbers from the pad.
+                  Index 0 is usually the first one a wallet shows you.
+                </p>
+              </div>
+            </div>
+
+            <div class="column-toggles" role="group" aria-label="Address type columns">
+              <span class="toggles-label">Show address types</span>
+              <label class="check">
+                <input type="checkbox" id="colBip86" checked disabled />
+                BIP86 Taproot <em>(always on)</em>
               </label>
-              <label class="field inline" for="deriveChange">Change
-                <select id="deriveChange">
-                  <option value="0" selected>0 · receive</option>
-                  <option value="1">1 · change</option>
-                </select>
+              <label class="check">
+                <input type="checkbox" id="colBip84" checked disabled />
+                BIP84 native segwit <em>(always on)</em>
               </label>
-              <label class="field inline" for="deriveCount">Indices
-                <select id="deriveCount">
-                  <option value="5" selected>5 (0–4)</option>
-                  <option value="10">10 (0–9)</option>
-                  <option value="20">20 (0–19)</option>
-                </select>
+              <label class="check">
+                <input type="checkbox" id="colBip49" />
+                BIP49 nested
+              </label>
+              <label class="check">
+                <input type="checkbox" id="colBip44" />
+                BIP44 legacy
               </label>
             </div>
-            <p id="derivePathSummary" class="hint-tiny">Account 0 · change 0 · BIP86 / BIP84 / BIP49 / BIP44</p>
-            <div class="table-scroll" aria-live="polite">
+            <p class="control-help">
+              Modern wallets mostly use <strong>Taproot (bc1p…)</strong> and <strong>native segwit (bc1q…)</strong>.
+              Nested (3…) and legacy (1…) are older formats — leave them off unless you need them; that keeps the table wide and readable without sideways scrolling.
+            </p>
+
+            <details class="help-fold">
+              <summary>What each column means (simple)</summary>
+              <ul class="help-list">
+                <li><strong>idx</strong> — address number in the sequence (0, 1, 2…). Same phrase + same settings always gives the same list.</li>
+                <li><strong>BIP86 Taproot (bc1p…)</strong> — newest common format; like a modern IBAN. Path style <code>m/86'/0'/account'/change/index</code>.</li>
+                <li><strong>BIP84 native segwit (bc1q…)</strong> — widely used “bc1q” addresses. Path <code>m/84'/…</code>.</li>
+                <li><strong>BIP49 nested (3…)</strong> — older “compatibility” style. Path <code>m/49'/…</code>. Optional.</li>
+                <li><strong>BIP44 legacy (1…)</strong> — oldest style still seen on chain. Path <code>m/44'/…</code>. Optional.</li>
+              </ul>
+              <p class="control-help">
+                <strong>What this is:</strong> public receive numbers only (safe to share one when you want payment).<br />
+                <strong>What this is not:</strong> not your recovery phrase, not a private key, not a balance, and not a bank transfer — you still need a real wallet to spend.
+              </p>
+            </details>
+
+            <p id="derivePathSummary" class="path-summary" aria-live="polite"></p>
+            <p id="deriveStatusPlain" class="status-plain" aria-live="polite"></p>
+
+            <div class="table-scroll" id="tableScroll" aria-live="polite">
               <table class="addr-table" id="addrTable">
                 <thead>
                   <tr>
-                    <th scope="col">idx</th>
-                    <th scope="col">BIP86 (Taproot)</th>
-                    <th scope="col">BIP84 (native segwit)</th>
-                    <th scope="col">BIP49 (nested)</th>
-                    <th scope="col">BIP44 (legacy)</th>
+                    <th scope="col" class="col-idx">#</th>
+                    <th scope="col" class="col-bip86" data-col="bip86">BIP86 · Taproot</th>
+                    <th scope="col" class="col-bip84" data-col="bip84">BIP84 · native segwit</th>
+                    <th scope="col" class="col-bip49" data-col="bip49" hidden>BIP49 · nested</th>
+                    <th scope="col" class="col-bip44" data-col="bip44" hidden>BIP44 · legacy</th>
                   </tr>
                 </thead>
                 <tbody id="addrTableBody">
                   <tr class="empty-row">
-                    <td colspan="5">Generate or paste a valid mnemonic to fill addresses.</td>
+                    <td colspan="3">Generate or paste a valid mnemonic to fill addresses.</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+            <p class="control-help copy-hint">
+              Click <strong>Copy</strong> next to any address to put it on the clipboard (like copying an IBAN).
+              Only the address is copied — never the recovery phrase.
+            </p>
           </div>
         </section>
 

@@ -237,21 +237,47 @@ code {
 }
 
 .content {
-  padding: 1rem 1.5rem 2.5rem;
-  max-width: 72rem;
+  padding: 1rem 1.75rem 2.5rem;
+  max-width: min(96rem, 100%);
+  width: 100%;
+}
+
+.main-wrap {
+  min-width: 0;
   width: 100%;
 }
 
 .card-wide {
   max-width: none;
+  width: 100%;
+}
+
+.lead-help {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
 }
 
 .derive-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem 1.25rem;
+  margin: 0.5rem 0 1rem;
+  align-items: start;
+}
+
+.control-block {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  margin: 0.5rem 0 0.75rem;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.control-help {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .field.inline {
@@ -261,8 +287,88 @@ code {
 
 .field.inline input[type="number"],
 .field.inline select {
-  width: auto;
+  width: 100%;
+  max-width: 14rem;
   min-width: 6.5rem;
+}
+
+.column-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+  align-items: center;
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.column-toggles .toggles-label {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--text);
+  width: 100%;
+}
+
+.column-toggles .check {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.column-toggles .check em {
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.78rem;
+}
+
+.help-fold {
+  margin: 0.75rem 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+
+.help-fold summary {
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--focus);
+  font-size: 0.9rem;
+}
+
+.help-list {
+  margin: 0.65rem 0 0.5rem 1.1rem;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.help-list li {
+  margin-bottom: 0.35rem;
+}
+
+.path-summary {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.status-plain {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.status-plain.ok {
+  color: var(--ok);
+}
+
+.status-plain.err {
+  color: #ff8a80;
 }
 
 .table-scroll {
@@ -274,17 +380,27 @@ code {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Default: modern columns only — fit without sideways scroll on wide screens */
+.table-scroll.cols-modern {
+  overflow-x: visible;
+}
+
 .addr-table {
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
   border-collapse: collapse;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  table-layout: auto;
+}
+
+.table-scroll.cols-legacy .addr-table {
+  width: max-content;
+  min-width: 100%;
 }
 
 .addr-table th,
 .addr-table td {
-  padding: 0.55rem 0.85rem;
+  padding: 0.6rem 0.9rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
@@ -295,7 +411,7 @@ code {
   background: var(--bg-elevated);
   color: var(--muted);
   font-weight: 650;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   position: sticky;
   top: 0;
   z-index: 1;
@@ -305,15 +421,47 @@ code {
   background: rgba(61, 139, 253, 0.06);
 }
 
-.addr-table td.idx {
+.addr-table td.idx,
+.addr-table th.col-idx {
   color: var(--muted);
   font-weight: 600;
-  width: 3rem;
+  width: 2.75rem;
 }
 
-.addr-table td.addr {
+.addr-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+}
+
+.addr-text {
   color: var(--focus);
   letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.btn-copy {
+  flex: 0 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 650;
+  cursor: pointer;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.btn-copy:hover {
+  border-color: var(--accent);
+  color: var(--focus);
+}
+
+.btn-copy.copied {
+  border-color: var(--ok);
+  color: var(--ok);
 }
 
 .addr-table .empty-row td {
@@ -322,6 +470,15 @@ code {
   font-family: "Segoe UI", system-ui, sans-serif;
   font-size: 0.88rem;
   padding: 1rem 0.85rem;
+}
+
+.copy-hint {
+  margin-top: 0.65rem;
+}
+
+/* Full-width shell for the address lab */
+.app {
+  grid-template-columns: 280px minmax(0, 1fr);
 }
 
 .panel {

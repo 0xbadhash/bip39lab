@@ -3,7 +3,6 @@
 
   const $ = (id) => document.getElementById(id);
 
-  /** BIP-39 ENT bits by word count (valid English mnemonics only). */
   const ENT_BITS_BY_WORDS = {
     12: 128,
     15: 160,
@@ -28,6 +27,7 @@
   };
 
   let deriveTimer = null;
+  let lastRows = null;
 
   function setPrivateVisible(show) {
     document.querySelectorAll("[data-private]").forEach((el) => {
@@ -87,60 +87,170 @@
     return { account, change, count };
   }
 
+  function showLegacy49() {
+    return !!($("colBip49") && $("colBip49").checked);
+  }
+
+  function showLegacy44() {
+    return !!($("colBip44") && $("colBip44").checked);
+  }
+
+  function visibleColCount() {
+    return 1 + 2 + (showLegacy49() ? 1 : 0) + (showLegacy44() ? 1 : 0);
+  }
+
+  function applyColumnVisibility() {
+    const leg49 = showLegacy49();
+    const leg44 = showLegacy44();
+    document.querySelectorAll('[data-col="bip49"]').forEach((el) => {
+      el.hidden = !leg49;
+    });
+    document.querySelectorAll('[data-col="bip44"]').forEach((el) => {
+      el.hidden = !leg44;
+    });
+    const scroll = $("tableScroll");
+    if (scroll) {
+      scroll.classList.toggle("cols-modern", !leg49 && !leg44);
+      scroll.classList.toggle("cols-legacy", leg49 || leg44);
+    }
+  }
+
   function updatePathSummary(opts, rowCount) {
     const last = Math.max(0, (rowCount || opts.count) - 1);
-    const chLabel = opts.change === 1 ? "1 · change" : "0 · receive";
+    const chWord = opts.change === 1 ? "change (internal leftovers)" : "receive (for people paying you)";
+    const types = ["BIP86 Taproot", "BIP84 native"];
+    if (showLegacy49()) types.push("BIP49 nested");
+    if (showLegacy44()) types.push("BIP44 legacy");
+
     $("derivePathSummary").textContent =
-      "Account " +
+      "Showing account " +
       opts.account +
-      " · change " +
-      chLabel +
-      " · indices 0–" +
+      " · " +
+      chWord +
+      " · address numbers 0 through " +
       last +
-      " · BIP86 / BIP84 / BIP49 / BIP44 · m/purpose'/0'/" +
+      " · formats: " +
+      types.join(", ") +
+      ". Technical path pattern: m/purpose'/0'/" +
       opts.account +
       "'/" +
       opts.change +
-      "/i";
+      "/index";
+  }
+
+  function setPlainStatus(text, kind) {
+    const el = $("deriveStatusPlain");
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove("ok", "err");
+    if (kind) el.classList.add(kind);
+  }
+
+  function copyAddress(addr, btn) {
+    if (!addr) return;
+    const done = () => {
+      if (!btn) return;
+      const prev = btn.textContent;
+      btn.textContent = "Copied";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = prev;
+        btn.classList.remove("copied");
+      }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(addr).then(done).catch(() => fallbackCopy(addr, done));
+    } else {
+      fallbackCopy(addr, done);
+    }
+  }
+
+  function fallbackCopy(addr, done) {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = addr;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      done();
+    } catch (e) {
+      setStatus("Could not copy — select the address manually.", "err");
+    }
+  }
+
+  function makeAddrCell(addr, col) {
+    const td = document.createElement("td");
+    td.className = "addr";
+    td.setAttribute("data-col", col);
+    if (col === "bip49" && !showLegacy49()) td.hidden = true;
+    if (col === "bip44" && !showLegacy44()) td.hidden = true;
+
+    const wrap = document.createElement("div");
+    wrap.className = "addr-cell";
+
+    const span = document.createElement("span");
+    span.className = "addr-text";
+    span.textContent = addr || "";
+    span.title = addr || "";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn-copy";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy address to clipboard");
+    btn.addEventListener("click", () => copyAddress(addr, btn));
+
+    wrap.appendChild(span);
+    wrap.appendChild(btn);
+    td.appendChild(wrap);
+    return td;
   }
 
   function clearAddressTable(message) {
+    lastRows = null;
     const tbody = $("addrTableBody");
     tbody.innerHTML = "";
     const tr = document.createElement("tr");
     tr.className = "empty-row";
     const td = document.createElement("td");
-    td.colSpan = 5;
-    td.textContent = message || "Generate or paste a valid mnemonic to fill addresses.";
+    td.colSpan = visibleColCount();
+    td.textContent =
+      message ||
+      "Generate or paste a valid recovery phrase to list receive addresses (like printing cheque numbers from a pad).";
     tr.appendChild(td);
     tbody.appendChild(tr);
+    applyColumnVisibility();
   }
 
   function fillAddressTable(result) {
     const tbody = $("addrTableBody");
     tbody.innerHTML = "";
     const rows = result.rows || [];
+    lastRows = rows;
     if (!rows.length) {
       clearAddressTable();
       return;
     }
     for (const r of rows) {
       const tr = document.createElement("tr");
-      const cells = [
-        { cls: "idx", text: String(r.index) },
-        { cls: "addr", text: r.bip86_p2tr || "" },
-        { cls: "addr", text: r.bip84_p2wpkh || "" },
-        { cls: "addr", text: r.bip49_p2sh_p2wpkh || "" },
-        { cls: "addr", text: r.bip44_p2pkh || "" },
-      ];
-      for (const c of cells) {
-        const td = document.createElement("td");
-        td.className = c.cls;
-        td.textContent = c.text;
-        tr.appendChild(td);
-      }
+
+      const tdIdx = document.createElement("td");
+      tdIdx.className = "idx";
+      tdIdx.textContent = String(r.index);
+      tr.appendChild(tdIdx);
+
+      tr.appendChild(makeAddrCell(r.bip86_p2tr || "", "bip86"));
+      tr.appendChild(makeAddrCell(r.bip84_p2wpkh || "", "bip84"));
+      tr.appendChild(makeAddrCell(r.bip49_p2sh_p2wpkh || "", "bip49"));
+      tr.appendChild(makeAddrCell(r.bip44_p2pkh || "", "bip44"));
+
       tbody.appendChild(tr);
     }
+    applyColumnVisibility();
   }
 
   async function refreshMnemonicEntropy() {
@@ -181,6 +291,7 @@
     updatePathSummary(path, path.count);
     if (!m) {
       clearAddressTable();
+      setPlainStatus("No phrase yet — generate one or paste a valid recovery phrase.", "");
       return;
     }
     if (!quiet) setStatus("Working…", "");
@@ -188,20 +299,32 @@
       const ok = await BIP39Lab.validateMnemonic(m);
       if (!ok) {
         if (!quiet) setStatus("Invalid mnemonic (wordlist or checksum).", "err");
-        clearAddressTable("Invalid mnemonic — fix the phrase to derive addresses.");
+        clearAddressTable("Invalid recovery phrase — fix words/checksum to list addresses.");
+        setPlainStatus("Invalid phrase — addresses cannot be listed until it checks out.", "err");
         await refreshMnemonicEntropy();
         return;
       }
       const result = await BIP39Lab.deriveAddresses(m, pp, path);
       fillAddressTable(result);
       updatePathSummary(path, (result.rows && result.rows.length) || path.count);
+      const plain =
+        "Done offline. Listed " +
+        path.count +
+        " address numbers (0–" +
+        (path.count - 1) +
+        ") for account " +
+        path.account +
+        ", " +
+        (path.change === 1 ? "change (internal)" : "receive (for payments)") +
+        ". Same phrase + settings always give the same list — like a fixed chequebook. " +
+        "A passphrase acts like a secret second password and changes every address. " +
+        "This table does not show balances or spend coins.";
+      setPlainStatus(plain, "ok");
       if (!quiet) {
         setStatus(
           "Derived offline · " +
             path.count +
-            " addresses (indices 0–" +
-            (path.count - 1) +
-            ") · account " +
+            " addresses · account " +
             path.account +
             " · change " +
             path.change +
@@ -214,6 +337,7 @@
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
       clearAddressTable("Derivation failed.");
+      setPlainStatus("Something went wrong while deriving addresses.", "err");
       await refreshMnemonicEntropy();
     }
   }
@@ -230,6 +354,7 @@
     $("passphrase").value = "";
     clearAddressTable();
     clearEntropyFields();
+    setPlainStatus("Cleared — nothing was saved to disk.", "");
     setStatus("Cleared (memory fields only; nothing was stored).", "");
   }
 
@@ -290,14 +415,31 @@
       $(id).addEventListener("input", () => scheduleDerive());
     });
 
+    ["colBip49", "colBip44"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener("change", () => {
+        applyColumnVisibility();
+        if (lastRows && lastRows.length) {
+          fillAddressTable({ rows: lastRows });
+        }
+        updatePathSummary(getDeriveOptions(), lastRows ? lastRows.length : getDeriveOptions().count);
+      });
+    });
+
     document.querySelectorAll(".nav-item[data-tab]").forEach((btn) => {
       btn.addEventListener("click", () => showTab(btn.getAttribute("data-tab")));
     });
 
     const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
     setStatus("Ready (offline lab v" + ver + "). Generate fills the address table automatically.", "");
+    setPlainStatus(
+      "Tip: Generate a phrase to fill the table. Taproot and native segwit show by default; turn on nested/legacy only if you need them.",
+      ""
+    );
     clearEntropyFields();
     clearAddressTable();
+    applyColumnVisibility();
     updatePathSummary(getDeriveOptions(), 5);
     showTab("lab");
   });
