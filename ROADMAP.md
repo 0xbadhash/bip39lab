@@ -93,9 +93,10 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Spec:** `.agents/specs/2026-08-06-phase-1-static-site.md`
 - **Notes:** Full FSM ship #2 — web/ + scure bundle
 
-### [PLANNED] Phase 2 — Address-only balance
-- **Status:** planned
+### [DONE] Phase 2 — Address-only balance
+- **Status:** done
 - **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-06-phase-2-address-balance.md`
 
 ### [PLANNED] Phase 3 — Hardening
 - **Status:** planned

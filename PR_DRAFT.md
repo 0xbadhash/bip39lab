@@ -1,29 +1,29 @@
-# PR Draft: Phase 1 static offline web lab (v0.2.0)
+# PR Draft: Phase 2 address-only balance (v0.3.0)
 
-**Range:** `v0.1.0...HEAD`
+**Range:** `v0.2.0...HEAD`
 
 ## Summary
 
-- Static `web/` BIP39 lab (CSP, no CDN)
-- Vendored `@scure`/`@noble` offline bundle
-- Hide private / clear secrets; airgap notes
+- `bip39lab balance` address-only
+- Fail-closed unknown vs zero
+- Network requires explicit leak acknowledgment
 
 ## What Problem This Solves
 
-Operators needed a self-hosted Coleman-style UI without third-party trust.
+Balance checks must not accept seeds or treat API failure as zero.
 
 ## Why This Change Was Made
 
-Phase 1 ROADMAP: client-only static site.
+Phase 2 ROADMAP.
 
 ## User Impact
 
-Open `web/index.html` offline (or static host); generate/derive without network.
+Optional explorer check without seed path.
 
 ## Evidence
 
 ```text
-red_cmd: python -m pytest -q tests/test_web_vectors.py
+red_cmd: python -m pytest -q tests/test_balance.py
 green_cmd: python -m pytest -q
 ```
 
@@ -31,67 +31,64 @@ green_cmd: python -m pytest -q
 
 | Item | Result |
 |------|--------|
-| hard_gates | at pr_review |
+| hard_gates | pr_review |
 | smoke | pytest |
-| pytest | 19 passed |
+| pytest | 25 passed |
 
 ## Spec
 
-**Spec:** `.agents/specs/2026-08-06-phase-1-static-site.md`
+**Spec:** `.agents/specs/2026-08-06-phase-2-address-balance.md`
 
 ## Traceability
 
-| AC | Test / smoke |
-|----|----------------|
-| AC1.1 offline static | `test_web_static_assets_present` |
-| AC1.2–1.3 generate/derive vectors | `test_web_js_abandon_vectors` |
-| AC1.4 hide/clear | HTML/UI presence |
-| AC1.5 CSP | meta in index.html |
-| AC1.6 airgap notes | warn copy |
-| AC1.7 vectors | node pytest |
-| AC1.8 no storage | no localStorage in app.js |
+| AC | Test |
+|----|------|
+| AC2.1 reject mnemonic | test_rejects_mnemonic_like |
+| AC2.2 fail closed | test_blockstream_http_failure_unknown |
+| AC2.3 default none | test_offline_default_unknown |
+| AC2.4 no mnemonic param | CLI balance address only |
+| AC2.5 mocks | test_blockstream_ok_mocked |
+| AC2.6 smoke | pytest |
 
 ## Threat notes
 
-- Seed material only in browser memory; Clear secrets zeros fields.
-- Bundle is vendored offline — no runtime CDN.
-- CSP blocks connect-src network for page scripts.
+- Network backends leak address interest to third parties — requires explicit flag.
+- Mnemonic-shaped input rejected on balance path.
 
 ## Red-proof
 
 ```text
-red_cmd: python -m pytest -q tests/test_web_vectors.py
+red_cmd: python -m pytest -q tests/test_balance.py
 green_cmd: python -m pytest -q
 ```
 
 ## Cross-review
 
-See `.agents/artifacts/CROSS_REVIEW.md`
+See artifacts.
 
 ## Test plan
 
-- [x] abandon vectors via node
-- [x] CSP + no CDN
-- [x] full pytest
+- [x] unit mocks
+- [x] CLI offline
 
 ## Things that look bad but are actually fine
 
-1. Large `bip39lab.bundle.js` — intentional offline audit/vendored crypto.
-2. Educational `crypto-core.js` may remain unused — superseded by scure bundle.
-3. node_modules gitignored — rebuild via esbuild + build-entry.mjs.
+1. Hardcoded Blockstream URL — only backend; gated by ack flag.
+2. Exit code 2 for unknown — intentional fail-closed.
+3. Web UI still offline CSP — balance not in browser Phase 2.
 
 ```yaml
 things_that_look_bad_but_are_fine:
-  - file: "web/js/bip39lab.bundle.js"
-    concern: "minified blob"
-    why_fine: "reproducible from build-entry + pinned npm versions"
-    validation: "test_web_js_abandon_vectors"
-  - file: "web/js/crypto-core.js"
-    concern: "unused educational code"
-    why_fine: "not loaded by index.html"
-    validation: "index.html script tags"
+  - file: "src/bip39lab/balance.py"
+    concern: "external URL"
+    why_fine: "address-only optional backend"
+    validation: "tests + ack flag"
+  - file: "src/bip39lab/cli.py"
+    concern: "network command"
+    why_fine: "default backend none"
+    validation: "test_cli_balance_offline"
   - file: "web/index.html"
-    concern: "file:// CSP"
-    why_fine: "script-src self works for relative scripts"
-    validation: "manual offline open"
+    concern: "no balance in UI"
+    why_fine: "CSP connect-src none preserved"
+    validation: "index CSP"
 ```
