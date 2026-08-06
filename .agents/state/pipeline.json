@@ -2,7 +2,7 @@
   "card_id": null,
   "phase": "init",
   "score": 0.0,
-  "spec_id": ".agents/specs/2026-08-06-phase-3-hardening.md",
+  "spec_id": ".agents/specs/2026-08-06-phase-4-bitcoind-balance.md",
   "task": "",
   "waiver": null
 }

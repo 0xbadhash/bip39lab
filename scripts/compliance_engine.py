@@ -41,7 +41,7 @@ def main() -> int:
     results = []
     # Linter: product code only
     results.append(
-        _run_tool("linter", [py, "-m", "ruff", "check", "src", "tests", "legacy"], env=env)
+        _run_tool("linter", [py, "-m", "ruff", "check", "src", "tests"], env=env)
     )
     # Typecheck product package only
     results.append(

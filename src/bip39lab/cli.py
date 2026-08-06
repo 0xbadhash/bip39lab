@@ -46,14 +46,30 @@ def _build_parser() -> argparse.ArgumentParser:
     b.add_argument("address", help="Bitcoin address (not a seed phrase)")
     b.add_argument(
         "--backend",
-        choices=["none", "blockstream"],
+        choices=["none", "blockstream", "bitcoind"],
         default="none",
-        help="Balance backend (default none = no network)",
+        help="Balance backend (default none = no network; prefer bitcoind over explorers)",
     )
     b.add_argument(
         "--i-understand-address-leak",
         action="store_true",
-        help="Required for network backends: explorer sees the address",
+        help="Required for public explorer backends: third party sees the address",
+    )
+    b.add_argument(
+        "--rpc-url",
+        default=None,
+        help="bitcoind JSON-RPC URL (default http://127.0.0.1:8332 or BIP39LAB_RPC_URL)",
+    )
+    b.add_argument("--rpc-user", default=None, help="RPC user (or BIP39LAB_RPC_USER)")
+    b.add_argument(
+        "--rpc-password",
+        default=None,
+        help="RPC password (or BIP39LAB_RPC_PASSWORD); prefer cookie file",
+    )
+    b.add_argument(
+        "--rpc-cookie",
+        default=None,
+        help="Path to bitcoind .cookie (or BIP39LAB_RPC_COOKIE)",
     )
     return p
 
@@ -70,6 +86,10 @@ def main(argv: list[str] | None = None) -> int:
             args.address,
             backend=args.backend,
             acknowledge_leak=args.i_understand_address_leak,
+            rpc_url=getattr(args, "rpc_url", None),
+            rpc_user=getattr(args, "rpc_user", None),
+            rpc_password=getattr(args, "rpc_password", None),
+            rpc_cookie=getattr(args, "rpc_cookie", None),
         )
         if res.status == "ok":
             print(f"ok {res.satoshis} sat  ({res.detail})")

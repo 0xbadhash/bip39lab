@@ -1,91 +1,84 @@
-# PR Draft: Phase 3 hardening (v0.4.0)
+# PR Draft: Phase 4 local bitcoind balance
 
-**Range:** `v0.3.0...HEAD`
-
-## Summary
-
-SECURITY.md, README, VERSION 0.4.0, web rebuild docs.
+**Range:** `v0.4.0...HEAD` (phase-4 feature)
 
 ## What Problem This Solves
 
-Operators lacked written policy and entry docs for the offline lab.
+Operators with a local Bitcoin Core node had no first-class way to check an address balance without using a public explorer (or staying offline/`unknown`).
 
 ## Why This Change Was Made
 
-Phase 3 ROADMAP.
+ROADMAP Phase 4 / AGENTS.md preference: local bitcoind for address-only balance; fail-closed; never send seed material.
 
 ## User Impact
 
-Clear install, usage, and security expectations.
+- New `--backend bitcoind` with `--rpc-url` / user / password / cookie (or env equivalents).
+- Public explorer path unchanged (still requires leak acknowledgment).
+- Default remains offline (`none`).
 
 ## Evidence
 
 ```text
-red_cmd: python -m pytest -q tests/test_hardening_docs.py
+red_cmd: python -m pytest -q tests/test_balance.py -k bitcoind
 green_cmd: python -m pytest -q
 ```
 
-## Evidence pack
-
-| Item | Result |
-|------|--------|
-| hard_gates | pr_review |
-| smoke | pytest |
-| pytest | suite green |
+33 tests green after implementation (mocked RPC; no live node in CI).
 
 ## Spec
 
-**Spec:** `.agents/specs/2026-08-06-phase-3-hardening.md`
+**Spec:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance.md`
+
+**Plan:** `.agents/specs/2026-08-06-phase-4-bitcoind-balance-plan.md`
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| AC3.1 SECURITY.md | test_hardening_docs |
-| AC3.2 README | test_hardening_docs |
-| AC3.3 VERSION | test_hardening_docs |
-| AC3.4–3.5 REBUILD.md | file present |
-| AC3.6 tests | pytest |
+| AC4.1 bitcoind backend CLI+lib | `test_bitcoind_*`, `test_cli_balance_bitcoind_backend` |
+| AC4.2 offline default | `test_offline_default_unknown` |
+| AC4.3 reject mnemonic | `test_bitcoind_rejects_mnemonic` |
+| AC4.4 ok satoshis | `test_bitcoind_ok_mocked_rpc`, `test_btc_to_sats_decimal_safe` |
+| AC4.5 fail-closed | `test_bitcoind_rpc_failure_unknown`, `test_bitcoind_rpc_error_object_unknown` |
+| AC4.6 no secret logging | RPC password only in Authorization header; not logged; cookie read only |
+| AC4.7 mocked tests | tests/test_balance.py |
+| AC4.8 regression | full pytest suite |
+| AC4.9 docs | README.md, SECURITY.md |
 
 ## Threat notes
 
-- Docs restate no-retention and address-leak consent.
-- Rebuild path keeps crypto offline-vendored.
+- Address-only balance path; mnemonic-like input rejected before RPC.
+- RPC credentials via flags/env/cookie; never printed; prefer cookie over password on CLI history.
+- Public explorers still require explicit leak acknowledgment; bitcoind soft-warns non-loopback hosts in detail string.
+- Fail-closed: transport/RPC errors → `unknown` with `satoshis is None`, never silent zero on failure (true empty UTXO set is `ok` with 0).
 
 ## Red-proof
 
 ```text
-red_cmd: python -m pytest -q tests/test_hardening_docs.py
+red_cmd: python -m pytest -q tests/test_balance.py -k 'bitcoind or btc_to'
 green_cmd: python -m pytest -q
 ```
 
 ## Cross-review
 
-See artifacts.
+(filled by `/code_review` / `/cross_review`)
 
 ## Test plan
 
-- [x] docs tests
-- [x] full suite
+- [x] Mocked bitcoind success / failure / zero / mnemonic reject
+- [x] CLI accepts bitcoind without leak flag
+- [x] Full suite
 
 ## Things that look bad but are actually fine
 
-1. No code-signing yet — documented out of scope.
-2. npm still needed only for rebuild, not runtime.
-3. VERSION vs git tags manual — release tags v0.4.0.
+1. `scantxoutset` only reports current UTXO sum (not lifetime received) — documented product choice for no-import address checks.
+2. Default RPC URL 127.0.0.1:8332 — still fail-closed if node absent.
+3. No live bitcoind in CI — intentional; mocked RPC is the contract.
 
 ```yaml
 things_that_look_bad_but_are_fine:
-  - file: "SECURITY.md"
-    concern: "policy only"
-    why_fine: "Phase 3 is hygiene"
-    validation: "test_hardening_docs"
-  - file: "web/REBUILD.md"
-    concern: "npm mention"
-    why_fine: "build-time only"
-    validation: "bundle committed"
-  - file: "VERSION"
-    concern: "manual bump"
-    why_fine: "aligned with pyproject"
-    validation: "0.4.0"
+  - file: "src/bip39lab/balance.py"
+    concern: "scantxoutset not wallet history"
+  - file: "tests/test_balance.py"
+    concern: "no live node"
 ```

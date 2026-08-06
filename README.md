@@ -10,7 +10,7 @@ Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by pub
 
 **Not** a funded-wallet brute-force scanner. Legacy unsafe scanner is under `legacy/` only.
 
-**Balance lookups:** prefer a **local Bitcoin node** you control (planned `--backend bitcoind`). Public explorers are opt-in only and leak address interest.
+**Balance lookups:** prefer a **local Bitcoin node** you control (`--backend bitcoind`). Public explorers are opt-in only and leak address interest.
 
 ## Quick start (CLI)
 
@@ -21,8 +21,12 @@ python -m pip install -e .
 python -m bip39lab generate --words 12
 python -m bip39lab validate abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
 python -m bip39lab derive abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
-# Optional network (address only — never pass a mnemonic):
+# Optional balance (address only — never pass a mnemonic):
 python -m bip39lab balance bc1q... --backend none
+# Prefer your own node (JSON-RPC scantxoutset; cookie or user/pass — never logged):
+python -m bip39lab balance bc1q... --backend bitcoind --rpc-cookie ~/.bitcoin/.cookie
+# Or env: BIP39LAB_RPC_URL BIP39LAB_RPC_USER BIP39LAB_RPC_PASSWORD BIP39LAB_RPC_COOKIE
+# Public explorer (leaks address interest — requires ack):
 python -m bip39lab balance bc1q... --backend blockstream --i-understand-address-leak
 ```
 
