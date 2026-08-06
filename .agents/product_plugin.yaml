@@ -17,7 +17,7 @@ harness_backlog: .agents/BACKLOG.md
 # Executed at release / smoke (argv arrays; cwd relative to product root).
 smoke:
   - name: unit
-    cmd: ["bash", "scripts/smoke_unit.sh"]
+    cmd: ["python", "-m", "pytest", "-q"]
     cwd: .
 
 vault:

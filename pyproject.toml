@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bip39lab"
+version = "0.1.0"
+description = "Offline BIP-39 / derivation lab (no network, no secret retention)"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+bip39lab = "bip39lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+bip39lab = ["data/english.txt"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -70,6 +70,36 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ---
 
+## Open work
+
+### [DONE] Phase 0 — Offline correctness lab
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-06-phase-0-correctness-lab.md`
+- **Plan:** `.agents/specs/2026-08-06-phase-0-correctness-lab-plan.md`
+- **Acceptance:**
+  - [x] Vendored wordlist + SHA-256
+  - [x] BIP-39 checksum validation
+  - [x] Golden abandon…about addresses BIP44/49/84
+  - [x] Offline CLI generate/validate/derive
+  - [x] No secret retention / no seed logging
+  - [x] Legacy scanner quarantined
+- **Smoke:** `python -m pytest -q` + product_smoke
+- **Notes:** Full FSM ship #1
+
+### [PLANNED] Phase 1 — Static site
+- **Status:** planned
+- **Priority:** P0
+- **Notes:** Spec after Phase 0 ships
+
+### [PLANNED] Phase 2 — Address-only balance
+- **Status:** planned
+- **Priority:** P1
+
+### [PLANNED] Phase 3 — Hardening
+- **Status:** planned
+- **Priority:** P1
+
 ## Current focus
 
-**Next ship:** **Phase 0** — start with `/spec` for Phase 0 acceptance criteria, then `/execute_dev`.
+**In ship:** **Phase 0** — `/spec` ready → `/execute_dev`.
