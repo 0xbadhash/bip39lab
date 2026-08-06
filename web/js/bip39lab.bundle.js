@@ -1,5 +1,5 @@
 (() => {
-  // ../../../node_modules/@noble/hashes/utils.js
+  // node_modules/@noble/hashes/utils.js
   function isBytes(a) {
     return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
   }
@@ -174,7 +174,7 @@
     oid: Uint8Array.from([6, 9, 96, 134, 72, 1, 101, 3, 4, 2, suffix])
   });
 
-  // ../../../node_modules/@noble/hashes/hmac.js
+  // node_modules/@noble/hashes/hmac.js
   var _HMAC = class {
     oHash;
     iHash;
@@ -250,7 +250,7 @@
     return hmac_;
   })();
 
-  // ../../../node_modules/@noble/hashes/pbkdf2.js
+  // node_modules/@noble/hashes/pbkdf2.js
   function pbkdf2Init(hash, _password, _salt, _opts) {
     ahash(hash);
     const opts = checkOpts({ dkLen: 32, asyncTick: 10 }, _opts);
@@ -299,7 +299,7 @@
     return pbkdf2Output(PRF, PRFSalt, DK, prfW, u);
   }
 
-  // ../../../node_modules/@noble/hashes/_md.js
+  // node_modules/@noble/hashes/_md.js
   function Chi(a, b, c) {
     return a & b ^ ~a & c;
   }
@@ -431,7 +431,7 @@
     327033209
   ]);
 
-  // ../../../node_modules/@noble/hashes/_u64.js
+  // node_modules/@noble/hashes/_u64.js
   var U32_MASK64 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
   var _32n = /* @__PURE__ */ BigInt(32);
   function fromBig(n, le = false) {
@@ -466,7 +466,7 @@
   var add5L = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
   var add5H = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
 
-  // ../../../node_modules/@noble/hashes/sha2.js
+  // node_modules/@noble/hashes/sha2.js
   var SHA256_K = /* @__PURE__ */ Uint32Array.from([
     1116352408,
     1899447441,
@@ -824,7 +824,7 @@
     /* @__PURE__ */ oidNist(3)
   );
 
-  // ../../../node_modules/@scure/base/index.js
+  // node_modules/@scure/base/index.js
   function isBytes2(a) {
     return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array" && "BYTES_PER_ELEMENT" in a && a.BYTES_PER_ELEMENT === 1;
   }
@@ -1119,7 +1119,7 @@
     return /* @__PURE__ */ chain(checksum(4, (data) => _sha256(_sha256(data))), base58);
   };
 
-  // ../../../node_modules/@scure/bip39/index.js
+  // node_modules/@scure/bip39/index.js
   var isJapanese = (wordlist2) => wordlist2[0] === "\u3042\u3044\u3053\u304F\u3057\u3093";
   function nfkd(str) {
     if (typeof str !== "string")
@@ -1184,7 +1184,7 @@
     });
   }
 
-  // ../../../node_modules/@scure/bip39/wordlists/english.js
+  // node_modules/@scure/bip39/wordlists/english.js
   var wordlist = /* @__PURE__ */ Object.freeze(`abandon
 ability
 able
@@ -3234,7 +3234,7 @@ zero
 zone
 zoo`.split("\n"));
 
-  // ../../../node_modules/@noble/curves/utils.js
+  // node_modules/@noble/curves/utils.js
   var abytes2 = (value, length, title) => abytes(value, length, title);
   var anumber3 = anumber;
   var bytesToHex2 = bytesToHex;
@@ -3386,7 +3386,7 @@ zoo`.split("\n"));
     iter(optFields, true);
   }
 
-  // ../../../node_modules/@noble/curves/abstract/modular.js
+  // node_modules/@noble/curves/abstract/modular.js
   var _0n2 = /* @__PURE__ */ BigInt(0);
   var _1n2 = /* @__PURE__ */ BigInt(1);
   var _2n = /* @__PURE__ */ BigInt(2);
@@ -3800,7 +3800,7 @@ zoo`.split("\n"));
     return isLE ? numberToBytesLE(reduced, fieldLen) : numberToBytesBE(reduced, fieldLen);
   }
 
-  // ../../../node_modules/@noble/curves/abstract/curve.js
+  // node_modules/@noble/curves/abstract/curve.js
   var _0n3 = /* @__PURE__ */ BigInt(0);
   var _1n3 = /* @__PURE__ */ BigInt(1);
   function negateCt(condition, item) {
@@ -4034,7 +4034,7 @@ zoo`.split("\n"));
     };
   }
 
-  // ../../../node_modules/@noble/curves/abstract/weierstrass.js
+  // node_modules/@noble/curves/abstract/weierstrass.js
   var divNearest = (num, den) => (num + (num >= 0 ? den : -den) / _2n2) / den;
   function _splitEndoScalar(k, basis, n) {
     aInRange("scalar", k, _0n4, n);
@@ -4942,7 +4942,7 @@ zoo`.split("\n"));
     });
   }
 
-  // ../../../node_modules/@noble/curves/secp256k1.js
+  // node_modules/@noble/curves/secp256k1.js
   var secp256k1_CURVE = {
     p: BigInt("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"),
     n: BigInt("0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),
@@ -4989,7 +4989,7 @@ zoo`.split("\n"));
   });
   var secp256k1 = /* @__PURE__ */ ecdsa(Pointk1, sha256);
 
-  // ../../../node_modules/@noble/hashes/legacy.js
+  // node_modules/@noble/hashes/legacy.js
   var Rho160 = /* @__PURE__ */ Uint8Array.from([
     7,
     4,
@@ -5107,7 +5107,7 @@ zoo`.split("\n"));
   };
   var ripemd160 = /* @__PURE__ */ createHasher(() => new _RIPEMD160());
 
-  // ../../../node_modules/@scure/bip32/index.js
+  // node_modules/@scure/bip32/index.js
   var Point = /* @__PURE__ */ (() => secp256k1.Point)();
   var Fn = /* @__PURE__ */ (() => Point.Fn)();
   var base58check = /* @__PURE__ */ createBase58check(sha256);
@@ -5434,21 +5434,36 @@ zoo`.split("\n"));
     const data = [0].concat(convertbits(h, 8, 5, true));
     return bech32Encode("bc", data);
   }
-  function deriveAddresses(mnemonic, passphrase) {
+  function deriveAddresses(mnemonic, passphrase, options) {
     if (!validateMnemonic(mnemonic, wordlist)) throw new Error("invalid mnemonic");
     const seed = mnemonicToSeedSync(mnemonic, passphrase || "");
     const root = HDKey.fromMasterSeed(seed);
-    const k44 = root.derive("m/44'/0'/0'/0/0");
-    const k49 = root.derive("m/49'/0'/0'/0/0");
-    const k84 = root.derive("m/84'/0'/0'/0/0");
+    const account = options && options.account || 0;
+    const change = options && options.change || 0;
+    let count = (options && options.count) != null ? options.count : 1;
+    count = Math.max(1, Math.min(Number(count) || 1, 20));
+    const rows = [];
+    for (let i = 0; i < count; i++) {
+      const k44 = root.derive(`m/44'/0'/${account}'/${change}/${i}`);
+      const k49 = root.derive(`m/49'/0'/${account}'/${change}/${i}`);
+      const k84 = root.derive(`m/84'/0'/${account}'/${change}/${i}`);
+      rows.push({
+        index: i,
+        bip44_p2pkh: p2pkh(k44.privateKey),
+        bip49_p2sh_p2wpkh: p2shP2wpkh(k49.privateKey),
+        bip84_p2wpkh: p2wpkh(k84.privateKey)
+      });
+    }
     return {
-      bip44_p2pkh: p2pkh(k44.privateKey),
-      bip49_p2sh_p2wpkh: p2shP2wpkh(k49.privateKey),
-      bip84_p2wpkh: p2wpkh(k84.privateKey)
+      rows,
+      // index-0 convenience (backward compatible with older UI)
+      bip44_p2pkh: rows[0].bip44_p2pkh,
+      bip49_p2sh_p2wpkh: rows[0].bip49_p2sh_p2wpkh,
+      bip84_p2wpkh: rows[0].bip84_p2wpkh
     };
   }
   function generate(wordCount) {
-    const strength = { 12: 128, 24: 256 }[wordCount] || 128;
+    const strength = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 }[wordCount] || 128;
     return generateMnemonic(wordlist, strength);
   }
   function validate(m) {
@@ -5457,8 +5472,8 @@ zoo`.split("\n"));
   var api = {
     generateMnemonic: async (n) => generate(n),
     validateMnemonic: async (m) => validate(m),
-    deriveAddresses: async (m, p) => deriveAddresses(m, p),
-    VERSION: "0.2.0-scure"
+    deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
+    VERSION: "0.6.1-scure"
   };
   var g = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : void 0;
   if (g) g.BIP39Lab = api;

@@ -98,22 +98,45 @@ function p2wpkh(privBytes) {
   return bech32Encode("bc", data);
 }
 
-function deriveAddresses(mnemonic, passphrase) {
+/**
+ * Derive receive addresses for account/change over consecutive indices.
+ * @param {string} mnemonic
+ * @param {string} [passphrase]
+ * @param {{ count?: number, account?: number, change?: number }} [options]
+ * @returns {{ rows: Array<{index,bip44_p2pkh,bip49_p2sh_p2wpkh,bip84_p2wpkh}>, bip44_p2pkh, bip49_p2sh_p2wpkh, bip84_p2wpkh }}
+ */
+function deriveAddresses(mnemonic, passphrase, options) {
   if (!validateMnemonic(mnemonic, wordlist)) throw new Error("invalid mnemonic");
   const seed = mnemonicToSeedSync(mnemonic, passphrase || "");
   const root = HDKey.fromMasterSeed(seed);
-  const k44 = root.derive("m/44'/0'/0'/0/0");
-  const k49 = root.derive("m/49'/0'/0'/0/0");
-  const k84 = root.derive("m/84'/0'/0'/0/0");
+  const account = (options && options.account) || 0;
+  const change = (options && options.change) || 0;
+  let count = (options && options.count) != null ? options.count : 1;
+  count = Math.max(1, Math.min(Number(count) || 1, 20));
+
+  const rows = [];
+  for (let i = 0; i < count; i++) {
+    const k44 = root.derive(`m/44'/0'/${account}'/${change}/${i}`);
+    const k49 = root.derive(`m/49'/0'/${account}'/${change}/${i}`);
+    const k84 = root.derive(`m/84'/0'/${account}'/${change}/${i}`);
+    rows.push({
+      index: i,
+      bip44_p2pkh: p2pkh(k44.privateKey),
+      bip49_p2sh_p2wpkh: p2shP2wpkh(k49.privateKey),
+      bip84_p2wpkh: p2wpkh(k84.privateKey),
+    });
+  }
   return {
-    bip44_p2pkh: p2pkh(k44.privateKey),
-    bip49_p2sh_p2wpkh: p2shP2wpkh(k49.privateKey),
-    bip84_p2wpkh: p2wpkh(k84.privateKey),
+    rows,
+    // index-0 convenience (backward compatible with older UI)
+    bip44_p2pkh: rows[0].bip44_p2pkh,
+    bip49_p2sh_p2wpkh: rows[0].bip49_p2sh_p2wpkh,
+    bip84_p2wpkh: rows[0].bip84_p2wpkh,
   };
 }
 
 function generate(wordCount) {
-  const strength = { 12: 128, 24: 256 }[wordCount] || 128;
+  const strength = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 }[wordCount] || 128;
   return generateMnemonic(wordlist, strength);
 }
 
@@ -124,8 +147,8 @@ function validate(m) {
 const api = {
   generateMnemonic: async (n) => generate(n),
   validateMnemonic: async (m) => validate(m),
-  deriveAddresses: async (m, p) => deriveAddresses(m, p),
-  VERSION: "0.2.0-scure",
+  deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
+  VERSION: "0.6.1-scure",
 };
 
 const g = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : undefined;
