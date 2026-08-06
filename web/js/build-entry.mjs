@@ -3,7 +3,7 @@ import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { HDKey } from "@scure/bip32";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { ripemd160 } from "@noble/hashes/legacy.js";
-import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { secp256k1, schnorr } from "@noble/curves/secp256k1.js";
 
 function hash160(data) {
   return ripemd160(sha256(data));
@@ -57,18 +57,27 @@ function bech32Polymod(values) {
   return chk;
 }
 
-function bech32Encode(hrp, data) {
-  const hrpExpand = [...hrp].map((c) => c.charCodeAt(0) >> 5).concat([0], [...hrp].map((c) => c.charCodeAt(0) & 31));
-  const polymod = bech32Polymod(hrpExpand.concat(data).concat([0, 0, 0, 0, 0, 0])) ^ 1;
+/** @param {'bech32'|'bech32m'} encoding */
+function bech32Encode(hrp, data, encoding = "bech32") {
+  const constXor = encoding === "bech32m" ? 0x2bc830a3 : 1;
+  const hrpExpand = [...hrp]
+    .map((c) => c.charCodeAt(0) >> 5)
+    .concat([0], [...hrp].map((c) => c.charCodeAt(0) & 31));
+  const polymod = bech32Polymod(hrpExpand.concat(data).concat([0, 0, 0, 0, 0, 0])) ^ constXor;
   const checksum = [];
   for (let i = 0; i < 6; i++) checksum.push((polymod >> (5 * (5 - i))) & 31);
   const charset = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
   return hrp + "1" + data.concat(checksum).map((d) => charset[d]).join("");
 }
 
+function bytesToHex(b) {
+  return Array.from(b)
+    .map((x) => x.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 function compressedPub(privBytes) {
-  const pub = secp256k1.getPublicKey(privBytes, true);
-  return pub;
+  return secp256k1.getPublicKey(privBytes, true);
 }
 
 function p2pkh(privBytes) {
@@ -95,22 +104,33 @@ function p2shP2wpkh(privBytes) {
 function p2wpkh(privBytes) {
   const h = hash160(compressedPub(privBytes));
   const data = [0].concat(convertbits(h, 8, 5, true));
-  return bech32Encode("bc", data);
+  return bech32Encode("bc", data, "bech32");
+}
+
+/** BIP86 key-path only Taproot (P2TR) address. */
+function p2tr(privBytes) {
+  const xonly = schnorr.getPublicKey(privBytes);
+  const x = BigInt("0x" + bytesToHex(xonly));
+  const P = schnorr.utils.lift_x(x);
+  const tweak = schnorr.utils.taggedHash("TapTweak", xonly);
+  const t = BigInt("0x" + bytesToHex(tweak));
+  const Q = P.add(secp256k1.Point.BASE.multiply(t));
+  const out = schnorr.utils.pointToBytes(Q);
+  const data = [1].concat(convertbits(out, 8, 5, true));
+  return bech32Encode("bc", data, "bech32m");
 }
 
 /**
- * Derive receive addresses for account/change over consecutive indices.
  * @param {string} mnemonic
  * @param {string} [passphrase]
  * @param {{ count?: number, account?: number, change?: number }} [options]
- * @returns {{ rows: Array<{index,bip44_p2pkh,bip49_p2sh_p2wpkh,bip84_p2wpkh}>, bip44_p2pkh, bip49_p2sh_p2wpkh, bip84_p2wpkh }}
  */
 function deriveAddresses(mnemonic, passphrase, options) {
   if (!validateMnemonic(mnemonic, wordlist)) throw new Error("invalid mnemonic");
   const seed = mnemonicToSeedSync(mnemonic, passphrase || "");
   const root = HDKey.fromMasterSeed(seed);
-  const account = (options && options.account) || 0;
-  const change = (options && options.change) || 0;
+  const account = Math.max(0, Math.floor(Number((options && options.account) || 0)));
+  const change = Number((options && options.change) || 0) === 1 ? 1 : 0;
   let count = (options && options.count) != null ? options.count : 1;
   count = Math.max(1, Math.min(Number(count) || 1, 20));
 
@@ -119,19 +139,23 @@ function deriveAddresses(mnemonic, passphrase, options) {
     const k44 = root.derive(`m/44'/0'/${account}'/${change}/${i}`);
     const k49 = root.derive(`m/49'/0'/${account}'/${change}/${i}`);
     const k84 = root.derive(`m/84'/0'/${account}'/${change}/${i}`);
+    const k86 = root.derive(`m/86'/0'/${account}'/${change}/${i}`);
     rows.push({
       index: i,
-      bip44_p2pkh: p2pkh(k44.privateKey),
-      bip49_p2sh_p2wpkh: p2shP2wpkh(k49.privateKey),
+      bip86_p2tr: p2tr(k86.privateKey),
       bip84_p2wpkh: p2wpkh(k84.privateKey),
+      bip49_p2sh_p2wpkh: p2shP2wpkh(k49.privateKey),
+      bip44_p2pkh: p2pkh(k44.privateKey),
     });
   }
   return {
     rows,
-    // index-0 convenience (backward compatible with older UI)
-    bip44_p2pkh: rows[0].bip44_p2pkh,
-    bip49_p2sh_p2wpkh: rows[0].bip49_p2sh_p2wpkh,
+    account,
+    change,
+    bip86_p2tr: rows[0].bip86_p2tr,
     bip84_p2wpkh: rows[0].bip84_p2wpkh,
+    bip49_p2sh_p2wpkh: rows[0].bip49_p2sh_p2wpkh,
+    bip44_p2pkh: rows[0].bip44_p2pkh,
   };
 }
 
@@ -148,7 +172,7 @@ const api = {
   generateMnemonic: async (n) => generate(n),
   validateMnemonic: async (m) => validate(m),
   deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
-  VERSION: "0.6.1-scure",
+  VERSION: "0.7.0-scure",
 };
 
 const g = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : undefined;

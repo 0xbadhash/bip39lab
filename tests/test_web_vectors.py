@@ -14,6 +14,7 @@ ABANDON = "abandon abandon abandon abandon abandon abandon abandon abandon aband
 ADDR44 = "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA"
 ADDR49 = "37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf"
 ADDR84 = "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
+ADDR86 = "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr"
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
@@ -29,7 +30,7 @@ eval(fs.readFileSync(path.join(root, 'web/js/bip39lab.bundle.js'), 'utf8'));
   const m = process.argv[2];
   const api = globalThis.BIP39Lab || globalThis.BIP39LabBundle;
   const ok = await api.validateMnemonic(m);
-  const a = await api.deriveAddresses(m, '');
+  const a = await api.deriveAddresses(m, '', { count: 5, account: 0, change: 0 });
   console.log(JSON.stringify({ ok, a }));
 })().catch((e) => { console.error(e); process.exit(1); });
 """
@@ -45,6 +46,9 @@ eval(fs.readFileSync(path.join(root, 'web/js/bip39lab.bundle.js'), 'utf8'));
     assert data["a"]["bip44_p2pkh"] == ADDR44
     assert data["a"]["bip49_p2sh_p2wpkh"] == ADDR49
     assert data["a"]["bip84_p2wpkh"] == ADDR84
+    assert data["a"]["bip86_p2tr"] == ADDR86
+    assert len(data["a"]["rows"]) == 5
+    assert data["a"]["rows"][0]["bip86_p2tr"] == ADDR86
 
 
 def test_web_static_assets_present():
@@ -55,3 +59,7 @@ def test_web_static_assets_present():
     assert "cdn." not in html.lower()
     assert "Clear secrets" in html
     assert "bip39lab.bundle.js" in html
+    assert 'id="addrTable"' in html
+    assert "BIP86" in html
+    assert "addr-table" in (ROOT / "web/css/app.css").read_text(encoding="utf-8")
+    assert "white-space: nowrap" in (ROOT / "web/css/app.css").read_text(encoding="utf-8")

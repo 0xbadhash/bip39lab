@@ -3,9 +3,6 @@
 
   const $ = (id) => document.getElementById(id);
 
-  /** How many consecutive receive indices to show (0 .. N-1). */
-  const RECEIVE_COUNT = 5;
-
   /** BIP-39 ENT bits by word count (valid English mnemonics only). */
   const ENT_BITS_BY_WORDS = {
     12: 128,
@@ -82,29 +79,68 @@
     setEntropyPassphrase("—");
   }
 
-  function formatAddressTable(result) {
-    const rows = result.rows || [
-      {
-        index: 0,
-        bip44_p2pkh: result.bip44_p2pkh,
-        bip49_p2sh_p2wpkh: result.bip49_p2sh_p2wpkh,
-        bip84_p2wpkh: result.bip84_p2wpkh,
-      },
-    ];
-    const lines = [
-      "Account 0 · change 0 · receive indices 0–" + (rows.length - 1),
-      "",
-      "idx  bip84 (native segwit)                     bip49 (nested)                          bip44 (legacy)",
-      "---  ----------------------------------------  --------------------------------------  ------------------------------------",
-    ];
-    for (const r of rows) {
-      const i = String(r.index).padStart(3, " ");
-      const a84 = (r.bip84_p2wpkh || "").padEnd(42, " ");
-      const a49 = (r.bip49_p2sh_p2wpkh || "").padEnd(38, " ");
-      const a44 = r.bip44_p2pkh || "";
-      lines.push(i + "  " + a84 + "  " + a49 + "  " + a44);
+  function getDeriveOptions() {
+    const account = Math.max(0, parseInt($("deriveAccount").value, 10) || 0);
+    const change = $("deriveChange").value === "1" ? 1 : 0;
+    let count = parseInt($("deriveCount").value, 10) || 5;
+    if (![5, 10, 20].includes(count)) count = 5;
+    return { account, change, count };
+  }
+
+  function updatePathSummary(opts, rowCount) {
+    const last = Math.max(0, (rowCount || opts.count) - 1);
+    const chLabel = opts.change === 1 ? "1 · change" : "0 · receive";
+    $("derivePathSummary").textContent =
+      "Account " +
+      opts.account +
+      " · change " +
+      chLabel +
+      " · indices 0–" +
+      last +
+      " · BIP86 / BIP84 / BIP49 / BIP44 · m/purpose'/0'/" +
+      opts.account +
+      "'/" +
+      opts.change +
+      "/i";
+  }
+
+  function clearAddressTable(message) {
+    const tbody = $("addrTableBody");
+    tbody.innerHTML = "";
+    const tr = document.createElement("tr");
+    tr.className = "empty-row";
+    const td = document.createElement("td");
+    td.colSpan = 5;
+    td.textContent = message || "Generate or paste a valid mnemonic to fill addresses.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+
+  function fillAddressTable(result) {
+    const tbody = $("addrTableBody");
+    tbody.innerHTML = "";
+    const rows = result.rows || [];
+    if (!rows.length) {
+      clearAddressTable();
+      return;
     }
-    return lines.join("\n");
+    for (const r of rows) {
+      const tr = document.createElement("tr");
+      const cells = [
+        { cls: "idx", text: String(r.index) },
+        { cls: "addr", text: r.bip86_p2tr || "" },
+        { cls: "addr", text: r.bip84_p2wpkh || "" },
+        { cls: "addr", text: r.bip49_p2sh_p2wpkh || "" },
+        { cls: "addr", text: r.bip44_p2pkh || "" },
+      ];
+      for (const c of cells) {
+        const td = document.createElement("td");
+        td.className = c.cls;
+        td.textContent = c.text;
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
   }
 
   async function refreshMnemonicEntropy() {
@@ -137,16 +173,14 @@
     setEntropyPassphrase(formatPassphraseStrength($("passphrase").value));
   }
 
-  /**
-   * Derive addresses when mnemonic is valid.
-   * @param {{ quiet?: boolean }} opts quiet=true for live typing (no "Working…")
-   */
   async function deriveNow(opts) {
     const quiet = opts && opts.quiet;
     const m = $("mnemonic").value.trim();
     const pp = $("passphrase").value;
+    const path = getDeriveOptions();
+    updatePathSummary(path, path.count);
     if (!m) {
-      $("out").textContent = "";
+      clearAddressTable();
       return;
     }
     if (!quiet) setStatus("Working…", "");
@@ -154,19 +188,24 @@
       const ok = await BIP39Lab.validateMnemonic(m);
       if (!ok) {
         if (!quiet) setStatus("Invalid mnemonic (wordlist or checksum).", "err");
-        $("out").textContent = "";
+        clearAddressTable("Invalid mnemonic — fix the phrase to derive addresses.");
         await refreshMnemonicEntropy();
         return;
       }
-      const result = await BIP39Lab.deriveAddresses(m, pp, { count: RECEIVE_COUNT });
-      $("out").textContent = formatAddressTable(result);
+      const result = await BIP39Lab.deriveAddresses(m, pp, path);
+      fillAddressTable(result);
+      updatePathSummary(path, (result.rows && result.rows.length) || path.count);
       if (!quiet) {
         setStatus(
           "Derived offline · " +
-            RECEIVE_COUNT +
-            " receive addresses (indices 0–" +
-            (RECEIVE_COUNT - 1) +
-            "). Passphrase changes the whole set.",
+            path.count +
+            " addresses (indices 0–" +
+            (path.count - 1) +
+            ") · account " +
+            path.account +
+            " · change " +
+            path.change +
+            ".",
           "ok"
         );
       }
@@ -174,7 +213,7 @@
       refreshPassphraseEntropy();
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
-      $("out").textContent = "";
+      clearAddressTable("Derivation failed.");
       await refreshMnemonicEntropy();
     }
   }
@@ -189,7 +228,7 @@
   function clearSecrets() {
     $("mnemonic").value = "";
     $("passphrase").value = "";
-    $("out").textContent = "";
+    clearAddressTable();
     clearEntropyFields();
     setStatus("Cleared (memory fields only; nothing was stored).", "");
   }
@@ -223,14 +262,10 @@
     $("mnemonic").value = m;
     await refreshMnemonicEntropy();
     refreshPassphraseEntropy();
-    // Always derive immediately after generate (with current passphrase, if any)
     await deriveNow({ quiet: false });
+    const path = getDeriveOptions();
     setStatus(
-      "Generated offline · " +
-        RECEIVE_COUNT +
-        " receive addresses shown below (indices 0–" +
-        (RECEIVE_COUNT - 1) +
-        ").",
+      "Generated offline · " + path.count + " receive addresses in the table below.",
       "ok"
     );
   }
@@ -247,8 +282,12 @@
     });
     $("passphrase").addEventListener("input", () => {
       refreshPassphraseEntropy();
-      // Recalculate the full address set when passphrase changes (BIP-39 25th word)
       scheduleDerive();
+    });
+
+    ["deriveAccount", "deriveChange", "deriveCount"].forEach((id) => {
+      $(id).addEventListener("change", () => scheduleDerive());
+      $(id).addEventListener("input", () => scheduleDerive());
     });
 
     document.querySelectorAll(".nav-item[data-tab]").forEach((btn) => {
@@ -256,8 +295,10 @@
     });
 
     const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
-    setStatus("Ready (offline lab v" + ver + "). Generate fills addresses automatically.", "");
+    setStatus("Ready (offline lab v" + ver + "). Generate fills the address table automatically.", "");
     clearEntropyFields();
+    clearAddressTable();
+    updatePathSummary(getDeriveOptions(), 5);
     showTab("lab");
   });
 })();

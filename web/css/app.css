@@ -238,7 +238,90 @@ code {
 
 .content {
   padding: 1rem 1.5rem 2.5rem;
-  max-width: 52rem;
+  max-width: 72rem;
+  width: 100%;
+}
+
+.card-wide {
+  max-width: none;
+}
+
+.derive-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0.5rem 0 0.75rem;
+  align-items: flex-end;
+}
+
+.field.inline {
+  margin: 0;
+  min-width: 7.5rem;
+}
+
+.field.inline input[type="number"],
+.field.inline select {
+  width: auto;
+  min-width: 6.5rem;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+  -webkit-overflow-scrolling: touch;
+}
+
+.addr-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.addr-table th,
+.addr-table td {
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.addr-table th {
+  background: var(--bg-elevated);
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.addr-table tbody tr:hover td {
+  background: rgba(61, 139, 253, 0.06);
+}
+
+.addr-table td.idx {
+  color: var(--muted);
+  font-weight: 600;
+  width: 3rem;
+}
+
+.addr-table td.addr {
+  color: var(--focus);
+  letter-spacing: 0.01em;
+}
+
+.addr-table .empty-row td {
+  color: var(--muted);
+  white-space: normal;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 0.88rem;
+  padding: 1rem 0.85rem;
 }
 
 .panel {

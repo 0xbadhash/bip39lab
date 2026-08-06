@@ -143,9 +143,40 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** open Lab on bip39.catalyxt.xyz; pytest green
 - **Notes:** Full FSM — **Next:** true
 
+
+### [DONE] Phase 7 — HTML address table + Option A derivation UX
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-06-phase-7-address-table-derivation-a.md`
+- **Plan:** `.agents/specs/2026-08-06-phase-7-address-table-derivation-a-plan.md`
+- **Acceptance:**
+  - [x] HTML table, nowrap addresses, horizontal scroll
+  - [x] Account / change / count 5|10|20
+  - [x] BIP86 Taproot column + BIP84/49/44
+  - [x] Auto-derive; BIP86 abandon vector
+- **Notes:** tag `v0.7.0`
+
+### [OPEN] Option B — Watch-only (xpub / zpub / QR)
+- **Status:** open
+- **Priority:** P1
+- **Spec:** (none yet — `/spec` before implement)
+- **Acceptance (draft):**
+  - [ ] Export account-level public keys (xpub/zpub/vpub) without showing xprv by default
+  - [ ] Optional address QR codes (offline)
+- **Notes:** Parked from feature triage — not in v0.7.0
+
+### [OPEN] Option C — Network tab (fees / mempool traffic / balances)
+- **Status:** open
+- **Priority:** P1
+- **Spec:** (none yet — `/spec` before implement)
+- **Acceptance (draft):**
+  - [ ] Opt-in fee snapshot (e.g. mempool.space recommended fees)
+  - [ ] Network “traffic” stats (mempool size / recent blocks)
+  - [ ] Optional address-only balances for table rows (leak ack + CSP allowlist)
+- **Notes:** Parked — separate from offline secrets lab
+
 ## Current focus
 
-**Phases 0–6 shipped** (through `v0.6.0`). Pipeline: post-release `/sync_docs` → `init`.
+**Phases through 7 shipped** (`v0.7.0`). Options **B** and **C** are OPEN (spec later).
 
-**Next candidate:** (none open) — `/spec` for next slice.
-
+**Next:** `/spec` Option B or C when ready.
