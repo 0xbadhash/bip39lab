@@ -87,10 +87,11 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** `python -m pytest -q` + product_smoke
 - **Notes:** Full FSM ship #1
 
-### [PLANNED] Phase 1 — Static site
-- **Status:** planned
+### [DONE] Phase 1 — Static site
+- **Status:** done
 - **Priority:** P0
-- **Notes:** Spec after Phase 0 ships
+- **Spec:** `.agents/specs/2026-08-06-phase-1-static-site.md`
+- **Notes:** Full FSM ship #2 — web/ + scure bundle
 
 ### [PLANNED] Phase 2 — Address-only balance
 - **Status:** planned

@@ -1,104 +1,97 @@
-# PR Draft: Phase 0 offline correctness lab (v0.1.0)
+# PR Draft: Phase 1 static offline web lab (v0.2.0)
 
-**Range:** `97b646d...HEAD`
+**Range:** `v0.1.0...HEAD`
 
 ## Summary
 
-- Offline `bip39lab` package + CLI (generate/validate/derive)
-- Vendored BIP-39 wordlist with SHA-256 integrity
-- Legacy scanner quarantined under `legacy/`
-- Golden vectors for abandon…about BIP44/49/84
+- Static `web/` BIP39 lab (CSP, no CDN)
+- Vendored `@scure`/`@noble` offline bundle
+- Hide private / clear secrets; airgap notes
 
 ## What Problem This Solves
 
-Legacy root scanner retained mnemonics, logged seeds, used `eval`, and fetched the wordlist online. Operators lacked a safe offline derivation lab.
+Operators needed a self-hosted Coleman-style UI without third-party trust.
 
 ## Why This Change Was Made
 
-Ship Phase 0 of ROADMAP: stdlib offline lab with fixtures, no network, no secret retention — foundation before any web UI or balance APIs.
+Phase 1 ROADMAP: client-only static site.
 
 ## User Impact
 
-Operators use `python -m bip39lab` for offline mnemonic tools. Unsafe scanner is under `legacy/` only.
+Open `web/index.html` offline (or static host); generate/derive without network.
 
 ## Evidence
 
-TDD: vector + no-retention tests; full suite green.
-
 ```text
-red_cmd: PYTHONPATH=src python -m pytest -q tests/test_bip39_vectors.py (written first against empty package — red then green)
-green_cmd: PYTHONPATH=src python -m pytest -q
+red_cmd: python -m pytest -q tests/test_web_vectors.py
+green_cmd: python -m pytest -q
 ```
 
 ## Evidence pack
 
 | Item | Result |
 |------|--------|
-| hard_gates | run at /pr_review |
-| smoke | product_smoke / pytest |
-| pytest | 17 passed |
+| hard_gates | at pr_review |
+| smoke | pytest |
+| pytest | 19 passed |
 
 ## Spec
 
-**Spec:** `.agents/specs/2026-08-06-phase-0-correctness-lab.md`
+**Spec:** `.agents/specs/2026-08-06-phase-1-static-site.md`
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC0.1 Vendored wordlist + SHA-256 | `test_wordlist_integrity` |
-| AC0.2 Checksum validation | `test_validate_abandon`, `test_reject_bad_checksum` |
-| AC0.3 Golden addresses | `test_derive_bip44/49/84`, `test_derive_all` |
-| AC0.4 CLI offline | `test_cli_derive_no_files`, `test_cli_validate` |
-| AC0.5 No retention | `test_modules_have_no_open_write`, `test_cli_derive_no_files` |
-| AC0.6 Legacy quarantine | `test_legacy_quarantined` |
-| AC0.7 No eval/API in new CLI | code review + package surface |
-| AC0.8 Smoke | `python -m pytest -q` |
-| AC0.9 No secrets committed | gitignore + secrets scan |
+| AC1.1 offline static | `test_web_static_assets_present` |
+| AC1.2–1.3 generate/derive vectors | `test_web_js_abandon_vectors` |
+| AC1.4 hide/clear | HTML/UI presence |
+| AC1.5 CSP | meta in index.html |
+| AC1.6 airgap notes | warn copy |
+| AC1.7 vectors | node pytest |
+| AC1.8 no storage | no localStorage in app.js |
 
 ## Threat notes
 
-- Asset / trust boundary: mnemonics and private keys exist only in process memory for CLI lifetime; never written by `bip39lab`.
-- Abuse case / mitigation: wrong derivation steals trust — mitigated by golden BIP address fixtures in CI.
-- Supply chain: wordlist integrity via SHA-256 of vendored file (no network fetch).
-- Logging: CLI logs omit mnemonic content.
+- Seed material only in browser memory; Clear secrets zeros fields.
+- Bundle is vendored offline — no runtime CDN.
+- CSP blocks connect-src network for page scripts.
 
-## Red-proof (process honesty)
+## Red-proof
 
 ```text
-red_cmd: PYTHONPATH=src python -m pytest -q tests/test_bip39_vectors.py
-green_cmd: PYTHONPATH=src python -m pytest -q
+red_cmd: python -m pytest -q tests/test_web_vectors.py
+green_cmd: python -m pytest -q
 ```
 
 ## Cross-review
 
-See `.agents/artifacts/CROSS_REVIEW.md` (marker CROSS-REVIEW).
+See `.agents/artifacts/CROSS_REVIEW.md`
 
 ## Test plan
 
-- [x] pytest vectors
-- [x] no-retention tests
-- [x] CLI validate/derive
-- [x] legacy path check
+- [x] abandon vectors via node
+- [x] CSP + no CDN
+- [x] full pytest
 
 ## Things that look bad but are actually fine
 
-1. Hand-rolled secp256k1 — educational offline path; gated by golden vectors (Phase 0 scope).
-2. Legacy scanner still in tree under `legacy/` — intentional quarantine, not default entrypoint.
-3. No external bip-utils dependency — intentional minimal offline trust surface.
+1. Large `bip39lab.bundle.js` — intentional offline audit/vendored crypto.
+2. Educational `crypto-core.js` may remain unused — superseded by scure bundle.
+3. node_modules gitignored — rebuild via esbuild + build-entry.mjs.
 
 ```yaml
 things_that_look_bad_but_are_fine:
-  - file: "src/bip39lab/secp256k1.py"
-    concern: "custom ECC"
-    why_fine: "fixture-tested; Phase 0 offline stdlib constraint"
-    validation: "test_derive_bip44/49/84"
-  - file: "legacy/brute-force-btc.py"
-    concern: "unsafe code remains"
-    why_fine: "quarantined + README; not product default"
-    validation: "test_legacy_quarantined"
-  - file: "src/bip39lab/cli.py"
-    concern: "prints mnemonic on generate"
-    why_fine: "stdout only, no file write; user-requested one-shot"
-    validation: "test_cli_derive_no_files"
+  - file: "web/js/bip39lab.bundle.js"
+    concern: "minified blob"
+    why_fine: "reproducible from build-entry + pinned npm versions"
+    validation: "test_web_js_abandon_vectors"
+  - file: "web/js/crypto-core.js"
+    concern: "unused educational code"
+    why_fine: "not loaded by index.html"
+    validation: "index.html script tags"
+  - file: "web/index.html"
+    concern: "file:// CSP"
+    why_fine: "script-src self works for relative scripts"
+    validation: "manual offline open"
 ```

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- CSP: no third-party scripts or network for crypto -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>BIP39 Lab — offline, no retention</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <main class="wrap">
+    <h1>BIP39 Lab <span class="tag">offline</span></h1>
+    <p class="warn">
+      <strong>Airgap recommended.</strong> All crypto runs in this page. Secrets stay in memory only —
+      not written to disk or sent to any server. Open this folder offline or serve as static files.
+      Do not paste real recovery phrases into a machine you do not trust.
+    </p>
+    <p class="hint">Inspired by the UX of public BIP39 tools; this copy is self-hosted with no CDN scripts.</p>
+
+    <label>Word count
+      <select id="wordCount">
+        <option value="12" selected>12</option>
+        <option value="24">24</option>
+      </select>
+    </label>
+    <div class="row">
+      <button type="button" id="btnGenerate">Generate</button>
+      <button type="button" id="btnDerive">Validate &amp; derive</button>
+      <button type="button" id="btnClear" class="danger">Clear secrets</button>
+    </div>
+
+    <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
+
+    <label data-private>BIP39 mnemonic
+      <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
+    </label>
+    <label data-private>Optional passphrase
+      <input id="passphrase" type="password" autocomplete="off" />
+    </label>
+
+    <p id="status" class="status"></p>
+    <h2>First receive addresses (account 0 / index 0)</h2>
+    <pre id="out" class="out"></pre>
+  </main>
+  <!-- Vendored offline bundle: @scure/bip39 + @scure/bip32 + @noble (no CDN) -->
+  <script src="js/bip39lab.bundle.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
