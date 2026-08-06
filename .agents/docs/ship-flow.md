@@ -1,5 +1,8 @@
 # Ship flow
 
+**Detailed pack (Mermaid + Draw.io/SVG, for operators and LLMs):**  
+[ship-flow-detailed.md](ship-flow-detailed.md) · [diagrams/ship-flow-overview.svg](diagrams/ship-flow-overview.svg) · [diagrams/ship-flow-overview.drawio](diagrams/ship-flow-overview.drawio)
+
 ## Pipeline FSM (full)
 
 **FSM** means **Finite State Machine**: a fixed set of **phases (states)** and allowed **transitions**. The ship pipeline is an FSM so agents cannot invent arbitrary “we’re done” paths — each skill only advances when the current phase and gates allow it.
@@ -307,6 +310,7 @@ Full catalog: [skills-catalog.md](skills-catalog.md).
 | `scripts/night_shift_morning_triage.py` | Morning FAIL aggregate after night_shift |
 | `scripts/night_fail_remediate.py` | P0: bounded autofix + recheck + NIGHT_FAIL_TICKETS |
 | `scripts/run_ship_chain.py` | P0: deterministic unattended score→ship→push (no LLM) |
+| `scripts/session_context.py` | P2: Organize pack (phase, OPEN, night FAIL, portfolio lag) |
 
 ## PR_DRAFT narrative (template)
 
