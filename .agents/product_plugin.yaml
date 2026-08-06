@@ -1,8 +1,8 @@
-# Product plugin — bitcoin-scripts (secure offline BIP39 / entropy lab)
+# Product plugin — bip39lab (secure offline BIP39 / entropy lab)
 # Harness does not assume a language; stack is declared here.
 
-product_id: bitcoin-scripts
-product_name: Bitcoin Scripts (secure BIP39 / entropy lab)
+product_id: bip39lab
+product_name: bip39lab (offline BIP-39 / entropy lab)
 repo_root: .
 
 stack:
@@ -24,8 +24,8 @@ vault:
   enabled: false
   root_env: PRODUCT_VAULT_ROOT
   default_root: ""
-  project_label: bitcoin-scripts
-  dev_log_rel: 01-Projects/bitcoin-scripts/dev-log.md
+  project_label: bip39lab
+  dev_log_rel: 01-Projects/bip39lab/dev-log.md
   mirror_docs: []
 
 product_path_prefixes:

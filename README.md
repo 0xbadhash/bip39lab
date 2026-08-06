@@ -1,13 +1,16 @@
-# bitcoin-scripts — offline BIP39 / entropy lab
+# bip39lab — offline BIP-39 / entropy lab
 
 <!-- CURRENT_RELEASE -->
 **Current release:** `v0.4.0` (docs synced via `/sync_docs`)
 <!-- /CURRENT_RELEASE -->
 
+**Repo:** [github.com/0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)
 
 Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by public converters but without third-party trust for seed material.
 
 **Not** a funded-wallet brute-force scanner. Legacy unsafe scanner is under `legacy/` only.
+
+**Balance lookups:** prefer a **local Bitcoin node** you control (planned `--backend bitcoind`). Public explorers are opt-in only and leak address interest.
 
 ## Quick start (CLI)
 
@@ -56,4 +59,4 @@ See [SECURITY.md](SECURITY.md).
 
 ## License
 
-See repository license if present; software provided as-is for self-custody education and offline labs.
+[MIT](LICENSE) — software provided as-is for self-custody education and offline labs.

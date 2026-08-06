@@ -105,4 +105,6 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**All roadmap phases 0–3 shipped** (tags `v0.1.0`–`v0.4.0`). Pipeline phase: `init` (ready for next `/spec`).
+**All roadmap phases 0–3 shipped** (tags `v0.1.0`–`v0.4.0`). Pipeline phase: `init`.
+
+**Next candidate:** local **bitcoind** address-only balance backend (your node, not remote explorers) — start with `/spec`.

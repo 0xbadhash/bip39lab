@@ -1,4 +1,4 @@
-# Security policy — bitcoin-scripts / BIP39 Lab
+# Security policy — bip39lab
 
 ## Threat model (product)
 

@@ -1,10 +1,12 @@
-# AGENTS.md — bitcoin-scripts + agent harness
+# AGENTS.md — bip39lab + agent harness
 
 Contract for any coding agent working in this repo.
 
+**GitHub:** `0xbadhash/bip39lab` (local folder may still be named `bitcoin-scripts`).
+
 ## Product intent
 
-**Secure, no-retention BIP-39 / entropy / derivation lab** (Ian Coleman–style capability), self-hosted and offline-first. Users must be able to generate and inspect entropy, mnemonics, seeds, and addresses **without** third parties seeing seed material and **without** the tool retaining secrets.
+**Secure, no-retention BIP-39 / entropy / derivation lab** (Ian Coleman–style capability), self-hosted and offline-first. Prefer **local bitcoind** for address balance when available. Users must be able to generate and inspect entropy, mnemonics, seeds, and addresses **without** third parties seeing seed material and **without** the tool retaining secrets.
 
 **Not** a funded-wallet brute-force scanner. Random mnemonic “lottery” and secret logging are anti-goals.
 

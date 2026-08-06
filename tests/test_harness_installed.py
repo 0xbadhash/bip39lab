@@ -33,7 +33,7 @@ def test_pipeline_init_phase():
 
 def test_product_plugin_requires_spec_policy():
     text = (ROOT / ".agents" / "product_plugin.yaml").read_text(encoding="utf-8")
-    assert "bitcoin-scripts" in text
+    assert "bip39lab" in text
     assert "require_spec" in text or "full_fsm_per_roadmap_phase" in text
 
 
