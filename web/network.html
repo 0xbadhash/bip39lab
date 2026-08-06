@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Network page may call mempool.space only — Lab stays connect-src none -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://mempool.space; base-uri 'none'; form-action 'none'" />
+  <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
+  <title>Network · bip39.catalyxt.xyz</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">39</div>
+        <div>
+          <div class="brand-title">bip39lab</div>
+          <div class="brand-sub">Offline BTC lab · Catalyxt</div>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Site sections">
+        <a class="nav-item" data-nav="lab" href="index.html">
+          <span class="nav-step">1</span>
+          <span class="nav-label"><strong>Lab</strong><small>Generate and derive</small></span>
+        </a>
+        <a class="nav-item" data-nav="multisig" href="multisig.html">
+          <span class="nav-step">2</span>
+          <span class="nav-label"><strong>Multisig</strong><small>M-of-N explainer</small></span>
+        </a>
+        <a class="nav-item active" data-nav="network" href="network.html" aria-current="page">
+          <span class="nav-step">3</span>
+          <span class="nav-label"><strong>Network</strong><small>Fees · balances</small></span>
+        </a>
+        <a class="nav-item" data-nav="balance" href="index.html#balance">
+          <span class="nav-step">4</span>
+          <span class="nav-label"><strong>Balance</strong><small>CLI docs</small></span>
+        </a>
+        <a class="nav-item" data-nav="about" href="index.html#about">
+          <span class="nav-step">5</span>
+          <span class="nav-label"><strong>About</strong><small>Security model</small></span>
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <p class="sidebar-note">
+          This page may contact <strong>mempool.space</strong> after you opt in.
+          Lab &amp; Multisig stay offline for secrets.
+        </p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <div>
+          <h1>Network (opt-in)</h1>
+          <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
+        </div>
+        <span class="chip">mempool.space</span>
+      </header>
+
+      <main class="content">
+        <div class="card">
+          <h2>What this page is</h2>
+          <p class="lead-help">
+            Like checking <strong>bank fees and account balances online</strong> — without logging into your vault keys.
+            Nothing here needs your recovery phrase. If you look up an address, that service learns you care about it
+            (like typing an account number into a public search box).
+          </p>
+          <p class="control-help">
+            <strong>Is:</strong> fee snapshot, how busy the mempool looks, optional balance for addresses you paste or brought from Lab.<br />
+            <strong>Is not:</strong> a wallet, price charts, or spending tools. Failures show as unknown/error — never a fake “0” when the API fails.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Fees &amp; traffic</h2>
+          <p class="control-help">
+            <strong>Fee rate</strong> (sat/vB) is like a postage stamp price for Bitcoin transactions — higher often confirms faster when the network is busy.
+            Example cost assumes ~140 vB (simple modern send) — an estimate only.
+          </p>
+          <div class="row">
+            <button type="button" class="btn" id="btnFetchSnap">Fetch fee + traffic snapshot</button>
+          </div>
+          <p id="snapStatus" class="status" aria-live="polite"></p>
+          <div id="snapResult" class="watch-list" hidden>
+            <div class="watch-item">
+              <div class="watch-item-title">Recommended fee rates (sat/vB)</div>
+              <pre class="out" id="feeOut"></pre>
+              <p class="control-help" id="feeExample"></p>
+            </div>
+            <div class="watch-item">
+              <div class="watch-item-title">Network traffic (public)</div>
+              <pre class="out" id="trafficOut"></pre>
+              <p class="control-help">Educational context only — not financial advice.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-wide">
+          <h2>Address balances (address-only)</h2>
+          <p class="control-help">
+            Enter Bitcoin <strong>addresses</strong> only (one per line). Never paste a seed phrase here.
+            Checking balance tells mempool.space which addresses you queried.
+          </p>
+          <label class="check">
+            <input type="checkbox" id="balAck" />
+            I understand these addresses will be sent to mempool.space (public API)
+          </label>
+          <div class="row" style="margin-top:0.75rem">
+            <button type="button" class="btn secondary" id="btnLoadLab" disabled>Load addresses from Lab (this session)</button>
+            <button type="button" class="btn" id="btnFetchBal" disabled>Fetch balances</button>
+          </div>
+          <label class="field" for="balAddrs">Addresses
+            <textarea id="balAddrs" rows="5" spellcheck="false" autocomplete="off"
+              placeholder="bc1q…&#10;bc1p…&#10;3…"></textarea>
+          </label>
+          <p id="balStatus" class="status" aria-live="polite"></p>
+          <div class="table-scroll cols-modern">
+            <table class="addr-table" id="balTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Balance (sats)</th>
+                  <th>Detail</th>
+                </tr>
+              </thead>
+              <tbody id="balTableBody">
+                <tr class="empty-row"><td colspan="5">No balances yet — acknowledge, add addresses, then Fetch.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="control-help">
+            Prefer a local node for sensitive checks:
+            <code>python -m bip39lab balance &lt;addr&gt; --backend bitcoind --rpc-cookie ~/.bitcoin/.cookie</code>
+          </p>
+        </div>
+
+        <p class="footer-host">
+          <a href="index.html">← Lab</a> ·
+          <a href="https://bip39.catalyxt.xyz/network.html">bip39.catalyxt.xyz/network.html</a>
+        </p>
+      </main>
+    </div>
+  </div>
+  <script src="js/network.bundle.js"></script>
+  <script src="js/network-app.js"></script>
+</body>
+</html>

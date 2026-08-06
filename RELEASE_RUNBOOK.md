@@ -1,7 +1,11 @@
-# RELEASE RUNBOOK — v0.9.0 Multisig explainer
+# RELEASE RUNBOOK — v0.10.0 Option C Network
 
-Educational M-of-N lab (public keys only). Options A/B were already shipped (v0.7/v0.8).
+Opt-in Network page: fee/traffic snapshot + address-only balances via mempool.space.
+Lab & Multisig remain `connect-src 'none'`. Network page CSP: `connect-src https://mempool.space`.
 
-Smoke: pytest 43 · e2e 13 live
+Smoke: pytest 45 · e2e 16 (local; S13b hits live mempool.space)
 
-URL: https://bip39.catalyxt.xyz/multisig.html
+URLs:
+- https://bip39.catalyxt.xyz/
+- https://bip39.catalyxt.xyz/multisig.html
+- https://bip39.catalyxt.xyz/network.html

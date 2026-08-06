@@ -27,6 +27,7 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.getByRole("button", { name: /Generate/i })).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="lab"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="multisig"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="balance"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="about"]')).toBeVisible();
     // Stable labels (must match Multisig page sidebar)
@@ -223,8 +224,9 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.locator("#panel-balance")).toBeVisible();
     await expect(page.locator("#panel-balance")).toContainText(/mempool|bitcoind|CLI/i);
     await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveClass(/active/);
-    // All four nav items still present
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(4);
+    // Lab + Multisig + Network + Balance + About
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
 
     await page.locator('.nav-item[data-nav="about"]').click();
     await expect(page.locator("#panel-about")).toBeVisible();
@@ -236,7 +238,7 @@ test.describe("BIP39 Lab E2E", () => {
     await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(4);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
     await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
     await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
 
@@ -244,7 +246,7 @@ test.describe("BIP39 Lab E2E", () => {
     await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page).toHaveURL(/index\.html#balance|#balance|\/#balance/);
     await expect(page.locator("#panel-balance")).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(4);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
   });
 
   test("S11 invalid mnemonic", async ({ page }) => {

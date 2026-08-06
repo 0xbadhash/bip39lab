@@ -4,6 +4,8 @@
 **Live apps:**  
 - BIP39 Lab: https://bip39.catalyxt.xyz/  
 - Multisig lab: https://bip39.catalyxt.xyz/multisig.html  
+- Network (opt-in): https://bip39.catalyxt.xyz/network.html  
+
 
 **GitHub (raw):** https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 **GitHub (blob):** https://github.com/0xbadhash/bip39lab/blob/master/docs/E2E_COMET_SCENARIOS.md  
@@ -167,7 +169,7 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | 2 | Uncheck Hide private | Visible again |
 | 3 | Clear secrets | Empty mnemonic; entropy `—`; empty table |
 
-### S10 — Nav Balance + About + Multisig link
+### S10 — Nav Balance + About + Multisig + Network
 
 | Step | Action | Expected |
 |------|--------|----------|
@@ -175,6 +177,8 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | 2 | About tab | Security / no retention |
 | 3 | Lab tab | Back to lab |
 | 4 | Click **Multisig** in sidebar | Navigates to `/multisig.html`; heading “Multisig, explained” |
+| 5 | Sidebar | **5** nav items: Lab, Multisig, Network, Balance, About |
+| 6 | Click **Network** | `/network.html` loads |
 
 ### S11 — Invalid mnemonic
 
@@ -208,6 +212,20 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 
 **PASS if:** Demo generator and/or paste works; private keys refused; educational copy present.
 
+### S13 — Network page (Option C)
+
+**URL:** https://bip39.catalyxt.xyz/network.html
+
+| Step | Action | Expected |
+|------|--------|----------|
+| 1 | Open Network | Heading “Network”; balances Fetch buttons **disabled** until ack |
+| 2 | Check leak ack | Fetch balances + Load from Lab enabled |
+| 3 | Open Lab (`/`) | CSP still `connect-src 'none'` |
+| 4 | **S13b:** Network → Fetch fee + traffic | Fee rates show sat/vB; tip/mempool lines; status OK |
+| 5 | Never paste a seed on Network | Address-shaped filter only |
+
+**PASS if:** Opt-in snapshot works; Lab stays offline; balances gated by ack.
+
 ---
 
 ## Report template (required final output)
@@ -217,6 +235,7 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 URLs:
   Lab: https://bip39.catalyxt.xyz/
   Multisig: https://bip39.catalyxt.xyz/multisig.html
+  Network: https://bip39.catalyxt.xyz/network.html
 Date (UTC):
 Agent: Comet / Perplexity / other:
 
@@ -230,11 +249,12 @@ S6 Copy: PASS|FAIL —
 S7 QR: PASS|FAIL — 
 S8 Watch-only: PASS|FAIL — 
 S9 Clear/hide: PASS|FAIL — 
-S10 Nav (+ Multisig link): PASS|FAIL — 
+S10 Nav (+ Multisig + Network): PASS|FAIL — 
 S11 Invalid: PASS|FAIL — 
 S12 Multisig explainer: PASS|FAIL — 
+S13 Network (+ fee snapshot): PASS|FAIL — 
 
-Score: __ / 13 PASS
+Score: __ / 14 PASS
 Blockers:
 Notes:
 ```
@@ -243,7 +263,7 @@ Notes:
 
 ## Operator one-liner for Comet
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute the PROMPT FOR COMET section (S0–S12) against https://bip39.catalyxt.xyz/ and https://bip39.catalyxt.xyz/multisig.html. Return the Report template filled in.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute the PROMPT FOR COMET section (S0–S13) against https://bip39.catalyxt.xyz/, multisig.html, and network.html. Return the Report template filled in.
 
 ---
 

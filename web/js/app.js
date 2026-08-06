@@ -576,6 +576,25 @@
       }
       const result = await BIP39Lab.deriveAddresses(m, pp, path);
       fillAddressTable(result);
+      // Bridge for Network page: addresses only (never mnemonic)
+      try {
+        const addrs = [];
+        const seen = Object.create(null);
+        (result.rows || []).forEach((r) => {
+          ["bip86_p2tr", "bip84_p2wpkh", "bip49_p2sh_p2wpkh", "bip44_p2pkh"].forEach((k) => {
+            const a = r[k];
+            if (a && !seen[a]) {
+              seen[a] = true;
+              addrs.push(a);
+            }
+          });
+        });
+        if (addrs.length) {
+          sessionStorage.setItem("bip39lab.derivedAddresses", JSON.stringify(addrs));
+        }
+      } catch (e) {
+        /* ignore quota / private mode */
+      }
       updatePathSummary(path, (result.rows && result.rows.length) || path.count);
       const plain =
         "Done offline. Listed " +
@@ -753,7 +772,7 @@
     document.querySelectorAll(".nav-item[data-nav]").forEach((el) => {
       el.addEventListener("click", (ev) => {
         const nav = el.getAttribute("data-nav");
-        if (nav === "multisig") return; // full navigation to multisig.html
+        if (nav === "multisig" || nav === "network") return; // full page navigation
         if (nav === "lab" || nav === "balance" || nav === "about") {
           ev.preventDefault();
           showTab(nav);

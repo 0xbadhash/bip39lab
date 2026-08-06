@@ -3,7 +3,7 @@
 - **Product:** bip39lab
 - **Created:** 2026-08-06
 - **Updated:** 2026-08-06 (re-spec for current site)
-- **Status:** ready-for-agent
+- **Status:** done (v0.10.0)
 - **Priority:** P0
 - **Roadmap:** ROADMAP.md → Open work (**Next:** true)
 - **Plan:** `.agents/specs/2026-08-06-option-c-network-tab-plan.md`
