@@ -1,9 +1,13 @@
 /**
  * Offline educational multisig helpers (public keys only).
  * P2SH + P2WSH bare M-of-N CHECKMULTISIG.
+ * Optional: generate demo cosigners (throwaway seeds → compressed pubkeys).
  */
 import { sha256 } from "@noble/hashes/sha2.js";
 import { ripemd160 } from "@noble/hashes/legacy.js";
+import { generateMnemonic, mnemonicToSeedSync } from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english.js";
+import { HDKey } from "@scure/bip32";
 
 const OP_0 = 0x00;
 const OP_CHECKMULTISIG = 0xae;
@@ -220,10 +224,48 @@ export function buildMultisigFromText(partsText, m, options) {
   };
 }
 
+/**
+ * Generate N throwaway cosigners for education only.
+ * Each: random 12-word mnemonic → BIP84 receive index 0 compressed pubkey.
+ * Path: m/84'/0'/0'/0/0 (same style as a normal native-segwit first receive key).
+ *
+ * WARNING: demo only — never fund these mnemonics for real money.
+ *
+ * @param {number} n cosigner count 2–7
+ * @returns {{ path: string, cosigners: Array<{label,mnemonic,pubkeyHex,path}>, pubkeysText: string }}
+ */
+export function generateDemoCosigners(n) {
+  const count = Math.max(2, Math.min(7, Math.floor(Number(n) || 3)));
+  const path = "m/84'/0'/0'/0/0";
+  const cosigners = [];
+  for (let i = 0; i < count; i++) {
+    const mnemonic = generateMnemonic(wordlist, 128);
+    const seed = mnemonicToSeedSync(mnemonic, "");
+    const root = HDKey.fromMasterSeed(seed);
+    const child = root.derive(path);
+    const pub = child.publicKey;
+    if (!pub || pub.length !== 33) throw new Error("failed to derive public key");
+    cosigners.push({
+      label: "Cosigner " + String.fromCharCode(65 + i), // A, B, C…
+      mnemonic,
+      pubkeyHex: bytesToHex(pub),
+      path,
+    });
+  }
+  return {
+    path,
+    cosigners,
+    pubkeysText: cosigners.map((c) => c.pubkeyHex).join("\n"),
+    warning:
+      "DEMO ONLY — these recovery phrases were generated in this browser for learning. Do not send real bitcoin to wallets made from them unless you intend a throwaway test.",
+  };
+}
+
 export const MultisigLab = {
   buildMultisigFromText,
+  generateDemoCosigners,
   looksPrivate,
-  VERSION: "0.9.0-ms",
+  VERSION: "0.9.1-ms",
 };
 
 const g = typeof globalThis !== "undefined" ? globalThis : undefined;

@@ -188,7 +188,9 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 
 **URL:** https://bip39.catalyxt.xyz/multisig.html  
 
-**Sample compressed public keys (not private):**
+**Where keys come from:** Real setups use each cosigner’s wallet public key. This lab also offers **Generate demo cosigners** (offline throwaway seeds → pubkeys).
+
+**Sample compressed public keys (not private) — for manual paste path:**
 ```text
 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
 02c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5
@@ -196,15 +198,15 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 
 | Step | Action | Expected |
 |------|--------|----------|
-| 1 | Open multisig page | Explainer text about M-of-N / vault analogy; offline chip |
-| 2 | Paste the two pubkeys; M = 2; BIP67 checked | — |
-| 3 | **Build multisig address** | Result shows; **P2SH** = `33RQmypKhD6f4tMquiR5a3C6dRT7eBpaiG` |
-| 4 | P2WSH field | starts with `bc1` |
-| 5 | Status | mentions offline / no private keys |
-| 6 | Replace parts with a WIF-looking string e.g. starts with `5Hue…` and Build | Error about **private** keys not accepted |
-| 7 | Optional: Copy P2SH | “Copied” / confirmation behavior if present |
+| 1 | Open multisig page | Explainer “Where do the public keys come from?”; **Generate demo cosigners** button |
+| 2a | **Demo path:** N=3 → Generate demo cosigners | 3 cosigner cards; pubkey box filled with 3 lines `02`/`03…` |
+| 2b | **Or paste path:** paste the two sample pubkeys | — |
+| 3 | M = 2 (or auto for demo); BIP67 on → **Build** | Result shows; P2SH starts with `3`; P2WSH with `bc1` |
+| 4 | Manual golden (paste path only) | P2SH = `33RQmypKhD6f4tMquiR5a3C6dRT7eBpaiG` |
+| 5 | Paste WIF-looking `5Hue…` and Build | Error: private keys not accepted |
+| 6 | Status | offline / no private keys messaging |
 
-**PASS if:** Golden P2SH matches; private key input refused; page stays educational (no explorer discovery UI).
+**PASS if:** Demo generator and/or paste works; private keys refused; educational copy present.
 
 ---
 

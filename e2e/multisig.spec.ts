@@ -9,6 +9,7 @@ test.describe("Multisig explainer E2E", () => {
   test("S12 build 2-of-2 from public keys and refuse private", async ({ page }) => {
     await page.goto("/multisig.html");
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
+    await expect(page.locator("body")).toContainText(/Where do the public keys come from/i);
 
     await page.locator("#msParts").fill(P1 + "\n" + P2);
     await page.locator("#msM").fill("2");
@@ -23,5 +24,20 @@ test.describe("Multisig explainer E2E", () => {
     await page.locator("#msParts").fill("5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ");
     await page.locator("#msBuild").click();
     await expect(page.locator("#msStatus")).toContainText(/private/i);
+  });
+
+  test("S12b generate demo cosigners then build", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await page.locator("#msDemoN").selectOption("3");
+    await page.locator("#msGenDemo").click();
+    await expect(page.locator("#msDemoList")).toBeVisible();
+    await expect(page.locator("#msDemoList .watch-item")).toHaveCount(3);
+    const pubs = await page.locator("#msParts").inputValue();
+    expect(pubs.trim().split(/\n/).length).toBe(3);
+    expect(pubs).toMatch(/^0[23]/m);
+    await page.locator("#msBuild").click();
+    await expect(page.locator("#msResult")).toBeVisible();
+    await expect(page.locator("#msP2sh")).toContainText(/^3/);
+    await expect(page.locator("#msP2wsh")).toContainText(/^bc1/);
   });
 });
