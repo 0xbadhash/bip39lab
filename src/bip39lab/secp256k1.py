@@ -17,7 +17,7 @@ class Point:
     infinity: bool = False
 
     @staticmethod
-    def inf() -> "Point":
+    def inf() -> Point:
         return Point(None, None, True)
 
 

@@ -7,7 +7,7 @@ import logging
 import sys
 
 from .bip39 import generate_mnemonic, validate_mnemonic
-from .derive import derive_addresses, derive_address_for_type
+from .derive import derive_address_for_type, derive_addresses
 
 # Never attach handlers that might capture secrets at DEBUG with full mnemonic dumps.
 logger = logging.getLogger("bip39lab")

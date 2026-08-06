@@ -1,10 +1,11 @@
 """Golden vectors — abandon…about (BIP-39 / common wallet paths)."""
 
+import hashlib
+from pathlib import Path
+
 from bip39lab.bip39 import generate_mnemonic, mnemonic_to_seed, validate_mnemonic
 from bip39lab.derive import derive_address_for_type, derive_addresses
 from bip39lab.wordlist import EXPECTED_SHA256, load_english_wordlist
-import hashlib
-from pathlib import Path
 
 ABANDON = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 

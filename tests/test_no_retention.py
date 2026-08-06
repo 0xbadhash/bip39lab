@@ -1,8 +1,8 @@
 """Ensure bip39lab does not write seed material to disk."""
 
 from pathlib import Path
-import bip39lab.bip39 as bip39
-import bip39lab.derive as derive
+
+from bip39lab import bip39, derive
 from bip39lab.cli import main
 
 ABANDON = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"

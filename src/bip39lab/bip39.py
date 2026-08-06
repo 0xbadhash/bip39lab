@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import secrets
-from typing import Iterable
 
 from .wordlist import load_english_wordlist, word_index
 

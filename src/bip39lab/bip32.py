@@ -47,7 +47,7 @@ def parse_path(path: str) -> list[int]:
         return []
     out: list[int] = []
     for part in s.split("/"):
-        hardened = part.endswith("'") or part.endswith("h")
+        hardened = part.endswith(("'", "h"))
         num = int(part[:-1] if hardened else part)
         if hardened:
             num |= HARDENED

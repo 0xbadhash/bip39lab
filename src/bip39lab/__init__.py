@@ -4,11 +4,11 @@ from .bip39 import generate_mnemonic, mnemonic_to_seed, validate_mnemonic
 from .derive import derive_address_for_type, derive_addresses
 
 __all__ = [
+    "derive_address_for_type",
+    "derive_addresses",
     "generate_mnemonic",
     "mnemonic_to_seed",
     "validate_mnemonic",
-    "derive_address_for_type",
-    "derive_addresses",
 ]
 
 __version__ = "0.1.0"
