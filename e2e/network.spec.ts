@@ -12,11 +12,11 @@ test.describe("Network page E2E", () => {
     await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
     await expect(page.locator("body")).toContainText(/mempool\.space/i);
 
-    // Network CSP may call mempool.space
+    // Network CSP: same-origin proxy and/or direct mempool.space (never offline-only)
     const netCsp =
       (await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content")) ||
       "";
-    expect(netCsp).toContain("mempool.space");
+    expect(netCsp).toMatch(/connect-src[^;]*('self'|mempool\.space)/);
     expect(netCsp).not.toMatch(/connect-src\s+'none'/);
 
     await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);

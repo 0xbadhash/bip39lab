@@ -72,8 +72,15 @@ console.log(JSON.stringify({
 def test_network_static_and_lab_csp():
     net = (ROOT / "web/network.html").read_text(encoding="utf-8")
     assert "mempool.space" in net
-    assert "connect-src https://mempool.space" in net
+    # same-origin proxy + direct fallback
+    assert "connect-src 'self' https://mempool.space" in net or (
+        "connect-src" in net and "mempool.space" in net and "'self'" in net
+    )
     assert "network.bundle.js" in net
+    conf = (ROOT / "deploy/nginx-bip39.catalyxt.xyz.conf").read_text(encoding="utf-8")
+    assert "location /api/mempool/" in conf
+    assert "mempool.space" in conf
+    assert "ipv6=off" in conf  # AAAA to mempool.space often blackholes from this host
     lab = (ROOT / "web/index.html").read_text(encoding="utf-8")
     assert "connect-src 'none'" in lab
     assert "network.html" in lab

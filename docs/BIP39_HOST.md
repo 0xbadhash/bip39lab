@@ -45,7 +45,13 @@ curl -sI https://bip39.catalyxt.xyz/ | head -8
 curl -s -o /dev/null -w '%{http_code}\n' https://bip39.catalyxt.xyz/
 # expect 404 on scanner probes
 curl -s -o /dev/null -w '%{http_code}\n' https://bip39.catalyxt.xyz/package.json
+# Network page same-origin mempool proxy (Option C) — must be 200 JSON
+curl -sS -m 15 https://bip39.catalyxt.xyz/api/mempool/v1/fees/recommended
+curl -sI https://bip39.catalyxt.xyz/network.html | grep -i content-security
+# expect: connect-src 'self' https://mempool.space
 ```
+
+**Note:** nginx resolves mempool.space with `ipv6=off` (AAAA is often unreachable from this VPS). The Network page uses `/api/mempool/…` first so browsers avoid third-party fetch failures.
 
 ## Free balance review (CLI, not the page)
 

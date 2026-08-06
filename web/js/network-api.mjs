@@ -1,26 +1,73 @@
 /**
  * mempool.space REST helpers + pure parsers (Option C).
  * No secrets — addresses and public chain data only.
+ *
+ * Production (bip39.catalyxt.xyz): same-origin /api/mempool/ nginx proxy
+ * so the browser never needs a third-party connect (adblock/CSP/CORS-safe).
+ * Local e2e / static server: direct https://mempool.space/api
  */
 
-export const MEMPOOL_BASE = "https://mempool.space/api";
+export const MEMPOOL_PUBLIC = "https://mempool.space/api";
+export const MEMPOOL_PROXY_PATH = "/api/mempool";
 export const EXAMPLE_VBYTES = 140; // simple 1-in-2-out P2WPKH estimate
 export const SESSION_ADDR_KEY = "bip39lab.derivedAddresses";
+export const FETCH_TIMEOUT_MS = 20_000;
 
-export function feesUrl() {
-  return MEMPOOL_BASE + "/v1/fees/recommended";
+/** @deprecated use resolveMempoolBase() — kept for tests/docs */
+export const MEMPOOL_BASE = MEMPOOL_PUBLIC;
+
+/**
+ * Prefer same-origin proxy on Catalyxt hosts; otherwise public API.
+ */
+export function resolveMempoolBase() {
+  try {
+    if (typeof location !== "undefined" && location.protocol && location.protocol.indexOf("http") === 0) {
+      const host = String(location.hostname || "");
+      if (host === "bip39.catalyxt.xyz" || /\.catalyxt\.xyz$/i.test(host) || host === "catalyxt.xyz") {
+        return MEMPOOL_PROXY_PATH;
+      }
+    }
+  } catch (e) {
+    /* ignore */
+  }
+  return MEMPOOL_PUBLIC;
 }
 
-export function tipHeightUrl() {
-  return MEMPOOL_BASE + "/blocks/tip/height";
+export function feesUrl(base) {
+  return (base || resolveMempoolBase()) + "/v1/fees/recommended";
 }
 
-export function mempoolUrl() {
-  return MEMPOOL_BASE + "/mempool";
+export function tipHeightUrl(base) {
+  return (base || resolveMempoolBase()) + "/blocks/tip/height";
 }
 
-export function addressUrl(addr) {
-  return MEMPOOL_BASE + "/address/" + encodeURIComponent(addr);
+export function mempoolUrl(base) {
+  return (base || resolveMempoolBase()) + "/mempool";
+}
+
+export function addressUrl(addr, base) {
+  return (base || resolveMempoolBase()) + "/address/" + encodeURIComponent(addr);
+}
+
+/**
+ * If primary base fails, try the other (proxy ↔ public).
+ */
+export function alternateBase(primary) {
+  const p = String(primary || "");
+  if (p.indexOf("/api/mempool") === 0 || p.indexOf("/api/mempool") >= 0 && p.indexOf("mempool.space") < 0) {
+    return MEMPOOL_PUBLIC;
+  }
+  if (p.indexOf("mempool.space") >= 0) {
+    try {
+      if (typeof location !== "undefined" && location.origin) {
+        return location.origin + MEMPOOL_PROXY_PATH;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return MEMPOOL_PROXY_PATH;
+  }
+  return null;
 }
 
 /**
@@ -172,38 +219,110 @@ export function saveSessionAddresses(addrs) {
   }
 }
 
-/** Browser fetch wrapper — inject for tests */
-export async function fetchJson(url, fetcher) {
+function rewriteUrlBase(url, fromBase, toBase) {
+  if (!fromBase || !toBase || fromBase === toBase) return null;
+  const u = String(url);
+  if (u.indexOf(fromBase) !== 0) return null;
+  return toBase + u.slice(fromBase.length);
+}
+
+async function fetchOnce(url, fetcher, asText) {
   const f = fetcher || fetch;
-  const res = await f(url, { method: "GET", credentials: "omit" });
-  if (!res.ok) {
-    throw new Error("HTTP " + res.status);
+  const opts = { method: "GET", credentials: "omit", cache: "no-store" };
+  let timer = null;
+  if (typeof AbortController !== "undefined") {
+    const ctrl = new AbortController();
+    opts.signal = ctrl.signal;
+    timer = setTimeout(function () {
+      try {
+        ctrl.abort();
+      } catch (e) {
+        /* ignore */
+      }
+    }, FETCH_TIMEOUT_MS);
   }
-  const ct = (res.headers && res.headers.get && res.headers.get("content-type")) || "";
-  if (ct.indexOf("json") >= 0 || url.indexOf("/address/") >= 0 || url.indexOf("fees") >= 0 || url.indexOf("mempool") >= 0) {
+  try {
+    const res = await f(url, opts);
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
+    if (asText) {
+      return res.text();
+    }
+    const ct = (res.headers && res.headers.get && res.headers.get("content-type")) || "";
     const text = await res.text();
+    if (
+      ct.indexOf("json") >= 0 ||
+      url.indexOf("/address/") >= 0 ||
+      url.indexOf("fees") >= 0 ||
+      url.indexOf("mempool") >= 0
+    ) {
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        return text;
+      }
+    }
+    return text;
+  } catch (e) {
+    const name = e && e.name ? e.name : "";
+    const msg = e && e.message ? e.message : String(e);
+    if (name === "AbortError" || /aborted/i.test(msg)) {
+      throw new Error("timeout after " + FETCH_TIMEOUT_MS / 1000 + "s");
+    }
+    // Browser TypeError: Failed to fetch → clearer
+    if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) {
+      throw new Error("network blocked or unreachable (" + url + ")");
+    }
+    throw e instanceof Error ? e : new Error(msg);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+/** Browser fetch wrapper — inject for tests; retries alternate base once */
+export async function fetchJson(url, fetcher) {
+  try {
+    return await fetchOnce(url, fetcher, false);
+  } catch (first) {
+    const primary = resolveMempoolBase();
+    const alt = alternateBase(primary);
+    const altUrl = alt ? rewriteUrlBase(url, primary, alt) : null;
+    if (!altUrl || altUrl === url) throw first;
     try {
-      return JSON.parse(text);
-    } catch (e) {
-      // tip height is plain text number
-      return text;
+      return await fetchOnce(altUrl, fetcher, false);
+    } catch (second) {
+      throw first;
     }
   }
-  return res.text();
 }
 
 export async function fetchText(url, fetcher) {
-  const f = fetcher || fetch;
-  const res = await f(url, { method: "GET", credentials: "omit" });
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.text();
+  try {
+    return await fetchOnce(url, fetcher, true);
+  } catch (first) {
+    const primary = resolveMempoolBase();
+    const alt = alternateBase(primary);
+    const altUrl = alt ? rewriteUrlBase(url, primary, alt) : null;
+    if (!altUrl || altUrl === url) throw first;
+    try {
+      return await fetchOnce(altUrl, fetcher, true);
+    } catch (second) {
+      throw first;
+    }
+  }
 }
 
 const g = typeof globalThis !== "undefined" ? globalThis : undefined;
 export const NetworkApi = {
   MEMPOOL_BASE,
+  MEMPOOL_PUBLIC,
+  MEMPOOL_PROXY_PATH,
   EXAMPLE_VBYTES,
   SESSION_ADDR_KEY,
+  FETCH_TIMEOUT_MS,
+  resolveMempoolBase,
+  alternateBase,
   feesUrl,
   tipHeightUrl,
   mempoolUrl,

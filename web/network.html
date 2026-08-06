@@ -4,8 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Network page may call mempool.space only — Lab stays connect-src none -->
+  <!-- 'self' = same-origin /api/mempool proxy; mempool.space = direct fallback -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://mempool.space; base-uri 'none'; form-action 'none'" />
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://mempool.space; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
   <title>Network · bip39.catalyxt.xyz</title>
   <link rel="stylesheet" href="css/app.css" />

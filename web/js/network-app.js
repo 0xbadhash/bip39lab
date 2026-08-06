@@ -22,7 +22,12 @@
       setStatus($("snapStatus"), "Network API not loaded.", "err");
       return;
     }
-    setStatus($("snapStatus"), "Fetching public data from mempool.space…", "");
+    const base = api.resolveMempoolBase ? api.resolveMempoolBase() : "https://mempool.space/api";
+    setStatus(
+      $("snapStatus"),
+      "Fetching public fee/traffic data (" + (base.indexOf("/api/mempool") === 0 ? "via lab proxy" : "mempool.space") + ")…",
+      ""
+    );
     $("snapResult").hidden = true;
     try {
       const feesRaw = await api.fetchJson(api.feesUrl());
@@ -83,7 +88,9 @@
     } catch (e) {
       setStatus(
         $("snapStatus"),
-        "Snapshot failed: " + (e && e.message ? e.message : e) + " (not showing fake zeros).",
+        "Snapshot failed: " +
+          (e && e.message ? e.message : e) +
+          " — try hard-refresh (Ctrl+Shift+R). Lab proxy or mempool.space may be blocked on this network. (not showing fake zeros).",
         "err"
       );
     }
