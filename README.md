@@ -8,9 +8,11 @@
 
 Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by public converters but without third-party trust for seed material.
 
+**Public host:** [https://bip39.catalyxt.xyz/](https://bip39.catalyxt.xyz/) (English UI only). Brand domain is **`catalyxt.xyz`** — do not use `catalyxt.ltd` for new deploys.
+
 **Not** a funded-wallet brute-force scanner. Legacy unsafe scanner is under `legacy/` only.
 
-**Balance lookups:** prefer a **local Bitcoin node** you control (`--backend bitcoind`). Public explorers are opt-in only and leak address interest.
+**Balance lookups:** prefer a **local Bitcoin node** (`--backend bitcoind`). For free review without a node, use **`--backend mempool`** (mempool.space REST). Public explorers require leak acknowledgment. There is no free public Bitcoin Core JSON-RPC.
 
 ## Quick start (CLI)
 
@@ -23,19 +25,27 @@ python -m bip39lab validate abandon abandon abandon abandon abandon abandon aban
 python -m bip39lab derive abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
 # Optional balance (address only — never pass a mnemonic):
 python -m bip39lab balance bc1q... --backend none
+# Free public review (REST — not Core RPC):
+python -m bip39lab balance bc1q... --backend mempool --i-understand-address-leak
 # Prefer your own node (JSON-RPC scantxoutset; cookie or user/pass — never logged):
 python -m bip39lab balance bc1q... --backend bitcoind --rpc-cookie ~/.bitcoin/.cookie
 # Or env: BIP39LAB_RPC_URL BIP39LAB_RPC_USER BIP39LAB_RPC_PASSWORD BIP39LAB_RPC_COOKIE
-# Public explorer (leaks address interest — requires ack):
+# Alternate explorer:
 python -m bip39lab balance bc1q... --backend blockstream --i-understand-address-leak
 ```
 
 ## Quick start (web)
 
+**Hosted:** open [https://bip39.catalyxt.xyz/](https://bip39.catalyxt.xyz/) (same Catalyxt card shell as `card.catalyxt.xyz`).
+
+Locally:
+
 1. Open `web/index.html` in a browser (prefer airgapped machine).
 2. Or serve static files: `python -m http.server 8080 --directory web`
 3. Generate / paste mnemonic, derive first BIP44/49/84 addresses.
 4. Use **Clear secrets** when done. Nothing is stored.
+
+Host ops: `docs/BIP39_HOST.md` · TLS: `bash deploy/setup_bip39_tls.sh`
 
 Rebuild offline bundle (after cloning scure/noble deps):
 

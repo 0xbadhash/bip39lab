@@ -3,48 +3,162 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- CSP: no third-party scripts or network for crypto -->
+  <!-- Offline crypto: no third-party scripts or network from this page -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'" />
-  <title>BIP39 Lab — offline, no retention</title>
+  <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
+  <title>BIP39 Lab · bip39.catalyxt.xyz</title>
   <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
-  <main class="wrap">
-    <h1>BIP39 Lab <span class="tag">offline</span></h1>
-    <p class="warn">
-      <strong>Airgap recommended.</strong> All crypto runs in this page. Secrets stay in memory only —
-      not written to disk or sent to any server. Open this folder offline or serve as static files.
-      Do not paste real recovery phrases into a machine you do not trust.
-    </p>
-    <p class="hint">Inspired by the UX of public BIP39 tools; this copy is self-hosted with no CDN scripts.</p>
+  <div class="app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">39</div>
+        <div>
+          <div class="brand-title">BIP39 Lab</div>
+          <div class="brand-sub">Offline entropy · Catalyxt</div>
+        </div>
+      </div>
 
-    <label>Word count
-      <select id="wordCount">
-        <option value="12" selected>12</option>
-        <option value="24">24</option>
-      </select>
-    </label>
-    <div class="row">
-      <button type="button" id="btnGenerate">Generate</button>
-      <button type="button" id="btnDerive">Validate &amp; derive</button>
-      <button type="button" id="btnClear" class="danger">Clear secrets</button>
+      <nav class="nav" role="tablist" aria-label="Lab steps">
+        <button type="button" class="nav-item active" data-tab="lab" role="tab" aria-selected="true">
+          <span class="nav-step">1</span>
+          <span class="nav-label">
+            <strong>Lab</strong>
+            <small>Generate and derive</small>
+          </span>
+        </button>
+        <button type="button" class="nav-item" data-tab="balance" role="tab" aria-selected="false">
+          <span class="nav-step">2</span>
+          <span class="nav-label">
+            <strong>Balance</strong>
+            <small>CLI · address only</small>
+          </span>
+        </button>
+        <button type="button" class="nav-item" data-tab="about" role="tab" aria-selected="false">
+          <span class="nav-step">i</span>
+          <span class="nav-label">
+            <strong>About</strong>
+            <small>Security model</small>
+          </span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p class="sidebar-note">
+          Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
+          <br /><br />
+          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
+        </p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <div>
+          <h1 id="panel-title">Offline BIP-39 lab</h1>
+          <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
+        </div>
+        <span class="chip" title="No network from this page">Offline crypto</span>
+      </header>
+
+      <main class="content">
+        <div class="warn" role="note">
+          <strong>Air-gap recommended.</strong>
+          All cryptography runs in this page. Nothing is written to disk or sent to a server from here.
+          Do not paste a real recovery phrase on a machine you do not trust.
+        </div>
+
+        <!-- Panel: Lab -->
+        <section id="panel-lab" class="panel active" role="tabpanel">
+          <div class="card">
+            <h2>Mnemonic</h2>
+            <p>English BIP-39 only. Passphrase is optional BIP-39 extension (not a PIN on this page).</p>
+
+            <label class="field" for="wordCount">Word count
+              <select id="wordCount">
+                <option value="12" selected>12</option>
+                <option value="15">15</option>
+                <option value="18">18</option>
+                <option value="21">21</option>
+                <option value="24">24</option>
+              </select>
+            </label>
+
+            <div class="row">
+              <button type="button" class="btn" id="btnGenerate">Generate</button>
+              <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
+              <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
+            </div>
+
+            <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
+
+            <label class="field" data-private for="mnemonic">BIP-39 mnemonic
+              <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
+            </label>
+            <label class="field" data-private for="passphrase">Optional passphrase
+              <input id="passphrase" type="password" autocomplete="off" />
+            </label>
+
+            <p id="status" class="status" aria-live="polite"></p>
+          </div>
+
+          <div class="card">
+            <h2>First receive addresses</h2>
+            <p>Account 0 · change 0 · index 0 (BIP44 / BIP49 / BIP84).</p>
+            <pre id="out" class="out" aria-live="polite"></pre>
+          </div>
+        </section>
+
+        <!-- Panel: Balance (CLI guidance; page stays offline) -->
+        <section id="panel-balance" class="panel" role="tabpanel" hidden>
+          <div class="card">
+            <h2>Address balance (CLI)</h2>
+            <p>
+              This page never loads balances (CSP blocks network). Use the CLI so seed material never leaves your machine
+              for a balance check. Public explorers only see the <em>address</em> after you opt in.
+            </p>
+            <p><strong>Free public review</strong> (no Bitcoin Core required) — mempool.space REST:</p>
+            <pre class="cli-block">python -m bip39lab balance bc1q… \
+  --backend mempool \
+  --i-understand-address-leak</pre>
+            <p style="margin-top:1rem"><strong>Your own node</strong> (preferred when available):</p>
+            <pre class="cli-block">python -m bip39lab balance bc1q… \
+  --backend bitcoind \
+  --rpc-cookie ~/.bitcoin/.cookie</pre>
+            <p style="margin-top:1rem">
+              There is no free public Bitcoin Core JSON-RPC for everyone on the Internet.
+              Free checks use explorer REST; real JSON-RPC is your node.
+            </p>
+          </div>
+        </section>
+
+        <!-- Panel: About -->
+        <section id="panel-about" class="panel" role="tabpanel" hidden>
+          <div class="card">
+            <h2>Security model</h2>
+            <p>
+              No retention of mnemonics, entropy, seeds, or private keys.
+              Production path uses audited browser libraries in the offline bundle.
+              Brand host: <code>bip39.catalyxt.xyz</code> under Catalyxt (<code>catalyxt.xyz</code> only —
+              <code>catalyxt.ltd</code> is retired for new work).
+            </p>
+            <p>
+              Sibling demos: <a href="https://card.catalyxt.xyz/" style="color:var(--accent)">card.catalyxt.xyz</a>.
+              Source: self-hosted bip39lab.
+            </p>
+          </div>
+        </section>
+
+        <p class="footer-host">
+          English UI only ·
+          <a href="https://bip39.catalyxt.xyz/">https://bip39.catalyxt.xyz/</a>
+        </p>
+      </main>
     </div>
+  </div>
 
-    <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
-
-    <label data-private>BIP39 mnemonic
-      <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
-    </label>
-    <label data-private>Optional passphrase
-      <input id="passphrase" type="password" autocomplete="off" />
-    </label>
-
-    <p id="status" class="status"></p>
-    <h2>First receive addresses (account 0 / index 0)</h2>
-    <pre id="out" class="out"></pre>
-  </main>
-  <!-- Vendored offline bundle: @scure/bip39 + @scure/bip32 + @noble (no CDN) -->
   <script src="js/bip39lab.bundle.js"></script>
   <script src="js/app.js"></script>
 </body>

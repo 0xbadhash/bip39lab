@@ -150,3 +150,35 @@ def test_btc_to_sats_decimal_safe():
     assert btc_to_satoshis(0.00000100) == 100
     assert btc_to_satoshis("1.00000001") == 100_000_001
     assert btc_to_satoshis(0) == 0
+
+
+def test_mempool_requires_ack():
+    r = get_address_balance(ADDR, backend="mempool", acknowledge_leak=False)
+    assert r.status == "error"
+
+
+def test_mempool_ok_mocked():
+    class Resp:
+        def read(self):
+            return b'{"chain_stats":{"funded_txo_sum":200,"spent_txo_sum":50}}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def opener(*_a, **_k):
+        return Resp()
+
+    r = get_address_balance(ADDR, backend="mempool", acknowledge_leak=True, opener=opener)
+    assert r == BalanceResult("ok", 150, "mempool")
+
+
+def test_mempool_http_failure_unknown():
+    def boom(*_a, **_k):
+        raise TimeoutError("nope")
+
+    r = get_address_balance(ADDR, backend="mempool", acknowledge_leak=True, opener=boom)
+    assert r.status == "unknown"
+    assert r.satoshis is None

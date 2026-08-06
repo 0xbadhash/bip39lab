@@ -141,7 +141,9 @@ URL_HOST_ALLOW = re.compile(
     r"substackcdn\.com|"
     r"([\w.-]+\.)?amazonaws\.com|"
     # Product-allowed public explorers (address-only balance backends)
-    r"(www\.)?blockstream\.info"
+    r"(www\.)?blockstream\.info",
+    r"(www\.)?mempool\.space",
+
     r")([/:?]|$)",
     re.I,
 )

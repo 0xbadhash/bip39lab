@@ -16,7 +16,8 @@
 4. **No `eval` of config** for balance extractors.
 5. **Balance** is address-only; API failure is `unknown`, never silent `0`.
 6. **Legacy scanner** under `legacy/` is unsafe and not the product path.
-7. **Prefer `bitcoind`** over public explorers. Local JSON-RPC uses address-only `scantxoutset`; RPC passwords/cookies are never logged or written by the balance path. Public backends still require `--i-understand-address-leak`.
+7. **Prefer `bitcoind`** over public explorers. Local JSON-RPC uses address-only `scantxoutset`; RPC passwords/cookies are never logged or written by the balance path. Free public review uses **mempool.space REST** (`--backend mempool`) or Blockstream — not open Core JSON-RPC. Public backends require `--i-understand-address-leak`.
+8. **Host brand:** `bip39.catalyxt.xyz` under **`catalyxt.xyz` only**. New products do not target `catalyxt.ltd`.
 
 ## Reporting
 

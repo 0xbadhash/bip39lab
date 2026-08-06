@@ -39,18 +39,44 @@ def btc_to_satoshis(amount: Any) -> int:
     return int(sats)
 
 
-def fetch_blockstream(address: str, opener: Callable = urlopen) -> BalanceResult:
-    url = f"https://blockstream.info/api/address/{address}"
+def _fetch_esplora_style(
+    address: str,
+    *,
+    base_url: str,
+    label: str,
+    opener: Callable = urlopen,
+) -> BalanceResult:
+    """Esplora-compatible address API (Blockstream, mempool.space)."""
+    url = f"{base_url.rstrip('/')}/address/{address}"
     try:
-        req = Request(url, headers={"User-Agent": "bip39lab-address-only/0.3"})
+        req = Request(url, headers={"User-Agent": "bip39lab-address-only/0.5"})
         with opener(req, timeout=20) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         chain = data.get("chain_stats") or {}
         funded = int(chain.get("funded_txo_sum", 0))
         spent = int(chain.get("spent_txo_sum", 0))
-        return BalanceResult("ok", funded - spent, "blockstream")
+        return BalanceResult("ok", funded - spent, label)
     except (HTTPError, URLError, TimeoutError, ValueError, KeyError, TypeError) as e:
-        return BalanceResult("unknown", None, f"blockstream failed: {e}")
+        return BalanceResult("unknown", None, f"{label} failed: {e}")
+
+
+def fetch_blockstream(address: str, opener: Callable = urlopen) -> BalanceResult:
+    return _fetch_esplora_style(
+        address,
+        base_url="https://blockstream.info/api",
+        label="blockstream",
+        opener=opener,
+    )
+
+
+def fetch_mempool(address: str, opener: Callable = urlopen) -> BalanceResult:
+    """Free public review endpoint (REST). Not Bitcoin Core JSON-RPC."""
+    return _fetch_esplora_style(
+        address,
+        base_url="https://mempool.space/api",
+        label="mempool",
+        opener=opener,
+    )
 
 
 def _read_cookie_file(path: str | Path) -> tuple[str, str]:
@@ -184,13 +210,15 @@ def get_address_balance(
     if backend in ("", "none", "offline"):
         return BalanceResult("unknown", None, "no backend (offline default)")
 
-    if backend == "blockstream":
+    if backend in ("blockstream", "mempool"):
         if not acknowledge_leak:
             return BalanceResult(
                 "error",
                 None,
                 "refusing network: pass acknowledge_leak=True / --i-understand-address-leak",
             )
+        if backend == "mempool":
+            return fetch_mempool(address, opener=opener)
         return fetch_blockstream(address, opener=opener)
 
     if backend in ("bitcoind", "bitcoin-core"):

@@ -116,8 +116,23 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** product smoke + `pytest -q`
 - **Notes:** Full FSM ship #5 — tag `v0.5.0`
 
+
+### [OPEN] Phase 5 — Catalyxt web brand + domain + free balance path
+- **Status:** open
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-06-phase-5-web-brand-rpc.md`
+- **Plan:** `.agents/specs/2026-08-06-phase-5-web-brand-rpc-plan.md`
+- **Acceptance:**
+  - [ ] Catalyxt-aligned dark card UI on static web
+  - [ ] Domain branding `bip39.catalyxt.xyz` (not .ltd) + nginx deploy artifact
+  - [ ] Free `mempool` address-only backend + honest no-public-bitcoind-RPC docs
+  - [ ] Local bitcoind RPC setup docs; suite green
+- **Smoke:** product smoke + pytest; manual free mempool call optional
+- **Notes:** Full FSM — **Next:** true (operator DNS for live TLS)
+
 ## Current focus
 
-**Phases 0–4 shipped** (tags `v0.1.0`–`v0.5.0`). Pipeline phase: post-release `/sync_docs` → `init`.
+**Phases 0–4 shipped** (`v0.1.0`–`v0.5.0`). Pipeline: `init`.
 
-**Next candidate:** (none open) — pick follow-up (regtest integration test, Electrum backend) via `/spec`.
+**Next:** Phase 5 in progress — host **bip39.catalyxt.xyz** (catalyxt.ltd retired for new work).
+
