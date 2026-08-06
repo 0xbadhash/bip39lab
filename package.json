@@ -1,0 +1,16 @@
+{
+  "name": "bip39lab-web",
+  "private": true,
+  "version": "0.8.0",
+  "description": "Offline BIP-39 lab static web + e2e",
+  "scripts": {
+    "build:web": "esbuild web/js/build-entry.mjs --bundle --format=iife --outfile=web/js/bip39lab.bundle.js",
+    "test:e2e": "playwright test",
+    "test:e2e:live": "BASE_URL=https://bip39.catalyxt.xyz playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report playwright-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2"
+  }
+}

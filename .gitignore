@@ -6,12 +6,16 @@ tested_mnemonics.json
 .env.*
 bitcoin_scanner.local.conf
 
-# Node (build tools only; commit web/js/bip39lab.bundle.js)
+# Node (build tools only; commit web/js/bip39lab.bundle.js and package.json for e2e)
 node_modules/
-package-lock.json
-package.json
 *.tgz
 vendor_tmp/
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
 
 # Python
 .venv/
