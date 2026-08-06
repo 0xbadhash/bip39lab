@@ -13,30 +13,47 @@
   <div class="app">
     <aside class="sidebar" aria-label="Primary">
       <div class="brand">
-        <div class="brand-mark" aria-hidden="true">MS</div>
+        <div class="brand-mark" aria-hidden="true">39</div>
         <div>
-          <div class="brand-title">Multisig lab</div>
-          <div class="brand-sub">Explain · offline · BTC</div>
+          <div class="brand-title">bip39lab</div>
+          <div class="brand-sub">Offline BTC lab · Catalyxt</div>
         </div>
       </div>
-      <nav class="nav" aria-label="Site">
-        <a class="nav-item" href="index.html">
+      <!-- Same nav as index.html — stable labels, no disappearing tabs -->
+      <nav class="nav" aria-label="Site sections">
+        <a class="nav-item" data-nav="lab" href="index.html">
           <span class="nav-step">1</span>
-          <span class="nav-label"><strong>BIP39 Lab</strong><small>Seeds &amp; addresses</small></span>
+          <span class="nav-label">
+            <strong>Lab</strong>
+            <small>Generate and derive</small>
+          </span>
         </a>
-        <a class="nav-item active" href="multisig.html" aria-current="page">
+        <a class="nav-item active" data-nav="multisig" href="multisig.html" aria-current="page">
           <span class="nav-step">2</span>
-          <span class="nav-label"><strong>Multisig</strong><small>M-of-N explainer</small></span>
+          <span class="nav-label">
+            <strong>Multisig</strong>
+            <small>M-of-N explainer</small>
+          </span>
         </a>
-        <a class="nav-item" href="index.html#balance">
+        <a class="nav-item" data-nav="balance" href="index.html#balance">
           <span class="nav-step">3</span>
-          <span class="nav-label"><strong>Balance</strong><small>CLI docs on Lab</small></span>
+          <span class="nav-label">
+            <strong>Balance</strong>
+            <small>CLI · address only</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="about" href="index.html#about">
+          <span class="nav-step">4</span>
+          <span class="nav-label">
+            <strong>About</strong>
+            <small>Security model</small>
+          </span>
         </a>
       </nav>
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          Inspired by tools like Ian Coleman’s multisig page, but <strong>public keys only</strong>
-          and plain-English explanations. No network. No private keys.
+          Multisig explainer: public keys only, offline. Lab keeps seeds &amp; addresses.
+          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
         </p>
       </div>
     </aside>

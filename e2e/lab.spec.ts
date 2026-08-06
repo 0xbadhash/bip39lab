@@ -25,9 +25,12 @@ test.describe("BIP39 Lab E2E", () => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("button", { name: /Generate/i })).toBeVisible();
-    await expect(page.locator(".nav-item[data-tab=lab]")).toBeVisible();
-    await expect(page.locator(".nav-item[data-tab=balance]")).toBeVisible();
-    await expect(page.locator(".nav-item[data-tab=about]")).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="lab"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="multisig"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="balance"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="about"]')).toBeVisible();
+    // Stable labels (must match Multisig page sidebar)
+    await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
   });
 
   test("S1 generate fills entropy and address table", async ({ page }) => {
@@ -216,21 +219,32 @@ test.describe("BIP39 Lab E2E", () => {
 
   test("S10 nav balance about and multisig", async ({ page }) => {
     await page.goto("/");
-    await page.locator(".nav-item[data-tab=balance]").click();
+    await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page.locator("#panel-balance")).toBeVisible();
     await expect(page.locator("#panel-balance")).toContainText(/mempool|bitcoind|CLI/i);
+    await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveClass(/active/);
+    // All four nav items still present
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(4);
 
-    await page.locator(".nav-item[data-tab=about]").click();
+    await page.locator('.nav-item[data-nav="about"]').click();
     await expect(page.locator("#panel-about")).toBeVisible();
     await expect(page.locator("#panel-about")).toContainText(/No retention|retention/i);
 
-    await page.locator(".nav-item[data-tab=lab]").click();
+    await page.locator('.nav-item[data-nav="lab"]').click();
     await expect(page.locator("#panel-lab")).toBeVisible();
 
-    await page.locator('a.nav-item[href="multisig.html"]').click();
+    await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
-    await expect(page.locator("body")).toContainText(/public keys only/i);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(4);
+    await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
+    await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
+
+    // Multisig → Balance deep-link must restore Lab page with Balance panel + full nav
+    await page.locator('.nav-item[data-nav="balance"]').click();
+    await expect(page).toHaveURL(/index\.html#balance|#balance|\/#balance/);
+    await expect(page.locator("#panel-balance")).toBeVisible();
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(4);
   });
 
   test("S11 invalid mnemonic", async ({ page }) => {

@@ -16,40 +16,41 @@
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">39</div>
         <div>
-          <div class="brand-title">BIP39 Lab</div>
-          <div class="brand-sub">Offline entropy · Catalyxt</div>
+          <div class="brand-title">bip39lab</div>
+          <div class="brand-sub">Offline BTC lab · Catalyxt</div>
         </div>
       </div>
 
-      <nav class="nav" role="tablist" aria-label="Lab steps">
-        <button type="button" class="nav-item active" data-tab="lab" role="tab" aria-selected="true">
+      <!-- Keep identical labels/order on every page (Lab / Multisig / …) -->
+      <nav class="nav" aria-label="Site sections">
+        <a class="nav-item active" data-nav="lab" href="index.html" aria-current="page">
           <span class="nav-step">1</span>
           <span class="nav-label">
             <strong>Lab</strong>
             <small>Generate and derive</small>
           </span>
-        </button>
-        <a class="nav-item" href="multisig.html">
+        </a>
+        <a class="nav-item" data-nav="multisig" href="multisig.html">
           <span class="nav-step">2</span>
           <span class="nav-label">
             <strong>Multisig</strong>
             <small>M-of-N explainer</small>
           </span>
         </a>
-        <button type="button" class="nav-item" data-tab="balance" role="tab" aria-selected="false">
+        <a class="nav-item" data-nav="balance" href="index.html#balance">
           <span class="nav-step">3</span>
           <span class="nav-label">
             <strong>Balance</strong>
             <small>CLI · address only</small>
           </span>
-        </button>
-        <button type="button" class="nav-item" data-tab="about" role="tab" aria-selected="false">
-          <span class="nav-step">i</span>
+        </a>
+        <a class="nav-item" data-nav="about" href="index.html#about">
+          <span class="nav-step">4</span>
           <span class="nav-label">
             <strong>About</strong>
             <small>Security model</small>
           </span>
-        </button>
+        </a>
       </nav>
 
       <div class="sidebar-foot">

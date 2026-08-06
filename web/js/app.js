@@ -637,19 +637,45 @@
   }
 
   function showTab(name) {
+    const allowed = { lab: true, balance: true, about: true };
+    if (!allowed[name]) name = "lab";
+
     document.querySelectorAll(".panel").forEach((p) => {
       const on = p.id === "panel-" + name;
       p.classList.toggle("active", on);
       p.hidden = !on;
     });
-    document.querySelectorAll(".nav-item").forEach((btn) => {
-      const on = btn.getAttribute("data-tab") === name;
-      btn.classList.toggle("active", on);
-      btn.setAttribute("aria-selected", on ? "true" : "false");
+
+    // Stable sidebar: highlight by data-nav (all items are <a>, same on every page)
+    document.querySelectorAll(".nav-item[data-nav]").forEach((el) => {
+      const nav = el.getAttribute("data-nav");
+      const on = nav === name;
+      el.classList.toggle("active", on);
+      if (on) el.setAttribute("aria-current", "page");
+      else el.removeAttribute("aria-current");
     });
+
     const t = titles[name] || titles.lab;
-    $("panel-title").textContent = t.title;
-    $("panel-sub").textContent = t.sub;
+    if ($("panel-title")) $("panel-title").textContent = t.title;
+    if ($("panel-sub")) $("panel-sub").textContent = t.sub;
+
+    // Keep URL in sync for deep links from Multisig → Balance/About
+    try {
+      const want = name === "lab" ? (location.pathname.split("/").pop() || "index.html") : "#" + name;
+      if (name === "lab") {
+        if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+      } else if (location.hash !== "#" + name) {
+        history.replaceState(null, "", "#" + name);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function tabFromHash() {
+    const h = (location.hash || "").replace(/^#/, "");
+    if (h === "balance" || h === "about" || h === "lab") return h;
+    return "lab";
   }
 
   async function onGenerate() {
@@ -723,8 +749,20 @@
       });
     }
 
-    document.querySelectorAll(".nav-item[data-tab]").forEach((btn) => {
-      btn.addEventListener("click", () => showTab(btn.getAttribute("data-tab")));
+    // Same-page nav (Lab / Balance / About): prevent full reload flicker
+    document.querySelectorAll(".nav-item[data-nav]").forEach((el) => {
+      el.addEventListener("click", (ev) => {
+        const nav = el.getAttribute("data-nav");
+        if (nav === "multisig") return; // full navigation to multisig.html
+        if (nav === "lab" || nav === "balance" || nav === "about") {
+          ev.preventDefault();
+          showTab(nav);
+        }
+      });
+    });
+
+    window.addEventListener("hashchange", () => {
+      showTab(tabFromHash());
     });
 
     const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
@@ -738,6 +776,6 @@
     updateAddrTypeChrome();
     updateWatchTypeChrome();
     updatePathSummary(getDeriveOptions(), 5);
-    showTab("lab");
+    showTab(tabFromHash());
   });
 })();
