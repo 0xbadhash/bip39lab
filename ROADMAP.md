@@ -130,9 +130,22 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** product smoke + pytest; manual free mempool call optional
 - **Notes:** Full FSM — **Next:** true (operator DNS for live TLS)
 
+
+### [OPEN] Phase 6 — Lab entropy fields (mnemonic + passphrase)
+- **Status:** open
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields.md`
+- **Plan:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields-plan.md`
+- **Acceptance:**
+  - [ ] Mnemonic BIP-39 ENT bits (12→128 … 24→256) on Lab
+  - [ ] Separate passphrase strength estimate field (does not overwrite mnemonic ENT)
+  - [ ] Clear / hide-private / invalid handling; English; offline
+- **Smoke:** open Lab on bip39.catalyxt.xyz; pytest green
+- **Notes:** Full FSM — **Next:** true
+
 ## Current focus
 
 **Phases 0–4 shipped** (`v0.1.0`–`v0.5.0`). Pipeline: `init`.
 
-**Next:** Phase 5 in progress — host **bip39.catalyxt.xyz** (catalyxt.ltd retired for new work).
+**Next:** Phase 6 Lab entropy fields — `/execute_dev`.
 

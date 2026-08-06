@@ -1,4 +1,4 @@
-# PR Draft: Phase 5 Catalyxt web + free balance
+# PR Draft: Phase 6 Lab entropy fields
 
 **Range:** `HEAD~N..HEAD`
 
@@ -18,9 +18,9 @@
 
 [fill]
 
-**Spec:** `.agents/specs/2026-08-06-phase-5-web-brand-rpc.md`
+**Spec:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields.md`
 
-**Plan:** `.agents/specs/2026-08-06-phase-5-web-brand-rpc-plan.md`
+**Plan:** `.agents/specs/2026-08-06-phase-6-lab-entropy-fields-plan.md`
 
 ## Traceability
 
