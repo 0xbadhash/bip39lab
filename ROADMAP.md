@@ -117,18 +117,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Notes:** Full FSM ship #5 — tag `v0.5.0`
 
 
-### [OPEN] Phase 5 — Catalyxt web brand + domain + free balance path
-- **Status:** open
+### [DONE] Phase 5 — Catalyxt web brand + domain + free balance path
+- **Status:** done
 - **Priority:** P0
 - **Spec:** `.agents/specs/2026-08-06-phase-5-web-brand-rpc.md`
 - **Plan:** `.agents/specs/2026-08-06-phase-5-web-brand-rpc-plan.md`
 - **Acceptance:**
-  - [ ] Catalyxt-aligned dark card UI on static web
-  - [ ] Domain branding `bip39.catalyxt.xyz` (not .ltd) + nginx deploy artifact
-  - [ ] Free `mempool` address-only backend + honest no-public-bitcoind-RPC docs
-  - [ ] Local bitcoind RPC setup docs; suite green
+  - [x] Catalyxt-aligned dark card UI on static web
+  - [x] Domain branding `bip39.catalyxt.xyz` (not .ltd) + nginx deploy artifact
+  - [x] Free `mempool` address-only backend + honest no-public-bitcoind-RPC docs
+  - [x] Local bitcoind RPC setup docs; suite green
 - **Smoke:** product smoke + pytest; manual free mempool call optional
-- **Notes:** Full FSM ship — tag `v0.6.0` (operator DNS for live TLS)
+- **Notes:** Shipped (site live; mempool backend; TLS). Tag lineage `v0.6.0`+
 
 
 ### [DONE] Phase 6 — Lab entropy fields (mnemonic + passphrase)
@@ -159,24 +159,38 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 ### [OPEN] Option B — Watch-only (xpub / zpub / QR)
 - **Status:** open
 - **Priority:** P1
-- **Spec:** (none yet — `/spec` before implement)
-- **Acceptance (draft):**
-  - [ ] Export account-level public keys (xpub/zpub/vpub) without showing xprv by default
-  - [ ] Optional address QR codes (offline)
-- **Notes:** Parked from feature triage — not in v0.7.0
+- **Spec:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr.md`
+- **Plan:** `.agents/specs/2026-08-06-option-b-watch-only-xpub-qr-plan.md`
+- **Acceptance:**
+  - [ ] Account public extended keys (zpub/xpub; no xprv by default)
+  - [ ] Offline per-address QR
+  - [ ] English watch-only help; CSP offline
+- **Smoke:** pytest + manual QR/export
+- **Notes:** Spec ready — **Next:** `/execute_dev` Option B
 
 ### [OPEN] Option C — Network tab (fees / mempool traffic / balances)
 - **Status:** open
 - **Priority:** P1
-- **Spec:** (none yet — `/spec` before implement)
-- **Acceptance (draft):**
-  - [ ] Opt-in fee snapshot (e.g. mempool.space recommended fees)
-  - [ ] Network “traffic” stats (mempool size / recent blocks)
-  - [ ] Optional address-only balances for table rows (leak ack + CSP allowlist)
-- **Notes:** Parked — separate from offline secrets lab
+- **Spec:** `.agents/specs/2026-08-06-option-c-network-tab.md`
+- **Plan:** `.agents/specs/2026-08-06-option-c-network-tab-plan.md`
+- **Acceptance:**
+  - [ ] Separate network surface; Lab CSP stays offline
+  - [ ] Opt-in fees + traffic metrics
+  - [ ] Address-only balances with leak ack
+- **Smoke:** mock fetch tests + product smoke
+- **Notes:** Spec ready — implement after or independent of B
+
+### [DONE] v0.7.1 — Table polish (UX)
+- **Status:** done
+- **Priority:** P0
+- **Acceptance:**
+  - [x] Wider layout; Copy on addresses
+  - [x] Optional BIP49/BIP44 columns (default off)
+  - [x] Plain-English help for account/change/indices
+- **Notes:** tag `v0.7.1` matches live site UX
 
 ## Current focus
 
-**Phases through 7 shipped** (`v0.7.0`). Options **B** and **C** are OPEN (spec later).
+**Phases 0–7 + v0.7.1 polish shipped.** Specs ready for Options **B** and **C**.
 
-**Next:** `/spec` Option B or C when ready.
+**Next:** `/execute_dev` Option B (recommended) or Option C.
