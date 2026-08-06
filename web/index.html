@@ -232,20 +232,39 @@
 
             <div class="card-sub watch-only" id="watchOnlyPanel">
               <h3>Watch-only export</h3>
-              <p class="lead-help">
-                <strong>Watch-only</strong> is like a bank statement login: you can <em>see</em> balances in another app,
-                but you cannot <em>spend</em>. These are public extended keys for the <strong>Account</strong> number above
-                (and current passphrase). They are not your recovery phrase and not private keys.
-              </p>
               <p class="control-help">
-                Import a <strong>zpub</strong> (BIP84) into Sparrow or similar as watch-only. A passphrase changes every key.
-                This lab never shows <code>xprv</code> / private extended keys.
+                <strong>Watch-only</strong> = see balances in another app, cannot spend (like a statement login, not transfer rights).
+                Public keys only for the <strong>Account</strong> above — never <code>xprv</code>. A passphrase changes every key.
               </p>
+
+              <div class="column-toggles watch-toggles" role="group" aria-label="Which watch-only keys to show">
+                <span class="toggles-label">Show one key type at a time (or several if you need them)</span>
+                <label class="check">
+                  <input type="checkbox" id="woBip84" checked />
+                  BIP84 · zpub <em>(native segwit — usual Sparrow import)</em>
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="woBip86" />
+                  BIP86 · xpub <em>(Taproot account)</em>
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="woBip49" />
+                  BIP49 · ypub <em>(nested)</em>
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="woBip44" />
+                  BIP44 · xpub <em>(legacy)</em>
+                </label>
+              </div>
+              <p class="control-help">
+                Default shows only <strong>BIP84 zpub</strong> so the page stays short. Tick others only when you need them.
+              </p>
+
               <div class="row">
                 <button type="button" class="btn secondary" id="btnWatchOnly">Refresh watch-only keys</button>
               </div>
               <div id="watchOnlyList" class="watch-list" aria-live="polite">
-                <p class="control-help">Generate or paste a valid phrase, then refresh.</p>
+                <p class="control-help">Generate or paste a valid phrase, then refresh (or wait for auto-derive).</p>
               </div>
             </div>
           </div>

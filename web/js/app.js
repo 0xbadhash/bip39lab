@@ -337,6 +337,83 @@
     $("qrModalImg").removeAttribute("src");
   }
 
+  /** Last full exportWatchOnly result (all purposes); UI filters by checkboxes. */
+  let lastWatchExport = null;
+
+  function selectedWatchPurposes() {
+    const map = [
+      { id: "woBip84", purpose: 84 },
+      { id: "woBip86", purpose: 86 },
+      { id: "woBip49", purpose: 49 },
+      { id: "woBip44", purpose: 44 },
+    ];
+    const out = [];
+    for (const m of map) {
+      const el = $(m.id);
+      if (el && el.checked) out.push(m.purpose);
+    }
+    return out;
+  }
+
+  function renderWatchOnlyList(exp) {
+    const list = $("watchOnlyList");
+    if (!list) return;
+    const want = selectedWatchPurposes();
+    list.innerHTML = "";
+
+    if (!want.length) {
+      list.innerHTML =
+        "<p class=\"control-help\">Tick at least one key type above (e.g. BIP84 zpub) to show an export card.</p>";
+      return;
+    }
+
+    if (!exp || !exp.keys || !exp.keys.length) {
+      list.innerHTML =
+        "<p class=\"control-help\">Generate or paste a valid phrase, then refresh (or wait for auto-derive).</p>";
+      return;
+    }
+
+    const filtered = exp.keys.filter((k) => want.indexOf(k.purpose) >= 0);
+    if (!filtered.length) {
+      list.innerHTML =
+        "<p class=\"control-help\">No keys match the selected types. Refresh after generating a phrase.</p>";
+      return;
+    }
+
+    for (const k of filtered) {
+      const item = document.createElement("div");
+      item.className = "watch-item";
+      item.setAttribute("data-purpose", String(k.purpose));
+      item.innerHTML =
+        "<div class=\"watch-item-title\"></div>" +
+        "<div class=\"watch-item-path\"></div>" +
+        "<div class=\"watch-item-key\"></div>" +
+        "<p class=\"watch-item-note\"></p>" +
+        "<div class=\"row\"></div>";
+      item.querySelector(".watch-item-title").textContent = k.label;
+      item.querySelector(".watch-item-path").textContent = k.path + " · account " + exp.account;
+      item.querySelector(".watch-item-key").textContent = k.key;
+      item.querySelector(".watch-item-note").textContent = k.note;
+      const row = item.querySelector(".row");
+      const bCopy = document.createElement("button");
+      bCopy.type = "button";
+      bCopy.className = "btn-copy";
+      bCopy.textContent = "Copy key";
+      bCopy.dataset.copyIdle = "Copy key";
+      bCopy.setAttribute("aria-label", "Copy key to clipboard");
+      bCopy.addEventListener("click", () => copyAddress(k.key, bCopy));
+      const bQr = document.createElement("button");
+      bQr.type = "button";
+      bQr.className = "btn-copy";
+      bQr.textContent = "QR";
+      bQr.setAttribute("aria-label", "Show key QR code");
+      bQr.addEventListener("click", () => showQr(k.key, k.label + " · " + k.path).catch(console.error));
+      row.appendChild(bCopy);
+      row.appendChild(bQr);
+      list.appendChild(item);
+    }
+  }
+
   async function refreshWatchOnly() {
     const list = $("watchOnlyList");
     if (!list) return;
@@ -344,7 +421,9 @@
     const pp = $("passphrase").value;
     const account = getDeriveOptions().account;
     if (!m) {
-      list.innerHTML = "<p class=\"control-help\">Generate or paste a valid phrase, then refresh.</p>";
+      lastWatchExport = null;
+      list.innerHTML =
+        "<p class=\"control-help\">Generate or paste a valid phrase, then refresh (or wait for auto-derive).</p>";
       return;
     }
     if (!BIP39Lab.exportWatchOnly) {
@@ -354,40 +433,15 @@
     try {
       const ok = await BIP39Lab.validateMnemonic(m);
       if (!ok) {
-        list.innerHTML = "<p class=\"control-help\">Invalid recovery phrase — cannot export watch-only keys.</p>";
+        lastWatchExport = null;
+        list.innerHTML =
+          "<p class=\"control-help\">Invalid recovery phrase — cannot export watch-only keys.</p>";
         return;
       }
-      const exp = await BIP39Lab.exportWatchOnly(m, pp, { account });
-      list.innerHTML = "";
-      for (const k of exp.keys) {
-        const item = document.createElement("div");
-        item.className = "watch-item";
-        item.innerHTML =
-          "<div class=\"watch-item-title\"></div>" +
-          "<div class=\"watch-item-path\"></div>" +
-          "<div class=\"watch-item-key\"></div>" +
-          "<p class=\"watch-item-note\"></p>" +
-          "<div class=\"row\"></div>";
-        item.querySelector(".watch-item-title").textContent = k.label;
-        item.querySelector(".watch-item-path").textContent = k.path + " · account " + exp.account;
-        item.querySelector(".watch-item-key").textContent = k.key;
-        item.querySelector(".watch-item-note").textContent = k.note;
-        const row = item.querySelector(".row");
-        const bCopy = document.createElement("button");
-        bCopy.type = "button";
-        bCopy.className = "btn-copy";
-        bCopy.textContent = "Copy key";
-        bCopy.addEventListener("click", () => copyAddress(k.key, bCopy));
-        const bQr = document.createElement("button");
-        bQr.type = "button";
-        bQr.className = "btn-copy";
-        bQr.textContent = "QR";
-        bQr.addEventListener("click", () => showQr(k.key, k.label + " · " + k.path).catch(console.error));
-        row.appendChild(bCopy);
-        row.appendChild(bQr);
-        list.appendChild(item);
-      }
+      lastWatchExport = await BIP39Lab.exportWatchOnly(m, pp, { account });
+      renderWatchOnlyList(lastWatchExport);
     } catch (e) {
+      lastWatchExport = null;
       list.innerHTML =
         "<p class=\"control-help\">Export failed: " +
         (e && e.message ? e.message : e) +
@@ -615,6 +669,15 @@
 
     const btnWo = $("btnWatchOnly");
     if (btnWo) btnWo.addEventListener("click", () => refreshWatchOnly().catch(console.error));
+
+    ["woBip84", "woBip86", "woBip49", "woBip44"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener("change", () => {
+        if (lastWatchExport) renderWatchOnlyList(lastWatchExport);
+        else refreshWatchOnly().catch(console.error);
+      });
+    });
 
     const btnQrClose = $("btnQrClose");
     if (btnQrClose) btnQrClose.addEventListener("click", hideQr);

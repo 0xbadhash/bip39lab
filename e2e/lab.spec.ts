@@ -174,14 +174,23 @@ test.describe("BIP39 Lab E2E", () => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
+    // Default: only BIP84 checkbox on — one card, not all four
+    await expect(page.locator("#woBip84")).toBeChecked();
+    await expect(page.locator("#woBip86")).not.toBeChecked();
     await page.locator("#btnWatchOnly").click();
-    await expect(page.locator("#watchOnlyList .watch-item").first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(1, { timeout: 10_000 });
 
-    const listText = await page.locator("#watchOnlyList").innerText();
+    let listText = await page.locator("#watchOnlyList").innerText();
     expect(listText).toMatch(/zpub/);
+    expect(listText).toMatch(/BIP84|native segwit/i);
+    expect(listText).not.toMatch(/xprv/i);
+
+    // Opt-in another type
+    await page.locator("#woBip44").check();
+    await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(2);
+    listText = await page.locator("#watchOnlyList").innerText();
     expect(listText).toMatch(/xpub/);
     expect(listText).not.toMatch(/xprv/i);
-    expect(listText).toMatch(/BIP84|native segwit/i);
   });
 
   test("S9 clear and hide private", async ({ page }) => {

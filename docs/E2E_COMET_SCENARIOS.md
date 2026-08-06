@@ -142,10 +142,11 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 
 | Step | Action | Expected |
 |------|--------|----------|
-| 1 | Abandon phrase; **Refresh watch-only keys** | Multiple export blocks |
-| 2 | BIP84 entry | key starts with `zpub` |
-| 3 | Other entries | `xpub` / `ypub` as labeled |
-| 4 | Watch-only panel text | **no** `xprv` |
+| 1 | Default checkboxes | **BIP84 zpub** checked; BIP86/49/44 **unchecked** |
+| 2 | Abandon phrase; **Refresh watch-only keys** | **One** card only (BIP84), not all four |
+| 3 | BIP84 key | starts with `zpub` |
+| 4 | Check BIP44 | Second card appears (`xpub`); still **no** `xprv` |
+| 5 | Uncheck BIP84 | Only BIP44 card remains (or empty if all off) |
 
 ### S9 — Hide private + Clear
 
