@@ -10,6 +10,10 @@ test.describe("Multisig explainer E2E", () => {
     await page.goto("/multisig.html");
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
     await expect(page.locator("body")).toContainText(/Where do the public keys come from/i);
+    // Sidebar parity with Lab / Network (Comet S10 / S12 step 7)
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
 
     await page.locator("#msParts").fill(P1 + "\n" + P2);
     await page.locator("#msM").fill("2");

@@ -218,11 +218,12 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
   });
 
-  test("S10 nav balance about and multisig", async ({ page }) => {
+  test("S10 nav balance about multisig and network", async ({ page }) => {
     await page.goto("/");
     await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page.locator("#panel-balance")).toBeVisible();
     await expect(page.locator("#panel-balance")).toContainText(/mempool|bitcoind|CLI/i);
+    await expect(page.locator("#panel-balance")).toContainText(/Network/i);
     await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveClass(/active/);
     // Lab + Multisig + Network + Balance + About
     await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
@@ -241,8 +242,16 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
     await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
     await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
+    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
 
-    // Multisig → Balance deep-link must restore Lab page with Balance panel + full nav
+    // Multisig → Network page
+    await page.locator('.nav-item[data-nav="network"]').click();
+    await expect(page).toHaveURL(/network\.html/);
+    await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator('.nav-item[data-nav="network"]')).toHaveClass(/active/);
+
+    // Network → Balance deep-link must restore Lab page with Balance panel + full nav
     await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page).toHaveURL(/index\.html#balance|#balance|\/#balance/);
     await expect(page.locator("#panel-balance")).toBeVisible();

@@ -6,14 +6,14 @@
 - Multisig lab: https://bip39.catalyxt.xyz/multisig.html  
 - Network (opt-in): https://bip39.catalyxt.xyz/network.html  
 
-
 **GitHub (raw):** https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 **GitHub (blob):** https://github.com/0xbadhash/bip39lab/blob/master/docs/E2E_COMET_SCENARIOS.md  
 
 | Suite | Playwright file | Scenarios |
 |-------|-----------------|-----------|
 | BIP39 Lab | `e2e/lab.spec.ts` | S0–S11 |
-| Multisig | `e2e/multisig.spec.ts` | S12 |
+| Multisig | `e2e/multisig.spec.ts` | S12, S12b |
+| Network | `e2e/network.spec.ts` | S13, S13b, S13c |
 
 Run: `npm run test:e2e` or `npm run test:e2e:live`
 
@@ -26,25 +26,39 @@ You are a browser QA agent. Execute the E2E suite in this document end-to-end.
 
 SOURCE OF TRUTH: this file (docs/E2E_COMET_SCENARIOS.md in 0xbadhash/bip39lab).
 APPS UNDER TEST:
-  - https://bip39.catalyxt.xyz/           (BIP39 Lab — S0–S11)
-  - https://bip39.catalyxt.xyz/multisig.html  (Multisig explainer — S12)
-Do a hard refresh once on each app you open, then run scenarios S0 through S12 in order.
+  - https://bip39.catalyxt.xyz/              (BIP39 Lab — S0–S11)
+  - https://bip39.catalyxt.xyz/multisig.html (Multisig explainer — S12)
+  - https://bip39.catalyxt.xyz/network.html  (Network opt-in — S13)
+Do a hard refresh once on each app you open, then run scenarios S0 through S13 in order.
 
 RULES:
 - Use ONLY the public abandon test mnemonic given in this file for Lab scenarios. Never use a real seed.
 - For Multisig (S12), use ONLY the sample compressed public keys in this file — never private keys/WIF.
+- For Network (S13), never paste a seed phrase into the address box; use addresses only.
 - Do not skip scenarios. For each, mark PASS or FAIL with one line of evidence.
 - Prefer visible UI text and exact string matches for golden values.
 - Lab and Multisig crypto must stay offline (no explorer API calls while generating/deriving/building).
+- Network may call mempool.space only after user opt-in (Fetch fee snapshot / Fetch balances + ack).
 - Stop only if the site is unreachable; otherwise complete all scenarios.
 - Final output MUST use the Report template at the bottom of this file.
 
 When a step says “wait for re-derive”, wait ~0.5–1s after input changes.
-Lab selectors: #btnGenerate #btnClear #btnDerive #mnemonic #passphrase
-#entropyMnemonic #entropyPassphrase #addrTableBody #colBip49 #colBip44 #deriveAccount
-#deriveChange #deriveCount #btnWatchOnly #watchOnlyList #woBip84 #woBip86 #qrModal #btnQrClose
-.nav-item[data-tab=lab|balance|about]  and  a.nav-item[href="multisig.html"]
-Multisig selectors: #msParts #msM #msBip67 #msBuild #msClear #msResult #msP2sh #msP2wsh #msStatus
+
+Lab selectors:
+  #btnGenerate #btnClear #btnDerive #mnemonic #passphrase
+  #entropyMnemonic #entropyPassphrase #addrTableBody #deriveAccount
+  #deriveChange #deriveCount #btnWatchOnly #watchOnlyList #woBip84 #woBip86
+  #qrModal #btnQrClose #copyFeedback
+  .nav-item[data-nav="lab"|"multisig"|"network"|"balance"|"about"]
+  (also href: index.html, multisig.html, network.html, index.html#balance, index.html#about)
+
+Multisig selectors:
+  #msParts #msM #msBip67 #msBuild #msClear #msResult #msP2sh #msP2wsh #msStatus
+  #msDemoN #msGenDemo #msDemoList #msWordTabs
+
+Network selectors:
+  #btnFetchSnap #snapStatus #snapResult #feeOut #feeExample #trafficOut
+  #balAck #btnLoadLab #btnFetchBal #balAddrs #balStatus #balTableBody
 
 Begin now with S0.
 ```
@@ -53,11 +67,12 @@ Begin now with S0.
 
 ## Global rules
 
-1. Open **https://bip39.catalyxt.xyz/** only (unless the operator gives another BASE_URL).
-2. Hard-refresh once before the suite.
+1. Open the three public URLs above (unless the operator gives another BASE_URL).
+2. Hard-refresh once before each app’s first scenario.
 3. **Never** paste a real funded recovery phrase.
 4. Record **PASS / FAIL** per scenario with evidence.
-5. Lab tab must not call public explorers from the browser; Balance tab is documentation only.
+5. Lab / Multisig must not call public explorers from the browser for crypto work.
+6. Network may contact **mempool.space** only; Lab Balance panel is CLI documentation only (live balances live on Network).
 
 ### Public test mnemonic
 
@@ -74,6 +89,12 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | BIP84 watch-only key | starts with `zpub` |
 | Mnemonic entropy (12 words) | `128 bits (12-word BIP-39)` |
 
+### Sample Network address (abandon BIP84 idx 0 — public test vector)
+
+```text
+bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu
+```
+
 ---
 
 ## Scenarios
@@ -83,7 +104,7 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | Step | Action | Expected |
 |------|--------|----------|
 | 1 | Open https://bip39.catalyxt.xyz/ | Page loads; title mentions BIP39 |
-| 2 | Sidebar | Lab, Balance, About |
+| 2 | Sidebar | **5** items: Lab, Multisig, Network, Balance, About |
 | 3 | Main | Generate button visible |
 
 ### S1 — Generate fills table + entropy
@@ -150,7 +171,7 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | 1 | Click **QR** on an address | Modal open; image shown |
 | 2 | Modal text | Same address as cell |
 | 3 | **Close** | Modal hidden |
-| 4 | Optional Network tab | No explorer fetch for QR |
+| 4 | Lab page | No explorer/network fetch for QR (offline CSP) |
 
 ### S8 — Watch-only export
 
@@ -169,16 +190,16 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | 2 | Uncheck Hide private | Visible again |
 | 3 | Clear secrets | Empty mnemonic; entropy `—`; empty table |
 
-### S10 — Nav Balance + About + Multisig + Network
+### S10 — Nav (Lab + Multisig + Network + Balance + About)
 
 | Step | Action | Expected |
 |------|--------|----------|
-| 1 | Balance tab | CLI balance docs (mempool / bitcoind) |
+| 1 | From Lab: Balance tab | CLI balance docs (mempool / bitcoind); link toward Network page |
 | 2 | About tab | Security / no retention |
 | 3 | Lab tab | Back to lab |
-| 4 | Click **Multisig** in sidebar | Navigates to `/multisig.html`; heading “Multisig, explained” |
-| 5 | Sidebar | **5** nav items: Lab, Multisig, Network, Balance, About |
-| 6 | Click **Network** | `/network.html` loads |
+| 4 | Click **Multisig** | `/multisig.html`; heading “Multisig, explained”; **5** nav items |
+| 5 | Click **Network** | `/network.html`; heading “Network”; **5** nav items; Network active |
+| 6 | Sidebar consistency | Labels: Lab, Multisig, Network, Balance, About on every page |
 
 ### S11 — Invalid mnemonic
 
@@ -209,22 +230,28 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 | 4 | Manual golden (paste path only) | P2SH = `33RQmypKhD6f4tMquiR5a3C6dRT7eBpaiG` |
 | 5 | Paste WIF-looking `5Hue…` and Build | Error: private keys not accepted |
 | 6 | Status | offline / no private keys messaging |
+| 7 | Sidebar | Network link present (5 nav items) |
 
 **PASS if:** Demo generator and/or paste works; private keys refused; educational copy present.
 
 ### S13 — Network page (Option C)
 
-**URL:** https://bip39.catalyxt.xyz/network.html
+**URL:** https://bip39.catalyxt.xyz/network.html  
+
+**Security model:** This page may contact **mempool.space**. Lab and Multisig must remain offline for secrets.
 
 | Step | Action | Expected |
 |------|--------|----------|
-| 1 | Open Network | Heading “Network”; balances Fetch buttons **disabled** until ack |
-| 2 | Check leak ack | Fetch balances + Load from Lab enabled |
-| 3 | Open Lab (`/`) | CSP still `connect-src 'none'` |
-| 4 | **S13b:** Network → Fetch fee + traffic | Fee rates show sat/vB; tip/mempool lines; status OK |
-| 5 | Never paste a seed on Network | Address-shaped filter only |
+| 1 | Open Network | Heading “Network (opt-in)” (or “Network”); chip/mentions mempool.space |
+| 2 | Balances section | **Fetch balances** and **Load addresses from Lab** **disabled** until ack |
+| 3 | Check leak-ack checkbox (`#balAck`) | Both buttons **enabled** |
+| 4 | CSP on Network | Page may allow `connect-src` for `https://mempool.space` (meta and/or response header) |
+| 5 | Open Lab (`/`) | CSP still `connect-src 'none'` (offline) |
+| 6 | **S13b Fees:** return to Network → **Fetch fee + traffic snapshot** | `#feeOut` shows sat/vB bands (fastest/halfHour/…); `#trafficOut` tip and/or mempool; `#snapStatus` OK |
+| 7 | **S13c Balances:** paste sample Network address above (BIP84 golden); ack on → **Fetch balances** | Row appears; status `ok` or `unknown` — **never** invent a success with fake zero if API failed; seed text in box is ignored/not treated as address |
+| 8 | Optional: Lab generate/derive → Network **Load from Lab** (same browser session) | Loads addresses if session bridge present |
 
-**PASS if:** Opt-in snapshot works; Lab stays offline; balances gated by ack.
+**PASS if:** Opt-in snapshot works; Lab stays offline; balances gated by ack; no seed accepted as address list.
 
 ---
 
@@ -244,15 +271,15 @@ S1 Generate: PASS|FAIL —
 S2 Abandon vectors: PASS|FAIL — 
 S3 Passphrase: PASS|FAIL — 
 S4 Controls: PASS|FAIL — 
-S5 Legacy columns: PASS|FAIL — 
+S5 Address type pads: PASS|FAIL — 
 S6 Copy: PASS|FAIL — 
 S7 QR: PASS|FAIL — 
 S8 Watch-only: PASS|FAIL — 
 S9 Clear/hide: PASS|FAIL — 
-S10 Nav (+ Multisig + Network): PASS|FAIL — 
+S10 Nav (5 items + Multisig + Network): PASS|FAIL — 
 S11 Invalid: PASS|FAIL — 
 S12 Multisig explainer: PASS|FAIL — 
-S13 Network (+ fee snapshot): PASS|FAIL — 
+S13 Network (ack + fee snapshot + balances gate): PASS|FAIL — 
 
 Score: __ / 14 PASS
 Blockers:
@@ -263,7 +290,7 @@ Notes:
 
 ## Operator one-liner for Comet
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute the PROMPT FOR COMET section (S0–S13) against https://bip39.catalyxt.xyz/, multisig.html, and network.html. Return the Report template filled in.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute the PROMPT FOR COMET section (S0–S13) against https://bip39.catalyxt.xyz/, https://bip39.catalyxt.xyz/multisig.html, and https://bip39.catalyxt.xyz/network.html. Return the Report template filled in.
 
 ---
 
@@ -280,4 +307,7 @@ npm run test:e2e:live         # https://bip39.catalyxt.xyz
 | Scenarios | File |
 |-----------|------|
 | S0–S11 | `e2e/lab.spec.ts` |
-| S12 | `e2e/multisig.spec.ts` |
+| S12, S12b | `e2e/multisig.spec.ts` |
+| S13, S13b, S13c | `e2e/network.spec.ts` |
+
+Maps 1:1 to Comet scenario IDs in this document.

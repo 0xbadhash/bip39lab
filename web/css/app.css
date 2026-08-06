@@ -557,6 +557,11 @@ a.nav-item:hover {
   margin-top: 0.75rem;
 }
 
+/* Author display:flex would otherwise override UA [hidden] { display:none } */
+.watch-list[hidden] {
+  display: none !important;
+}
+
 .watch-item {
   padding: 0.75rem 0.85rem;
   background: var(--bg-elevated);
