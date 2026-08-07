@@ -85,20 +85,30 @@
           <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
         </div>
         <div class="topbar-actions">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
-          <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+          <span class="topbar-status">
+            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+            <span class="help-tip help-tip-safety" data-term="TEACH">
+              <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
+          <span class="topbar-status">
+            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+            <span class="help-tip help-tip-safety" data-term="CSP">
+              <button type="button" class="help-tip-btn" aria-label="About offline crypto CSP">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
           <span class="topbar-status" id="airgapStatus">
             <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
-            <span class="help-tip help-tip-safety">
+            <span class="help-tip help-tip-safety" data-term="AIRGAP">
               <button type="button" class="help-tip-btn" aria-label="Why show browser online/offline?">i</button>
               <span class="help-tip-panel" hidden>
                 <strong>Why this chip?</strong>
-                It reports whether the <em>browser</em> thinks it has a network link
-                (<code>navigator.onLine</code>) — green = online, red = offline.
-                Lab cryptography still never leaves this page (see “Offline crypto” / CSP).
-                Use it as a quick air-gap hint: red/offline is safer for real recovery phrases;
-                green/online is fine for demos, but treat seeds carefully on a connected machine.
-                This is not a perfect air-gap detector (the OS can report online/offline incorrectly).
+                Browser network signal (<code>navigator.onLine</code>) — green = online, red = offline.
+                Lab crypto still never leaves this page (Offline crypto / CSP).
+                Red/offline is a better air-gap hint for real recovery phrases; green is fine for demos.
+                Not a perfect air-gap detector.
               </span>
             </span>
           </span>
@@ -350,12 +360,9 @@
 
             <div class="card-sub watch-only" id="watchOnlyPanel">
               <h3 class="label-row">Watch-only export
-                <span class="help-tip">
+                <span class="help-tip" data-term="WATCHONLY">
                   <button type="button" class="help-tip-btn" aria-label="About watch-only">i</button>
-                  <span class="help-tip-panel" hidden>
-                    See balances in another app without spending rights (statement login, not transfer rights).
-                    Public keys only — never <code>xprv</code>. Passphrase changes every key.
-                  </span>
+                  <span class="help-tip-panel" hidden></span>
                 </span>
               </h3>
 
@@ -384,15 +391,34 @@
 
         <!-- Panel: Tools -->
         <section id="panel-tools" class="panel" role="tabpanel" hidden>
+          <p class="control-help teach-only" style="margin:0 0 0.75rem">
+            Tools are offline utilities tied to the Lab phrase when needed. Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
+          </p>
           <div class="card">
-            <div class="card-head"><h2>Path playground</h2></div>
+            <div class="card-head">
+              <h2 class="label-row">Path playground
+                <span class="help-tip" data-term="PATH">
+                  <button type="button" class="help-tip-btn" aria-label="About derivation path">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </h2>
+            </div>
             <p class="card-lede teach-only">Live BIP path from Lab controls (account / change / network / type).</p>
             <pre class="out" id="pathPlayOut">m/86'/0'/0'/0/0</pre>
             <p class="control-help" id="pathPlayHelp">Purpose' / coin_type' / account' / change / index</p>
           </div>
 
           <div class="card">
-            <h2>Entropy pad (dice / coin)</h2>
+            <h2 class="label-row">Entropy pad (dice / coin)
+              <span class="help-tip" data-term="ENTROPY">
+                <button type="button" class="help-tip-btn" aria-label="About entropy pad">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="CSPRNG">
+                <button type="button" class="help-tip-btn" aria-label="About CSPRNG">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
             <p class="control-help">Build practice entropy offline. Not a substitute for OS CSPRNG for real funds.</p>
             <div class="row">
               <button type="button" class="btn secondary" id="btnDice">Roll d6</button>
@@ -404,7 +430,12 @@
           </div>
 
           <div class="card">
-            <h2>Compare two passphrases</h2>
+            <h2 class="label-row">Compare two passphrases
+              <span class="help-tip" data-term="PASSPHRASE">
+                <button type="button" class="help-tip-btn" aria-label="About passphrase compare">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
             <p class="control-help">Same mnemonic, different BIP-39 passphrases → different first addresses (offline). Uses the Lab phrase if set; otherwise generates a test phrase here (no need to leave Tools).</p>
             <label class="field" for="cmpPpA">Passphrase A
               <input id="cmpPpA" type="password" autocomplete="off" placeholder="(empty)" />
@@ -420,7 +451,16 @@
           </div>
 
           <div class="card card-wide">
-            <h2>Output descriptors (watch-only)</h2>
+            <h2 class="label-row">Output descriptors (watch-only)
+              <span class="help-tip" data-term="DESCRIPTOR">
+                <button type="button" class="help-tip-btn" aria-label="About output descriptors">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="WATCHONLY">
+                <button type="button" class="help-tip-btn" aria-label="About watch-only">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
             <p class="control-help">Built from Lab watch-only export — public material only. Auto-generates a test phrase if Lab is empty.</p>
             <div class="row">
               <button type="button" class="btn secondary" id="btnDescRefresh">Refresh descriptors</button>
@@ -429,8 +469,17 @@
           </div>
 
           <div class="card card-wide">
-            <h2>PSBT inspector (no sign)</h2>
-            <p class="control-help">Paste base64 or hex PSBT. Educational parse only — never signs or broadcasts.</p>
+            <h2 class="label-row">PSBT inspector (no sign)
+              <span class="help-tip help-tip-safety" data-term="PSBT">
+                <button type="button" class="help-tip-btn" aria-label="About PSBT">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip help-tip-safety" data-term="BIP174">
+                <button type="button" class="help-tip-btn" aria-label="About BIP-174">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
+            <p class="control-help">Paste base64 or hex PSBT. Educational parse only — never signs or broadcasts. Paste from a wallet export, not invented here.</p>
             <label class="field" for="psbtIn">PSBT
               <textarea id="psbtIn" rows="4" spellcheck="false" autocomplete="off" placeholder="cHNidP8…"></textarea>
             </label>
@@ -441,7 +490,12 @@
           </div>
 
           <div class="card">
-            <h2>Descriptor explain</h2>
+            <h2 class="label-row">Descriptor explain
+              <span class="help-tip" data-term="DESCRIPTOR">
+                <button type="button" class="help-tip-btn" aria-label="About descriptors">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
             <p class="control-help">Paste a <em>public</em> descriptor. Private keys / seeds are refused.</p>
             <label class="field" for="descExplainIn">Descriptor text
               <textarea id="descExplainIn" rows="3" spellcheck="false" autocomplete="off" placeholder="wpkh(zpub…/0/*)"></textarea>

@@ -60,7 +60,13 @@
           <p class="sub">Educational M-of-N share split · offline · not SLIP-39</p>
         </div>
         <div class="topbar-actions">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          <span class="topbar-status">
+            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+            <span class="help-tip help-tip-safety" data-term="TEACH">
+              <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
           <span class="chip chip-warn">Educational</span>
           <span class="chip">Offline</span>
         </div>
@@ -131,12 +137,28 @@
         </div>
 
         <div class="card" id="shCardDemo">
-          <div class="card-head"><h2>Practice secret</h2></div>
+          <div class="card-head">
+            <h2 class="label-row">Practice secret
+              <span class="help-tip help-tip-safety" data-term="SLIP39">
+                <button type="button" class="help-tip-btn" aria-label="Not SLIP-39">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
+          </div>
           <p class="control-help">
             Use a throwaway secret. Hex (even length) is treated as raw bytes; other text is UTF-8.
             Lab mnemonic is <strong>not</strong> imported automatically.
           </p>
-          <label class="field" for="shSecret">Practice secret
+          <label class="field" for="shSecret">
+            <span class="label-row">Practice secret
+              <span class="help-tip" data-term="ENTROPY">
+                <button type="button" class="help-tip-btn" aria-label="About practice secret bytes">i</button>
+                <span class="help-tip-panel" hidden>
+                  Demo bytes only — not a BIP-39 recovery phrase and not SLIP-39 words.
+                  Generate random hex here for practice; never paste a funded seed.
+                </span>
+              </span>
+            </span>
             <textarea id="shSecret" rows="3" spellcheck="false" autocomplete="off"
               placeholder="Click Generate, or paste demo text / hex"></textarea>
           </label>
@@ -148,18 +170,34 @@
 
         <div class="card" id="shCardSplit">
           <div class="card-head">
-            <h2>Split demo
+            <h2 class="label-row">Split demo
               <span class="help-tip" data-term="THRESHOLD">
                 <button type="button" class="help-tip-btn" aria-label="About threshold">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="SHAMIR">
+                <button type="button" class="help-tip-btn" aria-label="About Shamir split">i</button>
                 <span class="help-tip-panel" hidden></span>
               </span>
             </h2>
           </div>
           <div class="row fields-inline">
-            <label class="field" for="shM">M (threshold)
+            <label class="field" for="shM">
+              <span class="label-row">M (threshold)
+                <span class="help-tip" data-term="THRESHOLD">
+                  <button type="button" class="help-tip-btn" aria-label="About M">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
               <input id="shM" type="number" min="2" max="7" value="2" />
             </label>
-            <label class="field" for="shN">N (shares)
+            <label class="field" for="shN">
+              <span class="label-row">N (shares)
+                <span class="help-tip" data-term="SHARE">
+                  <button type="button" class="help-tip-btn" aria-label="About N shares">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
               <input id="shN" type="number" min="2" max="7" value="3" />
             </label>
           </div>
@@ -174,9 +212,16 @@
         </div>
 
         <div class="card card-wide" id="shCardShares">
-          <div class="card-head"><h2>Shares</h2></div>
+          <div class="card-head">
+            <h2 class="label-row">Shares
+              <span class="help-tip" data-term="SHARE">
+                <button type="button" class="help-tip-btn" aria-label="About share format">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
+          </div>
           <div id="shShares" class="shamir-shares"></div>
-          <p class="control-help" id="shSharesHint">Split to see labeled share cards.</p>
+          <p class="control-help" id="shSharesHint">Split to see labeled share cards (<code>share:index:hex</code> — not BIP-39 words).</p>
         </div>
 
         <p class="footer-host">

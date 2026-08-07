@@ -62,7 +62,13 @@
           <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
         </div>
         <div class="topbar-actions">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          <span class="topbar-status">
+            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+            <span class="help-tip help-tip-safety" data-term="TEACH">
+              <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
           <span class="chip">mempool.space</span>
         </div>
       </header>
@@ -106,6 +112,10 @@
                 <button type="button" class="help-tip-btn" aria-label="About fee rate">i</button>
                 <span class="help-tip-panel" hidden></span>
               </span>
+              <span class="help-tip" data-term="MEMPOOL">
+                <button type="button" class="help-tip-btn" aria-label="About mempool">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
             </h2>
           </div>
           <p class="card-lede teach-only">Optional public snapshot via mempool proxy.</p>
@@ -136,12 +146,27 @@
         </div>
 
         <div class="card card-wide" id="netCardBal">
-          <div class="card-head"><h2>Address balances (address-only)</h2></div>
+          <div class="card-head">
+            <h2 class="label-row">Address balances (address-only)
+              <span class="help-tip help-tip-safety" data-term="UTXO">
+                <button type="button" class="help-tip-btn" aria-label="About UTXO balance">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
+          </div>
           <p class="card-lede">Addresses only — never a seed phrase.</p>
           <!-- Safety always visible -->
-          <label class="check">
+          <label class="check label-row">
             <input type="checkbox" id="balAck" />
             I understand these addresses will be sent to the public API (leak ack)
+            <span class="help-tip help-tip-safety">
+              <button type="button" class="help-tip-btn" aria-label="About address privacy leak">i</button>
+              <span class="help-tip-panel" hidden>
+                <strong>Address leak:</strong> the API host learns which addresses you care about
+                (like looking up a bank account number in public). Never paste a recovery phrase here.
+                Prefer a local node (CLI + Knots) for private checks.
+              </span>
+            </span>
           </label>
           <p class="control-help teach-only" style="margin-top:0.5rem">
             Checking balance reveals interest in those addresses to the API host.
@@ -172,7 +197,20 @@
             </table>
           </div>
           <div class="card-sub" style="margin-top:1rem">
-            <h3>Private balance via CLI (not this page)</h3>
+            <h3 class="label-row">Private balance via CLI (not this page)
+              <span class="help-tip" data-term="KNOTS">
+                <button type="button" class="help-tip-btn" aria-label="About Bitcoin Knots">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="RPC">
+                <button type="button" class="help-tip-btn" aria-label="About RPC">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="SCANTXOUTSET">
+                <button type="button" class="help-tip-btn" aria-label="About scantxoutset">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h3>
             <p class="control-help">
               Lab never loads balances (CSP). For privacy, query an address only with the CLI — never a seed.
               Public explorers learn which address you care about; a local node does not.

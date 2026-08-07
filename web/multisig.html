@@ -79,7 +79,13 @@
           <p class="sub">M-of-N vault · offline · public keys only</p>
         </div>
         <div class="topbar-actions">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          <span class="topbar-status">
+            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+            <span class="help-tip help-tip-safety" data-term="TEACH">
+              <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
           <span class="chip">Offline</span>
         </div>
       </header>
@@ -101,7 +107,18 @@
         </nav>
 
         <div class="card" id="msCardIntro">
-          <div class="card-head"><h2>What is multisig?</h2></div>
+          <div class="card-head">
+            <h2 class="label-row">What is multisig?
+              <span class="help-tip" data-term="MULTISIG">
+                <button type="button" class="help-tip-btn" aria-label="About multisig">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="MOFN">
+                <button type="button" class="help-tip-btn" aria-label="About M-of-N">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
+          </div>
           <p class="card-lede">
             A vault that needs <em>M of N</em> keys to spend — offline calculator, not a wallet.
           </p>
@@ -207,7 +224,17 @@
             Compressed pubkeys hex, one per line — or use the generator above. Private keys / WIF / xprv rejected.
           </p>
 
-          <label class="field" for="msParts">Public keys (N parts)
+          <label class="field" for="msParts">
+            <span class="label-row">Public keys (N parts)
+              <span class="help-tip" data-term="PUBKEY">
+                <button type="button" class="help-tip-btn" aria-label="About public keys">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+              <span class="help-tip" data-term="COSIGNER">
+                <button type="button" class="help-tip-btn" aria-label="About cosigners">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </span>
             <textarea id="msParts" rows="5" spellcheck="false" autocomplete="off"
               placeholder="02abc…&#10;03def…&#10;02…"></textarea>
           </label>
@@ -216,9 +243,9 @@
             <div class="control-block">
               <label class="field inline" for="msM">
                 <span class="label-row">Signatories required (M)
-                  <span class="help-tip">
+                  <span class="help-tip" data-term="MOFN">
                     <button type="button" class="help-tip-btn" aria-label="About M">i</button>
-                    <span class="help-tip-panel" hidden>How many signatures are needed to spend (like “2 directors must approve”).</span>
+                    <span class="help-tip-panel" hidden></span>
                   </span>
                 </span>
                 <input id="msM" type="number" min="1" max="16" value="2" step="1" />

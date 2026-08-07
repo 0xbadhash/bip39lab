@@ -275,6 +275,22 @@
         "Import xpub/zpub/ypub (or addresses) to monitor balances without private keys — like a statement login, not transfer rights.",
     },
     {
+      id: "DESCRIPTOR",
+      title: "Output descriptor",
+      group: "Keys",
+      short: "Script policy string",
+      body:
+        "A text recipe for how an address is built (e.g. wpkh(zpub…/0/*)). Wallets use descriptors for watch-only import. This lab explains public descriptors only — never paste private keys or seeds here.",
+    },
+    {
+      id: "TEACH",
+      title: "Teach mode",
+      group: "Security",
+      short: "Show or hide teaching chrome",
+      body:
+        "Teach On shows step rails, long help folds, and most ⓘ tips. Teach Off keeps a compact UI but still shows safety ⓘ (recovery phrase, air-gap, CSP, PSBT, educational warnings). Preference is stored in this browser only — not secrets.",
+    },
+    {
       id: "MULTISIG",
       title: "Multisig (M-of-N)",
       group: "Multisig",
@@ -534,6 +550,10 @@
         SHARE: "SHARE",
         SLIP39: "SLIP39",
         "SLIP-39": "SLIP39",
+        DESCRIPTOR: "DESCRIPTOR",
+        DESCRIPTORS: "DESCRIPTOR",
+        TEACH: "TEACH",
+        "TEACH MODE": "TEACH",
         P2PKH: "P2PKH",
         P2SH: "P2SH",
         P2WPKH: "P2WPKH",
