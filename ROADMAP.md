@@ -215,8 +215,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Playwright S14 + Comet S0–S14 (6-nav)
 - **Notes:** tag `v0.11.0`
 
+### [DONE] Help UX hybrid (P0–P4)
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-07-help-ux-hybrid.md`
+- **Acceptance:**
+  - [x] P0 help-tip + help-fold CSS/JS
+  - [x] P1 Lab long copy → tips/`details`
+  - [x] P2 step rails Lab + Multisig (+ Network)
+  - [x] P3 Teach On/Off localStorage
+  - [x] P4 Multisig + Network same system
+  - [x] Playwright S41–S48 + Comet
+- **Notes:** tag with next ship (`v0.12.0`); safety copy never hover-only
+
 ## Current focus
 
-**Through Lab tools pack (`v0.11.0`).** Next: optional private Knots proxy for Network (not browser RPC).
-
-**Next:** backlog after Knots on external device.
+**Through Help UX hybrid.** Next: optional private Knots proxy for Network (not browser RPC).

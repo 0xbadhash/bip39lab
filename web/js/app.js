@@ -701,6 +701,8 @@
   function showTab(name) {
     const allowed = { lab: true, tools: true, balance: true, about: true };
     if (!allowed[name]) name = "lab";
+    // expose for step-rail / help-ui deep links
+    window.__bip39ShowTab = showTab;
 
     document.querySelectorAll(".panel").forEach((p) => {
       const on = p.id === "panel-" + name;

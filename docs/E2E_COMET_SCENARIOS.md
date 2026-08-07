@@ -49,7 +49,7 @@ APPS:
   - https://bip39.catalyxt.xyz/
   - https://bip39.catalyxt.xyz/multisig.html
   - https://bip39.catalyxt.xyz/network.html
-Hard-refresh each app once. Do not skip scenarios. Mark PASS/FAIL with evidence.
+Hard-refresh each app once. Do not skip scenarios (S0–S48 including Help UX S41–S48). Mark PASS/FAIL with evidence.
 Use ONLY the public abandon mnemonic for Lab. Multisig: public keys or demo generator only.
 Network: addresses only — never paste a seed. Lab/Tools/Multisig crypto stay offline.
 Final output MUST use the Report template (all S-ids listed).
@@ -247,6 +247,34 @@ Lab footer / Multisig / Network mention bip39.catalyxt.xyz or English host brand
 
 ---
 
+## Help UX hybrid (P0–P4)
+
+### S41 — Teach On + Lab step rail
+Lab loads with **Teach: On**; process rail (4 steps) visible.
+
+### S42 — Teach Off
+Click Teach → **Off**; step rail hidden; air-gap **warn** still visible.
+
+### S43 — ⓘ tip
+Click mnemonic **i** → panel open with vault/air-gap text; **Esc** closes.
+
+### S44 — Step rail jump
+Click step “Watch-only” → `#watchOnlyPanel` in view; step active.
+
+### S45 — Multisig rail + BIP67 tip
+Multisig step rail; jump to Build; open BIP67 **i** tip.
+
+### S46 — Cosigner checklist folded
+Checklist is a collapsed `<details>`; open to see hardware/public bullets.
+
+### S47 — Network rail + leak always on
+Network steps visible; Privacy/leak line always shown; fee **i** tip works; Teach Off hides rail but keeps ack checkbox.
+
+### S48 — Teach persists
+Set Teach Off on Lab → Network still Off; toggle back On.
+
+---
+
 ## Report template
 
 ```text
@@ -305,8 +333,16 @@ S37 CSP isolation: PASS|FAIL —
 S38 Multisig current: PASS|FAIL —
 S39 Network current: PASS|FAIL —
 S40 Host branding: PASS|FAIL —
+S41 Teach On + step rail: PASS|FAIL —
+S42 Teach Off: PASS|FAIL —
+S43 Help tip: PASS|FAIL —
+S44 Step rail jump: PASS|FAIL —
+S45 Multisig rail + BIP67 tip: PASS|FAIL —
+S46 Checklist folded: PASS|FAIL —
+S47 Network rail + leak: PASS|FAIL —
+S48 Teach persists: PASS|FAIL —
 
-Score: __ / 45 PASS
+Score: __ / 53 PASS
 Blockers:
 Notes:
 ```
@@ -315,7 +351,7 @@ Notes:
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (exhaustive S0–S40) against https://bip39.catalyxt.xyz/ Lab, Multisig, and Network. Return the Report template with all S-ids.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (exhaustive **S0–S48**) against https://bip39.catalyxt.xyz/ Lab, Multisig, and Network. Return the Report template with all S-ids.
 
 ## Playwright developers
 

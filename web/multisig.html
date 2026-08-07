@@ -76,39 +76,56 @@
       <header class="topbar">
         <div>
           <h1>Multisig, explained</h1>
-          <p class="sub">M-of-N vault · offline · Bitcoin mainnet addresses from public keys only</p>
+          <p class="sub">M-of-N vault · offline · public keys only</p>
         </div>
-        <span class="chip">Offline</span>
+        <div class="topbar-actions">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          <span class="chip">Offline</span>
+        </div>
       </header>
 
       <main class="content">
-        <div class="card">
-          <h2>What is multisig?</h2>
-          <p class="lead-help">
-            Think of a <strong>bank safe-deposit box that needs more than one key</strong>.
-            A normal Bitcoin address is 1-of-1: one private key can spend.
-            <strong>Multisig</strong> means <em>M of N</em> keys must agree before coins can move.
+        <nav class="step-rail teach-only" data-step-rail aria-label="Multisig process" id="msStepRail">
+          <button type="button" class="step-rail-btn is-active" data-step-target="#msCardIntro" aria-current="step">
+            1 · Learn<small>What M-of-N means</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#msCardKeys">
+            2 · Keys<small>Demo or paste pubkeys</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#msCardBuild">
+            3 · Build<small>M · BIP67 · address</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#msResult">
+            4 · Result<small>Copy P2SH / P2WSH</small>
+          </button>
+        </nav>
+
+        <div class="card" id="msCardIntro">
+          <div class="card-head"><h2>What is multisig?</h2></div>
+          <p class="card-lede">
+            A vault that needs <em>M of N</em> keys to spend — offline calculator, not a wallet.
           </p>
-          <ul class="help-list">
-            <li><strong>N</strong> — total keys (cosigners), like N officers who each hold a key.</li>
-            <li><strong>M</strong> — how many must sign a payment (e.g. 2-of-3: any two of three).</li>
-            <li><strong>Public key</strong> — safe to share for building the vault address (like a lock blueprint).</li>
-            <li><strong>Private key</strong> — never paste here; this page refuses WIF / xprv (safety).</li>
-          </ul>
-          <p class="control-help">
-            <strong>What this tool is:</strong> an offline calculator that turns M + public keys into
-            a shared receive address and the script that defines the vault.<br />
-            <strong>What it is not:</strong> a wallet, a transaction signer, or a blockchain scanner.
-            It will not broadcast anything or “discover” funded combos on explorers (that would hurt privacy).
-          </p>
+          <details class="help-fold teach-only">
+            <summary>Safe-deposit box metaphor</summary>
+            <p class="control-help">
+              Think of a <strong>bank safe-deposit box that needs more than one key</strong>.
+              A normal Bitcoin address is 1-of-1. <strong>Multisig</strong> means M of N keys must agree before coins move.
+            </p>
+            <ul class="help-list">
+              <li><strong>N</strong> — total cosigners.</li>
+              <li><strong>M</strong> — how many must sign (e.g. 2-of-3).</li>
+              <li><strong>Public key</strong> — safe to share to build the address.</li>
+              <li><strong>Private key</strong> — never paste here; WIF / xprv refused.</li>
+            </ul>
+          </details>
           <div class="card-sub" style="margin-top:1rem">
             <h3>Policy readout</h3>
             <p id="msPolicy" class="status-plain" aria-live="polite">
               Set M and N (or generate demo cosigners) — policy text updates after build.
             </p>
           </div>
-          <div class="card-sub" style="margin-top:1rem">
-            <h3>Cosigner checklist</h3>
+          <details class="help-fold teach-only" style="margin-top:1rem">
+            <summary>Cosigner checklist</summary>
             <ul class="help-list">
               <li>☐ Each cosigner generated their own seed offline / on hardware</li>
               <li>☐ Only <strong>public</strong> keys (or xpubs) are shared to build the vault</li>
@@ -117,27 +134,22 @@
               <li>☐ Backup plan: who holds which key; how to replace a lost cosigner</li>
               <li>☐ No private keys or seeds pasted into this page</li>
             </ul>
-          </div>
+          </details>
         </div>
 
-        <div class="card">
-          <h2>Where do the public keys come from?</h2>
-          <p class="lead-help">
-            A multisig vault is built from <strong>several people’s public keys</strong> (N cosigners).
-            You do <em>not</em> paste recovery phrases into the builder — only the <strong>compressed public key</strong>
-            of each cosigner (66 hex characters, starts with <code>02</code> or <code>03</code>).
+        <div class="card" id="msCardKeys">
+          <div class="card-head"><h2>Where do the public keys come from?</h2></div>
+          <p class="card-lede">
+            Paste compressed pubkeys (02/03…) or generate throwaway demo cosigners offline — never seeds here.
           </p>
-          <ul class="help-list">
-            <li><strong>Real life:</strong> each person generates their own seed in a hardware wallet / Sparrow / Coldcard,
-              then exports the <em>public</em> key (or xpub) for the multisig setup. Private keys never leave their device.</li>
-            <li><strong>In this lab:</strong> use <strong>Generate demo cosigners</strong> below to create N throwaway seeds
-              offline and fill their public keys automatically — so you can learn without hardware.</li>
-            <li><strong>Or</strong> paste public keys you already have (hex), one per line.</li>
-          </ul>
-          <p class="control-help">
-            Demo seeds are for education only. The BIP39 Lab page is where you explore a <em>single</em> seed’s addresses;
-            multisig is about combining <em>several</em> public keys into one shared address.
-          </p>
+          <details class="help-fold teach-only">
+            <summary>Real life vs this lab</summary>
+            <ul class="help-list">
+              <li><strong>Real life:</strong> each person exports a public key from hardware / Sparrow; private keys never leave their device.</li>
+              <li><strong>In this lab:</strong> <strong>Generate demo cosigners</strong> creates N throwaway seeds offline and fills pubkeys.</li>
+              <li>Demo seeds are for education only.</li>
+            </ul>
+          </details>
         </div>
 
         <div class="card card-wide">
@@ -189,11 +201,10 @@
           <p id="msDemoWarn" class="control-help" style="color:#f0d78c" hidden></p>
         </div>
 
-        <div class="card card-wide">
-          <h2>2 · Build an address (public keys only)</h2>
-          <p class="control-help">
-            Paste <strong>compressed</strong> public keys as hex, one per line — or use the generator above to fill this box.
-            Private keys / WIF / xprv are rejected.
+        <div class="card card-wide" id="msCardBuild">
+          <div class="card-head"><h2>2 · Build an address (public keys only)</h2></div>
+          <p class="card-lede">
+            Compressed pubkeys hex, one per line — or use the generator above. Private keys / WIF / xprv rejected.
           </p>
 
           <label class="field" for="msParts">Public keys (N parts)
@@ -203,20 +214,28 @@
 
           <div class="derive-controls">
             <div class="control-block">
-              <label class="field inline" for="msM">Signatories required (M)
+              <label class="field inline" for="msM">
+                <span class="label-row">Signatories required (M)
+                  <span class="help-tip">
+                    <button type="button" class="help-tip-btn" aria-label="About M">i</button>
+                    <span class="help-tip-panel" hidden>How many signatures are needed to spend (like “2 directors must approve”).</span>
+                  </span>
+                </span>
                 <input id="msM" type="number" min="1" max="16" value="2" step="1" />
               </label>
-              <p class="control-help">How many signatures are needed to spend (like “2 directors must approve”).</p>
             </div>
             <div class="control-block">
-              <label class="check" style="margin-top:1.5rem">
+              <label class="check label-row" style="margin-top:1.5rem">
                 <input type="checkbox" id="msBip67" checked />
                 Sort keys (BIP67)
+                <span class="help-tip">
+                  <button type="button" class="help-tip-btn" aria-label="About BIP67">i</button>
+                  <span class="help-tip-panel" hidden>
+                    When on, keys are sorted the same way for everyone so you all get the <em>same</em> address.
+                    Leave on unless you need a fixed custom order.
+                  </span>
+                </span>
               </label>
-              <p class="control-help">
-                When on, keys are sorted the same way for everyone so you all get the <em>same</em> address.
-                Leave on unless you know you need a fixed custom order.
-              </p>
             </div>
           </div>
 
@@ -232,35 +251,33 @@
             <div class="watch-item">
               <div class="watch-item-title" id="msSummary">—</div>
               <p class="watch-item-note" id="msOrderNote"></p>
-              <p class="control-help"><strong>P2SH address</strong> (classic multisig, starts with 3) — common for older setups</p>
+              <p class="control-help teach-only"><strong>P2SH</strong> (starts with 3) — classic multisig</p>
               <div class="watch-item-key" id="msP2sh"></div>
               <div class="row">
                 <button type="button" class="btn-copy" id="msCopyP2sh" data-copy-idle="Copy">Copy</button>
               </div>
-              <p class="control-help" style="margin-top:0.75rem"><strong>P2WSH address</strong> (native segwit vault, bc1q… longer) — same policy, modern wrapper</p>
+              <p class="control-help teach-only" style="margin-top:0.75rem"><strong>P2WSH</strong> (bc1q… longer) — same policy, modern wrapper</p>
               <div class="watch-item-key" id="msP2wsh"></div>
               <div class="row">
                 <button type="button" class="btn-copy" id="msCopyP2wsh" data-copy-idle="Copy">Copy</button>
               </div>
-              <p class="control-help" style="margin-top:0.75rem"><strong>Redeem / witness script</strong> (hex) — the actual “vault rules” encoded</p>
+              <p class="control-help teach-only" style="margin-top:0.75rem"><strong>Redeem / witness script</strong> (hex)</p>
               <div class="watch-item-key" id="msScript"></div>
               <div class="row">
                 <button type="button" class="btn-copy" id="msCopyScript" data-copy-idle="Copy">Copy</button>
               </div>
-              <p class="control-help" style="margin-top:0.75rem"><strong>Keys in final order</strong></p>
+              <p class="control-help teach-only" style="margin-top:0.75rem"><strong>Keys in final order</strong></p>
               <pre class="out" id="msKeys" style="margin-top:0.35rem"></pre>
             </div>
             <p id="msCopyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card teach-only">
           <h2>Compared to Ian Coleman’s multisig tool</h2>
           <p class="control-help">
             <a href="https://iancoleman.io/multisig/" style="color:var(--accent)">iancoleman.io/multisig</a>
-            can accept private keys and (optionally) probe explorers to “discover” key order.
-            This page focuses on <strong>understanding M-of-N</strong> and building addresses from
-            <strong>public keys only</strong>, fully offline — better for teaching and safer defaults.
+            can accept private keys and probe explorers. This page is <strong>public keys only</strong>, offline — safer teaching defaults.
           </p>
         </div>
 
@@ -271,6 +288,7 @@
       </main>
     </div>
   </div>
+  <script src="js/help-ui.js"></script>
   <script src="js/multisig.bundle.js"></script>
   <script src="js/multisig-app.js"></script>
 </body>

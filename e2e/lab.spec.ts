@@ -13,7 +13,7 @@ test.describe("Lab shell & chrome", () => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Generate/i })).toBeVisible();
+    await expect(page.locator("#btnGenerate")).toBeVisible();
     await expectNavCount(page, 6);
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();

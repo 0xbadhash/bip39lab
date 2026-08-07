@@ -61,29 +61,57 @@
           <h1>Network (opt-in)</h1>
           <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
         </div>
-        <span class="chip">mempool.space</span>
+        <div class="topbar-actions">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          <span class="chip">mempool.space</span>
+        </div>
       </header>
 
       <main class="content">
-        <div class="card">
-          <h2>What this page is</h2>
-          <p class="lead-help">
-            Like checking <strong>bank fees and account balances online</strong> — without logging into your vault keys.
-            Nothing here needs your recovery phrase. If you look up an address, that service learns you care about it
-            (like typing an account number into a public search box).
+        <nav class="step-rail teach-only" data-step-rail aria-label="Network process" id="netStepRail">
+          <button type="button" class="step-rail-btn is-active" data-step-target="#netCardIntro" aria-current="step">
+            1 · Understand<small>Address leak model</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#netCardFees">
+            2 · Fees<small>Optional snapshot</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#netCardBal">
+            3 · Balances<small>Ack · paste · fetch</small>
+          </button>
+        </nav>
+
+        <div class="card" id="netCardIntro">
+          <div class="card-head"><h2>What this page is</h2></div>
+          <p class="card-lede">
+            Public fees and address-only balances — not your seed. Failures stay unknown (no fake zeros).
           </p>
+          <!-- Safety always visible -->
           <p class="control-help">
-            <strong>Is:</strong> fee snapshot, how busy the mempool looks, optional balance for addresses you paste or brought from Lab.<br />
-            <strong>Is not:</strong> a wallet, price charts, or spending tools. Failures show as unknown/error — never a fake “0” when the API fails.
+            <strong>Privacy:</strong> looking up an address tells the API host you care about it
+            (like typing an account number into a public search box). Lab stays offline for secrets.
           </p>
+          <details class="help-fold teach-only">
+            <summary>Is / is not</summary>
+            <p class="control-help">
+              <strong>Is:</strong> fee snapshot, mempool traffic, optional address balances.<br />
+              <strong>Is not:</strong> a wallet, price charts, or spending tools.
+            </p>
+          </details>
         </div>
 
-        <div class="card">
-          <h2>Fees &amp; traffic</h2>
-          <p class="control-help">
-            <strong>Fee rate</strong> (sat/vB) is like a postage stamp price for Bitcoin transactions — higher often confirms faster when the network is busy.
-            Example cost assumes ~140 vB (simple modern send) — an estimate only.
-          </p>
+        <div class="card" id="netCardFees">
+          <div class="card-head">
+            <h2 class="label-row">Fees &amp; traffic
+              <span class="help-tip">
+                <button type="button" class="help-tip-btn" aria-label="About fee rate">i</button>
+                <span class="help-tip-panel" hidden>
+                  <strong>Fee rate</strong> (sat/vB) is like postage for Bitcoin transactions — higher often confirms faster when busy.
+                  Example cost assumes ~140 vB (simple modern send) — estimate only.
+                </span>
+              </span>
+            </h2>
+          </div>
+          <p class="card-lede teach-only">Optional public snapshot via mempool proxy.</p>
           <div class="row">
             <button type="button" class="btn" id="btnFetchSnap">Fetch fee + traffic snapshot</button>
           </div>
@@ -110,16 +138,17 @@
           </div>
         </div>
 
-        <div class="card card-wide">
-          <h2>Address balances (address-only)</h2>
-          <p class="control-help">
-            Enter Bitcoin <strong>addresses</strong> only (one per line). Never paste a seed phrase here.
-            Checking balance tells mempool.space which addresses you queried.
-          </p>
+        <div class="card card-wide" id="netCardBal">
+          <div class="card-head"><h2>Address balances (address-only)</h2></div>
+          <p class="card-lede">Addresses only — never a seed phrase.</p>
+          <!-- Safety always visible -->
           <label class="check">
             <input type="checkbox" id="balAck" />
-            I understand these addresses will be sent to mempool.space (public API)
+            I understand these addresses will be sent to the public API (leak ack)
           </label>
+          <p class="control-help teach-only" style="margin-top:0.5rem">
+            Checking balance reveals interest in those addresses to the API host.
+          </p>
           <div class="row" style="margin-top:0.75rem">
             <button type="button" class="btn secondary" id="btnLoadLab" disabled>Load addresses from Lab (this session)</button>
             <button type="button" class="btn" id="btnFetchBal" disabled>Fetch balances</button>
@@ -159,6 +188,7 @@
       </main>
     </div>
   </div>
+  <script src="js/help-ui.js"></script>
   <script src="js/network.bundle.js"></script>
   <script src="js/network-app.js"></script>
 </body>

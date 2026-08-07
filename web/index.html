@@ -84,7 +84,8 @@
           <h1 id="panel-title">Offline BIP-39 lab</h1>
           <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
         </div>
-        <div class="topbar-chips">
+        <div class="topbar-actions">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
           <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
           <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
         </div>
@@ -97,13 +98,31 @@
           Do not paste a real recovery phrase on a machine you do not trust.
         </div>
 
+        <!-- P2 step rail -->
+        <nav class="step-rail teach-only" data-step-rail aria-label="Lab process" id="labStepRail">
+          <button type="button" class="step-rail-btn is-active" data-step-target="#card-mnemonic" aria-current="step">
+            1 · Phrase<small>Generate or paste</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#card-addresses">
+            2 · Path<small>Network · account · type</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#addrTable">
+            3 · Addresses<small>Copy or QR</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#watchOnlyPanel">
+            4 · Watch-only<small>zpub / xpub export</small>
+          </button>
+        </nav>
+
         <!-- Panel: Lab -->
         <section id="panel-lab" class="panel active" role="tabpanel">
-          <div class="card">
-            <h2>Mnemonic</h2>
-            <p>English BIP-39 only. Passphrase is optional BIP-39 extension (not a PIN on this page).</p>
+          <div class="card" id="card-mnemonic">
+            <div class="card-head">
+              <h2>Mnemonic</h2>
+            </div>
+            <p class="card-lede">English BIP-39 only. Optional passphrase is a BIP-39 extension (not a PIN).</p>
 
-            <label class="field" for="wordCount">Word count
+            <label class="field" for="wordCount"><span class="label-row">Word count</span>
               <select id="wordCount">
                 <option value="12" selected>12</option>
                 <option value="15">15</option>
@@ -121,7 +140,16 @@
 
             <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
 
-            <label class="field" data-private for="mnemonic">BIP-39 mnemonic
+            <label class="field" data-private for="mnemonic">
+              <span class="label-row">BIP-39 mnemonic
+                <span class="help-tip help-tip-safety">
+                  <button type="button" class="help-tip-btn" aria-label="About the mnemonic">i</button>
+                  <span class="help-tip-panel" hidden>
+                    Your recovery phrase is the master key to a vault. Never paste a real funded phrase on an untrusted machine.
+                    Prefer air-gap. This lab does not store it on a server.
+                  </span>
+                </span>
+              </span>
               <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
             </label>
             <div class="row" data-private>
@@ -129,101 +157,158 @@
               <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
               <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
             </div>
-            <p class="hint-tiny" data-private>
-              Seed QR shows the recovery phrase as a scannable code — only on an air-gapped machine you trust.
-              Print backup never uploads data. Network handoff stores <em>addresses only</em> in sessionStorage.
-            </p>
+            <details class="help-fold teach-only" data-private>
+              <summary>About Seed QR, print, Network handoff</summary>
+              <p class="control-help">
+                Seed QR shows the recovery phrase as a scannable code — only on an air-gapped machine you trust.
+                Print backup never uploads data. Network handoff stores <em>addresses only</em> in sessionStorage.
+              </p>
+            </details>
             <div class="field-ro" data-private>
-              <span class="field-ro-label">Mnemonic entropy</span>
+              <span class="field-ro-label label-row">Mnemonic entropy
+                <span class="help-tip">
+                  <button type="button" class="help-tip-btn" aria-label="About mnemonic entropy">i</button>
+                  <span class="help-tip-panel" hidden>
+                    BIP-39 ENT bits from word count (e.g. 128 for 12 words) — not Shannon entropy of the words themselves.
+                  </span>
+                </span>
+              </span>
               <output id="entropyMnemonic" class="field-ro-value" for="mnemonic" aria-live="polite">—</output>
             </div>
 
-            <label class="field" data-private for="passphrase">Optional passphrase
+            <label class="field" data-private for="passphrase">
+              <span class="label-row">Optional passphrase
+                <span class="help-tip">
+                  <button type="button" class="help-tip-btn" aria-label="About passphrase">i</button>
+                  <span class="help-tip-panel" hidden>
+                    A second secret: same words + different passphrase = different vault (every address changes).
+                    Strength shown is a local estimate only.
+                  </span>
+                </span>
+              </span>
               <input id="passphrase" type="password" autocomplete="off" />
             </label>
             <div class="field-ro" data-private>
               <span class="field-ro-label">Passphrase strength (estimate)</span>
               <output id="entropyPassphrase" class="field-ro-value" for="passphrase" aria-live="polite">—</output>
             </div>
-            <p class="hint-tiny" data-private>
-              Mnemonic figure is BIP-39 ENT bits (not Shannon of the words).
-              Passphrase figure is a local estimate only. The BIP-39 seed is always 64 bytes from PBKDF2 — that is output size, not “512 bits of entropy.”
-            </p>
+            <details class="help-fold teach-only" data-private>
+              <summary>Why “512 bits” is not the passphrase strength</summary>
+              <p class="control-help">
+                The BIP-39 seed is always 64 bytes from PBKDF2 — that is <em>output size</em>, not “512 bits of entropy.”
+                Mnemonic figure is BIP-39 ENT bits; passphrase figure is a local estimate only.
+              </p>
+            </details>
 
             <p id="status" class="status" aria-live="polite"></p>
           </div>
 
-          <div class="card card-wide">
-            <h2>Receive addresses</h2>
-            <p class="lead-help">
-              Think of your recovery phrase as the master key to a bank vault.
-              From that one key, wallets create many different “account numbers” (addresses)
-              so you can receive bitcoin without reusing the same number every time.
-              Everything below is calculated <strong>offline on this page</strong> — nothing is sent to a bank or the internet.
+          <div class="card card-wide" id="card-addresses">
+            <div class="card-head">
+              <h2>Receive addresses</h2>
+            </div>
+            <p class="card-lede">
+              Offline “account numbers” from your phrase — nothing is sent to the internet from this page.
             </p>
+            <details class="help-fold teach-only">
+              <summary>Bank vault metaphor</summary>
+              <p class="control-help">
+                Think of your recovery phrase as the master key to a bank vault.
+                From that one key, wallets create many different “account numbers” (addresses)
+                so you can receive bitcoin without reusing the same number every time.
+              </p>
+            </details>
 
             <div class="derive-controls" role="group" aria-label="Derivation path">
               <div class="control-block">
-                <label class="field inline" for="deriveNetwork">Network
+                <label class="field inline" for="deriveNetwork">
+                  <span class="label-row">Network
+                    <span class="help-tip">
+                      <button type="button" class="help-tip-btn" aria-label="About network">i</button>
+                      <span class="help-tip-panel" hidden>
+                        <strong>Mainnet</strong> = real bitcoin.
+                        <strong>Test</strong> uses coin type 1 and <code>tb1…</code> addresses for practice (no real value).
+                      </span>
+                    </span>
+                  </span>
                   <select id="deriveNetwork">
                     <option value="main" selected>Mainnet</option>
                     <option value="test">Testnet / Signet paths (tb1…)</option>
                   </select>
                 </label>
-                <p class="control-help">
-                  <strong>Mainnet</strong> = real bitcoin. <strong>Test</strong> uses coin type 1 and <code>tb1…</code> addresses for practice (no real value).
-                </p>
               </div>
               <div class="control-block">
-                <label class="field inline" for="deriveAccount">Account
+                <label class="field inline" for="deriveAccount">
+                  <span class="label-row">Account
+                    <span class="help-tip">
+                      <button type="button" class="help-tip-btn" aria-label="About account">i</button>
+                      <span class="help-tip-panel" hidden>
+                        Like several bank accounts under one login (0 = first). Most people only use <strong>0</strong>.
+                        Changing account creates a completely different set of addresses.
+                      </span>
+                    </span>
+                  </span>
                   <input id="deriveAccount" type="number" min="0" max="2147483647" value="0" step="1" />
                 </label>
-                <p class="control-help">
-                  Like having several bank accounts under the same login (0 = first account, 1 = second, …).
-                  Most people only ever use account <strong>0</strong>. Changing it creates a completely different set of addresses.
-                </p>
               </div>
               <div class="control-block">
-                <label class="field inline" for="deriveChange">Change
+                <label class="field inline" for="deriveChange">
+                  <span class="label-row">Change
+                    <span class="help-tip">
+                      <button type="button" class="help-tip-btn" aria-label="About change">i</button>
+                      <span class="help-tip-panel" hidden>
+                        <strong>Receive (0)</strong> = numbers you share (like an IBAN on an invoice).<br />
+                        <strong>Change (1)</strong> = internal leftovers after a payment (till drawer, not for customers).
+                      </span>
+                    </span>
+                  </span>
                   <select id="deriveChange">
                     <option value="0" selected>0 · receive</option>
                     <option value="1">1 · change</option>
                   </select>
                 </label>
-                <p class="control-help">
-                  <strong>Receive (0)</strong> = numbers you share so others can pay you (like your IBAN on an invoice).<br />
-                  <strong>Change (1)</strong> = internal numbers wallets use for leftover coins after a payment (like a till drawer, not for customers).
-                </p>
               </div>
               <div class="control-block">
-                <label class="field inline" for="deriveCount">Indices
+                <label class="field inline" for="deriveCount">
+                  <span class="label-row">Indices
+                    <span class="help-tip">
+                      <button type="button" class="help-tip-btn" aria-label="About indices">i</button>
+                      <span class="help-tip-panel" hidden>
+                        How many addresses in a row (starting at 0), like printing the first cheque numbers.
+                        Index 0 is usually the first one a wallet shows.
+                      </span>
+                    </span>
+                  </span>
                   <select id="deriveCount">
                     <option value="5" selected>5 (0–4)</option>
                     <option value="10">10 (0–9)</option>
                     <option value="20">20 (0–19)</option>
                   </select>
                 </label>
-                <p class="control-help">
-                  How many addresses in a row to list (starting at 0). Like printing the first 5 cheque numbers from the pad.
-                  Index 0 is usually the first one a wallet shows you.
-                </p>
               </div>
             </div>
 
             <div class="seg-block">
-              <span class="toggles-label" id="addrTypeLabel">Address type (one at a time)</span>
+              <span class="toggles-label label-row" id="addrTypeLabel">Address type (one at a time)
+                <span class="help-tip">
+                  <button type="button" class="help-tip-btn" aria-label="About address types">i</button>
+                  <span class="help-tip-panel" hidden id="addrTypeHelpPanel">
+                    Formats differ (bc1p / bc1q / 3… / 1…) and use different BIP paths. Only one column at a time.
+                  </span>
+                </span>
+              </span>
               <div class="seg-tabs" role="tablist" aria-labelledby="addrTypeLabel">
                 <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-addr-type="bip86">BIP86 · Taproot</button>
                 <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip84">BIP84 · native</button>
                 <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip49">BIP49 · nested</button>
                 <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip44">BIP44 · legacy</button>
               </div>
-              <p id="addrTypeHelp" class="control-help">
-                <strong>Taproot (bc1p…)</strong> — newest common format (like a modern IBAN). Path <code>m/86'/…</code>.
+              <p id="addrTypeHelp" class="control-help teach-only is-compact">
+                <strong>Taproot (bc1p…)</strong> — newest common format. Path <code>m/86'/…</code>.
               </p>
             </div>
 
-            <details class="help-fold">
+            <details class="help-fold teach-only">
               <summary>What each type means (simple)</summary>
               <ul class="help-list">
                 <li><strong>#</strong> — address number in the sequence (0, 1, 2…). Same phrase + same settings always gives the same list.</li>
@@ -257,19 +342,25 @@
                 </tbody>
               </table>
             </div>
-            <p class="control-help copy-hint">
-              Click <strong>Copy</strong> next to any address to put it on the clipboard (like copying an IBAN).
-              The button should change to <strong>Copied</strong> (green) for about 2 seconds, and a line below confirms what was copied.
-              Use <strong>QR</strong> to show a scannable code offline. Only the address is copied — never the recovery phrase.
-            </p>
+            <details class="help-fold teach-only">
+              <summary>Copy &amp; QR tips</summary>
+              <p class="control-help copy-hint">
+                Click <strong>Copy</strong> to put an address on the clipboard (like an IBAN). The button shows <strong>Copied</strong> briefly.
+                Use <strong>QR</strong> for a scannable code offline. Only the address is copied — never the recovery phrase.
+              </p>
+            </details>
             <p id="copyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
 
             <div class="card-sub watch-only" id="watchOnlyPanel">
-              <h3>Watch-only export</h3>
-              <p class="control-help">
-                <strong>Watch-only</strong> = see balances in another app, cannot spend (like a statement login, not transfer rights).
-                Public keys only for the <strong>Account</strong> above — never <code>xprv</code>. A passphrase changes every key.
-              </p>
+              <h3 class="label-row">Watch-only export
+                <span class="help-tip">
+                  <button type="button" class="help-tip-btn" aria-label="About watch-only">i</button>
+                  <span class="help-tip-panel" hidden>
+                    See balances in another app without spending rights (statement login, not transfer rights).
+                    Public keys only — never <code>xprv</code>. Passphrase changes every key.
+                  </span>
+                </span>
+              </h3>
 
               <div class="seg-block">
                 <span class="toggles-label" id="woTypeLabel">Watch-only key type (one at a time)</span>
@@ -297,8 +388,8 @@
         <!-- Panel: Tools -->
         <section id="panel-tools" class="panel" role="tabpanel" hidden>
           <div class="card">
-            <h2>Path playground</h2>
-            <p class="control-help">Live BIP path from Lab controls (account / change / network / address type).</p>
+            <div class="card-head"><h2>Path playground</h2></div>
+            <p class="card-lede teach-only">Live BIP path from Lab controls (account / change / network / type).</p>
             <pre class="out" id="pathPlayOut">m/86'/0'/0'/0/0</pre>
             <p class="control-help" id="pathPlayHelp">Purpose' / coin_type' / account' / change / index</p>
           </div>
@@ -471,6 +562,7 @@ python -m bip39lab balance bc1q… --backend knots \
   </div>
 
   <script src="js/bip39lab.bundle.js"></script>
+  <script src="js/help-ui.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
