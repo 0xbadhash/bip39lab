@@ -6,10 +6,10 @@ product_name: bip39lab (offline BIP-39 / entropy lab)
 repo_root: .
 
 stack:
-  languages: [python]
+  languages: [python, typescript]
   package_manager: pip
-  test_runners: [pytest]
-  app_layout: "src/ (preferred) · legacy CLI at repo root until Phase 0 cleanup"
+  test_runners: [pytest, playwright]
+  app_layout: "src/ · web/ static lab"
 
 product_roadmap: ROADMAP.md
 harness_backlog: .agents/BACKLOG.md
@@ -19,6 +19,49 @@ smoke:
   - name: unit
     cmd: ["python", "-m", "pytest", "-q"]
     cwd: .
+  - name: e2e
+    cmd: ["npm", "run", "test:e2e"]
+    cwd: .
+
+# Deterministic Playwright + Comet scenario contract (harness 1.4.17+)
+web_e2e:
+  enabled: true
+  auto_detect: true
+  base_url: https://bip39.catalyxt.xyz
+  comet_doc: docs/E2E_COMET_SCENARIOS.md
+  playwright_config: playwright.config.ts
+  e2e_dir: e2e
+  surfaces:
+    - id: lab
+      order: 0
+      path: /
+      title: BIP39 Lab
+      playwright: e2e/lab.spec.ts
+      scenarios:
+        - id: smoke
+          name: Smoke load
+          steps: ["Open Lab", "6 nav items", "Generate visible"]
+        - id: tools
+          name: Tools pack
+          steps: ["Tools panel", "path playground", "PSBT/descriptors"]
+    - id: multisig
+      order: 1
+      path: /multisig.html
+      title: Multisig
+      playwright: e2e/multisig.spec.ts
+      scenarios:
+        - id: build
+          name: Multisig build
+          steps: ["Public keys only", "P2SH/P2WSH", "Policy checklist"]
+    - id: network
+      order: 2
+      path: /network.html
+      title: Network
+      playwright: e2e/network.spec.ts
+      scenarios:
+        - id: optin
+          name: Network opt-in
+          steps: ["Ack gate", "Fee snapshot", "Balances fail-closed"]
 
 vault:
   enabled: false
