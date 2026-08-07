@@ -299,6 +299,38 @@
         "A participant who holds one of the N keys. In real life each cosigner keeps their own seed offline; only public keys are shared to build the vault address.",
     },
     {
+      id: "SHAMIR",
+      title: "Shamir secret sharing",
+      group: "Multisig",
+      short: "Threshold split of one secret",
+      body:
+        "Split one secret into N shares so any M shares rebuild it. Different from Multisig (M-of-N keys). This lab’s Shamir tab is educational GF(256) demo — not SLIP-39 / Trezor word shares. Do not split real funded seeds here.",
+    },
+    {
+      id: "THRESHOLD",
+      title: "Threshold (M-of-N)",
+      group: "Multisig",
+      short: "How many pieces unlock",
+      body:
+        "M is the number required; N is the total. In Shamir, M shares rebuild the secret. In Multisig, M signatures authorize a spend. Same words, different objects.",
+    },
+    {
+      id: "SHARE",
+      title: "Share (Shamir)",
+      group: "Multisig",
+      short: "One piece of a split secret",
+      body:
+        "A single Shamir piece, here encoded as share:<index>:<hex>. Alone it should not reveal the secret when M>1. Not a BIP-39 word and not a cosigner public key.",
+    },
+    {
+      id: "SLIP39",
+      title: "SLIP-39",
+      group: "Multisig",
+      short: "Hardware-friendly share words",
+      body:
+        "Trezor’s standard for recoverable Shamir-style shares as word lists. This lab does not implement SLIP-39 — use vendor tools for real threshold backups.",
+    },
+    {
       id: "UTXO",
       title: "UTXO",
       group: "Network & fees",
@@ -368,7 +400,7 @@
       group: "Security",
       short: "Content Security Policy",
       body:
-        "Browser rules limiting scripts and network. Lab and Multisig use connect-src 'none' (offline crypto). Network page allowlists only the public fee/balance API.",
+        "Browser rules limiting scripts and network. Lab, Multisig, and Shamir use connect-src 'none' (offline crypto). Network page allowlists only the public fee/balance API.",
     },
     {
       id: "AIRGAP",
@@ -497,6 +529,11 @@
         BIP67: "BIP67",
         BIP174: "BIP174",
         PSBT: "PSBT",
+        SHAMIR: "SHAMIR",
+        THRESHOLD: "THRESHOLD",
+        SHARE: "SHARE",
+        SLIP39: "SLIP39",
+        "SLIP-39": "SLIP39",
         P2PKH: "P2PKH",
         P2SH: "P2SH",
         P2WPKH: "P2WPKH",

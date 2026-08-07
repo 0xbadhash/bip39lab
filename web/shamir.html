@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="description" content="Educational Shamir secret sharing demo — offline, not SLIP-39." />
+  <title>Shamir lab · bip39.catalyxt.xyz</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">39</div>
+        <div>
+          <div class="brand-title">bip39lab</div>
+          <div class="brand-sub">Offline BTC lab · Catalyxt</div>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Site sections">
+        <a class="nav-item" data-nav="lab" href="index.html">
+          <span class="nav-step">1</span>
+          <span class="nav-label"><strong>Lab</strong><small>Generate and derive</small></span>
+        </a>
+        <a class="nav-item" data-nav="multisig" href="multisig.html">
+          <span class="nav-step">2</span>
+          <span class="nav-label"><strong>Multisig</strong><small>M-of-N explainer</small></span>
+        </a>
+        <a class="nav-item active" data-nav="shamir" href="shamir.html" aria-current="page">
+          <span class="nav-step">3</span>
+          <span class="nav-label"><strong>Shamir</strong><small>Share split demo</small></span>
+        </a>
+        <a class="nav-item" data-nav="network" href="network.html">
+          <span class="nav-step">4</span>
+          <span class="nav-label"><strong>Network</strong><small>Fees · balances</small></span>
+        </a>
+        <a class="nav-item" data-nav="tools" href="index.html#tools">
+          <span class="nav-step">5</span>
+          <span class="nav-label"><strong>Tools</strong><small>Path · PSBT</small></span>
+        </a>
+        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
+          <span class="nav-step">6</span>
+          <span class="nav-label"><strong>Glossary</strong><small>BIPs · security</small></span>
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <p class="sidebar-note">
+          Educational Shamir only — not SLIP-39. Lab keeps seeds offline.
+          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
+        </p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <div>
+          <h1>Shamir secret sharing</h1>
+          <p class="sub">Educational M-of-N share split · offline · not SLIP-39</p>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          <span class="chip chip-warn">Educational</span>
+          <span class="chip">Offline</span>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="warn" role="alert" id="shDanger">
+          <strong>Educational Shamir (not SLIP-39).</strong>
+          Demo only — do <em>not</em> split a real funded recovery phrase here.
+          Shares are <strong>not</strong> Trezor/SLIP-39 words and will not restore hardware wallets.
+          Prefer audited products for real threshold backups.
+        </div>
+
+        <nav class="step-rail teach-only" data-step-rail aria-label="Shamir process" id="shStepRail">
+          <button type="button" class="step-rail-btn is-active" data-step-target="#shCardTeach" aria-current="step">
+            1 · Understand<small>Shamir vs Multisig</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#shCardDemo">
+            2 · Practice secret<small>Generate demo bytes</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#shCardSplit">
+            3 · Split<small>M-of-N shares</small>
+          </button>
+        </nav>
+
+        <div class="card card-wide" id="shCardTeach">
+          <div class="card-head"><h2>What is Shamir sharing?</h2></div>
+          <p class="card-lede teach-only">
+            Split one secret into <strong>N pieces</strong> so any <strong>M</strong> pieces rebuild it — and fewer than M reveal nothing useful.
+          </p>
+          <table class="compare-table" aria-label="Shamir vs Multisig vs BIP-39">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Shamir (this page)</th>
+                <th>Multisig</th>
+                <th>BIP-39 phrase</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">What is split?</th>
+                <td>One secret (bytes)</td>
+                <td>N separate keys</td>
+                <td>Not split — one word list</td>
+              </tr>
+              <tr>
+                <th scope="row">M-of-N means</th>
+                <td>M shares rebuild the secret</td>
+                <td>M signatures authorize a spend</td>
+                <td>N/A</td>
+              </tr>
+              <tr>
+                <th scope="row">This lab format</th>
+                <td><code>share:index:hex</code> (edu)</td>
+                <td>Addresses from pubkeys</td>
+                <td>English wordlist</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="control-help">
+            <span class="help-tip help-tip-safety" data-term="SHAMIR">
+              <button type="button" class="help-tip-btn" aria-label="About Shamir">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+            Threshold secret sharing is not the same as a multisig vault address.
+          </p>
+        </div>
+
+        <div class="card" id="shCardDemo">
+          <div class="card-head"><h2>Practice secret</h2></div>
+          <p class="control-help">
+            Use a throwaway secret. Hex (even length) is treated as raw bytes; other text is UTF-8.
+            Lab mnemonic is <strong>not</strong> imported automatically.
+          </p>
+          <label class="field" for="shSecret">Practice secret
+            <textarea id="shSecret" rows="3" spellcheck="false" autocomplete="off"
+              placeholder="Click Generate, or paste demo text / hex"></textarea>
+          </label>
+          <div class="row">
+            <button type="button" class="btn" id="btnShGen">Generate practice secret</button>
+            <button type="button" class="btn secondary" id="btnShClear">Clear</button>
+          </div>
+        </div>
+
+        <div class="card" id="shCardSplit">
+          <div class="card-head">
+            <h2>Split demo
+              <span class="help-tip" data-term="THRESHOLD">
+                <button type="button" class="help-tip-btn" aria-label="About threshold">i</button>
+                <span class="help-tip-panel" hidden></span>
+              </span>
+            </h2>
+          </div>
+          <div class="row fields-inline">
+            <label class="field" for="shM">M (threshold)
+              <input id="shM" type="number" min="2" max="7" value="2" />
+            </label>
+            <label class="field" for="shN">N (shares)
+              <input id="shN" type="number" min="2" max="7" value="3" />
+            </label>
+          </div>
+          <p class="control-help">Defaults 2-of-3. Require 2 ≤ M ≤ N ≤ 7.</p>
+          <div class="row">
+            <button type="button" class="btn" id="btnShSplit">Split demo</button>
+          </div>
+          <p id="shStatus" class="status" role="status">—</p>
+          <p class="control-help teach-only">
+            Recombine UI is intentionally <strong>not</strong> in v1 — unit tests prove recovery; learners should not treat this as a backup product.
+          </p>
+        </div>
+
+        <div class="card card-wide" id="shCardShares">
+          <div class="card-head"><h2>Shares</h2></div>
+          <div id="shShares" class="shamir-shares"></div>
+          <p class="control-help" id="shSharesHint">Split to see labeled share cards.</p>
+        </div>
+
+        <p class="footer-host">
+          <a href="index.html">← Lab</a> ·
+          <a href="multisig.html">Multisig</a> ·
+          <a href="https://bip39.catalyxt.xyz/shamir.html">bip39.catalyxt.xyz/shamir.html</a>
+        </p>
+      </main>
+    </div>
+  </div>
+  <script src="js/glossary.js"></script>
+  <script src="js/help-ui.js"></script>
+  <script src="js/shamir-core.js"></script>
+  <script src="js/shamir-app.js"></script>
+</body>
+</html>

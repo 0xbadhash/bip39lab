@@ -9,13 +9,14 @@ import {
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
-  test("S0 smoke load · 5-nav · chips · CSP offline", async ({ page }) => {
+  test("S0 smoke load · 6-nav · chips · CSP offline", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
     await expectNavCount(page);
     await expect(page.locator('.nav-item[data-nav="glossary"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="shamir"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="about"]')).toHaveCount(0);
     await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveCount(0);
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
@@ -338,7 +339,7 @@ test.describe("Lab Network CLI redirect + Glossary security", () => {
 });
 
 test.describe("Lab nav matrix", () => {
-  test("S10 full nav Lab→Tools→Glossary→Multisig→Network", async ({ page }) => {
+  test("S10 full nav Lab→Tools→Glossary→Multisig→Shamir→Network", async ({ page }) => {
     await page.goto("/");
     await expectNavCount(page);
 
@@ -355,6 +356,11 @@ test.describe("Lab nav matrix", () => {
     await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
     await expectNavCount(page);
+
+    await page.locator('.nav-item[data-nav="shamir"]').click();
+    await expect(page).toHaveURL(/shamir\.html/);
+    await expectNavCount(page);
+    await expect(page.locator("#shDanger")).toContainText(/SLIP-39|Educational/i);
 
     await page.locator('.nav-item[data-nav="network"]').click();
     await expect(page).toHaveURL(/network\.html/);

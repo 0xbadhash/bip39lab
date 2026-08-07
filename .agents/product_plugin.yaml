@@ -39,11 +39,11 @@ web_e2e:
       title: BIP39 Lab
       playwright: e2e/lab.spec.ts
       scenarios:
-        - { id: smoke, name: "S0–S0c shell", steps: ["5 nav", "theme", "keyboard ?"] }
+        - { id: smoke, name: "S0–S0c shell", steps: ["6 nav", "theme", "keyboard ?"] }
         - { id: derive, name: "S1–S11 derive", steps: ["generate", "abandon goldens", "passphrase", "path", "testnet", "copy", "QR", "watch-only", "clear", "invalid"] }
         - { id: tools, name: "S14–S23 tools", steps: ["path", "entropy", "compare auto-gen", "descriptors", "PSBT", "explain"] }
         - { id: panels, name: "S24–S25 panels", steps: ["#balance→Network CLI", "glossary threat"] }
-        - { id: nav, name: "S10 nav tour", steps: ["all 5 destinations"] }
+        - { id: nav, name: "S10 nav tour", steps: ["all 6 destinations incl Shamir"] }
         - { id: handoff, name: "S15–S16 seed QR Network", steps: ["seed QR", "session bridge"] }
     - id: multisig
       order: 1
@@ -56,8 +56,17 @@ web_e2e:
         - { id: demo, name: "S12b–S27 demo", steps: ["N=3", "24 words"] }
         - { id: bip67, name: "S28–S30 bip67 clear copy", steps: ["BIP67 off", "clear", "copy"] }
         - { id: nav, name: "S31 nav", steps: ["to Lab/Network"] }
-    - id: network
+    - id: shamir
       order: 2
+      path: /shamir.html
+      title: Shamir
+      playwright: e2e/shamir.spec.ts
+      scenarios:
+        - { id: shell, name: "S53 shell", steps: ["CSP offline", "danger banner", "6-nav"] }
+        - { id: split, name: "S54 split demo", steps: ["generate", "2-of-3", "3 cards"] }
+        - { id: err, name: "S55 empty secret", steps: ["no fake success"] }
+    - id: network
+      order: 3
       path: /network.html
       title: Network
       playwright: e2e/network.spec.ts
@@ -67,12 +76,12 @@ web_e2e:
         - { id: bal, name: "S13c–d balances", steps: ["reject seed", "fetch", "bridge"] }
         - { id: edge, name: "S33–S35 edge", steps: ["no ack", "empty", "tools link"] }
     - id: chrome
-      order: 3
+      order: 4
       path: /
       title: Site chrome
       playwright: e2e/site-chrome.spec.ts
       scenarios:
-        - { id: parity, name: "S36–S40 chrome", steps: ["nav labels", "CSP", "aria-current", "branding"] }
+        - { id: parity, name: "S36–S40 chrome", steps: ["6-nav labels", "CSP", "aria-current", "branding"] }
 
 vault:
   enabled: false

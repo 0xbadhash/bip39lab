@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { ABANDON, GOLDEN, expectNavCount, labCspOffline, pasteMnemonic, waitForTableRows } from "./helpers";
 
 test.describe("Network page E2E", () => {
-  test("S32 shell · 5-nav · mempool CSP · balances gated", async ({ page }) => {
+  test("S32 shell · 6-nav · mempool CSP · balances gated", async ({ page }) => {
     await page.goto("/network.html");
     await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
     await expect(page.locator("body")).toContainText(/mempool/i);

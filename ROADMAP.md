@@ -72,19 +72,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Shamir secret sharing — left-nav tab (v1 teach + demo split)
-- **Status:** open
+### [DONE] Shamir secret sharing — left-nav tab (v1 teach + demo split)
+- **Status:** done
 - **Priority:** P1
-- **Next:** true
 - **Spec:** `.agents/specs/2026-08-07-shamir-share-tab.md`
 - **Plan:** `.agents/specs/2026-08-07-shamir-share-tab-plan.md`
 - **Acceptance:**
-  - [ ] Nav step 3 **Shamir** on all shells (Lab → Multisig → Shamir → Network → Tools → Glossary)
-  - [ ] Offline page: teach Shamir vs Multisig vs BIP-39; educational / not SLIP-39 banner
-  - [ ] M-of-N demo split of practice secret → N share cards (no recombine UI)
-  - [ ] CSP `connect-src 'none'`; no Lab mnemonic auto-use; unit + Playwright smoke
-- **Smoke:** product smoke (pytest + e2e) + manual Shamir split on local static server
-- **Notes:** User “shair” → Shamir; v1 teach+split only; recombine/SLIP-39 later
+  - [x] Nav step 3 **Shamir** on all shells (Lab → Multisig → Shamir → Network → Tools → Glossary)
+  - [x] Offline page: teach Shamir vs Multisig vs BIP-39; educational / not SLIP-39 banner
+  - [x] M-of-N demo split of practice secret → N share cards (no recombine UI)
+  - [x] CSP `connect-src 'none'`; no Lab mnemonic auto-use; unit + Playwright smoke
+- **Smoke:** product smoke (pytest + e2e) + S53–S55
+- **Notes:** Educational GF(256); not SLIP-39; tag with ship
 
 ### [DONE] Phase 0 — Offline correctness lab
 - **Status:** done
@@ -252,5 +251,4 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Next:** Shamir left-nav tab (v1 teach + demo split) — `.agents/specs/2026-08-07-shamir-share-tab.md`.  
-Optional later: private Knots proxy for Network; Shamir recombine UI / SLIP-39.
+**Shipped:** Shamir left-nav tab v1. Optional later: private Knots proxy for Network; Shamir recombine UI / SLIP-39.

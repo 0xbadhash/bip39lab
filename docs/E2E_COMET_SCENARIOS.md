@@ -14,7 +14,7 @@ surfaces:
   - id: chrome
     path: /
     playwright: e2e/site-chrome.spec.ts
-scenarios: S0–S52 exhaustive · 5-nav (Balance docs → Network; About → Glossary)
+scenarios: S0–S55 exhaustive · 6-nav (Shamir after Multisig)
 -->
 
 # BIP39 Lab — Exhaustive E2E for Comet / Perplexity
@@ -23,17 +23,19 @@ scenarios: S0–S52 exhaustive · 5-nav (Balance docs → Network; About → Glo
 **Live:**  
 - Lab: https://bip39.catalyxt.xyz/  
 - Multisig: https://bip39.catalyxt.xyz/multisig.html  
+- Shamir: https://bip39.catalyxt.xyz/shamir.html  
 - Network: https://bip39.catalyxt.xyz/network.html  
 
-### Sidebar (all pages) — **5 items**
+### Sidebar (all pages) — **6 items**
 
 | # | Nav | Notes |
 |---|-----|--------|
 | 1 | Lab | Generate / derive |
 | 2 | Multisig | M-of-N explainer |
-| 3 | Network | Fees / address balances (opt-in) + CLI/Knots notes |
-| 4 | Tools | Path, PSBT, descriptors |
-| 5 | **Glossary** | BIPs, acronyms, **security & threat model** |
+| 3 | **Shamir** | Educational share split (not SLIP-39) |
+| 4 | Network | Fees / address balances (opt-in) + CLI/Knots notes |
+| 5 | Tools | Path, PSBT, descriptors |
+| 6 | **Glossary** | BIPs, acronyms, **security & threat model** |
 
 | Area | Playwright | Scenario IDs |
 |------|------------|--------------|
@@ -45,10 +47,11 @@ scenarios: S0–S52 exhaustive · 5-nav (Balance docs → Network; About → Glo
 | Network | `e2e/network.spec.ts` | S13b–d, S32–S35 |
 | Help UX | `e2e/help-ux.spec.ts` | S41–S48 |
 | Glossary | `e2e/glossary.spec.ts` | S49–S52 |
+| Shamir | `e2e/shamir.spec.ts` | S53–S55 |
 
-**Playwright:** `npm run test:e2e` (**60** tests)  
+**Playwright:** `npm run test:e2e`  
 **Live:** `npm run test:e2e:live`  
-**Comet score denominator:** **57** (S0–S52 report lines)
+**Comet score denominator:** **S0–S55**
 
 ---
 

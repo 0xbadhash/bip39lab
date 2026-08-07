@@ -1,8 +1,8 @@
 {
   "card_id": null,
   "phase": "init",
-  "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-06-option-c-network-tab.md",
+  "score": 0.0,
+  "spec_id": ".agents/specs/2026-08-07-shamir-share-tab.md",
   "task": "",
   "waiver": null
 }

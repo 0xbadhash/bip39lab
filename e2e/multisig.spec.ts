@@ -6,7 +6,7 @@ const P2 = "02c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5";
 const P2SH = "33RQmypKhD6f4tMquiR5a3C6dRT7eBpaiG";
 
 test.describe("Multisig explainer E2E", () => {
-  test("S26 shell offline CSP · 5-nav · checklist", async ({ page }) => {
+  test("S26 shell offline CSP · 6-nav · checklist", async ({ page }) => {
     await page.goto("/multisig.html");
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
     await expectNavCount(page);
