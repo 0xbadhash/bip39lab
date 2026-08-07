@@ -1,72 +1,62 @@
-# PR Draft: Tools self-serve compare · 5-nav · online chip UX
+# PR Draft: Shamir educational left-nav tab (v1)
 
-**Range:** `origin/master...HEAD` (`c75fb07`…`e519de6`)
+**Range:** `origin/master...HEAD`  
+**Spec:** `.agents/specs/2026-08-07-shamir-share-tab.md`  
+**Plan:** `.agents/specs/2026-08-07-shamir-share-tab-plan.md`
 
 ## What Problem This Solves
 
-Tools **Compare** failed with “Need a valid mnemonic on the Lab panel first,” forcing a round-trip to Lab. The **Balance** nav item was only CLI documentation, duplicating Network and confusing users. The online/offline chip lacked clear colors and an explanation of why it exists.
+Learners had Multisig (M-of-N keys) but no first-class offline place to see **Shamir** M-of-N **shares** of a secret, safely labeled as educational.
 
 ## Why This Change Was Made
 
-- Keep Tools self-sufficient for educational compare/descriptors.
-- Drop a docs-only primary nav item; live balances and CLI notes belong on **Network**.
-- Make browser online/offline state readable (green/red) with a permanent **(i)** safety tip.
+Ship the ready-for-agent Shamir spec: left-nav step 3, teach + demo split only (not SLIP-39, no recombine UI).
 
 ## User Impact
 
-- Compare / Refresh descriptors work without leaving Tools (auto-generate or explicit **Generate test phrase**).
-- Sidebar is **5 items**: Lab · Multisig · Network · Tools · Glossary.
-- Old `#balance` bookmarks redirect to Network’s balance + CLI card.
-- Online chip: green = online, red = offline; **(i)** explains air-gap vs CSP.
+- New **Shamir** page offline: compare table, generate practice secret, M-of-N split → labeled share cards.  
+- Sidebar is **6 items** again (feature, not docs-only).  
+- Glossary terms for Shamir / threshold / share / SLIP-39.
 
 ## Evidence
 
-- Playwright: compare S18/S18b, nav S0/S10/S36, S24 redirect, Network S32, Multisig S26, help-ux S48b.
-- Secrets: `check_secrets_diff` clean on range.
-- Hard gates + product smoke under release.
-
-**Spec:** `.agents/specs/2026-08-06-option-c-network-tab.md`  
-**Spec note:** Incremental UX/nav cleanup on the Option C / Network + Tools surface (not a new network protocol).
+- Unit: `tests/test_shamir.py` (split/combine + JS core round-trip)  
+- E2E: S53–S55, S0/S10/S36 nav  
+- product_smoke unit+e2e after VERSION sync  
 
 ## Traceability
 
-| AC | Test / smoke |
-|----|----------------|
-| Tools compare without Lab | `e2e/lab.spec.ts` S18, S18b |
-| No Balance nav / 5-nav | helpers `NAV`, S0, S36, S10 |
-| #balance → Network CLI | S24 |
-| Online chip UX | S0 + HTML help-tip-safety |
-| Lab CSP still offline | labCspOffline |
+| AC | Test |
+|----|------|
+| Nav step 3 Shamir | helpers NAV, S36, S10 |
+| Teach + danger banner | S53 |
+| M-of-N split N cards | S54 + pytest |
+| Empty error | S55 |
+| Offline CSP | S53 labCspOffline |
+| Glossary | glossary.js SHAMIR terms |
 
 ## Threat notes
 
-- Lab remains `connect-src 'none'`; auto-generated mnemonics never leave the page via this change.
-- Public balance still only on Network after leak ack; CLI remains address-only (no seed).
-- Online chip is `navigator.onLine` only — not a security boundary; CSP is the crypto isolation.
+- Offline CSP `connect-src 'none'`; no network secrets.  
+- Explicit non-SLIP-39 / not-for-real-funds banner.  
+- No Lab mnemonic auto-import.
 
 ## Red-proof
 
 ```text
-red_cmd: Tools Compare with empty #mnemonic → "Need a valid mnemonic on the Lab panel first."
-green_cmd: npx playwright test e2e/lab.spec.ts -g "S18"  → pass (auto-generate + A:/B:)
-TDD N/A for pure HTML/CSS chip/nav (covered by S0/S36)
+red_cmd: pytest tests/test_shamir.py → ModuleNotFoundError bip39lab.shamir
+green_cmd: pytest tests/test_shamir.py → 7 passed; npx playwright test e2e/shamir.spec.ts → 3 passed
 ```
 
 ## Evidence pack
 
-- **hard_gates:** `python3 scripts/hard_gates.py --diff origin/master...HEAD` (after artifacts)
-- **smoke / e2e:** `npm run test:e2e` (product_plugin) · focused S18/S24/S0 green in ship cycle
-- **pytest:** `python -m pytest -q` (unit smoke at release)
-- **secrets:** `check_secrets_diff` clean origin/master...HEAD
-- **CODE-REVIEW / BEHAVIOR / CROSS-REVIEW:** `.agents/artifacts/*`
+- hard_gates / CODE-REVIEW / BEHAVIOR-REPORT  
+- product_smoke pytest + e2e  
+- secrets scan on range  
 
 ## Things that look bad but are actually fine
 
-1. **Online=green / offline=red** looks like “online is healthy”; product intent is connectivity readability — (i) still teaches air-gap caution.
-2. **Auto-generate mutates Lab `#mnemonic`** from Tools — intentional shared field so Network handoff and Lab table stay consistent.
-3. **Removing Balance nav** can look like feature loss — it was docs only; Network has live balances + richer CLI copy.
-4. **S13b fee snapshot** may fail without mempool proxy — pre-existing env dependency, not this UX ship.
-
-## Cross-review
-
-See `.agents/artifacts/CROSS_REVIEW.md` — blockers=0, obsolete Tier A removals for Balance panel.
+1. **Hand-rolled GF(256) SSS** — educational only; unit round-trips; banner forbids real funds.  
+2. **No recombine UI** — intentional v1; combine exists for tests.  
+3. **6-nav again after v0.12.3 5-nav** — Balance was docs-only; Shamir is a real surface.  
+4. **Shares look like recovery material** — format is `share:index:hex`, not BIP-39 words.  
