@@ -14,7 +14,7 @@ surfaces:
   - id: chrome
     path: /
     playwright: e2e/site-chrome.spec.ts
-scenarios: S0–S40 exhaustive (see tables)
+scenarios: S0–S52 exhaustive (see tables) · 7-nav includes Glossary
 -->
 
 # BIP39 Lab — Exhaustive E2E for Comet / Perplexity
@@ -25,6 +25,18 @@ scenarios: S0–S40 exhaustive (see tables)
 - Multisig: https://bip39.catalyxt.xyz/multisig.html  
 - Network: https://bip39.catalyxt.xyz/network.html  
 
+### Sidebar (all pages) — **7 items**
+
+| # | Nav | Notes |
+|---|-----|--------|
+| 1 | Lab | Generate / derive |
+| 2 | Multisig | M-of-N explainer |
+| 3 | Network | Fees / balances (opt-in) |
+| 4 | Tools | Path, PSBT, descriptors |
+| 5 | Balance | CLI / Knots docs |
+| 6 | **Glossary** | BIPs & acronyms (educational) |
+| 7 | About | Threat model |
+
 | Area | Playwright | Scenario IDs |
 |------|------------|--------------|
 | Lab shell / chrome | `e2e/lab.spec.ts`, `e2e/site-chrome.spec.ts` | S0–S0c, S36–S40 |
@@ -33,26 +45,34 @@ scenarios: S0–S40 exhaustive (see tables)
 | Lab Balance / About | `e2e/lab.spec.ts` | S24–S25, S10 |
 | Multisig | `e2e/multisig.spec.ts` | S12, S12b, S26–S31 |
 | Network | `e2e/network.spec.ts` | S13b–d, S32–S35 |
+| Help UX | `e2e/help-ux.spec.ts` | S41–S48 |
+| Glossary | `e2e/glossary.spec.ts` | S49–S52 |
 
-**Playwright:** `npm run test:e2e` (~40 tests)  
-**Live:** `npm run test:e2e:live`
+**Playwright:** `npm run test:e2e` (**60** tests)  
+**Live:** `npm run test:e2e:live`  
+**Comet score denominator:** **57** (S0–S52 report lines)
 
 ---
 
 ## PROMPT FOR COMET / PERPLEXITY
 
 ```text
-You are a browser QA agent. Execute the FULL exhaustive suite in this document (S0–S40).
+You are a browser QA agent. Execute the FULL exhaustive suite in this document (S0–S52).
 
 SOURCE OF TRUTH: docs/E2E_COMET_SCENARIOS.md (0xbadhash/bip39lab).
 APPS:
   - https://bip39.catalyxt.xyz/
   - https://bip39.catalyxt.xyz/multisig.html
   - https://bip39.catalyxt.xyz/network.html
-Hard-refresh each app once. Do not skip scenarios (S0–S48 including Help UX S41–S48). Mark PASS/FAIL with evidence.
+Hard-refresh each app once. Do not skip scenarios (S0–S52 including Help UX S41–S48 and Glossary S49–S52). Mark PASS/FAIL with evidence.
+
+SIDEBAR: expect exactly **7** nav items on every page:
+  Lab, Multisig, Network, Tools, Balance, Glossary, About.
+S36 PASSes only if all 7 labels match (Glossary is required, not a bug).
+
 Use ONLY the public abandon mnemonic for Lab. Multisig: public keys or demo generator only.
 Network: addresses only — never paste a seed. Lab/Tools/Multisig crypto stay offline.
-Final output MUST use the Report template (all S-ids listed).
+Final output MUST use the Report template (all S-ids listed; score __ / 57).
 
 Test mnemonic:
 abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
@@ -81,7 +101,7 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 ## Lab shell
 
 ### S0 — Smoke
-Open Lab → title Offline BIP-39 lab; Generate; **6** nav; Offline crypto + airgap chips; CSP `connect-src 'none'`.
+Open Lab → title Offline BIP-39 lab; Generate; **7** nav (includes **Glossary**); Offline crypto + airgap chips; CSP `connect-src 'none'` (View Source → meta Content-Security-Policy).
 
 ### S0b — Theme
 Click Theme → label toggles dark/light; page still usable.
