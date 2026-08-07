@@ -33,6 +33,7 @@
   let deriveTimer = null;
   let lastRows = null;
   let entEvents = [];
+  const ENT_PAD_MAX = 128;
 
   function setPrivateVisible(show) {
     document.querySelectorAll("[data-private]").forEach((el) => {
