@@ -1012,14 +1012,14 @@
     if ($("btnDice")) {
       $("btnDice").addEventListener("click", () => {
         entEvents.push("d6:" + (1 + Math.floor(Math.random() * 6)));
-        if (entEvents.length > 64) entEvents.shift();
+        if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
         refreshEntPad();
       });
     }
     if ($("btnCoin")) {
       $("btnCoin").addEventListener("click", () => {
         entEvents.push("coin:" + (Math.random() < 0.5 ? "H" : "T"));
-        if (entEvents.length > 64) entEvents.shift();
+        if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
         refreshEntPad();
       });
     }
