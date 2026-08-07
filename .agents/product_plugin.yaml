@@ -39,11 +39,11 @@ web_e2e:
       title: BIP39 Lab
       playwright: e2e/lab.spec.ts
       scenarios:
-        - { id: smoke, name: "S0–S0c shell", steps: ["6 nav", "theme", "keyboard ?"] }
+        - { id: smoke, name: "S0–S0c shell", steps: ["5 nav", "theme", "keyboard ?"] }
         - { id: derive, name: "S1–S11 derive", steps: ["generate", "abandon goldens", "passphrase", "path", "testnet", "copy", "QR", "watch-only", "clear", "invalid"] }
-        - { id: tools, name: "S14–S23 tools", steps: ["path", "entropy", "compare", "descriptors", "PSBT", "explain"] }
-        - { id: panels, name: "S24–S25 panels", steps: ["balance Knots", "about threat"] }
-        - { id: nav, name: "S10 nav tour", steps: ["all 6 destinations"] }
+        - { id: tools, name: "S14–S23 tools", steps: ["path", "entropy", "compare auto-gen", "descriptors", "PSBT", "explain"] }
+        - { id: panels, name: "S24–S25 panels", steps: ["#balance→Network CLI", "glossary threat"] }
+        - { id: nav, name: "S10 nav tour", steps: ["all 5 destinations"] }
         - { id: handoff, name: "S15–S16 seed QR Network", steps: ["seed QR", "session bridge"] }
     - id: multisig
       order: 1
