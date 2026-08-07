@@ -31,6 +31,7 @@ web_e2e:
   comet_doc: docs/E2E_COMET_SCENARIOS.md
   playwright_config: playwright.config.ts
   e2e_dir: e2e
+  # Exhaustive S0–S40 map: docs/E2E_COMET_SCENARIOS.md · npm run test:e2e
   surfaces:
     - id: lab
       order: 0
@@ -38,30 +39,40 @@ web_e2e:
       title: BIP39 Lab
       playwright: e2e/lab.spec.ts
       scenarios:
-        - id: smoke
-          name: Smoke load
-          steps: ["Open Lab", "6 nav items", "Generate visible"]
-        - id: tools
-          name: Tools pack
-          steps: ["Tools panel", "path playground", "PSBT/descriptors"]
+        - { id: smoke, name: "S0–S0c shell", steps: ["6 nav", "theme", "keyboard ?"] }
+        - { id: derive, name: "S1–S11 derive", steps: ["generate", "abandon goldens", "passphrase", "path", "testnet", "copy", "QR", "watch-only", "clear", "invalid"] }
+        - { id: tools, name: "S14–S23 tools", steps: ["path", "entropy", "compare", "descriptors", "PSBT", "explain"] }
+        - { id: panels, name: "S24–S25 panels", steps: ["balance Knots", "about threat"] }
+        - { id: nav, name: "S10 nav tour", steps: ["all 6 destinations"] }
+        - { id: handoff, name: "S15–S16 seed QR Network", steps: ["seed QR", "session bridge"] }
     - id: multisig
       order: 1
       path: /multisig.html
       title: Multisig
       playwright: e2e/multisig.spec.ts
       scenarios:
-        - id: build
-          name: Multisig build
-          steps: ["Public keys only", "P2SH/P2WSH", "Policy checklist"]
+        - { id: shell, name: "S26 shell", steps: ["CSP offline", "checklist"] }
+        - { id: golden, name: "S12 golden refuse", steps: ["2-of-2 P2SH", "no WIF"] }
+        - { id: demo, name: "S12b–S27 demo", steps: ["N=3", "24 words"] }
+        - { id: bip67, name: "S28–S30 bip67 clear copy", steps: ["BIP67 off", "clear", "copy"] }
+        - { id: nav, name: "S31 nav", steps: ["to Lab/Network"] }
     - id: network
       order: 2
       path: /network.html
       title: Network
       playwright: e2e/network.spec.ts
       scenarios:
-        - id: optin
-          name: Network opt-in
-          steps: ["Ack gate", "Fee snapshot", "Balances fail-closed"]
+        - { id: shell, name: "S32 shell", steps: ["CSP mempool", "ack gate"] }
+        - { id: fees, name: "S13b fees", steps: ["bands", "traffic", "UTXO"] }
+        - { id: bal, name: "S13c–d balances", steps: ["reject seed", "fetch", "bridge"] }
+        - { id: edge, name: "S33–S35 edge", steps: ["no ack", "empty", "tools link"] }
+    - id: chrome
+      order: 3
+      path: /
+      title: Site chrome
+      playwright: e2e/site-chrome.spec.ts
+      scenarios:
+        - { id: parity, name: "S36–S40 chrome", steps: ["nav labels", "CSP", "aria-current", "branding"] }
 
 vault:
   enabled: false

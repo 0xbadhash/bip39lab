@@ -1,130 +1,256 @@
-# BIP39 Lab — E2E suite for Comet / Perplexity
+<!-- WEB_E2E_CONTRACT
+version: 1
+base_url: https://bip39.catalyxt.xyz
+surfaces:
+  - id: lab
+    path: /
+    playwright: e2e/lab.spec.ts
+  - id: multisig
+    path: /multisig.html
+    playwright: e2e/multisig.spec.ts
+  - id: network
+    path: /network.html
+    playwright: e2e/network.spec.ts
+  - id: chrome
+    path: /
+    playwright: e2e/site-chrome.spec.ts
+scenarios: S0–S40 exhaustive (see tables)
+-->
 
-**Canonical file in repo:** `docs/E2E_COMET_SCENARIOS.md`  
-**Live apps:**  
-- BIP39 Lab: https://bip39.catalyxt.xyz/  
-- Multisig lab: https://bip39.catalyxt.xyz/multisig.html  
-- Network (opt-in): https://bip39.catalyxt.xyz/network.html  
+# BIP39 Lab — Exhaustive E2E for Comet / Perplexity
 
-**GitHub (raw):** https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
+**Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
+**Live:**  
+- Lab: https://bip39.catalyxt.xyz/  
+- Multisig: https://bip39.catalyxt.xyz/multisig.html  
+- Network: https://bip39.catalyxt.xyz/network.html  
 
-| Suite | Playwright file | Scenarios |
-|-------|-----------------|-----------|
-| BIP39 Lab | `e2e/lab.spec.ts` | S0–S11, S14 |
-| Multisig | `e2e/multisig.spec.ts` | S12, S12b |
-| Network | `e2e/network.spec.ts` | S13, S13b–d |
+| Area | Playwright | Scenario IDs |
+|------|------------|--------------|
+| Lab shell / chrome | `e2e/lab.spec.ts`, `e2e/site-chrome.spec.ts` | S0–S0c, S36–S40 |
+| Lab mnemonic / table | `e2e/lab.spec.ts` | S1–S11, S15–S16 |
+| Lab Tools | `e2e/lab.spec.ts` | S14, S17–S23 |
+| Lab Balance / About | `e2e/lab.spec.ts` | S24–S25, S10 |
+| Multisig | `e2e/multisig.spec.ts` | S12, S12b, S26–S31 |
+| Network | `e2e/network.spec.ts` | S13b–d, S32–S35 |
 
-Run: `npm run test:e2e` or `npm run test:e2e:live`
-
----
-
-## PROMPT FOR COMET / PERPLEXITY (copy-paste)
-
-```text
-You are a browser QA agent. Execute the E2E suite in this document end-to-end.
-
-SOURCE OF TRUTH: docs/E2E_COMET_SCENARIOS.md in 0xbadhash/bip39lab.
-APPS UNDER TEST:
-  - https://bip39.catalyxt.xyz/              (Lab + Tools + About — S0–S11, S14)
-  - https://bip39.catalyxt.xyz/multisig.html (S12)
-  - https://bip39.catalyxt.xyz/network.html  (S13)
-Hard-refresh each app once, then run S0 through S14 in order.
-
-RULES:
-- Use ONLY the public abandon test mnemonic for Lab. Never use a real seed.
-- Multisig: public keys only (samples in this file). Never WIF/xprv.
-- Network: addresses only; never paste a seed into the address box.
-- Lab/Tools/Multisig stay offline for crypto; Network may call mempool after opt-in.
-- Mark PASS/FAIL with one line of evidence each. Final output = Report template.
-
-Lab selectors:
-  #btnGenerate #btnClear #btnDerive #mnemonic #passphrase #deriveNetwork
-  #entropyMnemonic #addrTableBody #btnSeedQr #btnPrintBackup #btnSendNetwork
-  .nav-item[data-nav="lab"|"multisig"|"network"|"tools"|"balance"|"about"]
-  Tools: #pathPlayOut #btnDice #btnCmpPp #cmpPpOut #btnDescRefresh #descOut
-  #psbtIn #btnPsbt #psbtOut #descExplainIn #btnDescExplain #chipAirgap #btnTheme
-
-Multisig: #msParts #msM #msBip67 #msBuild #msP2sh #msP2wsh #msPolicy
-Network: #btnFetchSnap #feeOut #feeBands #balAck #btnFetchBal #balAddrs
-
-Begin with S0.
-```
+**Playwright:** `npm run test:e2e` (~40 tests)  
+**Live:** `npm run test:e2e:live`
 
 ---
 
-## Global rules
-
-1. Hard-refresh before each app’s first scenario.  
-2. Never paste a real funded recovery phrase.  
-3. Lab CSP remains `connect-src 'none'`.  
-4. Sidebar has **6** items: Lab, Multisig, Network, Tools, Balance, About.
-
-### Public test mnemonic
+## PROMPT FOR COMET / PERPLEXITY
 
 ```text
+You are a browser QA agent. Execute the FULL exhaustive suite in this document (S0–S40).
+
+SOURCE OF TRUTH: docs/E2E_COMET_SCENARIOS.md (0xbadhash/bip39lab).
+APPS:
+  - https://bip39.catalyxt.xyz/
+  - https://bip39.catalyxt.xyz/multisig.html
+  - https://bip39.catalyxt.xyz/network.html
+Hard-refresh each app once. Do not skip scenarios. Mark PASS/FAIL with evidence.
+Use ONLY the public abandon mnemonic for Lab. Multisig: public keys or demo generator only.
+Network: addresses only — never paste a seed. Lab/Tools/Multisig crypto stay offline.
+Final output MUST use the Report template (all S-ids listed).
+
+Test mnemonic:
 abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
 ```
 
-### Golden (mainnet · account 0 · change 0 · index 0 · empty passphrase)
+### Goldens (mainnet · account 0 · change 0 · index 0 · empty passphrase)
 
-| Item | Expected |
-|------|----------|
+| Type | Address |
+|------|---------|
 | BIP86 | `bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr` |
 | BIP84 | `bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu` |
-| Testnet BIP84 idx0 | starts with `tb1` when Network = Test |
+| BIP49 | `37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf` |
+| BIP44 | `1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA` |
+| Testnet BIP84 | starts with `tb1` when Network=Test |
+
+### Multisig sample pubs (2-of-2 golden P2SH)
+
+```text
+0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
+02c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5
+→ P2SH 33RQmypKhD6f4tMquiR5a3C6dRT7eBpaiG
+```
 
 ---
 
-## Scenarios
+## Lab shell
 
 ### S0 — Smoke
-| Step | Expected |
-|------|----------|
-| Open Lab | Title BIP39; Generate visible |
-| Sidebar | **6** items including Tools |
-| Chips | Offline crypto + airgap/online chip |
+Open Lab → title Offline BIP-39 lab; Generate; **6** nav; Offline crypto + airgap chips; CSP `connect-src 'none'`.
 
-### S1–S9
-Unchanged lab flows (generate, abandon goldens, passphrase, pads, copy, QR, watch-only, hide/clear) — see prior suite detail; goldens above.
+### S0b — Theme
+Click Theme → label toggles dark/light; page still usable.
 
-### S10 — Nav (6 items)
-| Step | Expected |
-|------|----------|
-| Balance | CLI + Knots docs; UTXO blurb |
-| Tools | Path playground visible |
-| About | Threat model |
-| Multisig | 6 nav; checklist |
-| Network | 6 nav |
-| Back Balance | full nav |
+### S0c — Keyboard `?`
+Focus body → `?` → Tools panel + path playground.
 
-### S11 — Invalid mnemonic  
-Unchanged.
+---
 
-### S12 — Multisig  
-+ Policy readout after build; cosigner checklist visible; BIP67 note; 6 nav.
+## Lab mnemonic & table
 
-### S13 — Network  
-+ fee bands after snapshot; UTXO reminder; 6 nav; S13b–d as before.
+### S1 — Generate 12
+Word count 12 → Generate → 12 words; entropy `128 bits (12-word BIP-39)`; ≥5 table rows; default `bc1p`.
 
-### S14 — Tools pack (new)
-| Step | Action | Expected |
-|------|--------|----------|
-| 1 | Abandon on Lab mainnet | Goldens |
-| 2 | Network → Test | Addresses `tb1…` for BIP84 |
-| 3 | Tools panel | Path shows `…/1'/…` coin type |
-| 4 | Refresh descriptors | `wpkh(` or `tr(` |
-| 5 | Compare passphrase B=`test` | A/B lines; usually Different |
-| 6 | PSBT paste minimal base64 | ok / educational parse |
-| 7 | Descriptor explain `wpkh(…)` | mentions wpkh |
-| 8 | Dice | pad shows `d6:` |
-| 9 | Theme button (optional) | toggles label dark/light |
+### S1b — Generate 24
+Word count 24 → Generate → 24 words; entropy `256 bits…`.
+
+### S2 — Abandon all types
+Clear → paste abandon → BIP86/84/49/44 pads match **all four goldens**.
+
+### S3 — Passphrase
+BIP84 golden → passphrase `test` → address ≠ golden; strength shows bits; clear passphrase → golden returns.
+
+### S4 — Account / change / indices
+Indices 10 → 10 rows; change 1 → path mentions change; account 1 → ≠ golden; reset 0/0/5 → golden.
+
+### S5 — Mainnet / testnet
+Main BIP84 golden → Network Test → `tb1…` + path coin type 1 → Main restores golden.
+
+### S6 — Copy
+Copy first address → **Copied** / `#copyFeedback` shows clipboard confirmation.
+
+### S7 — QR address
+QR → modal image + address text → Close hides modal.
+
+### S8 — Watch-only
+Refresh → BIP84 **zpub**, no xprv; pad BIP44 → **xpub**, no xprv.
+
+### S9 — Hide + Clear
+Hide private → mnemonic hidden; unhide; Clear → empty mnemonic, entropy `—`, empty table.
+
+### S11 — Invalid mnemonic
+Garbage phrase → entropy not valid 128-bit line; no abandon goldens in table.
+
+### S15 — Seed QR
+Seed QR → confirm dialog → modal (sensitive) → Close.
+
+### S16 — Send → Network
+Abandon derive → Send addresses → Network → ack → Load from Lab → `bc1…` without `abandon`.
+
+---
+
+## Lab Tools
+
+### S14 — Tools path
+Tools nav → path playground shows `m/…'`.
+
+### S17 — Entropy pad
+Dice ×2 + coin → pad `d6:` + `coin:`; Clear → `—`.
+
+### S18 — Compare passphrases
+B=`test` → Compare → A/B lines; usually Different.
+
+### S19 — Descriptors
+Refresh descriptors → `wpkh(` or `tr(` or `pkh(`.
+
+### S20 — PSBT ok
+Paste `cHNidP8BAAoCAAAAAA==` → Inspect → ok / educational.
+
+### S21 — PSBT refuse xprv
+Paste xprv-looking string → refuse/error/secret.
+
+### S22 — Descriptor explain
+`wpkh(zpub…/0/*)` → wpkh ok; private/xprv text → refuse.
+
+### S23 — Shortcuts card
+Tools shows Keyboard shortcuts (G/D/Esc/?).
+
+---
+
+## Lab Balance / About / Nav
+
+### S24 — Balance panel
+`#balance` → Knots/bitcoind/mempool/UTXO + Network link.
+
+### S25 — About threat model
+`#about` → no retention + Threat model bullets.
+
+### S10 — Full nav tour
+Lab → Tools → About → Multisig (6 nav) → Network (6 nav) → Balance (6 nav).
+
+---
+
+## Multisig
+
+### S26 — Shell
+Open multisig → offline CSP; 6 nav; public-keys explainer; cosigner checklist; `#msPolicy`.
+
+### S12 — Golden 2-of-2 + refuse private
+Paste sample pubs, M=2, BIP67 → P2SH golden; P2WSH `bc1`; policy 2-of-2; paste WIF → private error.
+
+### S12b — Demo N=3
+N=3, 12 words → Generate → 3 cards + zpub; Build → P2SH `3…`, P2WSH `bc1`; policy of-3.
+
+### S27 — Demo 24-word pad
+N=2, 24-word tab → Generate → 256 bits / 24 mentioned.
+
+### S28 — BIP67 off
+Build with BIP67 unchecked → policy mentions BIP67 sort OFF.
+
+### S29 — Clear
+Build then Clear → result hidden; pubkey box empty.
+
+### S30 — Copy P2SH
+Build → Copy P2SH → copy feedback.
+
+### S31 — Nav out
+Multisig → Lab; Multisig → Network.
+
+---
+
+## Network
+
+### S32 — Shell + gate
+Network heading; 6 nav; CSP self/mempool (not Lab offline); balances disabled until ack; Lab still connect-src none.
+
+### S13b — Fee snapshot
+Fetch snapshot → feeOut sat/vB; feeBands; traffic tip/mempool; feeExample; UTXO reminder; status OK.
+
+### S13c — Balances
+Mnemonic in box → reject; BIP84 golden + ack → row with ok|unknown|error (fail-closed).
+
+### S13d — Session bridge
+Lab abandon → Network Load from Lab → addresses, no abandon words.
+
+### S33 — No ack
+Load Lab button disabled without ack.
+
+### S34 — Empty fetch
+Ack + empty box → Fetch → need addresses.
+
+### S35 — Network → Tools
+Tools nav → Tools panel on Lab.
+
+---
+
+## Cross-page chrome
+
+### S36 — Nav labels identical
+On Lab, Multisig, Network: same 6 strong labels Lab/Multisig/Network/Tools/Balance/About.
+
+### S37 — CSP isolation
+Lab+Multisig `connect-src 'none'`; Network allows mempool/`self`.
+
+### S38 — Multisig aria-current
+Multisig page: Multisig nav `aria-current=page`.
+
+### S39 — Network aria-current
+Network page: Network nav `aria-current=page`.
+
+### S40 — Host branding
+Lab footer / Multisig / Network mention bip39.catalyxt.xyz or English host branding.
 
 ---
 
 ## Report template
 
 ```text
-# BIP39 Lab E2E report
+# BIP39 Lab E2E report (exhaustive)
 URLs:
   Lab: https://bip39.catalyxt.xyz/
   Multisig: https://bip39.catalyxt.xyz/multisig.html
@@ -133,40 +259,76 @@ Date (UTC):
 Agent: Comet / Perplexity / other:
 
 S0 Smoke: PASS|FAIL —
-S1 Generate: PASS|FAIL —
-S2 Abandon vectors: PASS|FAIL —
+S0b Theme: PASS|FAIL —
+S0c Keyboard ?: PASS|FAIL —
+S1 Generate 12: PASS|FAIL —
+S1b Generate 24: PASS|FAIL —
+S2 Abandon 4 types: PASS|FAIL —
 S3 Passphrase: PASS|FAIL —
-S4 Controls: PASS|FAIL —
-S5 Address type pads: PASS|FAIL —
+S4 Account/change/indices: PASS|FAIL —
+S5 Mainnet/testnet: PASS|FAIL —
 S6 Copy: PASS|FAIL —
-S7 QR: PASS|FAIL —
+S7 QR address: PASS|FAIL —
 S8 Watch-only: PASS|FAIL —
-S9 Clear/hide: PASS|FAIL —
-S10 Nav (6 items + Tools): PASS|FAIL —
+S9 Hide/clear: PASS|FAIL —
+S10 Full nav tour: PASS|FAIL —
 S11 Invalid: PASS|FAIL —
-S12 Multisig (+ policy/checklist): PASS|FAIL —
-S13 Network (+ fee bands): PASS|FAIL —
-S14 Tools pack: PASS|FAIL —
+S12 Multisig golden+refuse: PASS|FAIL —
+S12b Demo N=3: PASS|FAIL —
+S13b Fees+bands: PASS|FAIL —
+S13c Balances: PASS|FAIL —
+S13d Lab bridge: PASS|FAIL —
+S14 Tools path: PASS|FAIL —
+S15 Seed QR: PASS|FAIL —
+S16 Send→Network: PASS|FAIL —
+S17 Entropy pad: PASS|FAIL —
+S18 Compare PP: PASS|FAIL —
+S19 Descriptors: PASS|FAIL —
+S20 PSBT ok: PASS|FAIL —
+S21 PSBT refuse: PASS|FAIL —
+S22 Desc explain: PASS|FAIL —
+S23 Shortcuts card: PASS|FAIL —
+S24 Balance panel: PASS|FAIL —
+S25 About threat: PASS|FAIL —
+S26 Multisig shell: PASS|FAIL —
+S27 Demo 24w: PASS|FAIL —
+S28 BIP67 off: PASS|FAIL —
+S29 Multisig clear: PASS|FAIL —
+S30 Copy P2SH: PASS|FAIL —
+S31 Multisig nav: PASS|FAIL —
+S32 Network shell: PASS|FAIL —
+S33 No ack: PASS|FAIL —
+S34 Empty fetch: PASS|FAIL —
+S35 Network→Tools: PASS|FAIL —
+S36 Nav labels: PASS|FAIL —
+S37 CSP isolation: PASS|FAIL —
+S38 Multisig current: PASS|FAIL —
+S39 Network current: PASS|FAIL —
+S40 Host branding: PASS|FAIL —
 
-Score: __ / 15 PASS
+Score: __ / 45 PASS
 Blockers:
 Notes:
 ```
 
+---
+
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (S0–S14) against bip39.catalyxt.xyz Lab, Multisig, and Network. Return the Report template.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (exhaustive S0–S40) against https://bip39.catalyxt.xyz/ Lab, Multisig, and Network. Return the Report template with all S-ids.
 
-## Playwright
+## Playwright developers
 
 ```bash
 npm install && npx playwright install chromium
-npm run build:web
-npm run test:e2e
+npm run test:e2e              # local :4173
+npm run test:e2e:live         # production
 ```
 
-| Scenarios | File |
-|-----------|------|
-| S0–S11, S14 | `e2e/lab.spec.ts` |
-| S12 | `e2e/multisig.spec.ts` |
-| S13 | `e2e/network.spec.ts` |
+| File | Covers |
+|------|--------|
+| `e2e/helpers.ts` | abandon goldens, nav, CSP helpers |
+| `e2e/lab.spec.ts` | S0–S25 Lab + Tools |
+| `e2e/multisig.spec.ts` | S12–S31 Multisig |
+| `e2e/network.spec.ts` | S13–S35 Network |
+| `e2e/site-chrome.spec.ts` | S36–S40 chrome |

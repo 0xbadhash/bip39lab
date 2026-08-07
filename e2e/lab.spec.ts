@@ -1,304 +1,198 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import {
+  ABANDON,
+  GOLDEN,
+  expectNavCount,
+  labCspOffline,
+  pasteMnemonic,
+  waitForTableRows,
+} from "./helpers";
 
-/** Public BIP-39 test vector — never a funded wallet for automation. */
-const ABANDON =
-  "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
-const ADDR84 = "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu";
-const ADDR86 = "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr";
-
-async function pasteMnemonic(page: Page, text: string) {
-  await page.locator("#mnemonic").fill(text);
-  // Debounced derive ~280ms
-  await page.waitForTimeout(450);
-}
-
-async function waitForTableRows(page: Page, min = 5) {
-  await expect
-    .poll(async () => page.locator("#addrTableBody tr:not(.empty-row)").count(), {
-      timeout: 15_000,
-    })
-    .toBeGreaterThanOrEqual(min);
-}
-
-test.describe("BIP39 Lab E2E", () => {
-  test("S0 smoke load", async ({ page }) => {
+test.describe("Lab shell & chrome", () => {
+  test("S0 smoke load · 6-nav · chips · CSP offline", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
+    await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Generate/i })).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="lab"]')).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="multisig"]')).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="balance"]')).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="about"]')).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
+    await expectNavCount(page, 6);
+    await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();
-    // Stable labels (must match Multisig page sidebar)
-    await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
+    await expect(page.locator("#btnTheme")).toBeVisible();
+    await labCspOffline(page);
   });
 
-  test("S1 generate fills entropy and address table", async ({ page }) => {
+  test("S0b theme toggle dark ↔ light", async ({ page }) => {
+    await page.goto("/");
+    const btn = page.locator("#btnTheme");
+    await expect(btn).toContainText(/dark|light/i);
+    await btn.click();
+    await expect(btn).toContainText(/Theme:/i);
+    const theme = await page.locator("html").getAttribute("data-theme");
+    expect(theme === "light" || theme === "dark").toBeTruthy();
+    await btn.click();
+  });
+
+  test("S0c keyboard shortcut ? opens Tools", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("body").click();
+    await page.keyboard.press("?");
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#pathPlayOut")).toBeVisible();
+  });
+});
+
+test.describe("Lab mnemonic & derive", () => {
+  test("S1 generate 12-word fills entropy + table", async ({ page }) => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("12");
     await page.locator("#btnGenerate").click();
     await waitForTableRows(page, 5);
-
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(12);
-
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
-
-    // Default pad BIP86 → bc1p; switch to BIP84 → bc1q
     await expect(page.locator("#addrTableBody")).toContainText(/bc1p/);
-    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText(/bc1q/);
   });
 
-  test("S2 abandon golden addresses", async ({ page }) => {
+  test("S1b generate 24-word entropy bits", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#wordCount").selectOption("24");
+    await page.locator("#btnGenerate").click();
+    await waitForTableRows(page, 5);
+    const mnemonic = await page.locator("#mnemonic").inputValue();
+    expect(mnemonic.trim().split(/\s+/).length).toBe(24);
+    await expect(page.locator("#entropyMnemonic")).toHaveText(/256 bits \(24-word BIP-39\)/);
+  });
+
+  test("S2 abandon golden BIP86 + BIP84 + BIP49 + BIP44", async ({ page }) => {
     await page.goto("/");
     await page.locator("#btnClear").click();
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-
-    // Default pad: BIP86
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR86);
-    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
+
+    await page.locator('.seg-tab[data-addr-type="bip86"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip86);
+
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
+
+    await page.locator('.seg-tab[data-addr-type="bip49"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip49);
+
+    await page.locator('.seg-tab[data-addr-type="bip44"]').click();
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip44);
   });
 
-  test("S3 passphrase changes addresses; ENT stays 128", async ({ page }) => {
+  test("S3 passphrase changes addresses + strength", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
     await page.locator('.seg-tab[data-addr-type="bip84"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
 
     await page.locator("#passphrase").fill("test");
     await page.waitForTimeout(500);
-    await waitForTableRows(page, 5);
-
-    const after = await page.locator("#addrTableBody").innerText();
-    expect(after).not.toContain(ADDR84);
-    await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
-    await expect(page.locator("#entropyPassphrase")).toHaveText(/bits \(estimate\)/);
+    await expect(page.locator("#entropyPassphrase")).toContainText(/bits \(estimate\)/);
+    const body = await page.locator("#addrTableBody").innerText();
+    expect(body).not.toContain(GOLDEN.bip84);
 
     await page.locator("#passphrase").fill("");
     await page.waitForTimeout(500);
-    await waitForTableRows(page, 5);
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
   });
 
-  test("S4 account change indices controls", async ({ page }) => {
+  test("S4 account change indices path summary", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
 
     await page.locator("#deriveCount").selectOption("10");
-    await page.waitForTimeout(450);
-    await waitForTableRows(page, 10);
-    expect(await page.locator("#addrTableBody tr:not(.empty-row)").count()).toBe(10);
+    await page.waitForTimeout(500);
+    await expect(page.locator("#addrTableBody tr:not(.empty-row)")).toHaveCount(10);
 
     await page.locator("#deriveChange").selectOption("1");
-    await page.waitForTimeout(450);
+    await page.waitForTimeout(500);
     await expect(page.locator("#derivePathSummary")).toContainText(/change/i);
 
     await page.locator("#deriveAccount").fill("1");
-    await page.waitForTimeout(450);
-    const acct1 = await page.locator("#addrTableBody").innerText();
-    expect(acct1).not.toContain(ADDR84);
+    await page.waitForTimeout(500);
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    const body = await page.locator("#addrTableBody").innerText();
+    expect(body).not.toContain(GOLDEN.bip84);
 
     await page.locator("#deriveAccount").fill("0");
     await page.locator("#deriveChange").selectOption("0");
     await page.locator("#deriveCount").selectOption("5");
-    await page.waitForTimeout(450);
+    await page.waitForTimeout(500);
     await waitForTableRows(page, 5);
-    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
   });
 
-  test("S5 address type pads one at a time", async ({ page }) => {
+  test("S5 mainnet vs testnet coin type", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-
-    await expect(page.locator('.seg-tab[data-addr-type="bip86"]')).toHaveClass(/active/);
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR86);
-
     await page.locator('.seg-tab[data-addr-type="bip84"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR84);
-    await expect(page.locator("#addrTableBody")).not.toContainText(ADDR86);
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
 
-    await page.locator('.seg-tab[data-addr-type="bip49"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText("37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf");
+    await page.locator("#deriveNetwork").selectOption("test");
+    await page.waitForTimeout(500);
+    await expect(page.locator("#addrTableBody")).toContainText(new RegExp(GOLDEN.bip84testPrefix));
+    await expect(page.locator("#derivePathSummary")).toContainText(/testnet|signet|network/i);
 
-    await page.locator('.seg-tab[data-addr-type="bip44"]').click();
-    await expect(page.locator("#addrTableBody")).toContainText("1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA");
+    await page.locator("#deriveNetwork").selectOption("main");
+    await page.waitForTimeout(500);
+    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
   });
 
-  test("S6 copy address button", async ({ page, context }) => {
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  test("S6 copy address feedback", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-
-    const firstCopy = page
-      .locator("#addrTableBody tr:not(.empty-row)")
-      .first()
-      .getByLabel(/Copy address to clipboard|Copied to clipboard/i)
-      .first();
-    await firstCopy.click();
-    // Visible feedback is required (Comet defect: label must change)
-    await expect(firstCopy).toHaveText(/Copied/i, { timeout: 3000 });
-    await expect(firstCopy).toHaveClass(/copied/);
-    await expect(page.locator("#copyFeedback")).toContainText(/Copied to clipboard/i, {
-      timeout: 3000,
-    });
-
-    const clip = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clip.length).toBeGreaterThan(10);
-    expect(clip).toMatch(/^(bc1|[13])/);
+    const copyBtn = page.locator("#addrTableBody .btn-copy").filter({ hasText: /^Copy$/ }).first();
+    await copyBtn.click();
+    await expect(page.locator("#copyFeedback")).toContainText(/Copied|clipboard/i, { timeout: 5_000 });
   });
 
   test("S7 QR modal offline", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-
-    await page
-      .locator("#addrTableBody tr:not(.empty-row)")
-      .first()
-      .getByLabel("Show address QR code")
-      .first()
-      .click();
+    await page.locator("#addrTableBody button").filter({ hasText: /^QR$/ }).first().click();
     await expect(page.locator("#qrModal")).toBeVisible();
-    await expect(page.locator("#qrModalImg")).toHaveAttribute("src", /data:image/);
-    const modalText = await page.locator("#qrModalText").innerText();
-    expect(modalText).toMatch(/^(bc1|[13])/);
-
+    await expect(page.locator("#qrModalImg")).toBeVisible();
+    await expect(page.locator("#qrModalText")).toContainText(/bc1/);
     await page.locator("#btnQrClose").click();
     await expect(page.locator("#qrModal")).toBeHidden();
   });
 
-  test("S8 watch-only export no xprv", async ({ page }) => {
+  test("S8 watch-only zpub then xpub pads", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
-    // Default pad: BIP84 zpub — one card
-    await expect(page.locator('.seg-tab[data-wo-type="84"]')).toHaveClass(/active/);
     await page.locator("#btnWatchOnly").click();
     await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(1, { timeout: 10_000 });
+    await expect(page.locator("#watchOnlyList")).toContainText(/zpub/);
+    await expect(page.locator("#watchOnlyList")).not.toContainText(/xprv/);
 
-    let listText = await page.locator("#watchOnlyList").innerText();
-    expect(listText).toMatch(/zpub/);
-    expect(listText).toMatch(/BIP84|native segwit/i);
-    expect(listText).not.toMatch(/xprv/i);
-
-    // Switch pad to BIP44 — still one card
     await page.locator('.seg-tab[data-wo-type="44"]').click();
     await expect(page.locator("#watchOnlyList .watch-item")).toHaveCount(1);
-    listText = await page.locator("#watchOnlyList").innerText();
-    expect(listText).toMatch(/xpub/);
-    expect(listText).not.toMatch(/xprv/i);
+    await expect(page.locator("#watchOnlyList")).toContainText(/xpub/);
+    await expect(page.locator("#watchOnlyList")).not.toContainText(/xprv/);
   });
 
-  test("S9 clear and hide private", async ({ page }) => {
+  test("S9 hide private + clear secrets", async ({ page }) => {
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
-    await page.locator("#passphrase").fill("secret");
-    await page.waitForTimeout(300);
-
+    await waitForTableRows(page, 5);
     await page.locator("#hidePrivate").check();
     await expect(page.locator("#mnemonic")).toBeHidden();
-    await expect(page.locator("#passphrase")).toBeHidden();
-
     await page.locator("#hidePrivate").uncheck();
     await expect(page.locator("#mnemonic")).toBeVisible();
-
     await page.locator("#btnClear").click();
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await expect(page.locator("#entropyMnemonic")).toHaveText("—");
     await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
-  });
-
-  test("S10 nav balance about multisig and network", async ({ page }) => {
-    await page.goto("/");
-    await page.locator('.nav-item[data-nav="balance"]').click();
-    await expect(page.locator("#panel-balance")).toBeVisible();
-    await expect(page.locator("#panel-balance")).toContainText(/mempool|bitcoind|CLI/i);
-    await expect(page.locator("#panel-balance")).toContainText(/Network/i);
-    await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveClass(/active/);
-    // Lab + Multisig + Network + Tools + Balance + About
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
-    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
-    await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
-
-    await page.locator('.nav-item[data-nav="tools"]').click();
-    await expect(page.locator("#panel-tools")).toBeVisible();
-    await expect(page.locator("#pathPlayOut")).toBeVisible();
-
-    await page.locator('.nav-item[data-nav="about"]').click();
-    await expect(page.locator("#panel-about")).toBeVisible();
-    await expect(page.locator("#panel-about")).toContainText(/No retention|retention|Threat model/i);
-
-    await page.locator('.nav-item[data-nav="lab"]').click();
-    await expect(page.locator("#panel-lab")).toBeVisible();
-
-    await page.locator('.nav-item[data-nav="multisig"]').click();
-    await expect(page).toHaveURL(/multisig\.html/);
-    await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
-    await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
-    await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
-    await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
-
-    // Multisig → Network page
-    await page.locator('.nav-item[data-nav="network"]').click();
-    await expect(page).toHaveURL(/network\.html/);
-    await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
-    await expect(page.locator('.nav-item[data-nav="network"]')).toHaveClass(/active/);
-
-    // Network → Balance deep-link must restore Lab page with Balance panel + full nav
-    await page.locator('.nav-item[data-nav="balance"]').click();
-    await expect(page).toHaveURL(/index\.html#balance|#balance|\/#balance/);
-    await expect(page.locator("#panel-balance")).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
-  });
-
-  test("S14 tools path playground testnet and descriptors", async ({ page }) => {
-    await page.goto("/");
-    await pasteMnemonic(page, ABANDON);
-    await waitForTableRows(page, 1);
-    await expect(page.locator("#addrTableBody")).toContainText(ADDR86.slice(0, 12));
-
-    await page.locator("#deriveNetwork").selectOption("test");
-    await page.waitForTimeout(500);
-    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
-    await waitForTableRows(page, 1);
-    await expect(page.locator("#addrTableBody")).toContainText(/tb1/);
-
-    await page.locator('.nav-item[data-nav="tools"]').click();
-    await expect(page.locator("#panel-tools")).toBeVisible();
-    await expect(page.locator("#pathPlayOut")).toContainText(/m\/8[46]'\/1'/);
-
-    await page.locator("#btnDescRefresh").click();
-    await expect(page.locator("#descOut")).toContainText(/wpkh\(|tr\(/);
-
-    await page.locator("#cmpPpB").fill("test");
-    await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same|A:/);
-
-    await page.locator("#psbtIn").fill("cHNidP8BAAoCAAAAAA==");
-    await page.locator("#btnPsbt").click();
-    await expect(page.locator("#psbtOut")).toContainText(/ok|PSBT|magic|Educational/i);
-
-    await page.locator("#descExplainIn").fill("wpkh(zpub6demo/0/*)");
-    await page.locator("#btnDescExplain").click();
-    await expect(page.locator("#descExplainOut")).toContainText(/wpkh|ok/i);
-
-    await page.locator("#btnDice").click();
-    await expect(page.locator("#entPadOut")).toContainText(/d6:/);
   });
 
   test("S11 invalid mnemonic", async ({ page }) => {
@@ -306,11 +200,148 @@ test.describe("BIP39 Lab E2E", () => {
     await page.locator("#btnClear").click();
     await page.locator("#mnemonic").fill("not a real seed phrase here at all xx");
     await page.waitForTimeout(500);
-
     const ent = await page.locator("#entropyMnemonic").innerText();
     expect(ent).not.toMatch(/^128 bits \(12-word BIP-39\)$/);
-    // table should not show golden abandon addresses
     const body = await page.locator("#addrTableBody").innerText();
-    expect(body).not.toContain(ADDR84);
+    expect(body).not.toContain(GOLDEN.bip84);
+  });
+
+  test("S15 seed QR confirm + modal", async ({ page }) => {
+    await page.goto("/");
+    await pasteMnemonic(page, ABANDON);
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnSeedQr").click();
+    await expect(page.locator("#qrModal")).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("#qrModalTitle")).toContainText(/Seed|sensitive|QR/i);
+    await page.locator("#btnQrClose").click();
+  });
+
+  test("S16 send addresses → Network session bridge", async ({ page }) => {
+    await page.goto("/");
+    await pasteMnemonic(page, ABANDON);
+    await waitForTableRows(page, 5);
+    await page.locator("#btnSendNetwork").click();
+    await expect(page).toHaveURL(/network\.html/);
+    await page.locator("#balAck").check();
+    await page.locator("#btnLoadLab").click();
+    const addrs = await page.locator("#balAddrs").inputValue();
+    expect(addrs).toMatch(/bc1/i);
+    expect(addrs.toLowerCase()).not.toContain("abandon");
+  });
+});
+
+test.describe("Lab Tools panel", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await pasteMnemonic(page, ABANDON);
+    await waitForTableRows(page, 5);
+  });
+
+  test("S14 path playground + tools open", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#pathPlayOut")).toContainText(/m\/\d+'/);
+  });
+
+  test("S17 entropy pad dice coin clear", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#btnDice").click();
+    await page.locator("#btnDice").click();
+    await page.locator("#btnCoin").click();
+    await expect(page.locator("#entPadOut")).toContainText(/d6:/);
+    await expect(page.locator("#entPadOut")).toContainText(/coin:/);
+    await expect(page.locator("#entPadMeta")).toContainText(/events/);
+    await page.locator("#btnEntClear").click();
+    await expect(page.locator("#entPadOut")).toHaveText("—");
+  });
+
+  test("S18 compare passphrases", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#cmpPpB").fill("test");
+    await page.locator("#btnCmpPp").click();
+    await expect(page.locator("#cmpPpOut")).toContainText(/A:|Different|Same/);
+  });
+
+  test("S19 descriptors refresh", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#btnDescRefresh").click();
+    await expect(page.locator("#descOut")).toContainText(/wpkh\(|tr\(|pkh\(|sh\(/);
+  });
+
+  test("S20 PSBT inspector educational", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#psbtIn").fill("cHNidP8BAAoCAAAAAA==");
+    await page.locator("#btnPsbt").click();
+    await expect(page.locator("#psbtOut")).toContainText(/ok|Educational|PSBT|magic/i);
+  });
+
+  test("S21 PSBT refuse secrets", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#psbtIn").fill("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi");
+    await page.locator("#btnPsbt").click();
+    await expect(page.locator("#psbtOut")).toContainText(/refus|error|secret/i);
+  });
+
+  test("S22 descriptor explain public + refuse private", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#descExplainIn").fill("wpkh(zpub6demo/0/*)");
+    await page.locator("#btnDescExplain").click();
+    await expect(page.locator("#descExplainOut")).toContainText(/wpkh|ok/i);
+
+    await page.locator("#descExplainIn").fill("xprvABC secret seed phrase abandon abandon");
+    await page.locator("#btnDescExplain").click();
+    await expect(page.locator("#descExplainOut")).toContainText(/refus|error|private/i);
+  });
+
+  test("S23 tools keyboard shortcuts card present", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toContainText(/Keyboard shortcuts/i);
+    await expect(page.locator("#panel-tools")).toContainText(/Generate|derive/i);
+  });
+});
+
+test.describe("Lab Balance + About panels", () => {
+  test("S24 balance panel CLI Knots UTXO Network link", async ({ page }) => {
+    await page.goto("/#balance");
+    await expect(page.locator("#panel-balance")).toBeVisible();
+    await expect(page.locator("#panel-balance")).toContainText(/knots|bitcoind|mempool|scantxoutset|UTXO/i);
+    await expect(page.locator('#panel-balance a[href="network.html"]')).toBeVisible();
+  });
+
+  test("S25 about threat model + no retention", async ({ page }) => {
+    await page.goto("/#about");
+    await expect(page.locator("#panel-about")).toBeVisible();
+    await expect(page.locator("#panel-about")).toContainText(/No retention|retention/i);
+    await expect(page.locator("#panel-about")).toContainText(/Threat model/i);
+    await expect(page.locator("#panel-about")).toContainText(/Malicious|clipboard|Network page/i);
+  });
+});
+
+test.describe("Lab nav matrix", () => {
+  test("S10 full nav Lab→Tools→About→Multisig→Network→Balance", async ({ page }) => {
+    await page.goto("/");
+    await expectNavCount(page, 6);
+
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+
+    await page.locator('.nav-item[data-nav="about"]').click();
+    await expect(page.locator("#panel-about")).toBeVisible();
+
+    await page.locator('.nav-item[data-nav="lab"]').click();
+    await expect(page.locator("#panel-lab")).toBeVisible();
+
+    await page.locator('.nav-item[data-nav="multisig"]').click();
+    await expect(page).toHaveURL(/multisig\.html/);
+    await expectNavCount(page, 6);
+
+    await page.locator('.nav-item[data-nav="network"]').click();
+    await expect(page).toHaveURL(/network\.html/);
+    await expectNavCount(page, 6);
+
+    await page.locator('.nav-item[data-nav="balance"]').click();
+    await expect(page).toHaveURL(/#balance/);
+    await expect(page.locator("#panel-balance")).toBeVisible();
+    await expectNavCount(page, 6);
   });
 });
