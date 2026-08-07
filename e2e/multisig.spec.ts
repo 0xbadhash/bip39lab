@@ -9,7 +9,7 @@ test.describe("Multisig explainer E2E", () => {
   test("S26 shell offline CSP · 6-nav · checklist", async ({ page }) => {
     await page.goto("/multisig.html");
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
     await labCspOffline(page);
     await expect(page.locator("body")).toContainText(/Where do the public keys come from/i);
     await expect(page.locator("body")).toContainText(/Cosigner checklist/i);

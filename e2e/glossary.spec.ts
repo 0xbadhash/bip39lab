@@ -8,7 +8,9 @@ test.describe("Glossary educational terms", () => {
     await expect(page.locator("#glossaryList")).toContainText(/BIP-39|BIP-44|BIP-84|BIP-86/i);
     await expect(page.locator("#glossaryList")).toContainText(/P2PKH|P2WPKH|P2TR|P2SH/i);
     await expect(page.locator("#glossaryList")).toContainText(/zpub|xpub|UTXO|sat/i);
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
+    await expect(page.locator("#glossary-security")).toContainText(/No retention|retention/i);
+    await expect(page.locator("#glossary-threat")).toContainText(/Threat model/i);
   });
 
   test("S50 glossary search filters", async ({ page }) => {

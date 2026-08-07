@@ -9,13 +9,14 @@ import {
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
-  test("S0 smoke load · 7-nav · chips · CSP offline", async ({ page }) => {
+  test("S0 smoke load · 6-nav · chips · CSP offline", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
     await expect(page.locator('.nav-item[data-nav="glossary"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="about"]')).toHaveCount(0);
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
@@ -301,7 +302,7 @@ test.describe("Lab Tools panel", () => {
   });
 });
 
-test.describe("Lab Balance + About panels", () => {
+test.describe("Lab Balance + Glossary security", () => {
   test("S24 balance panel CLI Knots UTXO Network link", async ({ page }) => {
     await page.goto("/#balance");
     await expect(page.locator("#panel-balance")).toBeVisible();
@@ -309,40 +310,45 @@ test.describe("Lab Balance + About panels", () => {
     await expect(page.locator('#panel-balance a[href="network.html"]')).toBeVisible();
   });
 
-  test("S25 about threat model + no retention", async ({ page }) => {
+  test("S25 glossary hosts threat model + no retention", async ({ page }) => {
+    await page.goto("/#glossary");
+    await expect(page.locator("#panel-glossary")).toBeVisible();
+    await expect(page.locator("#glossary-security")).toContainText(/No retention|retention/i);
+    await expect(page.locator("#glossary-threat")).toContainText(/Threat model/i);
+    await expect(page.locator("#glossary-threat")).toContainText(/Malicious|clipboard|Network page/i);
+    // legacy #about hash redirects to glossary panel
     await page.goto("/#about");
-    await expect(page.locator("#panel-about")).toBeVisible();
-    await expect(page.locator("#panel-about")).toContainText(/No retention|retention/i);
-    await expect(page.locator("#panel-about")).toContainText(/Threat model/i);
-    await expect(page.locator("#panel-about")).toContainText(/Malicious|clipboard|Network page/i);
+    await expect(page.locator("#panel-glossary")).toBeVisible();
+    await expect(page.locator("#glossary-threat")).toBeVisible();
   });
 });
 
 test.describe("Lab nav matrix", () => {
-  test("S10 full nav Lab→Tools→About→Multisig→Network→Balance", async ({ page }) => {
+  test("S10 full nav Lab→Tools→Glossary→Multisig→Network→Balance", async ({ page }) => {
     await page.goto("/");
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
 
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
 
-    await page.locator('.nav-item[data-nav="about"]').click();
-    await expect(page.locator("#panel-about")).toBeVisible();
+    await page.locator('.nav-item[data-nav="glossary"]').click();
+    await expect(page.locator("#panel-glossary")).toBeVisible();
+    await expect(page.locator("#glossary-threat")).toBeVisible();
 
     await page.locator('.nav-item[data-nav="lab"]').click();
     await expect(page.locator("#panel-lab")).toBeVisible();
 
     await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
 
     await page.locator('.nav-item[data-nav="network"]').click();
     await expect(page).toHaveURL(/network\.html/);
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
 
     await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page).toHaveURL(/#balance/);
     await expect(page.locator("#panel-balance")).toBeVisible();
-    await expectNavCount(page, 7);
+    await expectNavCount(page, 6);
   });
 });

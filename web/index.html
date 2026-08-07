@@ -62,14 +62,7 @@
           <span class="nav-step">6</span>
           <span class="nav-label">
             <strong>Glossary</strong>
-            <small>BIPs · acronyms</small>
-          </span>
-        </a>
-        <a class="nav-item" data-nav="about" href="index.html#about">
-          <span class="nav-step">7</span>
-          <span class="nav-label">
-            <strong>About</strong>
-            <small>Threat model</small>
+            <small>BIPs · security</small>
           </span>
         </a>
       </nav>
@@ -497,7 +490,7 @@ python -m bip39lab balance bc1q… --backend knots \
           </div>
         </section>
 
-        <!-- Panel: Glossary -->
+        <!-- Panel: Glossary (+ security / threat model — former About) -->
         <section id="panel-glossary" class="panel" role="tabpanel" hidden>
           <div class="card card-wide">
             <div class="card-head"><h2>Glossary — BIPs, scripts &amp; acronyms</h2></div>
@@ -509,19 +502,19 @@ python -m bip39lab balance bc1q… --backend knots \
             </label>
             <div id="glossaryList" class="glossary-list" aria-live="polite"></div>
           </div>
-        </section>
 
-        <!-- Panel: About -->
-        <section id="panel-about" class="panel" role="tabpanel" hidden>
-          <div class="card">
+          <div class="card" id="glossary-security">
             <h2>Security model</h2>
             <p>
               No retention of mnemonics, entropy, seeds, or private keys on a server.
               Production path uses audited browser libraries in the offline bundle.
               Brand host: <code>bip39.catalyxt.xyz</code> under Catalyxt (<code>catalyxt.xyz</code> only).
             </p>
+            <p class="control-help">
+              English UI only. Theme and Teach preferences may be stored locally (not secrets).
+            </p>
           </div>
-          <div class="card">
+          <div class="card" id="glossary-threat">
             <h2>Threat model (what can go wrong)</h2>
             <ul class="help-list">
               <li><strong>Malicious host / XSS</strong> — only use this lab on hardware and software you trust; prefer air-gap for real funds.</li>
@@ -530,7 +523,6 @@ python -m bip39lab balance bc1q… --backend knots \
               <li><strong>Network page</strong> — address lookups reveal interest to the API host; Lab CSP stays <code>connect-src 'none'</code>.</li>
               <li><strong>Not a wallet</strong> — cannot spend; no seed lottery / brute-force features.</li>
             </ul>
-            <p class="control-help">English UI only. Theme preference may be stored locally (not secrets).</p>
           </div>
         </section>
 

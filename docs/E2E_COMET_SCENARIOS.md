@@ -14,7 +14,7 @@ surfaces:
   - id: chrome
     path: /
     playwright: e2e/site-chrome.spec.ts
-scenarios: S0–S52 exhaustive (see tables) · 7-nav includes Glossary
+scenarios: S0–S52 exhaustive · 6-nav (About merged into Glossary)
 -->
 
 # BIP39 Lab — Exhaustive E2E for Comet / Perplexity
@@ -34,15 +34,14 @@ scenarios: S0–S52 exhaustive (see tables) · 7-nav includes Glossary
 | 3 | Network | Fees / balances (opt-in) |
 | 4 | Tools | Path, PSBT, descriptors |
 | 5 | Balance | CLI / Knots docs |
-| 6 | **Glossary** | BIPs & acronyms (educational) |
-| 7 | About | Threat model |
+| 6 | **Glossary** | BIPs, acronyms, **security & threat model** |
 
 | Area | Playwright | Scenario IDs |
 |------|------------|--------------|
 | Lab shell / chrome | `e2e/lab.spec.ts`, `e2e/site-chrome.spec.ts` | S0–S0c, S36–S40 |
 | Lab mnemonic / table | `e2e/lab.spec.ts` | S1–S11, S15–S16 |
 | Lab Tools | `e2e/lab.spec.ts` | S14, S17–S23 |
-| Lab Balance / About | `e2e/lab.spec.ts` | S24–S25, S10 |
+| Lab Balance / Glossary security | `e2e/lab.spec.ts` | S24–S25, S10 |
 | Multisig | `e2e/multisig.spec.ts` | S12, S12b, S26–S31 |
 | Network | `e2e/network.spec.ts` | S13b–d, S32–S35 |
 | Help UX | `e2e/help-ux.spec.ts` | S41–S48 |
@@ -67,8 +66,8 @@ APPS:
 Hard-refresh each app once. Do not skip scenarios (S0–S52 including Help UX S41–S48 and Glossary S49–S52). Mark PASS/FAIL with evidence.
 
 SIDEBAR: expect exactly **7** nav items on every page:
-  Lab, Multisig, Network, Tools, Balance, Glossary, About.
-S36 PASSes only if all 7 labels match (Glossary is required, not a bug).
+  Lab, Multisig, Network, Tools, Balance, Glossary.
+S36 PASSes only if all 6 labels match (About content lives under Glossary).
 
 Use ONLY the public abandon mnemonic for Lab. Multisig: public keys or demo generator only.
 Network: addresses only — never paste a seed. Lab/Tools/Multisig crypto stay offline.
@@ -101,7 +100,7 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 ## Lab shell
 
 ### S0 — Smoke
-Open Lab → title Offline BIP-39 lab; Generate; **7** nav (includes **Glossary**); Offline crypto + airgap chips; CSP `connect-src 'none'` (View Source → meta Content-Security-Policy).
+Open Lab → title Offline BIP-39 lab; Generate; **6** nav (includes **Glossary**, no separate About); Offline crypto + airgap chips; CSP `connect-src 'none'` (View Source → meta Content-Security-Policy).
 
 ### S0b — Theme
 Click Theme → label toggles dark/light; page still usable.
@@ -187,18 +186,18 @@ Tools shows Keyboard shortcuts (G/D/Esc/?).
 ### S24 — Balance panel
 `#balance` → Knots/bitcoind/mempool/UTXO + Network link.
 
-### S25 — About threat model
-`#about` → no retention + Threat model bullets.
+### S25 — Glossary security & threat model
+`#glossary` (or legacy `#about`) → no retention + Threat model bullets under Glossary.
 
 ### S10 — Full nav tour
-Lab → Tools → About → Multisig (6 nav) → Network (6 nav) → Balance (6 nav).
+Lab → Tools → Glossary (incl. security) → Multisig (**6** nav) → Network (**6** nav) → Balance (**6** nav).
 
 ---
 
 ## Multisig
 
 ### S26 — Shell
-Open multisig → offline CSP; 6 nav; public-keys explainer; cosigner checklist; `#msPolicy`.
+Open multisig → offline CSP; **6** nav (incl. Glossary); public-keys explainer; cosigner checklist; `#msPolicy`.
 
 ### S12 — Golden 2-of-2 + refuse private
 Paste sample pubs, M=2, BIP67 → P2SH golden; P2WSH `bc1`; policy 2-of-2; paste WIF → private error.
@@ -226,7 +225,7 @@ Multisig → Lab; Multisig → Network.
 ## Network
 
 ### S32 — Shell + gate
-Network heading; 6 nav; CSP self/mempool (not Lab offline); balances disabled until ack; Lab still connect-src none.
+Network heading; **6** nav; CSP allows mempool/`self` (not Lab’s connect-src none); balances disabled until ack; Lab still connect-src none.
 
 ### S13b — Fee snapshot
 Fetch snapshot → feeOut sat/vB; feeBands; traffic tip/mempool; feeExample; UTXO reminder; status OK.
@@ -250,11 +249,24 @@ Tools nav → Tools panel on Lab.
 
 ## Cross-page chrome
 
-### S36 — Nav labels identical
-On Lab, Multisig, Network: same 6 strong labels Lab/Multisig/Network/Tools/Balance/About.
+### S36 — Nav labels identical (6 items)
+On Lab, Multisig, **and** Network: same **6** strong labels, in order:
 
-### S37 — CSP isolation
-Lab+Multisig `connect-src 'none'`; Network allows mempool/`self`.
+**Lab · Multisig · Network · Tools · Balance · Glossary**
+
+(About was merged into Glossary — security + threat model live there.)
+
+**PASS if** all three pages show exactly these 6. **FAIL** if About reappears as a 7th item or Glossary is missing.
+
+### S37 — CSP isolation (agent-friendly)
+Do **not** require HTTP response headers. Use **View Page Source** (or DOM):
+
+1. Lab (`/`) and Multisig: find  
+   `<meta http-equiv="Content-Security-Policy" …>` containing **`connect-src 'none'`**.  
+2. Network: same meta contains **`mempool.space`** and/or **`'self'`**, and must **not** be offline-only `connect-src 'none'` alone.  
+3. Functional backup: Lab/Multisig make no explorer calls while generating/building; Network only contacts the public API after opt-in.
+
+**PASS if** (1)+(2) from meta, or (1)+(2) partial + (3) clearly observed.
 
 ### S38 — Multisig aria-current
 Multisig page: Multisig nav `aria-current=page`.
@@ -322,7 +334,7 @@ URLs:
 Date (UTC):
 Agent: Comet / Perplexity / other:
 
-S0 Smoke: PASS|FAIL —
+S0 Smoke (6-nav + Glossary): PASS|FAIL —
 S0b Theme: PASS|FAIL —
 S0c Keyboard ?: PASS|FAIL —
 S1 Generate 12: PASS|FAIL —
@@ -353,7 +365,7 @@ S21 PSBT refuse: PASS|FAIL —
 S22 Desc explain: PASS|FAIL —
 S23 Shortcuts card: PASS|FAIL —
 S24 Balance panel: PASS|FAIL —
-S25 About threat: PASS|FAIL —
+S25 Glossary threat/security: PASS|FAIL —
 S26 Multisig shell: PASS|FAIL —
 S27 Demo 24w: PASS|FAIL —
 S28 BIP67 off: PASS|FAIL —
@@ -364,8 +376,8 @@ S32 Network shell: PASS|FAIL —
 S33 No ack: PASS|FAIL —
 S34 Empty fetch: PASS|FAIL —
 S35 Network→Tools: PASS|FAIL —
-S36 Nav labels: PASS|FAIL —
-S37 CSP isolation: PASS|FAIL —
+S36 Nav labels (6 incl. Glossary): PASS|FAIL —
+S37 CSP isolation (meta + functional): PASS|FAIL —
 S38 Multisig current: PASS|FAIL —
 S39 Network current: PASS|FAIL —
 S40 Host branding: PASS|FAIL —

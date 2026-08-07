@@ -228,6 +228,14 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Playwright S41–S48 + Comet
 - **Notes:** tag with next ship (`v0.12.0`); safety copy never hover-only
 
+### [DONE] About → Glossary (option B)
+- **Status:** done
+- **Acceptance:**
+  - [x] 6-nav: Lab · Multisig · Network · Tools · Balance · Glossary
+  - [x] Security + threat model under Glossary (not teach-only)
+  - [x] `#about` redirects to glossary; e2e + Comet updated
+- **Notes:** `v0.12.2`
+
 ## Current focus
 
-**Through Help UX hybrid.** Next: optional private Knots proxy for Network (not browser RPC).
+**Through nav cleanup (About merged into Glossary).** Next: optional private Knots proxy for Network.

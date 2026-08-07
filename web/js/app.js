@@ -25,12 +25,8 @@
       sub: "CLI + Knots. This page never phones home.",
     },
     glossary: {
-      title: "Glossary",
-      sub: "BIPs, script types, keys, fees — plain English.",
-    },
-    about: {
-      title: "About this lab",
-      sub: "Threat model · no retention · offline crypto · bip39.catalyxt.xyz",
+      title: "Glossary & security",
+      sub: "BIPs, acronyms, no-retention model, and threat notes — plain English.",
     },
   };
 
@@ -703,7 +699,9 @@
   }
 
   function showTab(name) {
-    const allowed = { lab: true, tools: true, balance: true, glossary: true, about: true };
+    // about → glossary (merged option B)
+    if (name === "about") name = "glossary";
+    const allowed = { lab: true, tools: true, balance: true, glossary: true };
     if (!allowed[name]) name = "lab";
     // expose for step-rail / help-ui deep links
     window.__bip39ShowTab = showTab;
@@ -740,8 +738,9 @@
 
   function tabFromHash() {
     const h = (location.hash || "").replace(/^#/, "");
-    if (h === "balance" || h === "about" || h === "lab" || h === "tools" || h === "glossary") return h;
-    if (h.indexOf("gloss-") === 0) return "glossary";
+    if (h === "about" || h === "threat" || h === "security") return "glossary";
+    if (h === "balance" || h === "lab" || h === "tools" || h === "glossary") return h;
+    if (h.indexOf("gloss-") === 0 || h === "glossary-security" || h === "glossary-threat") return "glossary";
     return "lab";
   }
 
@@ -995,7 +994,7 @@
       el.addEventListener("click", (ev) => {
         const nav = el.getAttribute("data-nav");
         if (nav === "multisig" || nav === "network") return;
-        if (nav === "lab" || nav === "balance" || nav === "about" || nav === "tools" || nav === "glossary") {
+        if (nav === "lab" || nav === "balance" || nav === "tools" || nav === "glossary") {
           ev.preventDefault();
           showTab(nav);
         }
