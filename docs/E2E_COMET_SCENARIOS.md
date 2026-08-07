@@ -1,82 +1,121 @@
 <!-- WEB_E2E_CONTRACT
-version: 1
+version: 2
 base_url: https://bip39.catalyxt.xyz
 surfaces:
   - id: lab
     path: /
     playwright: e2e/lab.spec.ts
+  - id: tools
+    path: /#tools
+    playwright: e2e/lab.spec.ts
+  - id: glossary
+    path: /#glossary
+    playwright: e2e/glossary.spec.ts
   - id: multisig
     path: /multisig.html
     playwright: e2e/multisig.spec.ts
+  - id: shamir
+    path: /shamir.html
+    playwright: e2e/shamir.spec.ts
   - id: network
     path: /network.html
     playwright: e2e/network.spec.ts
   - id: chrome
     path: /
     playwright: e2e/site-chrome.spec.ts
-scenarios: S0–S55 exhaustive · 6-nav (Shamir after Multisig)
+  - id: help
+    path: /
+    playwright: e2e/help-ux.spec.ts
+scenarios: S0–S55 exhaustive · 6-nav · human process flows per page
 -->
 
-# BIP39 Lab — Exhaustive E2E for Comet / Perplexity
+# BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
-**Live:**  
-- Lab: https://bip39.catalyxt.xyz/  
-- Multisig: https://bip39.catalyxt.xyz/multisig.html  
-- Shamir: https://bip39.catalyxt.xyz/shamir.html  
-- Network: https://bip39.catalyxt.xyz/network.html  
+**Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
+**Live base:** https://bip39.catalyxt.xyz/
 
-### Sidebar (all pages) — **6 items**
+| Surface | URL | Playwright |
+|---------|-----|------------|
+| Lab | `/` | `e2e/lab.spec.ts` |
+| Tools | `/#tools` (same page as Lab) | `e2e/lab.spec.ts` |
+| Glossary | `/#glossary` (same page as Lab) | `e2e/glossary.spec.ts`, lab S25 |
+| Multisig | `/multisig.html` | `e2e/multisig.spec.ts` |
+| Shamir | `/shamir.html` | `e2e/shamir.spec.ts` |
+| Network | `/network.html` | `e2e/network.spec.ts` |
+| Help / Teach | all shells | `e2e/help-ux.spec.ts` |
+| Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-| # | Nav | Notes |
-|---|-----|--------|
-| 1 | Lab | Generate / derive |
-| 2 | Multisig | M-of-N explainer |
-| 3 | **Shamir** | Educational share split (not SLIP-39) |
-| 4 | Network | Fees / address balances (opt-in) + CLI/Knots notes |
-| 5 | Tools | Path, PSBT, descriptors |
-| 6 | **Glossary** | BIPs, acronyms, **security & threat model** |
+**Playwright total:** `npm run test:e2e` → **64** tests (local `http://127.0.0.1:4173`).  
+**Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
+**Comet/Perplexity score sheet:** **S0–S55** (scenario IDs below; some Playwright tests map 1:1).
 
-| Area | Playwright | Scenario IDs |
-|------|------------|--------------|
-| Lab shell / chrome | `e2e/lab.spec.ts`, `e2e/site-chrome.spec.ts` | S0–S0c, S36–S40 |
-| Lab mnemonic / table | `e2e/lab.spec.ts` | S1–S11, S15–S16 |
-| Lab Tools | `e2e/lab.spec.ts` | S14, S17–S23 |
-| Network CLI redirect / Glossary security | `e2e/lab.spec.ts` | S24–S25, S10 |
-| Multisig | `e2e/multisig.spec.ts` | S12, S12b, S26–S31 |
-| Network | `e2e/network.spec.ts` | S13b–d, S32–S35 |
-| Help UX | `e2e/help-ux.spec.ts` | S41–S48 |
-| Glossary | `e2e/glossary.spec.ts` | S49–S52 |
-| Shamir | `e2e/shamir.spec.ts` | S53–S55 |
+### Sidebar (every page) — **6 items**
 
-**Playwright:** `npm run test:e2e`  
-**Live:** `npm run test:e2e:live`  
-**Comet score denominator:** **S0–S55**
+| # | Nav | Route | Role for a human |
+|---|-----|-------|------------------|
+| 1 | **Lab** | `index.html` | Create/paste recovery phrase → see receive addresses |
+| 2 | **Multisig** | `multisig.html` | M-of-N vault from **public keys** only |
+| 3 | **Shamir** | `shamir.html` | Educational M-of-N **share split** (not SLIP-39) |
+| 4 | **Network** | `network.html` | Public fees + opt-in address balances |
+| 5 | **Tools** | `index.html#tools` | Offline utilities (path, entropy pad, PSBT, …) |
+| 6 | **Glossary** | `index.html#glossary` | Terms + security / threat model |
+
+There is **no** Balance nav (docs folded into Network). There is **no** separate About (merged into Glossary).
+
+---
+
+## Global mental model (must be coherent)
+
+```text
+Secrets stay offline ──► Lab / Multisig / Shamir / Tools  (CSP connect-src 'none')
+Addresses only online ─► Network (opt-in mempool.space) + CLI/Knots for private checks
+Words to look up ──────► Glossary (always available; Teach optional)
+```
+
+| Idea | Where humans learn it | Must not confuse with |
+|------|----------------------|------------------------|
+| BIP-39 recovery phrase | Lab | Multisig keys / Shamir shares |
+| M-of-N **keys** (spend policy) | Multisig | Shamir M-of-N **shares** |
+| M-of-N **shares** of one secret | Shamir | Multisig / BIP-39 words |
+| Fees & public balance | Network | Pasting a seed |
+| Path / PSBT / descriptors | Tools | Signing or broadcasting |
+| Acronyms & threat model | Glossary | A “hidden” sixth product |
+
+**Teach On/Off (all shells):** On = step rails + long help + most ⓘ. Off = compact UI; **safety ⓘ** (seed, CSP, air-gap, PSBT, leak ack, Teach) remain. Preference is one `localStorage` flag across pages.
 
 ---
 
 ## PROMPT FOR COMET / PERPLEXITY
 
 ```text
-You are a browser QA agent. Execute the FULL exhaustive suite in this document (S0–S52).
+You are a browser QA agent for bip39lab. Execute the FULL suite S0–S55 in
+docs/E2E_COMET_SCENARIOS.md (this file). Also complete the HUMAN COHERENCE
+checklist for EVERY page (section “Human process flows”).
 
-SOURCE OF TRUTH: docs/E2E_COMET_SCENARIOS.md (0xbadhash/bip39lab).
-APPS:
-  - https://bip39.catalyxt.xyz/
-  - https://bip39.catalyxt.xyz/multisig.html
-  - https://bip39.catalyxt.xyz/network.html
-Hard-refresh each app once. Do not skip scenarios (S0–S52 including Help UX S41–S48 and Glossary S49–S52). Mark PASS/FAIL with evidence.
+SOURCE OF TRUTH: docs/E2E_COMET_SCENARIOS.md · repo 0xbadhash/bip39lab
 
-SIDEBAR: expect exactly **7** nav items on every page:
-  Lab, Multisig, Network, Tools, Balance, Glossary.
-S36 PASSes only if all 6 labels match (About content lives under Glossary).
+APPS (hard-refresh each once before testing):
+  1. https://bip39.catalyxt.xyz/                 (Lab · Tools · Glossary panels)
+  2. https://bip39.catalyxt.xyz/multisig.html
+  3. https://bip39.catalyxt.xyz/shamir.html
+  4. https://bip39.catalyxt.xyz/network.html
 
-Use ONLY the public abandon mnemonic for Lab. Multisig: public keys or demo generator only.
-Network: addresses only — never paste a seed. Lab/Tools/Multisig crypto stay offline.
-Final output MUST use the Report template (all S-ids listed; score __ / 57).
+SIDEBAR: exactly **6** nav items, same order on every page:
+  Lab · Multisig · Shamir · Network · Tools · Glossary
+FAIL if Balance or About reappear as primary nav.
 
-Test mnemonic:
-abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
+RULES:
+  - Lab test mnemonic ONLY:
+    abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
+  - Multisig: public keys or “Generate demo cosigners” only — never fundable secrets.
+  - Shamir: practice secret only — educational, NOT SLIP-39; do not use a real seed.
+  - Network: addresses only — NEVER paste a mnemonic.
+  - Lab / Multisig / Shamir / Tools: offline crypto (no secret network calls).
+
+For each page section: walk the process flow as a first-time human learner would.
+Mark scenarios PASS/FAIL with short evidence. Fill HUMAN COHERENCE (coherent /
+makes sense / intuitive) per page. End with the Report template (score __ / N).
 ```
 
 ### Goldens (mainnet · account 0 · change 0 · index 0 · empty passphrase)
@@ -99,13 +138,244 @@ abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon 
 
 ---
 
+# Human process flows (Perplexity / Comet — every page)
+
+Agents **must** complete the coherence box after walking each flow. Score:
+
+- **Coherent:** steps follow a story a beginner can narrate (“first … then …”).
+- **Makes sense:** controls match the story; no dead ends or contradictory copy.
+- **Intuitive:** primary action is obvious; danger is visible without hunting.
+
+---
+
+## Page 1 — Lab (`/`)
+
+### Description
+Offline BIP-39 lab: generate or paste an English recovery phrase, optional passphrase, derive receive addresses (BIP86/84/49/44), watch-only export, hand off addresses to Network.
+
+### Process flow (learner)
+
+```text
+1. Land on Lab · read air-gap warn · note Offline crypto + Browser online/offline chips
+2. (Teach On) Follow step rail: Phrase → Addresses → Table → Watch-only
+3. Choose word count → Generate  OR  paste abandon vector
+4. See entropy line + address table fill (default Taproot bc1p…)
+5. Optionally: passphrase, account/change/count, address-type tabs
+6. Copy / QR one address · Refresh watch-only (zpub/xpub)
+7. Optional: Send addresses → Network  OR  open Tools / Glossary from sidebar
+```
+
+### Primary controls
+Generate · Validate & derive · Clear · Hide private · address-type tabs · watch-only refresh · Teach · Theme
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Phrase → table → export is left-to-right / rail-guided | | |
+| Makes sense | “Generate” produces phrase + table without extra clicks | | |
+| Intuitive | Default Taproot; goldens match when abandon pasted | | |
+| Safety | Air-gap warn + mnemonic ⓘ always findable | | |
+| Teach Off | Rail/long copy hide; chips + safety ⓘ remain | | |
+
+### Playwright / scenarios
+S0, S0b, S0c, S1, S1b, S2–S9, S11, S15, S16 · `e2e/lab.spec.ts`
+
+---
+
+## Page 2 — Tools (`/#tools`)
+
+### Description
+Same shell as Lab. Offline utilities: derivation path playground, dice/coin entropy pad, passphrase compare, output descriptors, PSBT inspect (no sign), descriptor explain, shortcuts.
+
+### Process flow (learner)
+
+```text
+1. Open Tools from sidebar (or press ? on Lab when not typing)
+2. Path playground reflects Lab account/change/network/type
+3. Entropy pad: roll dice / flip coin · clear (practice only, not CSPRNG)
+4. Compare passphrases: optional Generate test phrase → Compare idx 0
+5. Descriptors: Refresh → public descriptor text (auto-gen phrase if Lab empty)
+6. PSBT: paste base64/hex from a wallet → Inspect (structure only)
+7. Descriptor explain: public string only · refuse seeds
+```
+
+### Primary controls
+Path out · Dice/Coin/Clear · Generate test phrase · Compare · Refresh descriptors · Inspect PSBT · Explain
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Cards are independent tools, not a forced pipeline | | |
+| Makes sense | No step rail (toolbox, not a recipe) — OK if labeled by titles | | |
+| Intuitive | Compare works without returning to Lab | | |
+| Safety | PSBT ⓘ / copy says never signs or broadcasts | | |
+| Teach Off | Long Tools intro hides; tool cards still usable | | |
+
+### Playwright / scenarios
+S14, S17–S23, S18b · `e2e/lab.spec.ts`
+
+---
+
+## Page 3 — Glossary (`/#glossary`)
+
+### Description
+Searchable plain-English BIPs, scripts, acronyms. Hosts **Security model** + **Threat model** (former About). Not a crypto engine.
+
+### Process flow (learner)
+
+```text
+1. Open Glossary from sidebar
+2. Browse list or search (e.g. BIP84, Shamir, UTXO, sat/vB)
+3. Read security / threat cards at bottom
+4. Cross-check: on Lab, click mnemonic ⓘ → same ideas as glossary
+```
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | “Dictionary + security” is clear | | |
+| Makes sense | No Generate/Build on this panel | | |
+| Intuitive | Search filters terms quickly | | |
+| Safety | No retention / threat bullets always under Glossary | | |
+
+### Playwright / scenarios
+S25, S49–S52 · `e2e/lab.spec.ts`, `e2e/glossary.spec.ts`
+
+---
+
+## Page 4 — Multisig (`/multisig.html`)
+
+### Description
+Educational M-of-N **from public keys only**. Demo cosigner generator (throwaway). Builds P2SH + P2WSH addresses offline. Refuses WIF/xprv.
+
+### Process flow (learner)
+
+```text
+1. Land · Offline chip · read “What is multisig?” (vs single-key wallet)
+2. (Teach On) Rail: Intro → Keys → Build → Result
+3. Optional: Generate demo cosigners (N, word count) → public keys + zpubs
+4. Or paste compressed pubkeys (one per line)
+5. Set M · BIP67 sort · Build
+6. Read P2SH (3…) + P2WSH (bc1q…) · copy · Clear to reset
+```
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Explain → keys → build → addresses | | |
+| Makes sense | Distinct from Shamir (keys ≠ shares) | | |
+| Intuitive | Demo generator lowers barrier | | |
+| Safety | Private key paste refused; offline CSP | | |
+| Teach Off | Long folds hide; Build still works | | |
+
+### Playwright / scenarios
+S12, S12b, S26–S31 · `e2e/multisig.spec.ts`
+
+---
+
+## Page 5 — Shamir (`/shamir.html`)
+
+### Description
+Educational **Shamir secret sharing** over bytes (GF(256)). Demo split only — **not SLIP-39**, not BIP-39 words. No recombine UI in v1.
+
+### Process flow (learner)
+
+```text
+1. Land · red educational banner (not SLIP-39 / not real funds)
+2. (Teach On) Rail: Understand → Practice secret → Split
+3. Read compare table: Shamir vs Multisig vs BIP-39
+4. Generate practice secret (hex) — do not use Lab mnemonic
+5. Set M and N (default 2-of-3) → Split demo
+6. See N cards `share:index:hex` · Copy one · Clear
+```
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Teach difference first, then demo split | | |
+| Makes sense | Banner + “not SLIP-39” before any split | | |
+| Intuitive | Generate + Split are the only primary actions | | |
+| Safety | Empty secret errors; no fake success | | |
+| Teach Off | Rail hides; banner + Generate/Split remain | | |
+
+### Playwright / scenarios
+S53–S55 · `e2e/shamir.spec.ts`
+
+---
+
+## Page 6 — Network (`/network.html`)
+
+### Description
+**Opt-in** public data: fee/traffic snapshot + address-only balances via mempool (or proxy). Lab seeds never belong here. CLI/Knots notes for private balances.
+
+### Process flow (learner)
+
+```text
+1. Land · note mempool chip (this page may use network)
+2. (Teach On) Rail: Understand → Fees → Balances
+3. Read “what this is / is not”
+4. Fetch fee + traffic snapshot → bands + tip height
+5. Balances: tick leak-ack → paste addresses OR Load from Lab session
+6. Fetch balances → table (ok / unknown / error — never silent zero)
+7. Optional: read Private balance via CLI (Knots) block
+```
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Explain leak → fees → balances | | |
+| Makes sense | Buttons disabled until ack | | |
+| Intuitive | Mnemonic in address box rejected | | |
+| Safety | Leak checkbox + ⓘ; never requires seed | | |
+| Teach Off | Rail hides; ack + Fetch still work | | |
+
+### Playwright / scenarios
+S13b–d, S32–S35 · `e2e/network.spec.ts`
+
+---
+
+## Cross-cutting: Help / Teach / Chrome
+
+### Description
+Shared shell: 6-nav, Teach toggle + ⓘ, step rails (where present), CSP isolation Lab/Multisig/Shamir vs Network.
+
+### Process flow
+
+```text
+1. Verify 6-nav labels identical on Lab, Multisig, Shamir, Network
+2. Teach On → rails; Teach Off → rails hide; safety ⓘ remain
+3. Open mnemonic or PSBT ⓘ · Esc closes
+4. Confirm Lab/Multisig/Shamir CSP offline; Network allows mempool/'self'
+```
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Same left nav story everywhere | | |
+| Makes sense | Teach meaning explained by Teach ⓘ | | |
+| Intuitive | Offline pages never “phone home” for secrets | | |
+
+### Playwright / scenarios
+S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
+
+---
+
+# Scenario catalogue (S0–S55)
+
 ## Lab shell
 
 ### S0 — Smoke
-Open Lab → title Offline BIP-39 lab; Generate; **6** nav (includes **Glossary**, no separate About); Offline crypto + airgap chips; CSP `connect-src 'none'` (View Source → meta Content-Security-Policy).
+Open Lab → title Offline BIP-39 lab; Generate visible; **6** nav (Lab…Glossary, **includes Shamir**, no About/Balance); Offline crypto + airgap chips; CSP `connect-src 'none'`.
 
 ### S0b — Theme
-Click Theme → label toggles dark/light; page still usable.
+Theme toggles dark/light; page usable.
 
 ### S0c — Keyboard `?`
 Focus body → `?` → Tools panel + path playground.
@@ -115,109 +385,112 @@ Focus body → `?` → Tools panel + path playground.
 ## Lab mnemonic & table
 
 ### S1 — Generate 12
-Word count 12 → Generate → 12 words; entropy `128 bits (12-word BIP-39)`; ≥5 table rows; default `bc1p`.
+Word count 12 → Generate → 12 words; entropy `128 bits…`; ≥5 table rows; default `bc1p`.
 
 ### S1b — Generate 24
 Word count 24 → Generate → 24 words; entropy `256 bits…`.
 
 ### S2 — Abandon all types
-Clear → paste abandon → BIP86/84/49/44 pads match **all four goldens**.
+Clear → paste abandon → BIP86/84/49/44 match **all four goldens**.
 
 ### S3 — Passphrase
-BIP84 golden → passphrase `test` → address ≠ golden; strength shows bits; clear passphrase → golden returns.
+BIP84 golden → passphrase `test` → address ≠ golden; clear passphrase → golden returns.
 
 ### S4 — Account / change / indices
 Indices 10 → 10 rows; change 1 → path mentions change; account 1 → ≠ golden; reset 0/0/5 → golden.
 
 ### S5 — Mainnet / testnet
-Main BIP84 golden → Network Test → `tb1…` + path coin type 1 → Main restores golden.
+Main BIP84 golden → Network Test → `tb1…` → Main restores golden.
 
 ### S6 — Copy
-Copy first address → **Copied** / `#copyFeedback` shows clipboard confirmation.
+Copy first address → Copied / `#copyFeedback`.
 
 ### S7 — QR address
-QR → modal image + address text → Close hides modal.
+QR → modal image + address → Close.
 
 ### S8 — Watch-only
-Refresh → BIP84 **zpub**, no xprv; pad BIP44 → **xpub**, no xprv.
+Refresh → BIP84 **zpub**, no xprv; BIP44 pad → **xpub**, no xprv.
 
 ### S9 — Hide + Clear
-Hide private → mnemonic hidden; unhide; Clear → empty mnemonic, entropy `—`, empty table.
+Hide private → mnemonic hidden; Clear → empty mnemonic + empty table.
 
 ### S11 — Invalid mnemonic
-Garbage phrase → entropy not valid 128-bit line; no abandon goldens in table.
+Garbage → no valid abandon goldens.
 
 ### S15 — Seed QR
-Seed QR → confirm dialog → modal (sensitive) → Close.
+Confirm dialog → seed QR modal (careful).
 
 ### S16 — Send → Network
-Abandon derive → Send addresses → Network → ack → Load from Lab → `bc1…` without `abandon`.
+Lab addresses → Network session Load works (no mnemonic in Network).
 
 ---
 
-## Lab Tools
+## Lab Tools panel
 
-### S14 — Tools path
-Tools nav → path playground shows `m/…'`.
+### S14 — Path playground
+Tools open; path matches Lab controls (`m/…`).
 
 ### S17 — Entropy pad
-Dice ×2 + coin → pad `d6:` + `coin:`; Clear → `—`.
+Dice + coin events; Clear → empty pad.
 
 ### S18 — Compare passphrases
-B=`test` → Compare → A/B lines; usually Different.
+Tools only (no Lab visit required); B=`test` → A/B addresses; Different or Same.
 
-### S19 — Descriptors
-Refresh descriptors → `wpkh(` or `tr(` or `pkh(`.
+### S18b — Generate test phrase then compare
+Generate test phrase → Compare → Different.
 
-### S20 — PSBT ok
-Paste `cHNidP8BAAoCAAAAAA==` → Inspect → ok / educational.
+### S19 — Descriptors refresh
+Refresh → wpkh/tr/pkh/sh descriptors.
 
-### S21 — PSBT refuse xprv
-Paste xprv-looking string → refuse/error/secret.
+### S20 — PSBT inspector
+Paste educational PSBT → status/detail (no sign).
+
+### S21 — PSBT refuse secrets
+Refuse seed-like paste if applicable.
 
 ### S22 — Descriptor explain
-`wpkh(zpub…/0/*)` → wpkh ok; private/xprv text → refuse.
+Public descriptor OK; private refused.
 
 ### S23 — Shortcuts card
-Tools shows Keyboard shortcuts (G/D/Esc/?).
+G / D / Esc / ? documented.
 
 ---
 
-## Lab Network CLI redirect / About / Nav
+## Redirects & Glossary security
 
-### S24 — Old Balance deep link
-`#balance` redirects to Network `#netCardBal` (CLI Knots/mempool guidance lives there; no separate Balance nav).
+### S24 — Old `#balance` deep link
+`/#balance` → Network balance/CLI card (knots/mempool guidance).
 
-### S25 — Glossary security & threat model
-`#glossary` (or legacy `#about`) → no retention + Threat model bullets under Glossary.
+### S25 — Glossary security & threat
+`#glossary` or `#about` → no retention + Threat model.
 
 ### S10 — Full nav tour
-Lab → Tools → Glossary (incl. security) → Multisig (**5** nav) → Network (**5** nav + CLI card).
+Lab → Tools → Glossary → Multisig → **Shamir** → Network; **6** nav each.
 
 ---
 
 ## Multisig
 
 ### S26 — Shell
-Open multisig → offline CSP; **6** nav (incl. Glossary); public-keys explainer; cosigner checklist; `#msPolicy`.
+Offline CSP; 6-nav; explainer; checklist; `#msPolicy`.
 
 ### S12 — Golden 2-of-2 + refuse private
-Paste sample pubs, M=2, BIP67 → P2SH golden; P2WSH `bc1`; policy 2-of-2; paste WIF → private error.
+Sample pubs M=2 BIP67 → P2SH golden; WIF refused.
 
 ### S12b — Demo N=3
-N=3, 12 words → Generate → 3 cards + zpub; Build → P2SH `3…`, P2WSH `bc1`; policy of-3.
+Generate demo → Build → of-3 policy; P2SH `3…` / P2WSH `bc1`.
 
 ### S27 — Demo 24-word pad
-N=2, 24-word tab → Generate → 256 bits / 24 mentioned.
+24-word demo cosigners mention 256 bits / 24.
 
 ### S28 — BIP67 off
-Build with BIP67 unchecked → policy mentions BIP67 sort OFF.
+Policy mentions sort OFF.
 
 ### S29 — Clear
-Build then Clear → result hidden; pubkey box empty.
+Result hidden; keys cleared.
 
 ### S30 — Copy P2SH
-Build → Copy P2SH → copy feedback.
+Copy feedback after build.
 
 ### S31 — Nav out
 Multisig → Lab; Multisig → Network.
@@ -227,116 +500,137 @@ Multisig → Lab; Multisig → Network.
 ## Network
 
 ### S32 — Shell + gate
-Network heading; **6** nav; CSP allows mempool/`self` (not Lab’s connect-src none); balances disabled until ack; Lab still connect-src none.
+Network heading; 6-nav; CSP mempool/`self`; balances gated until ack.
 
 ### S13b — Fee snapshot
-Fetch snapshot → feeOut sat/vB; feeBands; traffic tip/mempool; feeExample; UTXO reminder; status OK.
+Fetch → sat/vB bands, traffic, example; status OK (needs public API or proxy).
 
 ### S13c — Balances
-Mnemonic in box → reject; BIP84 golden + ack → row with ok|unknown|error (fail-closed).
+Mnemonic rejected; golden address + ack → row status ok|unknown|error.
 
 ### S13d — Session bridge
-Lab abandon → Network Load from Lab → addresses, no abandon words.
+Lab → Load from Lab on Network → addresses only.
 
 ### S33 — No ack
-Load Lab button disabled without ack.
+Load Lab disabled without ack.
 
 ### S34 — Empty fetch
-Ack + empty box → Fetch → need addresses.
+Ack + empty → need addresses.
 
 ### S35 — Network → Tools
-Tools nav → Tools panel on Lab.
+Tools nav → Lab Tools panel.
 
 ---
 
 ## Cross-page chrome
 
-### S36 — Nav labels identical (6 items)
-On Lab, Multisig, **and** Network: same **6** strong labels, in order:
+### S36 — Nav labels identical (6)
+On Lab, Multisig, **Shamir**, Network — same strong labels in order:
 
-**Lab · Multisig · Network · Tools · Balance · Glossary**
+**Lab · Multisig · Shamir · Network · Tools · Glossary**
 
-(About was merged into Glossary — security + threat model live there.)
-
-**PASS if** all three pages show exactly these 6. **FAIL** if About reappears as a 7th item or Glossary is missing.
-
-### S37 — CSP isolation (agent-friendly)
-Do **not** require HTTP response headers. Use **View Page Source** (or DOM):
-
-1. Lab (`/`) and Multisig: find  
-   `<meta http-equiv="Content-Security-Policy" …>` containing **`connect-src 'none'`**.  
-2. Network: same meta contains **`mempool.space`** and/or **`'self'`**, and must **not** be offline-only `connect-src 'none'` alone.  
-3. Functional backup: Lab/Multisig make no explorer calls while generating/building; Network only contacts the public API after opt-in.
-
-**PASS if** (1)+(2) from meta, or (1)+(2) partial + (3) clearly observed.
+### S37 — CSP isolation
+Lab / Multisig / Shamir: meta `connect-src 'none'`.  
+Network: `mempool.space` and/or `'self'`, not offline-only.
 
 ### S38 — Multisig aria-current
-Multisig page: Multisig nav `aria-current=page`.
+`aria-current=page` on Multisig.
 
 ### S39 — Network aria-current
-Network page: Network nav `aria-current=page`.
+`aria-current=page` on Network.
+
+### S39b — Shamir aria-current
+`aria-current=page` on Shamir.
 
 ### S40 — Host branding
-Lab footer / Multisig / Network mention bip39.catalyxt.xyz or English host branding.
+bip39.catalyxt.xyz / English host branding present.
 
 ---
 
-## Help UX hybrid (P0–P4)
+## Help UX (Teach + ⓘ)
 
-### S41 — Teach On + Lab step rail
-Lab loads with **Teach: On**; process rail (4 steps) visible.
+### S41 — Teach On + Lab rail
+Teach: On; Lab step rail visible.
 
 ### S42 — Teach Off
-Click Teach → **Off**; step rail hidden; air-gap **warn** still visible.
+Off hides teach-only; safety chrome remains.
 
 ### S43 — ⓘ tip
-Click mnemonic **i** → panel open with vault/air-gap text; **Esc** closes.
+Mnemonic **i** opens; Esc closes.
 
 ### S44 — Step rail jump
-Click step “Watch-only” → `#watchOnlyPanel` in view; step active.
+Watch-only step scrolls to panel.
 
 ### S45 — Multisig rail + BIP67 tip
-Multisig step rail; jump to Build; open BIP67 **i** tip.
+Rail + BIP67 **i**.
 
-### S46 — Cosigner checklist folded
-Checklist is a collapsed `<details>`; open to see hardware/public bullets.
+### S46 — Checklist folded
+Cosigner checklist is collapsed `<details>`.
 
-### S47 — Network rail + leak always on
-Network steps visible; Privacy/leak line always shown; fee **i** tip works; Teach Off hides rail but keeps ack checkbox.
+### S47 — Network rail + leak
+Steps visible; leak ack always; fee **i**.
 
 ### S48 — Teach persists
-Set Teach Off on Lab → Network still Off; toggle back On.
+Off on Lab → still Off on Network; can turn On.
+
+### S48b — Still 6-nav after help UX
+Nav count remains 6 with Shamir.
 
 ---
 
-## Glossary (BIPs & acronyms)
+## Glossary terms
 
 ### S49 — Glossary panel
-Open **Glossary** nav (or `#glossary`) → list includes BIP-39/44/84/86, P2PKH/P2WPKH/P2TR, zpub/xpub, UTXO, sat/vB.
+Lists BIP-39/44/84/86, scripts, zpub/xpub, UTXO, sat/vB; Shamir/Teach terms present after search.
 
 ### S50 — Search
-Search `multisig` → M-of-N / cosigner entries; search `BIP67` → sorted keys.
+`multisig` / `BIP67` filter.
 
 ### S51 — Inline ⓘ from glossary
-Lab mnemonic **i** shows BIP-39 recovery phrase explanation + link to full glossary.
+Lab mnemonic **i** filled from glossary.
 
 ### S52 — Address-type terms
-BIP84 pad has glossary tip or Glossary lists BIP-84 / SegWit.
+BIP84 tab / glossary covers SegWit/BIP-84.
 
 ---
 
-## Report template
+## Shamir
+
+### S53 — Shell
+Shamir heading; 6-nav; offline CSP; educational / not SLIP-39 banner; Multisig contrast present.
+
+### S54 — Generate + split 2-of-3
+Generate practice secret → Split → **3** share cards `share:n:hex`.
+
+### S55 — Empty secret error
+Empty secret → error status; **0** share cards (no fake success).
+
+---
+
+# Report template
 
 ```text
 # BIP39 Lab E2E report (exhaustive)
 URLs:
-  Lab: https://bip39.catalyxt.xyz/
+  Lab:      https://bip39.catalyxt.xyz/
   Multisig: https://bip39.catalyxt.xyz/multisig.html
-  Network: https://bip39.catalyxt.xyz/network.html
+  Shamir:   https://bip39.catalyxt.xyz/shamir.html
+  Network:  https://bip39.catalyxt.xyz/network.html
 Date (UTC):
 Agent: Comet / Perplexity / other:
 
-S0 Smoke (6-nav + Glossary): PASS|FAIL —
+## Human coherence (required)
+Lab:      coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Tools:    coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Glossary: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Multisig: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Shamir:   coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Network:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Chrome/Teach: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Cross-product story (secrets offline / addresses online / shares≠keys): PASS|FAIL —
+
+## Scenarios
+S0 Smoke (6-nav + Shamir): PASS|FAIL —
 S0b Theme: PASS|FAIL —
 S0c Keyboard ?: PASS|FAIL —
 S1 Generate 12: PASS|FAIL —
@@ -349,7 +643,7 @@ S6 Copy: PASS|FAIL —
 S7 QR address: PASS|FAIL —
 S8 Watch-only: PASS|FAIL —
 S9 Hide/clear: PASS|FAIL —
-S10 Full nav tour: PASS|FAIL —
+S10 Full nav (incl Shamir): PASS|FAIL —
 S11 Invalid: PASS|FAIL —
 S12 Multisig golden+refuse: PASS|FAIL —
 S12b Demo N=3: PASS|FAIL —
@@ -361,12 +655,13 @@ S15 Seed QR: PASS|FAIL —
 S16 Send→Network: PASS|FAIL —
 S17 Entropy pad: PASS|FAIL —
 S18 Compare PP: PASS|FAIL —
+S18b Tools gen+compare: PASS|FAIL —
 S19 Descriptors: PASS|FAIL —
 S20 PSBT ok: PASS|FAIL —
 S21 PSBT refuse: PASS|FAIL —
 S22 Desc explain: PASS|FAIL —
 S23 Shortcuts card: PASS|FAIL —
-S24 Balance panel: PASS|FAIL —
+S24 #balance→Network CLI: PASS|FAIL —
 S25 Glossary threat/security: PASS|FAIL —
 S26 Multisig shell: PASS|FAIL —
 S27 Demo 24w: PASS|FAIL —
@@ -378,10 +673,11 @@ S32 Network shell: PASS|FAIL —
 S33 No ack: PASS|FAIL —
 S34 Empty fetch: PASS|FAIL —
 S35 Network→Tools: PASS|FAIL —
-S36 Nav labels (6 incl. Glossary): PASS|FAIL —
-S37 CSP isolation (meta + functional): PASS|FAIL —
+S36 Nav labels (6 incl Shamir): PASS|FAIL —
+S37 CSP isolation: PASS|FAIL —
 S38 Multisig current: PASS|FAIL —
 S39 Network current: PASS|FAIL —
+S39b Shamir current: PASS|FAIL —
 S40 Host branding: PASS|FAIL —
 S41 Teach On + step rail: PASS|FAIL —
 S42 Teach Off: PASS|FAIL —
@@ -391,34 +687,43 @@ S45 Multisig rail + BIP67 tip: PASS|FAIL —
 S46 Checklist folded: PASS|FAIL —
 S47 Network rail + leak: PASS|FAIL —
 S48 Teach persists: PASS|FAIL —
+S48b Still 6-nav: PASS|FAIL —
 S49 Glossary panel: PASS|FAIL —
 S50 Glossary search: PASS|FAIL —
 S51 Mnemonic glossary tip: PASS|FAIL —
 S52 BIP terms: PASS|FAIL —
+S53 Shamir shell: PASS|FAIL —
+S54 Shamir split 2-of-3: PASS|FAIL —
+S55 Shamir empty error: PASS|FAIL —
 
-Score: __ / 57 PASS
+Score: __ / 58 PASS   (count S0,S0b,S0c + S1–S55 including S18b,S48b)
 Blockers:
-Notes:
+UX / coherence notes (what confused a human learner):
 ```
 
 ---
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (exhaustive **S0–S52**) against https://bip39.catalyxt.xyz/ Lab, Multisig, and Network. Return the Report template with all S-ids.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (S0–S55 + human process flows) against Lab, Multisig, Shamir, Network. Return the Report template including Human coherence for every page.
+
+---
 
 ## Playwright developers
 
 ```bash
 npm install && npx playwright install chromium
-npm run test:e2e              # local :4173
+npm run test:e2e              # local :4173  (~64 tests)
 npm run test:e2e:live         # production
 ```
 
 | File | Covers |
 |------|--------|
-| `e2e/helpers.ts` | abandon goldens, nav, CSP helpers |
-| `e2e/lab.spec.ts` | S0–S25 Lab + Tools |
+| `e2e/helpers.ts` | abandon goldens, 6-nav, CSP helpers |
+| `e2e/lab.spec.ts` | S0–S25 Lab + Tools + nav tour |
 | `e2e/multisig.spec.ts` | S12–S31 Multisig |
+| `e2e/shamir.spec.ts` | S53–S55 Shamir |
 | `e2e/network.spec.ts` | S13–S35 Network |
 | `e2e/site-chrome.spec.ts` | S36–S40 chrome |
+| `e2e/help-ux.spec.ts` | S41–S48b Teach / tips |
+| `e2e/glossary.spec.ts` | S49–S52 Glossary |

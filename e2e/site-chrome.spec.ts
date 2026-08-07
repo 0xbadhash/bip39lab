@@ -49,6 +49,14 @@ test.describe("Site chrome cross-page", () => {
     );
   });
 
+  test("S39b Shamir active aria-current", async ({ page }) => {
+    await page.goto("/shamir.html");
+    await expect(page.locator('.nav-item[data-nav="shamir"]')).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+  });
+
   test("S40 footer host links present", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator(".footer-host")).toContainText(/bip39\.catalyxt\.xyz|English/i);

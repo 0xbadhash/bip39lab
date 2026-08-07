@@ -31,7 +31,7 @@ web_e2e:
   comet_doc: docs/E2E_COMET_SCENARIOS.md
   playwright_config: playwright.config.ts
   e2e_dir: e2e
-  # Exhaustive S0–S40 map: docs/E2E_COMET_SCENARIOS.md · npm run test:e2e
+  # Exhaustive S0–S55 + human process flows: docs/E2E_COMET_SCENARIOS.md · npm run test:e2e
   surfaces:
     - id: lab
       order: 0
