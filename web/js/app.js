@@ -16,18 +16,23 @@
       title: "Offline BIP-39 lab",
       sub: "Generate, validate, and derive receive addresses — English wordlist only.",
     },
+    tools: {
+      title: "Lab tools",
+      sub: "Paths, entropy pad, descriptors, PSBT inspect, passphrase compare — all offline.",
+    },
     balance: {
       title: "Balance checks",
-      sub: "Address-only via CLI. This page never phones home.",
+      sub: "CLI + Knots. This page never phones home.",
     },
     about: {
       title: "About this lab",
-      sub: "No retention · offline crypto · bip39.catalyxt.xyz",
+      sub: "Threat model · no retention · offline crypto · bip39.catalyxt.xyz",
     },
   };
 
   let deriveTimer = null;
   let lastRows = null;
+  let entEvents = [];
 
   function setPrivateVisible(show) {
     document.querySelectorAll("[data-private]").forEach((el) => {
@@ -84,7 +89,8 @@
     const change = $("deriveChange").value === "1" ? 1 : 0;
     let count = parseInt($("deriveCount").value, 10) || 5;
     if (![5, 10, 20].includes(count)) count = 5;
-    return { account, change, count };
+    const network = $("deriveNetwork") && $("deriveNetwork").value === "test" ? "test" : "main";
+    return { account, change, count, network };
   }
 
   const ADDR_TYPE_META = {
@@ -169,23 +175,52 @@
     const chWord = opts.change === 1 ? "change (internal leftovers)" : "receive (for people paying you)";
     const t = getActiveAddrType();
     const meta = ADDR_TYPE_META[t];
+    const net = opts.network || "main";
+    const pathStr =
+      typeof BIP39Lab !== "undefined" && BIP39Lab.formatPath
+        ? BIP39Lab.formatPath(meta.purpose, net, opts.account, opts.change, "i")
+        : "m/" + meta.purpose + "'/" + (net === "test" ? "1" : "0") + "'/" + opts.account + "'/" + opts.change + "/index";
 
-    $("derivePathSummary").textContent =
-      "Showing account " +
-      opts.account +
-      " · " +
-      chWord +
-      " · address numbers 0 through " +
-      last +
-      " · type: " +
-      meta.label +
-      ". Path pattern: m/" +
-      meta.purpose +
-      "'/0'/" +
-      opts.account +
-      "'/" +
-      opts.change +
-      "/index";
+    if ($("derivePathSummary")) {
+      $("derivePathSummary").textContent =
+        "Showing account " +
+        opts.account +
+        " · " +
+        chWord +
+        " · address numbers 0 through " +
+        last +
+        " · type: " +
+        meta.label +
+        " · network: " +
+        (net === "test" ? "testnet/signet paths" : "mainnet") +
+        ". Path pattern: " +
+        pathStr;
+    }
+    updatePathPlayground(opts);
+  }
+
+  function updatePathPlayground(opts) {
+    const o = opts || getDeriveOptions();
+    const t = getActiveAddrType();
+    const meta = ADDR_TYPE_META[t];
+    const el = $("pathPlayOut");
+    if (!el) return;
+    const path0 =
+      typeof BIP39Lab !== "undefined" && BIP39Lab.formatPath
+        ? BIP39Lab.formatPath(meta.purpose, o.network, o.account, o.change, 0)
+        : "m/" + meta.purpose + "'/…";
+    el.textContent = path0 + "   … through index " + (o.count - 1);
+    const help = $("pathPlayHelp");
+    if (help) {
+      help.textContent =
+        meta.label +
+        " · coin_type " +
+        (o.network === "test" ? "1 (test)" : "0 (main)") +
+        " · account " +
+        o.account +
+        " · change " +
+        o.change;
+    }
   }
 
   function setPlainStatus(text, kind) {
@@ -481,7 +516,10 @@
           "<p class=\"control-help\">Invalid recovery phrase — cannot export watch-only keys.</p>";
         return;
       }
-      lastWatchExport = await BIP39Lab.exportWatchOnly(m, pp, { account });
+      lastWatchExport = await BIP39Lab.exportWatchOnly(m, pp, {
+        account,
+        network: getDeriveOptions().network,
+      });
       renderWatchOnlyList(lastWatchExport);
     } catch (e) {
       lastWatchExport = null;
@@ -577,24 +615,7 @@
       const result = await BIP39Lab.deriveAddresses(m, pp, path);
       fillAddressTable(result);
       // Bridge for Network page: addresses only (never mnemonic)
-      try {
-        const addrs = [];
-        const seen = Object.create(null);
-        (result.rows || []).forEach((r) => {
-          ["bip86_p2tr", "bip84_p2wpkh", "bip49_p2sh_p2wpkh", "bip44_p2pkh"].forEach((k) => {
-            const a = r[k];
-            if (a && !seen[a]) {
-              seen[a] = true;
-              addrs.push(a);
-            }
-          });
-        });
-        if (addrs.length) {
-          sessionStorage.setItem("bip39lab.derivedAddresses", JSON.stringify(addrs));
-        }
-      } catch (e) {
-        /* ignore quota / private mode */
-      }
+      saveSessionAddresses(result);
       updatePathSummary(path, (result.rows && result.rows.length) || path.count);
       const plain =
         "Done offline. Listed " +
@@ -655,8 +676,30 @@
     if (kind) el.classList.add(kind);
   }
 
+  function saveSessionAddresses(result) {
+    try {
+      const addrs = [];
+      const seen = Object.create(null);
+      (result.rows || []).forEach((r) => {
+        ["bip86_p2tr", "bip84_p2wpkh", "bip49_p2sh_p2wpkh", "bip44_p2pkh"].forEach((k) => {
+          const a = r[k];
+          if (a && !seen[a]) {
+            seen[a] = true;
+            addrs.push(a);
+          }
+        });
+      });
+      if (addrs.length) {
+        sessionStorage.setItem("bip39lab.derivedAddresses", JSON.stringify(addrs));
+      }
+      return addrs;
+    } catch (e) {
+      return [];
+    }
+  }
+
   function showTab(name) {
-    const allowed = { lab: true, balance: true, about: true };
+    const allowed = { lab: true, tools: true, balance: true, about: true };
     if (!allowed[name]) name = "lab";
 
     document.querySelectorAll(".panel").forEach((p) => {
@@ -665,7 +708,6 @@
       p.hidden = !on;
     });
 
-    // Stable sidebar: highlight by data-nav (all items are <a>, same on every page)
     document.querySelectorAll(".nav-item[data-nav]").forEach((el) => {
       const nav = el.getAttribute("data-nav");
       const on = nav === name;
@@ -678,9 +720,7 @@
     if ($("panel-title")) $("panel-title").textContent = t.title;
     if ($("panel-sub")) $("panel-sub").textContent = t.sub;
 
-    // Keep URL in sync for deep links from Multisig → Balance/About
     try {
-      const want = name === "lab" ? (location.pathname.split("/").pop() || "index.html") : "#" + name;
       if (name === "lab") {
         if (location.hash) history.replaceState(null, "", location.pathname + location.search);
       } else if (location.hash !== "#" + name) {
@@ -689,12 +729,186 @@
     } catch (e) {
       /* ignore */
     }
+    if (name === "tools") updatePathPlayground(getDeriveOptions());
   }
 
   function tabFromHash() {
     const h = (location.hash || "").replace(/^#/, "");
-    if (h === "balance" || h === "about" || h === "lab") return h;
+    if (h === "balance" || h === "about" || h === "lab" || h === "tools") return h;
     return "lab";
+  }
+
+  function updateAirgapChip() {
+    const el = $("chipAirgap");
+    if (!el) return;
+    const on = typeof navigator !== "undefined" && navigator.onLine;
+    el.textContent = on ? "Browser online" : "Air-gap signal";
+    el.classList.toggle("chip-warn", !!on);
+    el.classList.toggle("chip-ok", !on);
+    el.title = on
+      ? "navigator.onLine is true — still use this lab carefully; Lab CSP blocks network crypto calls"
+      : "navigator.onLine is false — good signal for air-gapped use";
+  }
+
+  function applyTheme(theme) {
+    const t = theme === "light" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", t);
+    try {
+      localStorage.setItem("bip39lab.theme", t);
+    } catch (e) {
+      /* ignore */
+    }
+    const btn = $("btnTheme");
+    if (btn) btn.textContent = "Theme: " + t;
+  }
+
+  function initTheme() {
+    let t = "dark";
+    try {
+      t = localStorage.getItem("bip39lab.theme") || "dark";
+    } catch (e) {
+      t = "dark";
+    }
+    applyTheme(t);
+  }
+
+  function refreshEntPad() {
+    const out = $("entPadOut");
+    const meta = $("entPadMeta");
+    if (!out) return;
+    if (!entEvents.length) {
+      out.textContent = "—";
+      if (meta) meta.textContent = "0 events · ~0 bits (estimate)";
+      return;
+    }
+    out.textContent = entEvents.join(" ");
+    // rough: d6 ~ 2.58 bits, coin 1 bit
+    let bits = 0;
+    entEvents.forEach((e) => {
+      if (e.indexOf("d6:") === 0) bits += 2.58;
+      else if (e.indexOf("coin:") === 0) bits += 1;
+    });
+    if (meta) {
+      meta.textContent =
+        entEvents.length + " events · ~" + Math.round(bits) + " bits (estimate, not CSPRNG)";
+    }
+  }
+
+  async function comparePassphrases() {
+    const out = $("cmpPpOut");
+    if (!out) return;
+    const m = $("mnemonic").value.trim();
+    if (!m || !(await BIP39Lab.validateMnemonic(m))) {
+      out.textContent = "Need a valid mnemonic on the Lab panel first.";
+      return;
+    }
+    const a = ($("cmpPpA") && $("cmpPpA").value) || "";
+    const b = ($("cmpPpB") && $("cmpPpB").value) || "";
+    const path = Object.assign({}, getDeriveOptions(), { count: 1 });
+    const ra = await BIP39Lab.deriveAddresses(m, a, path);
+    const rb = await BIP39Lab.deriveAddresses(m, b, path);
+    const field = ADDR_TYPE_META[getActiveAddrType()].field;
+    const aa = ra.rows[0][field];
+    const bb = rb.rows[0][field];
+    out.textContent =
+      "A: " +
+      aa +
+      "\nB: " +
+      bb +
+      "\n" +
+      (aa === bb ? "Same address (passphrases match or both empty)." : "Different — passphrase changed the vault.");
+  }
+
+  async function refreshDescriptors() {
+    const out = $("descOut");
+    if (!out) return;
+    const m = $("mnemonic").value.trim();
+    if (!m || !(await BIP39Lab.validateMnemonic(m))) {
+      out.textContent = "Need a valid mnemonic on Lab first.";
+      return;
+    }
+    if (!BIP39Lab.descriptorsFromWatchOnly) {
+      out.textContent = "Descriptors API not in this build.";
+      return;
+    }
+    const wo = await BIP39Lab.exportWatchOnly(m, $("passphrase").value, {
+      account: getDeriveOptions().account,
+      network: getDeriveOptions().network,
+    });
+    const pack = BIP39Lab.descriptorsFromWatchOnly(wo, getDeriveOptions().network);
+    out.textContent = pack.descriptors
+      .map((d) => d.label + "\n" + d.descriptor + "\n(" + d.note + ")")
+      .join("\n\n");
+  }
+
+  function inspectPsbtUi() {
+    const out = $("psbtOut");
+    if (!out) return;
+    if (!BIP39Lab.inspectPsbt) {
+      out.textContent = "PSBT API not in this build.";
+      return;
+    }
+    const r = BIP39Lab.inspectPsbt($("psbtIn").value);
+    out.textContent =
+      r.status +
+      ": " +
+      r.detail +
+      (r.globalKeys != null ? "\nglobalKeys≈" + r.globalKeys + " maps=" + r.mapCount : "");
+  }
+
+  function explainDescUi() {
+    const out = $("descExplainOut");
+    if (!out) return;
+    if (!BIP39Lab.explainDescriptor) {
+      out.textContent = "API missing.";
+      return;
+    }
+    const r = BIP39Lab.explainDescriptor($("descExplainIn").value);
+    out.textContent = r.status + ": " + r.detail;
+  }
+
+  async function seedQr() {
+    const m = $("mnemonic").value.trim();
+    if (!m) {
+      setStatus("No mnemonic to QR.", "err");
+      return;
+    }
+    if (!confirm("Show a QR of the recovery phrase? Only continue on a private air-gapped machine.")) {
+      return;
+    }
+    await showQr(m, "Seed phrase (sensitive)");
+  }
+
+  function printBackup() {
+    const m = $("mnemonic").value.trim();
+    const words = m ? m.split(/\s+/).filter(Boolean) : [];
+    const ol = $("printWordList");
+    if (ol) {
+      ol.innerHTML = "";
+      const n = words.length || 12;
+      for (let i = 0; i < n; i++) {
+        const li = document.createElement("li");
+        li.textContent = words[i] || "________";
+        ol.appendChild(li);
+      }
+    }
+    const sheet = $("printBackup");
+    if (sheet) {
+      sheet.hidden = false;
+      sheet.setAttribute("aria-hidden", "false");
+    }
+    window.print();
+    if (sheet) {
+      sheet.hidden = true;
+      sheet.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function sendToNetwork() {
+    if (lastRows && lastRows.length) {
+      saveSessionAddresses({ rows: lastRows });
+    }
+    window.location.href = "network.html";
   }
 
   async function onGenerate() {
@@ -726,7 +940,8 @@
       scheduleDerive();
     });
 
-    ["deriveAccount", "deriveChange", "deriveCount"].forEach((id) => {
+    ["deriveAccount", "deriveChange", "deriveCount", "deriveNetwork"].forEach((id) => {
+      if (!$(id)) return;
       $(id).addEventListener("change", () => scheduleDerive());
       $(id).addEventListener("input", () => scheduleDerive());
     });
@@ -768,12 +983,12 @@
       });
     }
 
-    // Same-page nav (Lab / Balance / About): prevent full reload flicker
+    // Same-page nav
     document.querySelectorAll(".nav-item[data-nav]").forEach((el) => {
       el.addEventListener("click", (ev) => {
         const nav = el.getAttribute("data-nav");
-        if (nav === "multisig" || nav === "network") return; // full page navigation
-        if (nav === "lab" || nav === "balance" || nav === "about") {
+        if (nav === "multisig" || nav === "network") return;
+        if (nav === "lab" || nav === "balance" || nav === "about" || nav === "tools") {
           ev.preventDefault();
           showTab(nav);
         }
@@ -784,10 +999,66 @@
       showTab(tabFromHash());
     });
 
+    if ($("btnSeedQr")) $("btnSeedQr").addEventListener("click", () => seedQr().catch(console.error));
+    if ($("btnPrintBackup")) $("btnPrintBackup").addEventListener("click", printBackup);
+    if ($("btnSendNetwork")) $("btnSendNetwork").addEventListener("click", sendToNetwork);
+    if ($("btnDice")) {
+      $("btnDice").addEventListener("click", () => {
+        entEvents.push("d6:" + (1 + Math.floor(Math.random() * 6)));
+        if (entEvents.length > 64) entEvents.shift();
+        refreshEntPad();
+      });
+    }
+    if ($("btnCoin")) {
+      $("btnCoin").addEventListener("click", () => {
+        entEvents.push("coin:" + (Math.random() < 0.5 ? "H" : "T"));
+        if (entEvents.length > 64) entEvents.shift();
+        refreshEntPad();
+      });
+    }
+    if ($("btnEntClear")) {
+      $("btnEntClear").addEventListener("click", () => {
+        entEvents = [];
+        refreshEntPad();
+      });
+    }
+    if ($("btnCmpPp")) $("btnCmpPp").addEventListener("click", () => comparePassphrases().catch(console.error));
+    if ($("btnDescRefresh")) $("btnDescRefresh").addEventListener("click", () => refreshDescriptors().catch(console.error));
+    if ($("btnPsbt")) $("btnPsbt").addEventListener("click", inspectPsbtUi);
+    if ($("btnDescExplain")) $("btnDescExplain").addEventListener("click", explainDescUi);
+    if ($("btnTheme")) {
+      $("btnTheme").addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        applyTheme(cur === "dark" ? "light" : "dark");
+      });
+    }
+
+    document.addEventListener("keydown", (ev) => {
+      const tag = (ev.target && ev.target.tagName) || "";
+      const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (ev.target && ev.target.isContentEditable);
+      if (ev.key === "Escape") hideQr();
+      if (typing) return;
+      if (ev.key === "g" || ev.key === "G") {
+        ev.preventDefault();
+        onGenerate().catch(console.error);
+      } else if (ev.key === "d" || ev.key === "D") {
+        ev.preventDefault();
+        deriveNow({ quiet: false }).catch(console.error);
+      } else if (ev.key === "?") {
+        ev.preventDefault();
+        showTab("tools");
+      }
+    });
+
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
+    updateAirgapChip();
+    initTheme();
+
     const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
     setStatus("Ready (offline lab v" + ver + "). Generate fills the address table automatically.", "");
     setPlainStatus(
-      "Tip: Generate a phrase to fill the table. Use Copy / QR on addresses; watch-only keys appear below (no private keys).",
+      "Tip: Generate a phrase to fill the table. Tools panel has path playground, PSBT inspect, descriptors. Shortcuts: G / D / ?",
       ""
     );
     clearEntropyFields();

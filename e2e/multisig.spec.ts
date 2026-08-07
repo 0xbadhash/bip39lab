@@ -11,9 +11,11 @@ test.describe("Multisig explainer E2E", () => {
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
     await expect(page.locator("body")).toContainText(/Where do the public keys come from/i);
     // Sidebar parity with Lab / Network (Comet S10 / S12 step 7)
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
     await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
+    await expect(page.locator("body")).toContainText(/Cosigner checklist/i);
 
     await page.locator("#msParts").fill(P1 + "\n" + P2);
     await page.locator("#msM").fill("2");
@@ -24,6 +26,7 @@ test.describe("Multisig explainer E2E", () => {
     await expect(page.locator("#msP2sh")).toHaveText(P2SH);
     await expect(page.locator("#msP2wsh")).toContainText(/^bc1/);
     await expect(page.locator("#msStatus")).toContainText(/offline/i);
+    await expect(page.locator("#msPolicy")).toContainText(/2-of-2|Policy/i);
 
     await page.locator("#msParts").fill("5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ");
     await page.locator("#msBuild").click();

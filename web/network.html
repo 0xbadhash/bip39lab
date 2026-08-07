@@ -34,13 +34,17 @@
           <span class="nav-step">3</span>
           <span class="nav-label"><strong>Network</strong><small>Fees · balances</small></span>
         </a>
-        <a class="nav-item" data-nav="balance" href="index.html#balance">
+        <a class="nav-item" data-nav="tools" href="index.html#tools">
           <span class="nav-step">4</span>
-          <span class="nav-label"><strong>Balance</strong><small>CLI docs</small></span>
+          <span class="nav-label"><strong>Tools</strong><small>Path · PSBT</small></span>
+        </a>
+        <a class="nav-item" data-nav="balance" href="index.html#balance">
+          <span class="nav-step">5</span>
+          <span class="nav-label"><strong>Balance</strong><small>CLI · Knots</small></span>
         </a>
         <a class="nav-item" data-nav="about" href="index.html#about">
-          <span class="nav-step">5</span>
-          <span class="nav-label"><strong>About</strong><small>Security model</small></span>
+          <span class="nav-step">6</span>
+          <span class="nav-label"><strong>About</strong><small>Threat model</small></span>
         </a>
       </nav>
       <div class="sidebar-foot">
@@ -87,8 +91,16 @@
           <div id="snapResult" class="watch-list" hidden>
             <div class="watch-item">
               <div class="watch-item-title">Recommended fee rates (sat/vB)</div>
+              <div class="fee-bands" id="feeBands" aria-live="polite"></div>
               <pre class="out" id="feeOut"></pre>
               <p class="control-help" id="feeExample"></p>
+            </div>
+            <div class="watch-item">
+              <div class="watch-item-title">UTXO reminder</div>
+              <p class="control-help">
+                Fees are paid from UTXOs you spend — not from a separate “fee account”.
+                Higher sat/vB competes for block space when the mempool is full.
+              </p>
             </div>
             <div class="watch-item">
               <div class="watch-item-title">Network traffic (public)</div>

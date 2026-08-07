@@ -44,18 +44,25 @@
             <small>Fees · balances</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="balance" href="index.html#balance">
+        <a class="nav-item" data-nav="tools" href="index.html#tools">
           <span class="nav-step">4</span>
           <span class="nav-label">
+            <strong>Tools</strong>
+            <small>Path · PSBT · backup</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="balance" href="index.html#balance">
+          <span class="nav-step">5</span>
+          <span class="nav-label">
             <strong>Balance</strong>
-            <small>CLI docs</small>
+            <small>CLI · Knots</small>
           </span>
         </a>
         <a class="nav-item" data-nav="about" href="index.html#about">
-          <span class="nav-step">5</span>
+          <span class="nav-step">6</span>
           <span class="nav-label">
             <strong>About</strong>
-            <small>Security model</small>
+            <small>Threat model</small>
           </span>
         </a>
       </nav>
@@ -65,6 +72,8 @@
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
           <br /><br />
           Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
+          <br />
+          <button type="button" class="btn secondary btn-sm" id="btnTheme" style="margin-top:0.75rem">Theme: dark</button>
         </p>
       </div>
     </aside>
@@ -75,7 +84,10 @@
           <h1 id="panel-title">Offline BIP-39 lab</h1>
           <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
         </div>
-        <span class="chip" title="No network from this page">Offline crypto</span>
+        <div class="topbar-chips">
+          <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+          <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+        </div>
       </header>
 
       <main class="content">
@@ -112,6 +124,15 @@
             <label class="field" data-private for="mnemonic">BIP-39 mnemonic
               <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
             </label>
+            <div class="row" data-private>
+              <button type="button" class="btn secondary" id="btnSeedQr">Seed QR (offline, careful)</button>
+              <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
+              <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
+            </div>
+            <p class="hint-tiny" data-private>
+              Seed QR shows the recovery phrase as a scannable code — only on an air-gapped machine you trust.
+              Print backup never uploads data. Network handoff stores <em>addresses only</em> in sessionStorage.
+            </p>
             <div class="field-ro" data-private>
               <span class="field-ro-label">Mnemonic entropy</span>
               <output id="entropyMnemonic" class="field-ro-value" for="mnemonic" aria-live="polite">—</output>
@@ -142,6 +163,17 @@
             </p>
 
             <div class="derive-controls" role="group" aria-label="Derivation path">
+              <div class="control-block">
+                <label class="field inline" for="deriveNetwork">Network
+                  <select id="deriveNetwork">
+                    <option value="main" selected>Mainnet</option>
+                    <option value="test">Testnet / Signet paths (tb1…)</option>
+                  </select>
+                </label>
+                <p class="control-help">
+                  <strong>Mainnet</strong> = real bitcoin. <strong>Test</strong> uses coin type 1 and <code>tb1…</code> addresses for practice (no real value).
+                </p>
+              </div>
               <div class="control-block">
                 <label class="field inline" for="deriveAccount">Account
                   <input id="deriveAccount" type="number" min="0" max="2147483647" value="0" step="1" />
@@ -262,6 +294,86 @@
           </div>
         </section>
 
+        <!-- Panel: Tools -->
+        <section id="panel-tools" class="panel" role="tabpanel" hidden>
+          <div class="card">
+            <h2>Path playground</h2>
+            <p class="control-help">Live BIP path from Lab controls (account / change / network / address type).</p>
+            <pre class="out" id="pathPlayOut">m/86'/0'/0'/0/0</pre>
+            <p class="control-help" id="pathPlayHelp">Purpose' / coin_type' / account' / change / index</p>
+          </div>
+
+          <div class="card">
+            <h2>Entropy pad (dice / coin)</h2>
+            <p class="control-help">Build practice entropy offline. Not a substitute for OS CSPRNG for real funds.</p>
+            <div class="row">
+              <button type="button" class="btn secondary" id="btnDice">Roll d6</button>
+              <button type="button" class="btn secondary" id="btnCoin">Flip coin</button>
+              <button type="button" class="btn danger" id="btnEntClear">Clear pad</button>
+            </div>
+            <pre class="out" id="entPadOut">—</pre>
+            <p class="control-help" id="entPadMeta">0 events · ~0 bits (estimate)</p>
+          </div>
+
+          <div class="card">
+            <h2>Compare two passphrases</h2>
+            <p class="control-help">Same mnemonic, different BIP-39 passphrases → different first addresses (offline).</p>
+            <label class="field" for="cmpPpA">Passphrase A
+              <input id="cmpPpA" type="password" autocomplete="off" placeholder="(empty)" />
+            </label>
+            <label class="field" for="cmpPpB">Passphrase B
+              <input id="cmpPpB" type="password" autocomplete="off" placeholder="e.g. test" />
+            </label>
+            <div class="row">
+              <button type="button" class="btn" id="btnCmpPp">Compare idx 0 (active type)</button>
+            </div>
+            <pre class="out" id="cmpPpOut">—</pre>
+          </div>
+
+          <div class="card card-wide">
+            <h2>Output descriptors (watch-only)</h2>
+            <p class="control-help">Built from Lab watch-only export — public material only.</p>
+            <div class="row">
+              <button type="button" class="btn secondary" id="btnDescRefresh">Refresh descriptors</button>
+            </div>
+            <pre class="out" id="descOut">Derive a valid phrase on Lab, then refresh.</pre>
+          </div>
+
+          <div class="card card-wide">
+            <h2>PSBT inspector (no sign)</h2>
+            <p class="control-help">Paste base64 or hex PSBT. Educational parse only — never signs or broadcasts.</p>
+            <label class="field" for="psbtIn">PSBT
+              <textarea id="psbtIn" rows="4" spellcheck="false" autocomplete="off" placeholder="cHNidP8…"></textarea>
+            </label>
+            <div class="row">
+              <button type="button" class="btn" id="btnPsbt">Inspect</button>
+            </div>
+            <pre class="out" id="psbtOut">—</pre>
+          </div>
+
+          <div class="card">
+            <h2>Descriptor explain</h2>
+            <p class="control-help">Paste a <em>public</em> descriptor. Private keys / seeds are refused.</p>
+            <label class="field" for="descExplainIn">Descriptor text
+              <textarea id="descExplainIn" rows="3" spellcheck="false" autocomplete="off" placeholder="wpkh(zpub…/0/*)"></textarea>
+            </label>
+            <div class="row">
+              <button type="button" class="btn secondary" id="btnDescExplain">Explain</button>
+            </div>
+            <pre class="out" id="descExplainOut">—</pre>
+          </div>
+
+          <div class="card">
+            <h2>Keyboard shortcuts</h2>
+            <ul class="help-list">
+              <li><kbd>G</kbd> — Generate (when not typing in a field)</li>
+              <li><kbd>D</kbd> — Validate &amp; derive</li>
+              <li><kbd>Esc</kbd> — Close QR modal</li>
+              <li><kbd>?</kbd> — Jump to Tools shortcuts</li>
+            </ul>
+          </div>
+        </section>
+
         <!-- Panel: Balance (CLI guidance; page stays offline) -->
         <section id="panel-balance" class="panel" role="tabpanel" hidden>
           <div class="card">
@@ -274,22 +386,32 @@
             <pre class="cli-block">python -m bip39lab balance bc1q… \
   --backend mempool \
   --i-understand-address-leak</pre>
-            <p style="margin-top:1rem"><strong>Your own node</strong> (preferred when available):</p>
+            <p style="margin-top:1rem"><strong>Your own node — Bitcoin Knots or Core</strong> (preferred):</p>
             <pre class="cli-block">python -m bip39lab balance bc1q… \
   --backend knots \
   --rpc-cookie ~/.bitcoin/.cookie</pre>
             <p class="control-help">
-              <code>bitcoind</code> and <code>knots</code> are the same RPC path (Bitcoin Core or Bitcoin Knots).
-              Pruned node is enough for current balances via <code>scantxoutset</code> — see <code>docs/BITCOIN_KNOTS.md</code>.
+              <code>bitcoind</code> and <code>knots</code> are the same RPC path. Pruned node is enough for current balances
+              via <code>scantxoutset</code> — see <code>docs/BITCOIN_KNOTS.md</code>.
             </p>
-            <p style="margin-top:1rem">
-              There is no free public Bitcoin Core JSON-RPC for everyone on the Internet.
-              Free checks use explorer REST; real JSON-RPC is your node.
-            </p>
+            <h3 style="margin-top:1.25rem">Remote Knots for tests (SSH tunnel)</h3>
+            <pre class="cli-block">ssh -N -L 8332:127.0.0.1:8332 user@knots-host
+python -m bip39lab balance bc1q… --backend knots \
+  --rpc-url http://127.0.0.1:8332 --rpc-cookie /path/to/.cookie</pre>
+            <p class="control-help">Never expose RPC to the public internet. Cookie auth only on loopback/VPN.</p>
+            <div class="card-sub" style="margin-top:1rem">
+              <h3>What is a UTXO? (simple)</h3>
+              <p class="control-help">
+                Bitcoin does not store a single “account balance” like a bank ledger row.
+                It tracks <strong>unspent transaction outputs</strong> (UTXOs) — like uncashed cheques that still clear.
+                Your “balance” is the sum of UTXOs that pay to addresses you control.
+                Spending consumes UTXOs and may create a new change UTXO back to you.
+              </p>
+            </div>
             <p style="margin-top:1rem">
               <strong>In-browser (opt-in):</strong>
               <a href="network.html" style="color:var(--accent)">Network page</a>
-              — fees, traffic, and address-only balances via mempool.space (separate page; Lab stays offline).
+              — fees, traffic, and address-only balances via mempool proxy (Lab stays offline).
             </p>
           </div>
         </section>
@@ -299,13 +421,31 @@
           <div class="card">
             <h2>Security model</h2>
             <p>
-              No retention of mnemonics, entropy, seeds, or private keys.
+              No retention of mnemonics, entropy, seeds, or private keys on a server.
               Production path uses audited browser libraries in the offline bundle.
-              Brand host: <code>bip39.catalyxt.xyz</code> under Catalyxt (<code>catalyxt.xyz</code> only —
-              <code>catalyxt.ltd</code> is retired for new work).
+              Brand host: <code>bip39.catalyxt.xyz</code> under Catalyxt (<code>catalyxt.xyz</code> only).
             </p>
           </div>
+          <div class="card">
+            <h2>Threat model (what can go wrong)</h2>
+            <ul class="help-list">
+              <li><strong>Malicious host / XSS</strong> — only use this lab on hardware and software you trust; prefer air-gap for real funds.</li>
+              <li><strong>Clipboard malware</strong> — verify addresses after copy; seed QR is especially sensitive.</li>
+              <li><strong>Shoulder surfing / screen share</strong> — use Hide private; clear secrets when done.</li>
+              <li><strong>Network page</strong> — address lookups reveal interest to the API host; Lab CSP stays <code>connect-src 'none'</code>.</li>
+              <li><strong>Not a wallet</strong> — cannot spend; no seed lottery / brute-force features.</li>
+            </ul>
+            <p class="control-help">English UI only. Theme preference may be stored locally (not secrets).</p>
+          </div>
         </section>
+
+        <div id="printBackup" class="print-only" hidden aria-hidden="true">
+          <h1>BIP-39 backup sheet (offline)</h1>
+          <p>Write words by hand if this is for real funds. Never photograph a funded sheet on a networked phone.</p>
+          <ol id="printWordList"></ol>
+          <p>Passphrase? ☐ no  ☐ yes (stored separately, never with this sheet)</p>
+          <p>Created with bip39.catalyxt.xyz lab — verify checksum by re-entering offline.</p>
+        </div>
 
         <p class="footer-host">
           English UI only ·

@@ -63,15 +63,47 @@
         "minimum     " + b.minimumFee + " sat/vB",
       ].join("\n");
 
+      const bandsEl = $("feeBands");
+      if (bandsEl) {
+        const items = [
+          ["fastest", b.fastestFee],
+          ["½ hour", b.halfHourFee],
+          ["hour", b.hourFee],
+          ["economy", b.economyFee],
+          ["minimum", b.minimumFee],
+        ];
+        bandsEl.innerHTML = items
+          .map(function (pair) {
+            const sats = api.exampleFeeSats(pair[1], vb);
+            return (
+              '<div class="fee-band"><strong>' +
+              pair[1] +
+              "</strong><span>" +
+              pair[0] +
+              " sat/vB</span><span>~" +
+              sats +
+              " sats @ " +
+              vb +
+              " vB</span></div>"
+            );
+          })
+          .join("");
+      }
+
       const ex = api.exampleFeeSats(b.halfHourFee, vb);
+      const exFast = api.exampleFeeSats(b.fastestFee, vb);
       $("feeExample").textContent =
-        "Example at halfHourFee × " +
+        "Example costs for ~" +
         vb +
-        " vB ≈ " +
+        " vB: halfHour ≈ " +
         ex +
+        " sats; fastest ≈ " +
+        exFast +
         " sats (" +
         api.satsToBtc(ex) +
-        " BTC). Estimate only — real txs vary.";
+        " / " +
+        api.satsToBtc(exFast) +
+        " BTC). Estimates only — real txs vary.";
 
       const trafficLines = [];
       if (tip.status === "ok") trafficLines.push("Tip block height: " + tip.height);

@@ -203,8 +203,20 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Plain-English help for account/change/indices
 - **Notes:** tag `v0.7.1` matches live site UX
 
+### [DONE] Lab tools pack (path, PSBT, descriptors, theme, …)
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-07-lab-tools-pack.md`
+- **Acceptance:**
+  - [x] Tools panel: path playground, entropy pad, passphrase compare, descriptors, PSBT, descriptor explain
+  - [x] Mainnet/testnet toggle; seed QR + print backup; Lab→Network handoff
+  - [x] Multisig policy + cosigner checklist; Network fee bands + UTXO blurb
+  - [x] Airgap chip, theme toggle, keyboard shortcuts, threat model
+  - [x] Playwright S14 + Comet S0–S14 (6-nav)
+- **Notes:** tag `v0.11.0`
+
 ## Current focus
 
-**Through Option C Network (`v0.10.0`).** Lab + Multisig offline; Network opt-in public API.
+**Through Lab tools pack (`v0.11.0`).** Next: optional private Knots proxy for Network (not browser RPC).
 
-**Next:** backlog / UX polish (or next open ROADMAP item).
+**Next:** backlog after Knots on external device.

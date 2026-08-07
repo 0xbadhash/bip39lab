@@ -28,8 +28,11 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.locator('.nav-item[data-nav="lab"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="multisig"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="balance"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="about"]')).toBeVisible();
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
+    await expect(page.locator("#chipAirgap")).toBeVisible();
     // Stable labels (must match Multisig page sidebar)
     await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
   });
@@ -225,13 +228,18 @@ test.describe("BIP39 Lab E2E", () => {
     await expect(page.locator("#panel-balance")).toContainText(/mempool|bitcoind|CLI/i);
     await expect(page.locator("#panel-balance")).toContainText(/Network/i);
     await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveClass(/active/);
-    // Lab + Multisig + Network + Balance + About
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    // Lab + Multisig + Network + Tools + Balance + About
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
     await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
+    await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
+
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#pathPlayOut")).toBeVisible();
 
     await page.locator('.nav-item[data-nav="about"]').click();
     await expect(page.locator("#panel-about")).toBeVisible();
-    await expect(page.locator("#panel-about")).toContainText(/No retention|retention/i);
+    await expect(page.locator("#panel-about")).toContainText(/No retention|retention|Threat model/i);
 
     await page.locator('.nav-item[data-nav="lab"]').click();
     await expect(page.locator("#panel-lab")).toBeVisible();
@@ -239,7 +247,7 @@ test.describe("BIP39 Lab E2E", () => {
     await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
     await expect(page.getByRole("heading", { name: /Multisig, explained/i })).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
     await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
     await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveClass(/active/);
     await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
@@ -248,14 +256,49 @@ test.describe("BIP39 Lab E2E", () => {
     await page.locator('.nav-item[data-nav="network"]').click();
     await expect(page).toHaveURL(/network\.html/);
     await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
     await expect(page.locator('.nav-item[data-nav="network"]')).toHaveClass(/active/);
 
     // Network → Balance deep-link must restore Lab page with Balance panel + full nav
     await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page).toHaveURL(/index\.html#balance|#balance|\/#balance/);
     await expect(page.locator("#panel-balance")).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
+  });
+
+  test("S14 tools path playground testnet and descriptors", async ({ page }) => {
+    await page.goto("/");
+    await pasteMnemonic(page, ABANDON);
+    await waitForTableRows(page, 1);
+    await expect(page.locator("#addrTableBody")).toContainText(ADDR86.slice(0, 12));
+
+    await page.locator("#deriveNetwork").selectOption("test");
+    await page.waitForTimeout(500);
+    await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await waitForTableRows(page, 1);
+    await expect(page.locator("#addrTableBody")).toContainText(/tb1/);
+
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#pathPlayOut")).toContainText(/m\/8[46]'\/1'/);
+
+    await page.locator("#btnDescRefresh").click();
+    await expect(page.locator("#descOut")).toContainText(/wpkh\(|tr\(/);
+
+    await page.locator("#cmpPpB").fill("test");
+    await page.locator("#btnCmpPp").click();
+    await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same|A:/);
+
+    await page.locator("#psbtIn").fill("cHNidP8BAAoCAAAAAA==");
+    await page.locator("#btnPsbt").click();
+    await expect(page.locator("#psbtOut")).toContainText(/ok|PSBT|magic|Educational/i);
+
+    await page.locator("#descExplainIn").fill("wpkh(zpub6demo/0/*)");
+    await page.locator("#btnDescExplain").click();
+    await expect(page.locator("#descExplainOut")).toContainText(/wpkh|ok/i);
+
+    await page.locator("#btnDice").click();
+    await expect(page.locator("#entPadOut")).toContainText(/d6:/);
   });
 
   test("S11 invalid mnemonic", async ({ page }) => {

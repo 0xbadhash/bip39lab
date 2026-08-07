@@ -94,6 +94,25 @@
         bip67: $("msBip67").checked,
       });
       $("msResult").hidden = false;
+      const pol = $("msPolicy");
+      if (pol) {
+        const m = parseInt($("msM").value, 10) || 0;
+        const lines = ($("msParts").value || "").split(/\n/).map((s) => s.trim()).filter(Boolean);
+        const n = lines.length;
+        pol.textContent =
+          "Policy: " +
+          m +
+          "-of-" +
+          n +
+          " — any " +
+          m +
+          " of the " +
+          n +
+          " cosigners must sign to spend. " +
+          ($("msBip67").checked
+            ? "BIP67 sort ON: keys ordered so every wallet builds the same address."
+            : "BIP67 sort OFF: different key order can produce a different address — usually a mistake.");
+      }
       $("msSummary").textContent = r.summary;
       $("msOrderNote").textContent = r.orderNote;
       $("msP2sh").textContent = r.p2sh;

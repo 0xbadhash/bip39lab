@@ -42,18 +42,25 @@
             <small>Fees · balances</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="balance" href="index.html#balance">
+        <a class="nav-item" data-nav="tools" href="index.html#tools">
           <span class="nav-step">4</span>
           <span class="nav-label">
+            <strong>Tools</strong>
+            <small>Path · PSBT · backup</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="balance" href="index.html#balance">
+          <span class="nav-step">5</span>
+          <span class="nav-label">
             <strong>Balance</strong>
-            <small>CLI docs</small>
+            <small>CLI · Knots</small>
           </span>
         </a>
         <a class="nav-item" data-nav="about" href="index.html#about">
-          <span class="nav-step">5</span>
+          <span class="nav-step">6</span>
           <span class="nav-label">
             <strong>About</strong>
-            <small>Security model</small>
+            <small>Threat model</small>
           </span>
         </a>
       </nav>
@@ -94,6 +101,23 @@
             <strong>What it is not:</strong> a wallet, a transaction signer, or a blockchain scanner.
             It will not broadcast anything or “discover” funded combos on explorers (that would hurt privacy).
           </p>
+          <div class="card-sub" style="margin-top:1rem">
+            <h3>Policy readout</h3>
+            <p id="msPolicy" class="status-plain" aria-live="polite">
+              Set M and N (or generate demo cosigners) — policy text updates after build.
+            </p>
+          </div>
+          <div class="card-sub" style="margin-top:1rem">
+            <h3>Cosigner checklist</h3>
+            <ul class="help-list">
+              <li>☐ Each cosigner generated their own seed offline / on hardware</li>
+              <li>☐ Only <strong>public</strong> keys (or xpubs) are shared to build the vault</li>
+              <li>☐ M and N written down for recovery (e.g. 2-of-3)</li>
+              <li>☐ BIP67 sort agreed (recommended) so everyone builds the same address</li>
+              <li>☐ Backup plan: who holds which key; how to replace a lost cosigner</li>
+              <li>☐ No private keys or seeds pasted into this page</li>
+            </ul>
+          </div>
         </div>
 
         <div class="card">

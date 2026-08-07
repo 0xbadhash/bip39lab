@@ -19,8 +19,9 @@ test.describe("Network page E2E", () => {
     expect(netCsp).toMatch(/connect-src[^;]*('self'|mempool\.space)/);
     expect(netCsp).not.toMatch(/connect-src\s+'none'/);
 
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
     await expect(page.locator('.nav-item[data-nav="network"]')).toHaveClass(/active/);
+    await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
 
     await expect(page.locator("#btnFetchBal")).toBeDisabled();
     await expect(page.locator("#btnLoadLab")).toBeDisabled();
@@ -36,7 +37,7 @@ test.describe("Network page E2E", () => {
       "";
     expect(labCsp).toContain("connect-src 'none'");
     await expect(page.locator('.nav-item[data-nav="network"]')).toBeVisible();
-    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(5);
+    await expect(page.locator(".nav-item[data-nav]")).toHaveCount(6);
   });
 
   test("S13b fee snapshot fetch (live API)", async ({ page }) => {
@@ -53,6 +54,7 @@ test.describe("Network page E2E", () => {
     await expect(page.locator("#trafficOut")).toContainText(/Tip|height|Mempool/i);
     await expect(page.locator("#snapStatus")).toContainText(/OK|ok|Snapshot/i);
     await expect(page.locator("#feeExample")).toContainText(/vB|sats/i);
+    await expect(page.locator("#feeBands")).toContainText(/sat\/vB|fastest|½|hour/i);
   });
 
   test("S13c balances ack; address fetch; reject mnemonic as addresses", async ({ page }) => {
