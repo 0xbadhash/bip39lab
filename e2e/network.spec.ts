@@ -2,11 +2,11 @@ import { test, expect } from "@playwright/test";
 import { ABANDON, GOLDEN, expectNavCount, labCspOffline, pasteMnemonic, waitForTableRows } from "./helpers";
 
 test.describe("Network page E2E", () => {
-  test("S32 shell · 6-nav · mempool CSP · balances gated", async ({ page }) => {
+  test("S32 shell · 5-nav · mempool CSP · balances gated", async ({ page }) => {
     await page.goto("/network.html");
     await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
     await expect(page.locator("body")).toContainText(/mempool/i);
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
     await expect(page.locator('.nav-item[data-nav="network"]')).toHaveClass(/active/);
     await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
 
@@ -22,9 +22,11 @@ test.describe("Network page E2E", () => {
     await expect(page.locator("#btnFetchBal")).toBeEnabled();
     await expect(page.locator("#btnLoadLab")).toBeEnabled();
 
+    await expect(page.locator("#netCardBal")).toContainText(/Private balance via CLI|knots|mempool/i);
+
     await page.goto("/");
     await labCspOffline(page);
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
   });
 
   test("S13b fee snapshot + bands + traffic", async ({ page }) => {

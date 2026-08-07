@@ -6,16 +6,16 @@ import { expectNavCount, labCspOffline } from "./helpers";
  * Comet scenarios S36–S40.
  */
 test.describe("Site chrome cross-page", () => {
-  test("S36 Lab Multisig Network same 6 nav labels", async ({ page }) => {
+  test("S36 Lab Multisig Network same 5 nav labels", async ({ page }) => {
     for (const path of ["/", "/multisig.html", "/network.html"]) {
       await page.goto(path);
-      await expectNavCount(page, 6);
+      await expectNavCount(page);
       await expect(page.locator('.nav-item[data-nav="lab"] strong')).toHaveText("Lab");
       await expect(page.locator('.nav-item[data-nav="multisig"] strong')).toHaveText("Multisig");
       await expect(page.locator('.nav-item[data-nav="network"] strong')).toHaveText("Network");
       await expect(page.locator('.nav-item[data-nav="tools"] strong')).toHaveText("Tools");
-      await expect(page.locator('.nav-item[data-nav="balance"] strong')).toHaveText("Balance");
       await expect(page.locator('.nav-item[data-nav="glossary"] strong')).toHaveText("Glossary");
+      await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveCount(0);
       await expect(page.locator('.nav-item[data-nav="about"]')).toHaveCount(0);
     }
   });

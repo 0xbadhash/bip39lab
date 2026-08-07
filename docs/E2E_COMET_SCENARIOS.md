@@ -14,7 +14,7 @@ surfaces:
   - id: chrome
     path: /
     playwright: e2e/site-chrome.spec.ts
-scenarios: S0–S52 exhaustive · 6-nav (About merged into Glossary)
+scenarios: S0–S52 exhaustive · 5-nav (Balance docs → Network; About → Glossary)
 -->
 
 # BIP39 Lab — Exhaustive E2E for Comet / Perplexity
@@ -25,23 +25,22 @@ scenarios: S0–S52 exhaustive · 6-nav (About merged into Glossary)
 - Multisig: https://bip39.catalyxt.xyz/multisig.html  
 - Network: https://bip39.catalyxt.xyz/network.html  
 
-### Sidebar (all pages) — **7 items**
+### Sidebar (all pages) — **5 items**
 
 | # | Nav | Notes |
 |---|-----|--------|
 | 1 | Lab | Generate / derive |
 | 2 | Multisig | M-of-N explainer |
-| 3 | Network | Fees / balances (opt-in) |
+| 3 | Network | Fees / address balances (opt-in) + CLI/Knots notes |
 | 4 | Tools | Path, PSBT, descriptors |
-| 5 | Balance | CLI / Knots docs |
-| 6 | **Glossary** | BIPs, acronyms, **security & threat model** |
+| 5 | **Glossary** | BIPs, acronyms, **security & threat model** |
 
 | Area | Playwright | Scenario IDs |
 |------|------------|--------------|
 | Lab shell / chrome | `e2e/lab.spec.ts`, `e2e/site-chrome.spec.ts` | S0–S0c, S36–S40 |
 | Lab mnemonic / table | `e2e/lab.spec.ts` | S1–S11, S15–S16 |
 | Lab Tools | `e2e/lab.spec.ts` | S14, S17–S23 |
-| Lab Balance / Glossary security | `e2e/lab.spec.ts` | S24–S25, S10 |
+| Network CLI redirect / Glossary security | `e2e/lab.spec.ts` | S24–S25, S10 |
 | Multisig | `e2e/multisig.spec.ts` | S12, S12b, S26–S31 |
 | Network | `e2e/network.spec.ts` | S13b–d, S32–S35 |
 | Help UX | `e2e/help-ux.spec.ts` | S41–S48 |
@@ -181,16 +180,16 @@ Tools shows Keyboard shortcuts (G/D/Esc/?).
 
 ---
 
-## Lab Balance / About / Nav
+## Lab Network CLI redirect / About / Nav
 
-### S24 — Balance panel
-`#balance` → Knots/bitcoind/mempool/UTXO + Network link.
+### S24 — Old Balance deep link
+`#balance` redirects to Network `#netCardBal` (CLI Knots/mempool guidance lives there; no separate Balance nav).
 
 ### S25 — Glossary security & threat model
 `#glossary` (or legacy `#about`) → no retention + Threat model bullets under Glossary.
 
 ### S10 — Full nav tour
-Lab → Tools → Glossary (incl. security) → Multisig (**6** nav) → Network (**6** nav) → Balance (**6** nav).
+Lab → Tools → Glossary (incl. security) → Multisig (**5** nav) → Network (**5** nav + CLI card).
 
 ---
 

@@ -9,14 +9,15 @@ import {
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
-  test("S0 smoke load · 6-nav · chips · CSP offline", async ({ page }) => {
+  test("S0 smoke load · 5-nav · chips · CSP offline", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
     await expect(page.locator('.nav-item[data-nav="glossary"]')).toBeVisible();
     await expect(page.locator('.nav-item[data-nav="about"]')).toHaveCount(0);
+    await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveCount(0);
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
@@ -259,9 +260,22 @@ test.describe("Lab Tools panel", () => {
 
   test("S18 compare passphrases", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
+    // No Lab visit: Compare auto-generates a test phrase when empty
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/A:|Different|Same/);
+    await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same address/);
+    await expect(page.locator("#cmpPpOut")).toContainText(/A:/);
+    await expect(page.locator("#mnemonic")).not.toHaveValue("");
+  });
+
+  test("S18b tools generate test phrase then compare", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#btnCmpGen").click();
+    await expect(page.locator("#cmpPpOut")).toContainText(/Generated/);
+    await expect(page.locator("#mnemonic")).not.toHaveValue("");
+    await page.locator("#cmpPpB").fill("test");
+    await page.locator("#btnCmpPp").click();
+    await expect(page.locator("#cmpPpOut")).toContainText(/Different/);
   });
 
   test("S19 descriptors refresh", async ({ page }) => {
@@ -302,12 +316,12 @@ test.describe("Lab Tools panel", () => {
   });
 });
 
-test.describe("Lab Balance + Glossary security", () => {
-  test("S24 balance panel CLI Knots UTXO Network link", async ({ page }) => {
+test.describe("Lab Network CLI redirect + Glossary security", () => {
+  test("S24 old #balance deep-links to Network CLI guidance", async ({ page }) => {
     await page.goto("/#balance");
-    await expect(page.locator("#panel-balance")).toBeVisible();
-    await expect(page.locator("#panel-balance")).toContainText(/knots|bitcoind|mempool|scantxoutset|UTXO/i);
-    await expect(page.locator('#panel-balance a[href="network.html"]')).toBeVisible();
+    await expect(page).toHaveURL(/network\.html/);
+    await expect(page.locator("#netCardBal")).toBeVisible();
+    await expect(page.locator("#netCardBal")).toContainText(/knots|mempool|CLI|rpc-cookie/i);
   });
 
   test("S25 glossary hosts threat model + no retention", async ({ page }) => {
@@ -324,9 +338,9 @@ test.describe("Lab Balance + Glossary security", () => {
 });
 
 test.describe("Lab nav matrix", () => {
-  test("S10 full nav Lab→Tools→Glossary→Multisig→Network→Balance", async ({ page }) => {
+  test("S10 full nav Lab→Tools→Glossary→Multisig→Network", async ({ page }) => {
     await page.goto("/");
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
 
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
@@ -340,15 +354,11 @@ test.describe("Lab nav matrix", () => {
 
     await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
 
     await page.locator('.nav-item[data-nav="network"]').click();
     await expect(page).toHaveURL(/network\.html/);
-    await expectNavCount(page, 6);
-
-    await page.locator('.nav-item[data-nav="balance"]').click();
-    await expect(page).toHaveURL(/#balance/);
-    await expect(page.locator("#panel-balance")).toBeVisible();
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
+    await expect(page.locator("#netCardBal")).toContainText(/CLI|knots|mempool/i);
   });
 });

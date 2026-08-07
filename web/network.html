@@ -38,12 +38,8 @@
           <span class="nav-step">4</span>
           <span class="nav-label"><strong>Tools</strong><small>Path · PSBT</small></span>
         </a>
-        <a class="nav-item" data-nav="balance" href="index.html#balance">
-          <span class="nav-step">5</span>
-          <span class="nav-label"><strong>Balance</strong><small>CLI · Knots</small></span>
-        </a>
         <a class="nav-item" data-nav="glossary" href="index.html#glossary">
-          <span class="nav-step">6</span>
+          <span class="nav-step">5</span>
           <span class="nav-label"><strong>Glossary</strong><small>BIPs · security</small></span>
         </a>
       </nav>
@@ -171,11 +167,24 @@
               </tbody>
             </table>
           </div>
-          <p class="control-help">
-            Prefer a local <strong>Bitcoin Knots</strong> (or Core) node for private checks:
-            <code>python -m bip39lab balance &lt;addr&gt; --backend knots --rpc-cookie ~/.bitcoin/.cookie</code>
-            (pruned node is enough for current UTXO balance — not required for this public fee page)
-          </p>
+          <div class="card-sub" style="margin-top:1rem">
+            <h3>Private balance via CLI (not this page)</h3>
+            <p class="control-help">
+              Lab never loads balances (CSP). For privacy, query an address only with the CLI — never a seed.
+              Public explorers learn which address you care about; a local node does not.
+            </p>
+            <p class="control-help"><strong>Your node (preferred)</strong> — Knots or Core, pruned is enough for current UTXOs:</p>
+            <pre class="cli-block">python -m bip39lab balance bc1q… \
+  --backend knots --rpc-cookie ~/.bitcoin/.cookie</pre>
+            <p class="control-help"><strong>Public review</strong> (address leak to mempool.space):</p>
+            <pre class="cli-block">python -m bip39lab balance bc1q… \
+  --backend mempool --i-understand-address-leak</pre>
+            <p class="control-help">
+              Remote node: SSH tunnel <code>8332</code> to loopback, then same CLI with
+              <code>--rpc-url http://127.0.0.1:8332</code>. See <code>docs/BITCOIN_KNOTS.md</code>.
+              Never expose RPC to the public internet.
+            </p>
+          </div>
         </div>
 
         <p class="footer-host">

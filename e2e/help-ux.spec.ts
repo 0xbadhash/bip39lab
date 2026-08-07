@@ -123,9 +123,9 @@ test.describe("Help UX hybrid", () => {
     await expect(page.locator("html")).toHaveAttribute("data-teach", "on");
   });
 
-  test("S48b Lab still 6-nav after help UX", async ({ page }) => {
+  test("S48b Lab still 5-nav after help UX", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await expectNavCount(page, 6);
+    await expectNavCount(page);
   });
 });

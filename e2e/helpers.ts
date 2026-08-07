@@ -13,8 +13,8 @@ export const GOLDEN = {
   bip84testPrefix: "tb1",
 };
 
-/** Six primary nav items (About merged into Glossary). */
-export const NAV = ["lab", "multisig", "network", "tools", "balance", "glossary"] as const;
+/** Five primary nav items (Balance docs folded into Network; About into Glossary). */
+export const NAV = ["lab", "multisig", "network", "tools", "glossary"] as const;
 
 export async function pasteMnemonic(page: Page, text: string) {
   await page.locator("#mnemonic").fill(text);
@@ -29,11 +29,12 @@ export async function waitForTableRows(page: Page, min = 5) {
     .toBeGreaterThanOrEqual(min);
 }
 
-export async function expectNavCount(page: Page, n = 6) {
+export async function expectNavCount(page: Page, n = NAV.length) {
   await expect(page.locator(".nav-item[data-nav]")).toHaveCount(n);
   for (const id of NAV) {
     await expect(page.locator(`.nav-item[data-nav="${id}"]`)).toBeVisible();
   }
+  await expect(page.locator('.nav-item[data-nav="balance"]')).toHaveCount(0);
 }
 
 export async function labCspOffline(page: Page) {

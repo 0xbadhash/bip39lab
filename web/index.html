@@ -51,15 +51,8 @@
             <small>Path · PSBT · backup</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="balance" href="index.html#balance">
-          <span class="nav-step">5</span>
-          <span class="nav-label">
-            <strong>Balance</strong>
-            <small>CLI · Knots</small>
-          </span>
-        </a>
         <a class="nav-item" data-nav="glossary" href="index.html#glossary">
-          <span class="nav-step">6</span>
+          <span class="nav-step">5</span>
           <span class="nav-label">
             <strong>Glossary</strong>
             <small>BIPs · security</small>
@@ -87,7 +80,21 @@
         <div class="topbar-actions">
           <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
           <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
-          <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+            <span class="help-tip help-tip-safety">
+              <button type="button" class="help-tip-btn" aria-label="Why show browser online/offline?">i</button>
+              <span class="help-tip-panel" hidden>
+                <strong>Why this chip?</strong>
+                It reports whether the <em>browser</em> thinks it has a network link
+                (<code>navigator.onLine</code>) — green = online, red = offline.
+                Lab cryptography still never leaves this page (see “Offline crypto” / CSP).
+                Use it as a quick air-gap hint: red/offline is safer for real recovery phrases;
+                green/online is fine for demos, but treat seeds carefully on a connected machine.
+                This is not a perfect air-gap detector (the OS can report online/offline incorrectly).
+              </span>
+            </span>
+          </span>
         </div>
       </header>
 
@@ -391,7 +398,7 @@
 
           <div class="card">
             <h2>Compare two passphrases</h2>
-            <p class="control-help">Same mnemonic, different BIP-39 passphrases → different first addresses (offline).</p>
+            <p class="control-help">Same mnemonic, different BIP-39 passphrases → different first addresses (offline). Uses the Lab phrase if set; otherwise generates a test phrase here (no need to leave Tools).</p>
             <label class="field" for="cmpPpA">Passphrase A
               <input id="cmpPpA" type="password" autocomplete="off" placeholder="(empty)" />
             </label>
@@ -399,6 +406,7 @@
               <input id="cmpPpB" type="password" autocomplete="off" placeholder="e.g. test" />
             </label>
             <div class="row">
+              <button type="button" class="btn secondary" id="btnCmpGen">Generate test phrase</button>
               <button type="button" class="btn" id="btnCmpPp">Compare idx 0 (active type)</button>
             </div>
             <pre class="out" id="cmpPpOut">—</pre>
@@ -406,11 +414,11 @@
 
           <div class="card card-wide">
             <h2>Output descriptors (watch-only)</h2>
-            <p class="control-help">Built from Lab watch-only export — public material only.</p>
+            <p class="control-help">Built from Lab watch-only export — public material only. Auto-generates a test phrase if Lab is empty.</p>
             <div class="row">
               <button type="button" class="btn secondary" id="btnDescRefresh">Refresh descriptors</button>
             </div>
-            <pre class="out" id="descOut">Derive a valid phrase on Lab, then refresh.</pre>
+            <pre class="out" id="descOut">Click refresh — uses Lab phrase or generates a test one.</pre>
           </div>
 
           <div class="card card-wide">
@@ -445,48 +453,6 @@
               <li><kbd>Esc</kbd> — Close QR modal</li>
               <li><kbd>?</kbd> — Jump to Tools shortcuts</li>
             </ul>
-          </div>
-        </section>
-
-        <!-- Panel: Balance (CLI guidance; page stays offline) -->
-        <section id="panel-balance" class="panel" role="tabpanel" hidden>
-          <div class="card">
-            <h2>Address balance (CLI)</h2>
-            <p>
-              This page never loads balances (CSP blocks network). Use the CLI so seed material never leaves your machine
-              for a balance check. Public explorers only see the <em>address</em> after you opt in.
-            </p>
-            <p><strong>Free public review</strong> (no Bitcoin Core required) — mempool.space REST:</p>
-            <pre class="cli-block">python -m bip39lab balance bc1q… \
-  --backend mempool \
-  --i-understand-address-leak</pre>
-            <p style="margin-top:1rem"><strong>Your own node — Bitcoin Knots or Core</strong> (preferred):</p>
-            <pre class="cli-block">python -m bip39lab balance bc1q… \
-  --backend knots \
-  --rpc-cookie ~/.bitcoin/.cookie</pre>
-            <p class="control-help">
-              <code>bitcoind</code> and <code>knots</code> are the same RPC path. Pruned node is enough for current balances
-              via <code>scantxoutset</code> — see <code>docs/BITCOIN_KNOTS.md</code>.
-            </p>
-            <h3 style="margin-top:1.25rem">Remote Knots for tests (SSH tunnel)</h3>
-            <pre class="cli-block">ssh -N -L 8332:127.0.0.1:8332 user@knots-host
-python -m bip39lab balance bc1q… --backend knots \
-  --rpc-url http://127.0.0.1:8332 --rpc-cookie /path/to/.cookie</pre>
-            <p class="control-help">Never expose RPC to the public internet. Cookie auth only on loopback/VPN.</p>
-            <div class="card-sub" style="margin-top:1rem">
-              <h3>What is a UTXO? (simple)</h3>
-              <p class="control-help">
-                Bitcoin does not store a single “account balance” like a bank ledger row.
-                It tracks <strong>unspent transaction outputs</strong> (UTXOs) — like uncashed cheques that still clear.
-                Your “balance” is the sum of UTXOs that pay to addresses you control.
-                Spending consumes UTXOs and may create a new change UTXO back to you.
-              </p>
-            </div>
-            <p style="margin-top:1rem">
-              <strong>In-browser (opt-in):</strong>
-              <a href="network.html" style="color:var(--accent)">Network page</a>
-              — fees, traffic, and address-only balances via mempool proxy (Lab stays offline).
-            </p>
           </div>
         </section>
 

@@ -20,10 +20,6 @@
       title: "Lab tools",
       sub: "Paths, entropy pad, descriptors, PSBT inspect, passphrase compare — all offline.",
     },
-    balance: {
-      title: "Balance checks",
-      sub: "CLI + Knots. This page never phones home.",
-    },
     glossary: {
       title: "Glossary & security",
       sub: "BIPs, acronyms, no-retention model, and threat notes — plain English.",
@@ -700,9 +696,13 @@
   }
 
   function showTab(name) {
-    // about → glossary (merged option B)
+    // about → glossary (merged option B); balance panel removed → Network for live balances + CLI notes
     if (name === "about") name = "glossary";
-    const allowed = { lab: true, tools: true, balance: true, glossary: true };
+    if (name === "balance") {
+      window.location.href = "network.html#netCardBal";
+      return;
+    }
+    const allowed = { lab: true, tools: true, glossary: true };
     if (!allowed[name]) name = "lab";
     // expose for step-rail / help-ui deep links
     window.__bip39ShowTab = showTab;
@@ -740,7 +740,9 @@
   function tabFromHash() {
     const h = (location.hash || "").replace(/^#/, "");
     if (h === "about" || h === "threat" || h === "security") return "glossary";
-    if (h === "balance" || h === "lab" || h === "tools" || h === "glossary") return h;
+    // Old #balance deep link → Network (live balances + CLI guidance)
+    if (h === "balance") return "balance";
+    if (h === "lab" || h === "tools" || h === "glossary") return h;
     if (h.indexOf("gloss-") === 0 || h === "glossary-security" || h === "glossary-threat") return "glossary";
     return "lab";
   }
@@ -749,12 +751,13 @@
     const el = $("chipAirgap");
     if (!el) return;
     const on = typeof navigator !== "undefined" && navigator.onLine;
-    el.textContent = on ? "Browser online" : "Air-gap signal";
-    el.classList.toggle("chip-warn", !!on);
-    el.classList.toggle("chip-ok", !on);
+    el.textContent = on ? "Browser online" : "Browser offline";
+    el.classList.toggle("chip-ok", !!on);
+    el.classList.toggle("chip-bad", !on);
+    el.classList.remove("chip-warn");
     el.title = on
-      ? "navigator.onLine is true — still use this lab carefully; Lab CSP blocks network crypto calls"
-      : "navigator.onLine is false — good signal for air-gapped use";
+      ? "Browser reports online (green). Lab crypto still stays on-page via CSP — click (i) for why this chip exists."
+      : "Browser reports offline (red). Extra air-gap signal, not a guarantee — click (i) for why this chip exists.";
   }
 
   function applyTheme(theme) {
@@ -801,14 +804,37 @@
     }
   }
 
+  /** Ensure #mnemonic is a valid BIP-39 phrase; generate one on Tools if empty/invalid. */
+  async function ensureLabMnemonic(opts) {
+    opts = opts || {};
+    const el = $("mnemonic");
+    if (!el) return { ok: false, mnemonic: "", generated: false };
+    let m = el.value.trim();
+    if (m && (await BIP39Lab.validateMnemonic(m))) {
+      return { ok: true, mnemonic: m, generated: false };
+    }
+    if (opts.generate === false) {
+      return { ok: false, mnemonic: "", generated: false };
+    }
+    const n = parseInt(($("wordCount") && $("wordCount").value) || "12", 10) || 12;
+    m = await BIP39Lab.generateMnemonic(n);
+    el.value = m;
+    if (typeof refreshMnemonicEntropy === "function") {
+      await refreshMnemonicEntropy().catch(function () {});
+    }
+    if (typeof refreshPassphraseEntropy === "function") refreshPassphraseEntropy();
+    return { ok: true, mnemonic: m, generated: true };
+  }
+
   async function comparePassphrases() {
     const out = $("cmpPpOut");
     if (!out) return;
-    const m = $("mnemonic").value.trim();
-    if (!m || !(await BIP39Lab.validateMnemonic(m))) {
-      out.textContent = "Need a valid mnemonic on the Lab panel first.";
+    const ens = await ensureLabMnemonic({ generate: true });
+    if (!ens.ok) {
+      out.textContent = "Could not generate a mnemonic. Check that BIP39Lab is loaded.";
       return;
     }
+    const m = ens.mnemonic;
     const a = ($("cmpPpA") && $("cmpPpA").value) || "";
     const b = ($("cmpPpB") && $("cmpPpB").value) || "";
     const path = Object.assign({}, getDeriveOptions(), { count: 1 });
@@ -817,7 +843,11 @@
     const field = ADDR_TYPE_META[getActiveAddrType()].field;
     const aa = ra.rows[0][field];
     const bb = rb.rows[0][field];
+    const note = ens.generated
+      ? "Generated a " + m.split(/\s+/).length + "-word test phrase on Lab (shared).\n"
+      : "";
     out.textContent =
+      note +
       "A: " +
       aa +
       "\nB: " +
@@ -829,11 +859,12 @@
   async function refreshDescriptors() {
     const out = $("descOut");
     if (!out) return;
-    const m = $("mnemonic").value.trim();
-    if (!m || !(await BIP39Lab.validateMnemonic(m))) {
-      out.textContent = "Need a valid mnemonic on Lab first.";
+    const ens = await ensureLabMnemonic({ generate: true });
+    if (!ens.ok) {
+      out.textContent = "Could not generate a mnemonic. Check that BIP39Lab is loaded.";
       return;
     }
+    const m = ens.mnemonic;
     if (!BIP39Lab.descriptorsFromWatchOnly) {
       out.textContent = "Descriptors API not in this build.";
       return;
@@ -843,9 +874,14 @@
       network: getDeriveOptions().network,
     });
     const pack = BIP39Lab.descriptorsFromWatchOnly(wo, getDeriveOptions().network);
-    out.textContent = pack.descriptors
-      .map((d) => d.label + "\n" + d.descriptor + "\n(" + d.note + ")")
-      .join("\n\n");
+    const note = ens.generated
+      ? "Generated a " + m.split(/\s+/).length + "-word test phrase on Lab (shared).\n\n"
+      : "";
+    out.textContent =
+      note +
+      pack.descriptors
+        .map((d) => d.label + "\n" + d.descriptor + "\n(" + d.note + ")")
+        .join("\n\n");
   }
 
   function inspectPsbtUi() {
@@ -995,7 +1031,7 @@
       el.addEventListener("click", (ev) => {
         const nav = el.getAttribute("data-nav");
         if (nav === "multisig" || nav === "network") return;
-        if (nav === "lab" || nav === "balance" || nav === "tools" || nav === "glossary") {
+        if (nav === "lab" || nav === "tools" || nav === "glossary") {
           ev.preventDefault();
           showTab(nav);
         }
@@ -1030,6 +1066,22 @@
       });
     }
     if ($("btnCmpPp")) $("btnCmpPp").addEventListener("click", () => comparePassphrases().catch(console.error));
+    if ($("btnCmpGen")) {
+      $("btnCmpGen").addEventListener("click", () => {
+        onGenerate()
+          .then(() => {
+            const out = $("cmpPpOut");
+            if (out) {
+              const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
+              out.textContent =
+                "Generated " +
+                (m ? m.split(/\s+/).length : "?") +
+                "-word test phrase on Lab (shared). Click Compare to run.";
+            }
+          })
+          .catch(console.error);
+      });
+    }
     if ($("btnDescRefresh")) $("btnDescRefresh").addEventListener("click", () => refreshDescriptors().catch(console.error));
     if ($("btnPsbt")) $("btnPsbt").addEventListener("click", inspectPsbtUi);
     if ($("btnDescExplain")) $("btnDescExplain").addEventListener("click", explainDescUi);
