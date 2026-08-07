@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "approved",
-  "score": 100,
+  "phase": "shipped",
+  "score": 100.0,
   "spec_id": ".agents/specs/2026-08-06-option-c-network-tab.md",
   "task": "",
   "waiver": null
