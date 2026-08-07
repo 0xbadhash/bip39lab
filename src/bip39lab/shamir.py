@@ -8,7 +8,8 @@ For teaching only; do not use for real recovery seed backups.
 from __future__ import annotations
 
 import secrets
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 MAX_N = 7
 MIN_M = 2
@@ -130,7 +131,7 @@ def combine_shares(shares: Sequence[Mapping[str, Any]]) -> bytes:
         idx = int(s["index"])
         payload = s["payload"]
         if not isinstance(payload, (bytes, bytearray)):
-            raise ValueError("share payload must be bytes")
+            raise TypeError("share payload must be bytes")
         if idx < 1 or idx > 255:
             raise ValueError("invalid share index")
         by_idx[idx] = bytes(payload)
