@@ -126,6 +126,6 @@ test.describe("Help UX hybrid", () => {
   test("S48b Lab still 6-nav after help UX", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
   });
 });

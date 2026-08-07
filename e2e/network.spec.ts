@@ -6,7 +6,7 @@ test.describe("Network page E2E", () => {
     await page.goto("/network.html");
     await expect(page.getByRole("heading", { name: /Network/i })).toBeVisible();
     await expect(page.locator("body")).toContainText(/mempool/i);
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
     await expect(page.locator('.nav-item[data-nav="network"]')).toHaveClass(/active/);
     await expect(page.locator('.nav-item[data-nav="tools"]')).toBeVisible();
 
@@ -24,7 +24,7 @@ test.describe("Network page E2E", () => {
 
     await page.goto("/");
     await labCspOffline(page);
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
   });
 
   test("S13b fee snapshot + bands + traffic", async ({ page }) => {

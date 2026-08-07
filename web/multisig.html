@@ -56,8 +56,15 @@
             <small>CLI · Knots</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="about" href="index.html#about">
+        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
           <span class="nav-step">6</span>
+          <span class="nav-label">
+            <strong>Glossary</strong>
+            <small>BIPs · acronyms</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="about" href="index.html#about">
+          <span class="nav-step">7</span>
           <span class="nav-label">
             <strong>About</strong>
             <small>Threat model</small>
@@ -228,12 +235,9 @@
               <label class="check label-row" style="margin-top:1.5rem">
                 <input type="checkbox" id="msBip67" checked />
                 Sort keys (BIP67)
-                <span class="help-tip">
+                <span class="help-tip" data-term="BIP67">
                   <button type="button" class="help-tip-btn" aria-label="About BIP67">i</button>
-                  <span class="help-tip-panel" hidden>
-                    When on, keys are sorted the same way for everyone so you all get the <em>same</em> address.
-                    Leave on unless you need a fixed custom order.
-                  </span>
+                  <span class="help-tip-panel" hidden></span>
                 </span>
               </label>
             </div>
@@ -288,6 +292,7 @@
       </main>
     </div>
   </div>
+  <script src="js/glossary.js"></script>
   <script src="js/help-ui.js"></script>
   <script src="js/multisig.bundle.js"></script>
   <script src="js/multisig-app.js"></script>

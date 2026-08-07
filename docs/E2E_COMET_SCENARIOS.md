@@ -275,6 +275,22 @@ Set Teach Off on Lab → Network still Off; toggle back On.
 
 ---
 
+## Glossary (BIPs & acronyms)
+
+### S49 — Glossary panel
+Open **Glossary** nav (or `#glossary`) → list includes BIP-39/44/84/86, P2PKH/P2WPKH/P2TR, zpub/xpub, UTXO, sat/vB.
+
+### S50 — Search
+Search `multisig` → M-of-N / cosigner entries; search `BIP67` → sorted keys.
+
+### S51 — Inline ⓘ from glossary
+Lab mnemonic **i** shows BIP-39 recovery phrase explanation + link to full glossary.
+
+### S52 — Address-type terms
+BIP84 pad has glossary tip or Glossary lists BIP-84 / SegWit.
+
+---
+
 ## Report template
 
 ```text
@@ -341,8 +357,12 @@ S45 Multisig rail + BIP67 tip: PASS|FAIL —
 S46 Checklist folded: PASS|FAIL —
 S47 Network rail + leak: PASS|FAIL —
 S48 Teach persists: PASS|FAIL —
+S49 Glossary panel: PASS|FAIL —
+S50 Glossary search: PASS|FAIL —
+S51 Mnemonic glossary tip: PASS|FAIL —
+S52 BIP terms: PASS|FAIL —
 
-Score: __ / 53 PASS
+Score: __ / 57 PASS
 Blockers:
 Notes:
 ```
@@ -351,7 +371,7 @@ Notes:
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (exhaustive **S0–S48**) against https://bip39.catalyxt.xyz/ Lab, Multisig, and Network. Return the Report template with all S-ids.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md and execute PROMPT FOR COMET (exhaustive **S0–S52**) against https://bip39.catalyxt.xyz/ Lab, Multisig, and Network. Return the Report template with all S-ids.
 
 ## Playwright developers
 

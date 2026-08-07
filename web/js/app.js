@@ -24,6 +24,10 @@
       title: "Balance checks",
       sub: "CLI + Knots. This page never phones home.",
     },
+    glossary: {
+      title: "Glossary",
+      sub: "BIPs, script types, keys, fees — plain English.",
+    },
     about: {
       title: "About this lab",
       sub: "Threat model · no retention · offline crypto · bip39.catalyxt.xyz",
@@ -699,7 +703,7 @@
   }
 
   function showTab(name) {
-    const allowed = { lab: true, tools: true, balance: true, about: true };
+    const allowed = { lab: true, tools: true, balance: true, glossary: true, about: true };
     if (!allowed[name]) name = "lab";
     // expose for step-rail / help-ui deep links
     window.__bip39ShowTab = showTab;
@@ -736,7 +740,8 @@
 
   function tabFromHash() {
     const h = (location.hash || "").replace(/^#/, "");
-    if (h === "balance" || h === "about" || h === "lab" || h === "tools") return h;
+    if (h === "balance" || h === "about" || h === "lab" || h === "tools" || h === "glossary") return h;
+    if (h.indexOf("gloss-") === 0) return "glossary";
     return "lab";
   }
 
@@ -990,7 +995,7 @@
       el.addEventListener("click", (ev) => {
         const nav = el.getAttribute("data-nav");
         if (nav === "multisig" || nav === "network") return;
-        if (nav === "lab" || nav === "balance" || nav === "about" || nav === "tools") {
+        if (nav === "lab" || nav === "balance" || nav === "about" || nav === "tools" || nav === "glossary") {
           ev.preventDefault();
           showTab(nav);
         }

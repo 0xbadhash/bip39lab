@@ -13,7 +13,7 @@ export const GOLDEN = {
   bip84testPrefix: "tb1",
 };
 
-export const NAV = ["lab", "multisig", "network", "tools", "balance", "about"] as const;
+export const NAV = ["lab", "multisig", "network", "tools", "balance", "glossary", "about"] as const;
 
 export async function pasteMnemonic(page: Page, text: string) {
   await page.locator("#mnemonic").fill(text);
@@ -28,7 +28,7 @@ export async function waitForTableRows(page: Page, min = 5) {
     .toBeGreaterThanOrEqual(min);
 }
 
-export async function expectNavCount(page: Page, n = 6) {
+export async function expectNavCount(page: Page, n = 7) {
   await expect(page.locator(".nav-item[data-nav]")).toHaveCount(n);
   for (const id of NAV) {
     await expect(page.locator(`.nav-item[data-nav="${id}"]`)).toBeVisible();

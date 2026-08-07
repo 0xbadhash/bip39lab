@@ -58,8 +58,15 @@
             <small>CLI · Knots</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="about" href="index.html#about">
+        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
           <span class="nav-step">6</span>
+          <span class="nav-label">
+            <strong>Glossary</strong>
+            <small>BIPs · acronyms</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="about" href="index.html#about">
+          <span class="nav-step">7</span>
           <span class="nav-label">
             <strong>About</strong>
             <small>Threat model</small>
@@ -142,12 +149,9 @@
 
             <label class="field" data-private for="mnemonic">
               <span class="label-row">BIP-39 mnemonic
-                <span class="help-tip help-tip-safety">
+                <span class="help-tip help-tip-safety" data-term="MNEMONIC">
                   <button type="button" class="help-tip-btn" aria-label="About the mnemonic">i</button>
-                  <span class="help-tip-panel" hidden>
-                    Your recovery phrase is the master key to a vault. Never paste a real funded phrase on an untrusted machine.
-                    Prefer air-gap. This lab does not store it on a server.
-                  </span>
+                  <span class="help-tip-panel" hidden></span>
                 </span>
               </span>
               <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
@@ -166,11 +170,9 @@
             </details>
             <div class="field-ro" data-private>
               <span class="field-ro-label label-row">Mnemonic entropy
-                <span class="help-tip">
+                <span class="help-tip" data-term="ENTROPY">
                   <button type="button" class="help-tip-btn" aria-label="About mnemonic entropy">i</button>
-                  <span class="help-tip-panel" hidden>
-                    BIP-39 ENT bits from word count (e.g. 128 for 12 words) — not Shannon entropy of the words themselves.
-                  </span>
+                  <span class="help-tip-panel" hidden></span>
                 </span>
               </span>
               <output id="entropyMnemonic" class="field-ro-value" for="mnemonic" aria-live="polite">—</output>
@@ -178,12 +180,9 @@
 
             <label class="field" data-private for="passphrase">
               <span class="label-row">Optional passphrase
-                <span class="help-tip">
+                <span class="help-tip" data-term="PASSPHRASE">
                   <button type="button" class="help-tip-btn" aria-label="About passphrase">i</button>
-                  <span class="help-tip-panel" hidden>
-                    A second secret: same words + different passphrase = different vault (every address changes).
-                    Strength shown is a local estimate only.
-                  </span>
+                  <span class="help-tip-panel" hidden></span>
                 </span>
               </span>
               <input id="passphrase" type="password" autocomplete="off" />
@@ -223,12 +222,9 @@
               <div class="control-block">
                 <label class="field inline" for="deriveNetwork">
                   <span class="label-row">Network
-                    <span class="help-tip">
+                    <span class="help-tip" data-term="MAINNET">
                       <button type="button" class="help-tip-btn" aria-label="About network">i</button>
-                      <span class="help-tip-panel" hidden>
-                        <strong>Mainnet</strong> = real bitcoin.
-                        <strong>Test</strong> uses coin type 1 and <code>tb1…</code> addresses for practice (no real value).
-                      </span>
+                      <span class="help-tip-panel" hidden></span>
                     </span>
                   </span>
                   <select id="deriveNetwork">
@@ -240,12 +236,9 @@
               <div class="control-block">
                 <label class="field inline" for="deriveAccount">
                   <span class="label-row">Account
-                    <span class="help-tip">
+                    <span class="help-tip" data-term="ACCOUNT">
                       <button type="button" class="help-tip-btn" aria-label="About account">i</button>
-                      <span class="help-tip-panel" hidden>
-                        Like several bank accounts under one login (0 = first). Most people only use <strong>0</strong>.
-                        Changing account creates a completely different set of addresses.
-                      </span>
+                      <span class="help-tip-panel" hidden></span>
                     </span>
                   </span>
                   <input id="deriveAccount" type="number" min="0" max="2147483647" value="0" step="1" />
@@ -254,12 +247,9 @@
               <div class="control-block">
                 <label class="field inline" for="deriveChange">
                   <span class="label-row">Change
-                    <span class="help-tip">
+                    <span class="help-tip" data-term="CHANGE">
                       <button type="button" class="help-tip-btn" aria-label="About change">i</button>
-                      <span class="help-tip-panel" hidden>
-                        <strong>Receive (0)</strong> = numbers you share (like an IBAN on an invoice).<br />
-                        <strong>Change (1)</strong> = internal leftovers after a payment (till drawer, not for customers).
-                      </span>
+                      <span class="help-tip-panel" hidden></span>
                     </span>
                   </span>
                   <select id="deriveChange">
@@ -298,10 +288,10 @@
                 </span>
               </span>
               <div class="seg-tabs" role="tablist" aria-labelledby="addrTypeLabel">
-                <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-addr-type="bip86">BIP86 · Taproot</button>
-                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip84">BIP84 · native</button>
-                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip49">BIP49 · nested</button>
-                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip44">BIP44 · legacy</button>
+                <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-addr-type="bip86" data-term="BIP86">BIP86 · Taproot</button>
+                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip84" data-term="BIP84">BIP84 · native</button>
+                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip49" data-term="BIP49">BIP49 · nested</button>
+                <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip44" data-term="BIP44">BIP44 · legacy</button>
               </div>
               <p id="addrTypeHelp" class="control-help teach-only is-compact">
                 <strong>Taproot (bc1p…)</strong> — newest common format. Path <code>m/86'/…</code>.
@@ -365,10 +355,10 @@
               <div class="seg-block">
                 <span class="toggles-label" id="woTypeLabel">Watch-only key type (one at a time)</span>
                 <div class="seg-tabs" role="tablist" aria-labelledby="woTypeLabel">
-                  <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-wo-type="84">BIP84 · zpub</button>
-                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="86">BIP86 · xpub</button>
-                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="49">BIP49 · ypub</button>
-                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="44">BIP44 · xpub</button>
+                  <button type="button" class="seg-tab active" role="tab" aria-selected="true" data-wo-type="84" data-term="ZPUB">BIP84 · zpub</button>
+                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="86" data-term="XPUB">BIP86 · xpub</button>
+                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="49" data-term="YPUB">BIP49 · ypub</button>
+                  <button type="button" class="seg-tab" role="tab" aria-selected="false" data-wo-type="44" data-term="XPUB">BIP44 · xpub</button>
                 </div>
                 <p id="woTypeHelp" class="control-help">
                   <strong>BIP84 zpub</strong> — usual Sparrow / mobile watch-only import for native segwit.
@@ -507,6 +497,20 @@ python -m bip39lab balance bc1q… --backend knots \
           </div>
         </section>
 
+        <!-- Panel: Glossary -->
+        <section id="panel-glossary" class="panel" role="tabpanel" hidden>
+          <div class="card card-wide">
+            <div class="card-head"><h2>Glossary — BIPs, scripts &amp; acronyms</h2></div>
+            <p class="card-lede">
+              Plain-English meanings for terms used in this lab. Click a term, or use <strong>ⓘ</strong> next to labels on other panels.
+            </p>
+            <label class="field" for="glossarySearch">Search
+              <input id="glossarySearch" type="search" placeholder="e.g. BIP84, zpub, UTXO, sat/vB" autocomplete="off" />
+            </label>
+            <div id="glossaryList" class="glossary-list" aria-live="polite"></div>
+          </div>
+        </section>
+
         <!-- Panel: About -->
         <section id="panel-about" class="panel" role="tabpanel" hidden>
           <div class="card">
@@ -562,6 +566,7 @@ python -m bip39lab balance bc1q… --backend knots \
   </div>
 
   <script src="js/bip39lab.bundle.js"></script>
+  <script src="js/glossary.js"></script>
   <script src="js/help-ui.js"></script>
   <script src="js/app.js"></script>
 </body>

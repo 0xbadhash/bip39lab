@@ -9,12 +9,13 @@ import {
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
-  test("S0 smoke load · 6-nav · chips · CSP offline", async ({ page }) => {
+  test("S0 smoke load · 7-nav · chips · CSP offline", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
+    await expect(page.locator('.nav-item[data-nav="glossary"]')).toBeVisible();
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
@@ -320,7 +321,7 @@ test.describe("Lab Balance + About panels", () => {
 test.describe("Lab nav matrix", () => {
   test("S10 full nav Lab→Tools→About→Multisig→Network→Balance", async ({ page }) => {
     await page.goto("/");
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
 
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
@@ -333,15 +334,15 @@ test.describe("Lab nav matrix", () => {
 
     await page.locator('.nav-item[data-nav="multisig"]').click();
     await expect(page).toHaveURL(/multisig\.html/);
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
 
     await page.locator('.nav-item[data-nav="network"]').click();
     await expect(page).toHaveURL(/network\.html/);
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
 
     await page.locator('.nav-item[data-nav="balance"]').click();
     await expect(page).toHaveURL(/#balance/);
     await expect(page.locator("#panel-balance")).toBeVisible();
-    await expectNavCount(page, 6);
+    await expectNavCount(page, 7);
   });
 });

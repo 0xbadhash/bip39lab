@@ -42,8 +42,12 @@
           <span class="nav-step">5</span>
           <span class="nav-label"><strong>Balance</strong><small>CLI · Knots</small></span>
         </a>
-        <a class="nav-item" data-nav="about" href="index.html#about">
+        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
           <span class="nav-step">6</span>
+          <span class="nav-label"><strong>Glossary</strong><small>BIPs · acronyms</small></span>
+        </a>
+        <a class="nav-item" data-nav="about" href="index.html#about">
+          <span class="nav-step">7</span>
           <span class="nav-label"><strong>About</strong><small>Threat model</small></span>
         </a>
       </nav>
@@ -102,12 +106,9 @@
         <div class="card" id="netCardFees">
           <div class="card-head">
             <h2 class="label-row">Fees &amp; traffic
-              <span class="help-tip">
+              <span class="help-tip" data-term="SATVB">
                 <button type="button" class="help-tip-btn" aria-label="About fee rate">i</button>
-                <span class="help-tip-panel" hidden>
-                  <strong>Fee rate</strong> (sat/vB) is like postage for Bitcoin transactions — higher often confirms faster when busy.
-                  Example cost assumes ~140 vB (simple modern send) — estimate only.
-                </span>
+                <span class="help-tip-panel" hidden></span>
               </span>
             </h2>
           </div>
@@ -188,6 +189,7 @@
       </main>
     </div>
   </div>
+  <script src="js/glossary.js"></script>
   <script src="js/help-ui.js"></script>
   <script src="js/network.bundle.js"></script>
   <script src="js/network-app.js"></script>

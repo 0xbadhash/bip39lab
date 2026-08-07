@@ -640,6 +640,51 @@ html[data-teach="off"] .help-fold.teach-only {
   align-items: center;
 }
 
+/* Glossary */
+.glossary-group {
+  margin-bottom: 1.25rem;
+}
+
+.glossary-group h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: var(--focus);
+}
+
+.glossary-item {
+  margin: 0.35rem 0;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+}
+
+.glossary-item summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.glossary-item .control-help {
+  margin-top: 0.5rem;
+}
+
+.gloss-term {
+  border-bottom: 1px dotted var(--border-strong);
+  cursor: help;
+}
+
+.gloss-link {
+  color: var(--accent);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+#glossarySearch {
+  width: 100%;
+  max-width: 28rem;
+}
+
 .control-help.is-compact {
   margin-top: 0.25rem;
 }
