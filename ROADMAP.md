@@ -72,6 +72,20 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] Shamir secret sharing — left-nav tab (v1 teach + demo split)
+- **Status:** open
+- **Priority:** P1
+- **Next:** true
+- **Spec:** `.agents/specs/2026-08-07-shamir-share-tab.md`
+- **Plan:** `.agents/specs/2026-08-07-shamir-share-tab-plan.md`
+- **Acceptance:**
+  - [ ] Nav step 3 **Shamir** on all shells (Lab → Multisig → Shamir → Network → Tools → Glossary)
+  - [ ] Offline page: teach Shamir vs Multisig vs BIP-39; educational / not SLIP-39 banner
+  - [ ] M-of-N demo split of practice secret → N share cards (no recombine UI)
+  - [ ] CSP `connect-src 'none'`; no Lab mnemonic auto-use; unit + Playwright smoke
+- **Smoke:** product smoke (pytest + e2e) + manual Shamir split on local static server
+- **Notes:** User “shair” → Shamir; v1 teach+split only; recombine/SLIP-39 later
+
 ### [DONE] Phase 0 — Offline correctness lab
 - **Status:** done
 - **Priority:** P0
@@ -141,7 +155,7 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Separate passphrase strength estimate field (does not overwrite mnemonic ENT)
   - [x] Clear / hide-private / invalid handling; English; offline
 - **Smoke:** open Lab on bip39.catalyxt.xyz; pytest green
-- **Notes:** Full FSM — **Next:** true
+- **Notes:** Full FSM ship (Next cleared — Shamir tab is Next)
 
 
 ### [DONE] Phase 7 — HTML address table + Option A derivation UX
@@ -238,4 +252,5 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Through nav cleanup (About merged into Glossary).** Next: optional private Knots proxy for Network.
+**Next:** Shamir left-nav tab (v1 teach + demo split) — `.agents/specs/2026-08-07-shamir-share-tab.md`.  
+Optional later: private Knots proxy for Network; Shamir recombine UI / SLIP-39.
