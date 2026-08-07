@@ -1,6 +1,6 @@
 {
   "card_id": null,
-  "phase": "shipped",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-07-shamir-share-tab.md",
   "task": "",
