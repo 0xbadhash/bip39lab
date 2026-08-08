@@ -47,6 +47,8 @@
       </nav>
       <div class="sidebar-foot">
         <p class="sidebar-note">
+          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <br />
           Educational Shamir only — not SLIP-39. Lab keeps seeds offline.
           Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
         </p>
@@ -251,13 +253,15 @@
         </div>
 
         <p class="footer-host">
-          <a href="index.html">← Lab</a> ·
+          <span data-site-version class="site-version-inline">…</span>
+          · <a href="index.html">← Lab</a> ·
           <a href="multisig.html">Multisig</a> ·
           <a href="https://bip39.catalyxt.xyz/shamir.html">bip39.catalyxt.xyz/shamir.html</a>
         </p>
       </main>
     </div>
   </div>
+  <script src="js/site-version.js"></script>
   <script src="js/glossary.js"></script>
   <script src="js/help-ui.js"></script>
   <script src="js/shamir-core.js"></script>

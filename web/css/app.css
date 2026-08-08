@@ -1256,6 +1256,25 @@ button.btn.danger:hover {
   font-size: 0.8rem;
 }
 
+.site-version-chip {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--focus);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  margin-bottom: 0.35rem;
+  background: var(--bg-elevated);
+}
+
+.site-version-inline {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 650;
+  color: var(--focus);
+}
+
 .footer-host a {
   color: var(--accent);
 }

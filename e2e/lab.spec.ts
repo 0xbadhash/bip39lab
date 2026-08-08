@@ -22,6 +22,7 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
+    await expect(page.locator("[data-site-version]").first()).toContainText(/^v\d+\.\d+\.\d+$/);
     await labCspOffline(page);
   });
 

@@ -69,6 +69,8 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
+          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
           <br /><br />
           Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
@@ -562,7 +564,8 @@
         </div>
 
         <p class="footer-host">
-          English UI only ·
+          <span data-site-version class="site-version-inline">…</span>
+          · English UI only ·
           <a href="https://bip39.catalyxt.xyz/">https://bip39.catalyxt.xyz/</a>
         </p>
       </main>
@@ -584,6 +587,7 @@
     </div>
   </div>
 
+  <script src="js/site-version.js"></script>
   <script src="js/bip39lab.bundle.js"></script>
   <script src="js/glossary.js"></script>
   <script src="js/help-ui.js"></script>
