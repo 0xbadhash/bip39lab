@@ -173,10 +173,16 @@
           <p class="control-help teach-only" style="margin-top:0.5rem">
             Checking balance reveals interest in those addresses to the API host.
           </p>
+          <p class="control-help" id="balGateHint" style="margin-top:0.5rem;color:var(--warn)">
+            Load / Fetch stay <strong>grayed out</strong> until you tick the leak-ack above.
+          </p>
           <div class="row" style="margin-top:0.75rem">
-            <button type="button" class="btn secondary" id="btnLoadLab" disabled>Load addresses from Lab (this session)</button>
-            <button type="button" class="btn" id="btnFetchBal" disabled>Fetch balances</button>
+            <button type="button" class="btn secondary" id="btnLoadLab" disabled title="Tick the leak-ack checkbox first">Load addresses from Lab (this session)</button>
+            <button type="button" class="btn" id="btnFetchBal" disabled title="Tick the leak-ack checkbox first">Fetch balances</button>
           </div>
+          <p class="control-help teach-only" style="margin-top:0.5rem">
+            <strong>0 sats</strong> with status <code>ok</code> means the address is empty (valid). Failures show status <code>unknown</code>/<code>error</code> — never a silent fake zero.
+          </p>
           <label class="field" for="balAddrs">Addresses
             <textarea id="balAddrs" rows="5" spellcheck="false" autocomplete="off"
               placeholder="bc1q…&#10;bc1p…&#10;3…"></textarea>

@@ -270,7 +270,8 @@
 
   function copyAddress(addr, btn) {
     if (!addr) return;
-    const restoreMs = 2000;
+    // Comet: 2s was easy to miss — keep green "Copied" longer
+    const restoreMs = 3500;
     const idleLabel =
       btn && btn.dataset.copyIdle
         ? btn.dataset.copyIdle

@@ -12,8 +12,26 @@
 
   function updateAck() {
     const on = $("balAck").checked;
-    $("btnFetchBal").disabled = !on;
-    $("btnLoadLab").disabled = !on;
+    const fetchBtn = $("btnFetchBal");
+    const loadBtn = $("btnLoadLab");
+    if (fetchBtn) {
+      fetchBtn.disabled = !on;
+      fetchBtn.setAttribute("aria-disabled", on ? "false" : "true");
+      fetchBtn.title = on
+        ? "Fetch balances for the addresses below (public API)"
+        : "Tick the leak-ack checkbox first — button stays inactive until then";
+    }
+    if (loadBtn) {
+      loadBtn.disabled = !on;
+      loadBtn.setAttribute("aria-disabled", on ? "false" : "true");
+      loadBtn.title = on
+        ? "Load addresses from this browser’s Lab session"
+        : "Tick the leak-ack checkbox first — button stays inactive until then";
+    }
+    const gateHint = $("balGateHint");
+    if (gateHint) {
+      gateHint.hidden = !!on;
+    }
   }
 
   async function fetchSnapshot() {
@@ -167,7 +185,11 @@
         String(i),
         r.address,
         r.status,
-        r.satoshis == null ? "—" : String(r.satoshis),
+        r.satoshis == null
+          ? "—"
+          : r.status === "ok" && r.satoshis === 0
+            ? "0 (empty)"
+            : String(r.satoshis),
         r.detail || "",
       ];
       cells.forEach((text, j) => {
@@ -178,6 +200,10 @@
           span.className = "addr-text";
           span.textContent = text;
           td.appendChild(span);
+        } else if (j === 3 && r.status === "ok" && r.satoshis === 0) {
+          td.textContent = text;
+          td.className = "bal-zero-ok";
+          td.title = "Valid empty balance — API returned ok with 0 sats";
         } else {
           td.textContent = text;
         }
@@ -206,11 +232,16 @@
       try {
         const data = await api.fetchJson(api.addressUrl(address));
         const parsed = api.parseAddressBalanceJson(data);
+        let detail = parsed.detail || "";
+        // Comet: legitimate zero looks like a failure — spell out empty wallet
+        if (parsed.status === "ok" && parsed.satoshis === 0) {
+          detail = (detail ? detail + " · " : "") + "0 sats is a valid empty result (not a fetch error)";
+        }
         rows.push({
           address,
           status: parsed.status,
           satoshis: parsed.satoshis,
-          detail: parsed.detail,
+          detail: detail,
         });
       } catch (e) {
         rows.push({

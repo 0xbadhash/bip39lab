@@ -67,14 +67,14 @@
     }
     if (wrote) {
       setCopyFeedback(btn, "ok", text);
-      setTimeout(() => setCopyFeedback(btn, "idle"), 2000);
+      setTimeout(() => setCopyFeedback(btn, "idle"), 3500);
       return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(
         () => {
           setCopyFeedback(btn, "ok", text);
-          setTimeout(() => setCopyFeedback(btn, "idle"), 2000);
+          setTimeout(() => setCopyFeedback(btn, "idle"), 3500);
         },
         () => setCopyFeedback(btn, "err")
       );
@@ -128,6 +128,10 @@
 
   function clearAll() {
     $("msParts").value = "";
+    if ($("msPartsSource")) {
+      $("msPartsSource").textContent =
+        "Active source: paste compressed pubkeys below, or use Generate demo cosigners (warns before overwrite).";
+    }
     $("msM").value = "2";
     $("msBip67").checked = true;
     $("msResult").hidden = true;
@@ -158,11 +162,27 @@
       return;
     }
     try {
+      const existing = ($("msParts") && $("msParts").value || "").trim();
+      if (existing) {
+        const ok = window.confirm(
+          "Public keys box already has text.\n\n" +
+            "Generate demo cosigners will REPLACE what you typed/pasted with throwaway demo keys.\n\n" +
+            "Continue and overwrite?"
+        );
+        if (!ok) {
+          setStatus("Generate cancelled — your pasted keys were kept.", "");
+          return;
+        }
+      }
       const n = parseInt($("msDemoN").value, 10) || 3;
       const words = getDemoWords();
       const passphrase = ($("msDemoPass") && $("msDemoPass").value) || "";
       const demo = api.generateDemoCosigners(n, { words, passphrase });
       $("msParts").value = demo.pubkeysText;
+      if ($("msPartsSource")) {
+        $("msPartsSource").textContent =
+          "Active source: demo generator (throwaway). Paste your own keys to replace, or Clear.";
+      }
       // Suggest M = n-1 for 2-of-3 style when n>=3, else n-of-n
       $("msM").value = String(n >= 3 ? n - 1 : n);
 
@@ -229,6 +249,14 @@
     $("msClear").addEventListener("click", clearAll);
     const gen = $("msGenDemo");
     if (gen) gen.addEventListener("click", genDemo);
+    if ($("msParts")) {
+      $("msParts").addEventListener("input", () => {
+        if ($("msPartsSource") && ($("msParts").value || "").trim()) {
+          $("msPartsSource").textContent =
+            "Active source: textarea (paste/edit). Generate demo will ask before overwriting.";
+        }
+      });
+    }
 
     document.querySelectorAll("#msWordTabs .seg-tab").forEach((btn) => {
       // pointerdown: select before layout reflow from later generate; avoid mis-hit on 24-word tab

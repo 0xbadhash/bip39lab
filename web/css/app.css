@@ -901,9 +901,16 @@ html[data-teach="off"] .help-fold.teach-only {
 
 .btn-copy.copied {
   border-color: var(--ok);
-  background: rgba(34, 160, 107, 0.2);
+  background: rgba(34, 160, 107, 0.28);
   color: #3dd68c;
   font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(34, 160, 107, 0.35);
+}
+
+.bal-zero-ok {
+  color: var(--ok);
+  font-weight: 650;
+  white-space: nowrap;
 }
 
 .btn-copy.copy-failed {
@@ -1139,7 +1146,7 @@ button.btn {
   cursor: pointer;
 }
 
-button.btn:hover {
+button.btn:hover:not(:disabled) {
   background: var(--accent-hover);
 }
 
@@ -1149,7 +1156,7 @@ button.btn.secondary {
   color: var(--text);
 }
 
-button.btn.secondary:hover {
+button.btn.secondary:hover:not(:disabled) {
   border-color: var(--border-strong);
 }
 
@@ -1158,8 +1165,28 @@ button.btn.danger {
   color: #fff;
 }
 
-button.btn.danger:hover {
+button.btn.danger:hover:not(:disabled) {
   filter: brightness(1.08);
+}
+
+/* Visible disabled state — Comet: gated buttons must look inactive, not fully clickable */
+button.btn:disabled,
+button.btn.secondary:disabled,
+button.btn.danger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.35);
+  box-shadow: none;
+}
+
+button.btn:disabled:hover,
+button.btn.secondary:disabled:hover {
+  background: var(--accent);
+}
+
+button.btn.secondary:disabled:hover {
+  background: var(--panel-2);
+  border-color: var(--border);
 }
 
 .check {

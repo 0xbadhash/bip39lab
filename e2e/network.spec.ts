@@ -18,9 +18,12 @@ test.describe("Network page E2E", () => {
 
     await expect(page.locator("#btnFetchBal")).toBeDisabled();
     await expect(page.locator("#btnLoadLab")).toBeDisabled();
+    // Visible gate: hint present while disabled
+    await expect(page.locator("#balGateHint")).toBeVisible();
     await page.locator("#balAck").check();
     await expect(page.locator("#btnFetchBal")).toBeEnabled();
     await expect(page.locator("#btnLoadLab")).toBeEnabled();
+    await expect(page.locator("#balGateHint")).toBeHidden();
 
     await expect(page.locator("#netCardBal")).toContainText(/Private balance via CLI|knots|mempool/i);
 
