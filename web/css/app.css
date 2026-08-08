@@ -487,6 +487,27 @@ a.nav-item:hover {
   border-radius: var(--radius);
 }
 
+/* Multisig demo word-count: fixed 5-column grid so tabs do not reflow under clicks after generate */
+#msWordTabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  position: sticky;
+  top: 0.5rem;
+  z-index: 3;
+  background: var(--bg-elevated);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+#msWordTabs .seg-tab {
+  flex: none;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  padding: 0.5rem 0.35rem;
+}
+
 .seg-tab {
   flex: 1 1 auto;
   min-width: 6.5rem;

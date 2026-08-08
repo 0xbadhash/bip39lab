@@ -290,7 +290,9 @@ Educational **Shamir secret sharing** over bytes (GF(256)). Demo split only — 
 3. Read compare table: Shamir vs Multisig vs BIP-39
 4. Generate practice secret (hex) — do not use Lab mnemonic
 5. Set M and N (default 2-of-3) → Split demo
-6. See N cards `share:index:hex` · Copy one · Clear
+6. See N cards `share:index:hex` · Copy one
+7. **Verify recombine** (or Fill M shares from cards) → matches practice secret
+8. Clear when done
 ```
 
 ### Human coherence checklist
@@ -299,12 +301,12 @@ Educational **Shamir secret sharing** over bytes (GF(256)). Demo split only — 
 |-----------|----------|-----------|-------|
 | Coherent | Teach difference first, then demo split | | |
 | Makes sense | Banner + “not SLIP-39” before any split | | |
-| Intuitive | Generate + Split are the only primary actions | | |
-| Safety | Empty secret errors; no fake success | | |
-| Teach Off | Rail hides; banner + Generate/Split remain | | |
+| Intuitive | Generate + Split + Verify recombine close the teach loop | | |
+| Safety | Empty secret errors; no fake success; not SLIP-39 | | |
+| Teach Off | Rail hides; banner + Generate/Split/Recombine remain | | |
 
 ### Playwright / scenarios
-S53–S55 · `e2e/shamir.spec.ts`
+S53–S56 · `e2e/shamir.spec.ts`
 
 ---
 
@@ -392,6 +394,9 @@ Word count 24 → Generate → 24 words; entropy `256 bits…`.
 
 ### S2 — Abandon all types
 Clear → paste abandon → BIP86/84/49/44 match **all four goldens**.
+
+### S2b — Word count follows paste
+Set word-count dropdown to **24**, paste 12-word abandon → dropdown becomes **12** and entropy shows 128-bit.
 
 ### S3 — Passphrase
 BIP84 golden → passphrase `test` → address ≠ golden; clear passphrase → golden returns.
@@ -605,6 +610,9 @@ Generate practice secret → Split → **3** share cards `share:n:hex`.
 ### S55 — Empty secret error
 Empty secret → error status; **0** share cards (no fake success).
 
+### S56 — Educational recombine
+Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered matches practice secret (offline).
+
 ---
 
 # Report template
@@ -636,6 +644,7 @@ S0c Keyboard ?: PASS|FAIL —
 S1 Generate 12: PASS|FAIL —
 S1b Generate 24: PASS|FAIL —
 S2 Abandon 4 types: PASS|FAIL —
+S2b Word count follows paste: PASS|FAIL —
 S3 Passphrase: PASS|FAIL —
 S4 Account/change/indices: PASS|FAIL —
 S5 Mainnet/testnet: PASS|FAIL —
@@ -695,8 +704,9 @@ S52 BIP terms: PASS|FAIL —
 S53 Shamir shell: PASS|FAIL —
 S54 Shamir split 2-of-3: PASS|FAIL —
 S55 Shamir empty error: PASS|FAIL —
+S56 Shamir recombine: PASS|FAIL —
 
-Score: __ / 58 PASS   (count S0,S0b,S0c + S1–S55 including S18b,S48b)
+Score: __ / 60 PASS   (count S0,S0b,S0c + S1–S56 including S18b,S48b,S2b)
 Blockers:
 UX / coherence notes (what confused a human learner):
 ```
@@ -722,7 +732,7 @@ npm run test:e2e:live         # production
 | `e2e/helpers.ts` | abandon goldens, 6-nav, CSP helpers |
 | `e2e/lab.spec.ts` | S0–S25 Lab + Tools + nav tour |
 | `e2e/multisig.spec.ts` | S12–S31 Multisig |
-| `e2e/shamir.spec.ts` | S53–S55 Shamir |
+| `e2e/shamir.spec.ts` | S53–S56 Shamir |
 | `e2e/network.spec.ts` | S13–S35 Network |
 | `e2e/site-chrome.spec.ts` | S36–S40 chrome |
 | `e2e/help-ux.spec.ts` | S41–S48b Teach / tips |

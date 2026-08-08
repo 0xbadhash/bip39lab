@@ -558,6 +558,16 @@
     }
   }
 
+  /** Keep word-count dropdown aligned with a valid pasted/typed phrase. */
+  function syncWordCountSelect(n) {
+    const sel = $("wordCount");
+    if (!sel || !ENT_BITS_BY_WORDS[n]) return;
+    const want = String(n);
+    if (sel.value !== want) {
+      sel.value = want;
+    }
+  }
+
   async function refreshMnemonicEntropy() {
     const m = $("mnemonic").value.trim();
     if (!m) {
@@ -576,6 +586,7 @@
         setEntropyMnemonic("Invalid (wordlist or checksum)", true);
         return false;
       }
+      syncWordCountSelect(n);
       setEntropyMnemonic(formatMnemonicEntropy(n), false);
       return true;
     } catch (e) {

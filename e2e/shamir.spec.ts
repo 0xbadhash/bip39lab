@@ -34,4 +34,18 @@ test.describe("Shamir educational page", () => {
     await expect(page.locator("#shStatus")).toContainText(/empty|Practice secret/i);
     await expect(page.locator(".shamir-share-card")).toHaveCount(0);
   });
+
+  test("S56 recombine verifies practice secret offline", async ({ page }) => {
+    await page.goto("/shamir.html");
+    await page.locator("#btnShGen").click();
+    const secret = await page.locator("#shSecret").inputValue();
+    expect(secret.length).toBeGreaterThan(0);
+    await page.locator("#shM").fill("2");
+    await page.locator("#shN").fill("3");
+    await page.locator("#btnShSplit").click();
+    await expect(page.locator(".shamir-share-card")).toHaveCount(3);
+    await page.locator("#btnShRecombine").click();
+    await expect(page.locator("#shRecombineOut")).toContainText(/Matches practice secret|Recovered/i);
+    await expect(page.locator("#shStatus")).toContainText(/Recombine OK/i);
+  });
 });

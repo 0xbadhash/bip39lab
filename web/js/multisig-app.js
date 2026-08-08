@@ -231,7 +231,18 @@
     if (gen) gen.addEventListener("click", genDemo);
 
     document.querySelectorAll("#msWordTabs .seg-tab").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      // pointerdown: select before layout reflow from later generate; avoid mis-hit on 24-word tab
+      btn.addEventListener("pointerdown", (ev) => {
+        if (ev.button != null && ev.button !== 0) return;
+        ev.preventDefault();
+        document.querySelectorAll("#msWordTabs .seg-tab").forEach((b) => {
+          const on = b === btn;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+        });
+      });
+      btn.addEventListener("click", (ev) => {
+        ev.preventDefault();
         document.querySelectorAll("#msWordTabs .seg-tab").forEach((b) => {
           const on = b === btn;
           b.classList.toggle("active", on);

@@ -207,7 +207,7 @@
           </div>
           <p id="shStatus" class="status" role="status">—</p>
           <p class="control-help teach-only">
-            Recombine UI is intentionally <strong>not</strong> in v1 — unit tests prove recovery; learners should not treat this as a backup product.
+            Educational only — not SLIP-39. After split, use <strong>Verify recombine</strong> below to prove any M shares rebuild the practice secret (still offline).
           </p>
         </div>
 
@@ -222,6 +222,32 @@
           </div>
           <div id="shShares" class="shamir-shares"></div>
           <p class="control-help" id="shSharesHint">Split to see labeled share cards (<code>share:index:hex</code> — not BIP-39 words).</p>
+        </div>
+
+        <div class="card" id="shCardRecombine">
+          <div class="card-head">
+            <h2 class="label-row">Verify recombine (educational)
+              <span class="help-tip help-tip-safety" data-term="SHAMIR">
+                <button type="button" class="help-tip-btn" aria-label="About recombine">i</button>
+                <span class="help-tip-panel" hidden>
+                  Paste any M share lines (one per line). Reconstructs the <em>practice</em> secret offline
+                  and compares to the field above when it is still filled. Not SLIP-39; never for real funds.
+                </span>
+              </span>
+            </h2>
+          </div>
+          <p class="control-help">
+            Paste M or more <code>share:index:hex</code> lines (e.g. copy two cards after a 2-of-3 split). Closes the teach loop without a production backup product.
+          </p>
+          <label class="field" for="shRecombineIn">Shares to combine
+            <textarea id="shRecombineIn" rows="4" spellcheck="false" autocomplete="off"
+              placeholder="share:1:…&#10;share:3:…"></textarea>
+          </label>
+          <div class="row">
+            <button type="button" class="btn secondary" id="btnShRecombine">Verify recombine</button>
+            <button type="button" class="btn secondary" id="btnShFillM">Fill M shares from cards</button>
+          </div>
+          <pre class="out" id="shRecombineOut">—</pre>
         </div>
 
         <p class="footer-host">

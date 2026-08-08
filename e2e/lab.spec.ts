@@ -67,6 +67,14 @@ test.describe("Lab mnemonic & derive", () => {
     await expect(page.locator("#entropyMnemonic")).toHaveText(/256 bits \(24-word BIP-39\)/);
   });
 
+  test("S2b word count select follows pasted phrase length", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#wordCount").selectOption("24");
+    await pasteMnemonic(page, ABANDON);
+    await expect(page.locator("#wordCount")).toHaveValue("12");
+    await expect(page.locator("#entropyMnemonic")).toContainText(/128 bits|12-word/i);
+  });
+
   test("S2 abandon golden BIP86 + BIP84 + BIP49 + BIP44", async ({ page }) => {
     await page.goto("/");
     await page.locator("#btnClear").click();

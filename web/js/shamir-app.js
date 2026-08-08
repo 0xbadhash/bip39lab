@@ -119,18 +119,110 @@
           mn.m +
           "-of-" +
           mn.n +
-          " educational shares (not SLIP-39). Recombine UI is not in v1.",
+          " educational shares (not SLIP-39). Use Verify recombine below to prove recovery.",
         "ok"
       );
+      if ($("shRecombineIn")) {
+        // Prefill first M share lines for one-click verify
+        var lines = shares.slice(0, mn.m).map(function (sh) {
+          return ShamirLab.encodeShare(sh);
+        });
+        $("shRecombineIn").value = lines.join("\n");
+      }
+      if ($("shRecombineOut")) $("shRecombineOut").textContent = "—";
     } catch (e) {
       if ($("shShares")) $("shShares").innerHTML = "";
       setStatus(String(e && e.message ? e.message : e), "err");
     }
   }
 
+  function parseShareLines(text) {
+    var lines = String(text || "")
+      .split(/\r?\n/)
+      .map(function (l) {
+        return l.trim();
+      })
+      .filter(Boolean);
+    if (!lines.length) throw new Error("Paste at least M share lines (share:index:hex).");
+    return lines.map(function (line) {
+      return ShamirLab.parseShare(line);
+    });
+  }
+
+  function onRecombine() {
+    if (!globalThis.ShamirLab) {
+      setStatus("ShamirLab not loaded.", "err");
+      return;
+    }
+    var out = $("shRecombineOut");
+    try {
+      var shares = parseShareLines($("shRecombineIn") && $("shRecombineIn").value);
+      var recovered = ShamirLab.combineShares(shares);
+      var hex = ShamirLab.toHex(recovered);
+      var utf8 = "";
+      try {
+        if (typeof TextDecoder !== "undefined") {
+          utf8 = new TextDecoder("utf-8", { fatal: false }).decode(recovered);
+        }
+      } catch (e2) {
+        utf8 = "";
+      }
+      var original = (($("shSecret") && $("shSecret").value) || "").trim();
+      var match = false;
+      if (original) {
+        if (/^[0-9a-fA-F]+$/.test(original) && original.length % 2 === 0) {
+          match = original.toLowerCase() === hex;
+        } else {
+          match = original === utf8;
+        }
+      }
+      var msg =
+        "Recovered " +
+        recovered.length +
+        " bytes.\nhex: " +
+        hex +
+        (utf8 && /^[\x20-\x7e]*$/.test(utf8) ? "\nas UTF-8: " + utf8 : "") +
+        "\n" +
+        (original
+          ? match
+            ? "Matches practice secret field above. (Educational proof only — not SLIP-39.)"
+            : "Does not match practice secret field (different secret or incomplete shares)."
+          : "No practice secret in field to compare — hex above is the reconstruction.");
+      if (out) out.textContent = msg;
+      setStatus(
+        match
+          ? "Recombine OK — practice secret reconstructed offline."
+          : original
+            ? "Recombine ran — result does not match the secret field."
+            : "Recombine OK — reconstructed " + recovered.length + " bytes.",
+        match || !original ? "ok" : "err"
+      );
+    } catch (e) {
+      if (out) out.textContent = String(e && e.message ? e.message : e);
+      setStatus(String(e && e.message ? e.message : e), "err");
+    }
+  }
+
+  function onFillM() {
+    var cards = document.querySelectorAll(".shamir-share-card .share-line");
+    var m = parseInt(($("shM") && $("shM").value) || "2", 10) || 2;
+    var lines = [];
+    for (var i = 0; i < cards.length && lines.length < m; i++) {
+      lines.push(cards[i].textContent.trim());
+    }
+    if (!lines.length) {
+      setStatus("No share cards yet — Split demo first.", "err");
+      return;
+    }
+    if ($("shRecombineIn")) $("shRecombineIn").value = lines.join("\n");
+    setStatus("Filled " + lines.length + " share line(s) from cards (need M=" + m + ").", "ok");
+  }
+
   function onClear() {
     if ($("shSecret")) $("shSecret").value = "";
     if ($("shShares")) $("shShares").innerHTML = "";
+    if ($("shRecombineIn")) $("shRecombineIn").value = "";
+    if ($("shRecombineOut")) $("shRecombineOut").textContent = "—";
     setStatus("Cleared practice secret and shares from this page.", "");
   }
 
@@ -138,6 +230,8 @@
     if ($("btnShGen")) $("btnShGen").addEventListener("click", onGenerate);
     if ($("btnShSplit")) $("btnShSplit").addEventListener("click", onSplit);
     if ($("btnShClear")) $("btnShClear").addEventListener("click", onClear);
+    if ($("btnShRecombine")) $("btnShRecombine").addEventListener("click", onRecombine);
+    if ($("btnShFillM")) $("btnShFillM").addEventListener("click", onFillM);
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
   });
 })();
