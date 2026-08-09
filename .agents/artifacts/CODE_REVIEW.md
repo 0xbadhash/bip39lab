@@ -1,31 +1,22 @@
-# CODE-REVIEW — Multisig teach UX polish
+# CODE_REVIEW — teach-surface jump-link consistency
 
-**Spec:** `.agents/specs/2026-08-09-multisig-teach-ux.md`  
-**Scope:** `web/multisig.html`, `web/js/multisig-app.js`, `tests/test_multisig.py`, `e2e/multisig.spec.ts`, roadmap/PR_DRAFT
+**Date:** 2026-08-09  
+**Spec:** `.agents/specs/2026-08-09-teach-surface-jump-links.md`  
+**Verdict:** APPROVE (teach HTML only)
 
-## Verdict
+## Scope
 
-**Approve** for `/pr_review` — teach/UI only; crypto path and CSP unchanged.
+- `web/index.html`, `web/network.html`, `web/shamir.html` — jump-link rail help, drop forced step numbers, small teach copy.
+- `tests/test_teach_surface_jump_links.py` — static HTML contracts.
+- Roadmap: Multisig teach → DONE; new OPEN for this slice (closed by this ship once released).
 
-## Findings
+## Checks
 
-### Blockers
-None.
+- [x] No crypto/bundle/CSP change
+- [x] No secret retention / no new network from Lab or Shamir
+- [x] Multisig pattern parity (On this page / jump links / aria)
+- [x] pytest contracts + product smoke unit+e2e green
 
-### Non-blockers
-- N1: Airgap chip depends on `navigator.onLine` (spoofable); copy already disclaims guarantee.
-- N2: Step rail remains teach-only (hidden when Teach Off) — intentional; calculator banner always visible.
+## Residual
 
-## Security checklist
-- [x] No mnemonic/seed/xprv retention or logging
-- [x] CSP `connect-src 'none'` retained
-- [x] Refuse private material still covered by S12 / unit golden
-- [x] No eval of config; no secret commits
-
-## Tests
-- Unit: ` .venv/bin/python -m pytest tests/test_multisig.py -q` → 3 passed
-- E2E: `npx playwright test e2e/multisig.spec.ts` → 8 passed
-- `python3 scripts/check_web_e2e.py --root .` → ok (67 S-ids)
-
-## Traceability
-PR_DRAFT AC table maps AC-1…8 → unit + S26/S28/S12.
+- Full `/pr_review --validate` + `/release_mgmt` version bump (0.13.5) still operator-follow for tag ship if desired as separate release.
