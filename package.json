@@ -1,7 +1,7 @@
 {
   "name": "bip39lab-web",
   "private": true,
-  "version": "0.13.4",
+  "version": "0.13.5",
   "description": "Offline BIP-39 lab static web + e2e",
   "scripts": {
     "build:web": "esbuild web/js/build-entry.mjs --bundle --format=iife --outfile=web/js/bip39lab.bundle.js",

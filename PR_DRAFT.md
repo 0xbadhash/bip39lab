@@ -20,8 +20,17 @@ Learners can jump freely on Lab / Network / Shamir the same way as Multisig; cle
 
 | Check | Result |
 |-------|--------|
-| pytest teach surface | `python -m pytest tests/test_teach_surface_jump_links.py -q` |
-| product smoke | `python scripts/product_smoke.py --root .` (as available) |
+| pytest teach surface | `python -m pytest tests/test_teach_surface_jump_links.py -q` → 3 passed |
+| product smoke | `python scripts/product_smoke.py --root .` (release gate) |
+
+## Evidence pack
+
+| Artifact | Result |
+|----------|--------|
+| hard_gates | `python3 scripts/hard_gates.py --diff b32f07b...HEAD` |
+| pytest | `.venv/bin/python -m pytest tests/test_teach_surface_jump_links.py -q` → 3 passed |
+| behavior | `.agents/artifacts/BEHAVIOR_REPORT.md` (BEHAVIOR-REPORT) PASS |
+| CODE-REVIEW | `.agents/artifacts/CODE_REVIEW.md` APPROVE |
 
 ## Traceability
 
@@ -47,3 +56,11 @@ green_cmd: python -m pytest tests/test_teach_surface_jump_links.py -q
 ```
 
 TDD: contracts assert Multisig-aligned jump-link strings on Lab/Network/Shamir.
+
+## Things that look bad but are actually fine
+
+1. Step rails still list a suggested order (1-ish visual sequence via label order) — they are **jump links**, not a forced wizard; copy says so explicitly.
+2. Network page still has CSP allowing mempool/API for opt-in balance — intentional; Lab/Shamir stay offline CSP; failure copy still unknown ≠ zero.
+3. Shamir still says “not SLIP-39” repeatedly — educational safety, not incomplete product copy.
+4. HTML-only diff with no JS crypto change — correct scope for teach IA consistency.
+5. BEHAVIOR_REPORT uses static HTML + pytest contracts rather than live browser this turn — black-box clauses still satisfied for static teach surfaces.
