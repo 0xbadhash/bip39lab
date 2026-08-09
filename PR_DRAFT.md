@@ -26,6 +26,18 @@ Teach-first Multisig surface after Shamir ship: align framing with Lab (dual CSP
 - `python3 scripts/check_web_e2e.py --root .`
 - Product smoke at release
 
+
+## Evidence pack
+
+| Item | Result |
+|------|--------|
+| hard_gates | run after this section |
+| smoke / pytest | `.venv/bin/python -m pytest -q` → 56 passed |
+| playwright | `npx playwright test e2e/multisig.spec.ts` → 8 passed |
+| validate / web_e2e | `python3 scripts/check_web_e2e.py --root .` → ok · 67 S-ids |
+| coverage | Multisig teach contracts in unit + S26/S28 |
+| SBOM / secrets | no dep change; no secrets in diff |
+
 ## Traceability
 
 | AC | Test / smoke |
