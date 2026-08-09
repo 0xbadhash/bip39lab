@@ -44,3 +44,6 @@ Thumbs.db
 .idea/
 .vscode/
 .agents/state/*.lock
+
+# local random seed scan state (hashes only)
+.local/seed_scan/
