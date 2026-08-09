@@ -55,6 +55,18 @@ def test_one_share_cannot_reconstruct_when_m_is_2():
         combine_shares([shares[0]])
 
 
+def test_duplicate_index_does_not_count_as_two_shares():
+    secret = b"need-two-shares!"
+    shares = split_secret(secret, m=2, n=3, rng=secrets.SystemRandom())
+    with pytest.raises(ValueError, match="need|threshold|M|distinct"):
+        combine_shares([shares[0], shares[0]])
+
+
+def test_parse_share_rejects_malformed():
+    with pytest.raises(ValueError, match="format|share"):
+        parse_share("not-a-share-line")
+
+
 def test_encode_parse_roundtrip():
     secret = bytes.fromhex("00112233445566778899aabbccddeeff")
     shares = split_secret(secret, m=3, n=5, rng=secrets.SystemRandom())

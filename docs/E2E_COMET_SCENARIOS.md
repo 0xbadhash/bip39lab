@@ -280,7 +280,7 @@ S12, S12b, S26–S31 · `e2e/multisig.spec.ts`
 ## Page 5 — Shamir (`/shamir.html`)
 
 ### Description
-Educational **Shamir secret sharing** over bytes (GF(256)). Demo split only — **not SLIP-39**, not BIP-39 words. No recombine UI in v1.
+Educational **Shamir secret sharing** over bytes (GF(256)). Demo split + **Verify recombine** — **not SLIP-39**, not BIP-39 words.
 
 ### Process flow (learner)
 

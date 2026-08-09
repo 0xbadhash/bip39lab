@@ -72,20 +72,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Shamir recombine (educational, non-SLIP-39)
-- **Status:** open
+### [DONE] Shamir recombine (educational, non-SLIP-39)
+- **Status:** done
 - **Priority:** P1
-- **Next:** true
 - **Spec:** `.agents/specs/2026-08-08-shamir-recombine.md`
-- **Plan:** none
 - **Acceptance:**
-  - [ ] Verify recombine reconstructs practice secret offline from M educational shares
-  - [ ] Fill M from cards (or equivalent) + match/mismatch vs practice secret field
-  - [ ] Errors on empty/bad/under-threshold input; no fake success
-  - [ ] Banner remains educational / not SLIP-39 / not for real funds (no wallet-safety claim)
-  - [ ] CSP offline; unit + Playwright S56; product smoke green
+  - [x] Verify recombine reconstructs practice secret offline from M educational shares
+  - [x] Fill M from cards (or equivalent) + match/mismatch vs practice secret field
+  - [x] Errors on empty/bad/under-threshold input; no fake success
+  - [x] Banner remains educational / not SLIP-39 / not for real funds (no wallet-safety claim)
+  - [x] CSP offline; unit + Playwright S56; product smoke green
 - **Smoke:** product smoke (pytest + e2e) + S53–S56
-- **Notes:** Completes demo loop after v1 split; **not** SLIP-39. Code may exist from Comet polish — gap-check on execute.
+- **Notes:** Completes demo loop after v1 split; **not** SLIP-39. Gap-checked on top of Comet polish (`edb7220`).
 
 ### [DONE] Shamir secret sharing — left-nav tab (v1 teach + demo split)
 - **Status:** done
@@ -266,6 +264,5 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Next:** Shamir recombine (educational, non-SLIP-39) — `.agents/specs/2026-08-08-shamir-recombine.md`.  
-**Later (not this ship):** SLIP-39 standard (integrity-checked wordlists + fixtures); private Knots proxy for Network.  
-**Shipped:** Shamir left-nav tab v1 (split demo).
+**Shipped:** Shamir left-nav tab v1 + educational recombine (non-SLIP-39).  
+**Later (not this ship):** SLIP-39 standard (integrity-checked wordlists + fixtures); private Knots proxy for Network.

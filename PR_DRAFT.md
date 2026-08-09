@@ -1,62 +1,47 @@
-# PR Draft: Shamir educational left-nav tab (v1)
+# PR Draft: Shamir recombine (educational, non-SLIP-39)
 
-**Range:** `origin/master...HEAD`  
-**Spec:** `.agents/specs/2026-08-07-shamir-share-tab.md`  
-**Plan:** `.agents/specs/2026-08-07-shamir-share-tab-plan.md`
+**Range:** `buzz/main...HEAD`  
+**Spec:** `.agents/specs/2026-08-08-shamir-recombine.md`  
+**Plan:** none
 
 ## What Problem This Solves
 
-Learners had Multisig (M-of-N keys) but no first-class offline place to see **Shamir** M-of-N **shares** of a secret, safely labeled as educational.
+v1 Shamir taught split but learners could not close the loop: any M shares rebuild the practice secret. Without recombine, the threshold demo is incomplete and easy to mistrust.
 
 ## Why This Change Was Made
 
-Ship the ready-for-agent Shamir spec: left-nav step 3, teach + demo split only (not SLIP-39, no recombine UI).
+Ship educational recombine on the existing Shamir page (gap-check on Comet polish + step rail, Fill M e2e, Comet/ROADMAP alignment). Still **not SLIP-39**.
 
 ## User Impact
 
-- New **Shamir** page offline: compare table, generate practice secret, M-of-N split → labeled share cards.  
-- Sidebar is **6 items** again (feature, not docs-only).  
-- Glossary terms for Shamir / threshold / share / SLIP-39.
+- **Verify recombine** + **Fill M shares from cards** on `shamir.html`
+- Step rail step **4 · Recombine**
+- Match / mismatch vs practice secret field; clear errors on bad input
+- Banner remains educational / not for real funds
 
 ## Evidence
 
-- Unit: `tests/test_shamir.py` (split/combine + JS core round-trip)  
-- E2E: S53–S55, S0/S10/S36 nav  
-- product_smoke unit+e2e after VERSION sync  
+- Unit: `tests/test_shamir.py` (any-M, under-threshold, duplicate index, malformed parse, JS core)
+- E2E: S53–S56 (S56 Fill M + recombine match)
+- Comet: Page 5 description + S56 scenario
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| Nav step 3 Shamir | helpers NAV, S36, S10 |
-| Teach + danger banner | S53 |
-| M-of-N split N cards | S54 + pytest |
-| Empty error | S55 |
-| Offline CSP | S53 labCspOffline |
-| Glossary | glossary.js SHAMIR terms |
-
-## Threat notes
-
-- Offline CSP `connect-src 'none'`; no network secrets.  
-- Explicit non-SLIP-39 / not-for-real-funds banner.  
-- No Lab mnemonic auto-import.
+| Verify recombine offline | S56 + `combine_shares` / `combineShares` |
+| Fill M from cards | S56 clears textarea → Fill M → recombine |
+| Errors empty/bad/under-threshold | S55; unit under-threshold + malformed + duplicate |
+| Educational banner / not SLIP-39 | S53 |
+| Offline CSP | S53 `labCspOffline` |
+| Step rail recombine | S56 step-rail selector |
+| No secrets committed | secrets diff / no retention |
 
 ## Red-proof
 
-```text
-red_cmd: pytest tests/test_shamir.py → ModuleNotFoundError bip39lab.shamir
-green_cmd: pytest tests/test_shamir.py → 7 passed; npx playwright test e2e/shamir.spec.ts → 3 passed
-```
+- `red_cmd`: new unit cases for duplicate index / malformed parse (contract already enforced)
+- `green_cmd`: `.venv/bin/python -m pytest tests/test_shamir.py -q`
 
-## Evidence pack
+## Threat notes
 
-- hard_gates / CODE-REVIEW / BEHAVIOR-REPORT  
-- product_smoke pytest + e2e  
-- secrets scan on range  
-
-## Things that look bad but are actually fine
-
-1. **Hand-rolled GF(256) SSS** — educational only; unit round-trips; banner forbids real funds.  
-2. **No recombine UI** — intentional v1; combine exists for tests.  
-3. **6-nav again after v0.12.3 5-nav** — Balance was docs-only; Shamir is a real surface.  
-4. **Shares look like recovery material** — format is `share:index:hex`, not BIP-39 words.  
+- Offline CSP `connect-src 'none'`; no network of shares; no Lab mnemonic auto-import; no retention.
