@@ -58,3 +58,5 @@ green_cmd: python3 scripts/check_web_e2e.py --root .
 
 1. **No VERSION bump required for this chore** if release is docs/UX only; live already on 0.13.2 crypto. Optional 0.13.3 only if deploy wants a distinct tag.
 2. **Plugin still lists coarse S13** in web_e2e surface IDs — contract MD is authoritative exhaustive list.
+3. **Artifacts CODE_REVIEW / BEHAVIOR_REPORT gitignored** — present on disk for hard_gates; not committed (same pattern as prior ships).
+4. **Ahead of buzz/main by prior v0.13.2 commits** — this chore rides the same push of recombine + polish, not a re-ship of crypto.
