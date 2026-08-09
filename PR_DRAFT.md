@@ -46,6 +46,14 @@ red_cmd: n/a (chore copy + docs; behavior already covered by S53–S56)
 green_cmd: python3 scripts/check_web_e2e.py --root .
 ```
 
+## Evidence pack
+
+- **hard_gates:** `python3 scripts/hard_gates.py --diff buzz/main...HEAD`
+- **web_e2e:** `python3 scripts/check_web_e2e.py --root .` (67 Playwright S-ids)
+- **secrets:** `python3 scripts/check_secrets_diff.py --base buzz/main --head HEAD` (clean)
+- **smoke:** `python3 scripts/product_smoke.py --root .` at release (or targeted shamir e2e)
+- **validate:** `python3 scripts/validate.py full` when harness path available
+
 ## Things that look bad but are actually fine
 
 1. **No VERSION bump required for this chore** if release is docs/UX only; live already on 0.13.2 crypto. Optional 0.13.3 only if deploy wants a distinct tag.
