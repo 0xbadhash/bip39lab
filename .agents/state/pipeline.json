@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "ready_for_review",
-  "score": 0,
+  "phase": "shipped",
+  "score": 100.0,
   "spec_id": ".agents/specs/2026-08-09-multisig-teach-ux.md",
   "task": "Multisig teach UX polish",
   "waiver": null
