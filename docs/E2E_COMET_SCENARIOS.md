@@ -31,6 +31,8 @@ scenarios: S0–S56 exhaustive · 6-nav · human process flows per page
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
+`Product: 0.13.2 · Contract: 2 · Last aligned: 2026-08-09`
+
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
 **Live base:** https://bip39.catalyxt.xyz/
@@ -46,7 +48,7 @@ scenarios: S0–S56 exhaustive · 6-nav · human process flows per page
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **64** tests (local `http://127.0.0.1:4173`).  
+**Playwright total:** `npm run test:e2e` → **67** tests (local `http://127.0.0.1:4173`).  
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
 **Comet/Perplexity score sheet:** **S0–S56** (scenario IDs below; some Playwright tests map 1:1).
 
@@ -662,6 +664,8 @@ Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered
 
 ```text
 # BIP39 Lab E2E report (exhaustive)
+Product version:
+Doc contract version: 2
 URLs:
   Lab:      https://bip39.catalyxt.xyz/
   Multisig: https://bip39.catalyxt.xyz/multisig.html
@@ -749,7 +753,7 @@ S54 Shamir split 2-of-3: PASS|FAIL —
 S55 Shamir empty error: PASS|FAIL —
 S56 Shamir recombine: PASS|FAIL —
 
-Score: __ / 60 PASS   (count S0,S0b,S0c + S1–S56 including S18b,S48b,S2b)
+Score: __ / 67 PASS   (count Playwright S-ids: S0,S0b,S0c + S1–S56 incl. S1b,S2b,S12b,S13b–d,S18b,S39b,S48b)
 Blockers:
 UX / coherence notes (what confused a human learner):
 ```
@@ -766,7 +770,7 @@ UX / coherence notes (what confused a human learner):
 
 ```bash
 npm install && npx playwright install chromium
-npm run test:e2e              # local :4173  (~64 tests)
+npm run test:e2e              # local :4173  (67 tests)
 npm run test:e2e:live         # production
 ```
 
@@ -776,7 +780,7 @@ npm run test:e2e:live         # production
 | `e2e/lab.spec.ts` | S0–S25 Lab + Tools + nav tour |
 | `e2e/multisig.spec.ts` | S12–S31 Multisig |
 | `e2e/shamir.spec.ts` | S53–S56 Shamir |
-| `e2e/network.spec.ts` | S13–S35 Network |
+| `e2e/network.spec.ts` | S13b–d, S32–S35 Network |
 | `e2e/site-chrome.spec.ts` | S36–S40 chrome |
 | `e2e/help-ux.spec.ts` | S41–S48b Teach / tips |
 | `e2e/glossary.spec.ts` | S49–S52 Glossary |

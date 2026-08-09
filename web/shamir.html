@@ -100,35 +100,38 @@
         <div class="card card-wide" id="shCardTeach">
           <div class="card-head"><h2>What is Shamir sharing?</h2></div>
           <p class="card-lede teach-only">
-            Split one secret into <strong>N pieces</strong> so any <strong>M</strong> pieces rebuild it — and fewer than M reveal nothing useful.
+            <strong>Shamir</strong> splits <em>one</em> secret into <strong>N shares</strong> so any
+            <strong>M</strong> shares rebuild it — fewer than M reveal nothing useful.
+            That is different from <strong>Multisig</strong> (M-of-N <em>keys</em> that co-sign a spend)
+            and from a <strong>BIP-39 phrase</strong> (one recovery word list — not a threshold split).
           </p>
           <table class="compare-table" aria-label="Shamir vs Multisig vs BIP-39">
             <thead>
               <tr>
-                <th></th>
-                <th>Shamir (this page)</th>
-                <th>Multisig</th>
-                <th>BIP-39 phrase</th>
+                <th scope="col">Question</th>
+                <th scope="col">Shamir (this page)</th>
+                <th scope="col">Multisig</th>
+                <th scope="col">BIP-39 phrase</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th scope="row">What is split?</th>
-                <td>One secret (bytes)</td>
-                <td>N separate keys</td>
-                <td>Not split — one word list</td>
+                <th scope="row">What is split / controlled?</th>
+                <td>One secret (raw bytes) → N shares</td>
+                <td>N independent keys (not one secret split)</td>
+                <td>Nothing is split — one recovery word list</td>
               </tr>
               <tr>
-                <th scope="row">M-of-N means</th>
-                <td>M shares rebuild the secret</td>
-                <td>M signatures authorize a spend</td>
-                <td>N/A</td>
+                <th scope="row">What does M-of-N mean?</th>
+                <td>Any M shares rebuild the same secret</td>
+                <td>M signatures authorize a spend on a vault address</td>
+                <td>N/A — phrase is all-or-nothing, not threshold</td>
               </tr>
               <tr>
-                <th scope="row">This lab format</th>
-                <td><code>share:index:hex</code> (edu)</td>
-                <td>Addresses from pubkeys</td>
-                <td>English wordlist</td>
+                <th scope="row">This lab’s format</th>
+                <td><code>share:index:hex</code> (educational only)</td>
+                <td>Addresses derived from public keys</td>
+                <td>English BIP-39 wordlist</td>
               </tr>
             </tbody>
           </table>
@@ -137,7 +140,7 @@
               <button type="button" class="help-tip-btn" aria-label="About Shamir">i</button>
               <span class="help-tip-panel" hidden></span>
             </span>
-            Threshold secret sharing is not the same as a multisig vault address.
+            Threshold <em>secret sharing</em> ≠ multisig vault (spend policy). Shares here are not SLIP-39 words.
           </p>
         </div>
 
