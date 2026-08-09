@@ -1,23 +1,21 @@
-# RELEASE RUNBOOK — v0.13.2
+# RELEASE RUNBOOK — v0.13.3
 
 **Date:** 2026-08-09  
-**Tag:** `v0.13.2`  
-**Task:** Shamir recombine (educational, non-SLIP-39)  
-**Spec:** `.agents/specs/2026-08-08-shamir-recombine.md`  
+**Tag:** `v0.13.3`  
+**Task:** Shamir teach + E2E align (chore)  
+**Spec waiver:** chore · `.agents/specs/2026-08-08-shamir-recombine.md` (prior crypto)  
 **Live:** https://bip39.catalyxt.xyz/ (nginx root → `web/`)
 
 ## What shipped
 
-- Close educational Shamir recombine loop: Verify recombine + Fill M from cards
-- Step rail step 4 · Recombine; match/mismatch vs practice secret
-- Unit edges: under-threshold, duplicate index, malformed parse
-- E2E S53–S56 + Comet/ROADMAP alignment (still **not SLIP-39**)
-- Site version stamp remains `v0.13.2` via `scripts/stamp_site_version.py`
+- Clearer Shamir teach table (threshold shares ≠ multisig keys ≠ BIP-39 phrase)
+- E2E Comet MD: score total **67**, Network map **S13b–d / S32–S35**, product/contract stamp
+- No crypto / retention path change (copy + docs chore after v0.13.2 recombine)
 
 ## Version stamp
 
 ```bash
-echo 0.13.2 > VERSION
+echo 0.13.3 > VERSION
 python3 scripts/stamp_site_version.py
 # package.json + pyproject.toml match
 ```
@@ -28,36 +26,26 @@ python3 scripts/stamp_site_version.py
 |------|------|
 | `python3 scripts/product_smoke.py --root .` (unit + e2e) | 0 |
 | `python3 scripts/check_web_e2e.py --root .` | 0 (67 Playwright S-ids; surfaces ok) |
-| `python3 scripts/stamp_site_version.py` | 0 → v0.13.2 |
-| Open PRs (`gh pr list --state open`) | empty / n/a on this branch |
+| `python3 scripts/stamp_site_version.py` | 0 → v0.13.3 |
+| Open PRs (`gh pr list --state open`) | empty / n/a |
+| Infra | skip (no INFRA_RUNBOOK) |
 
 ## Evidence pack (B5)
 
 - **smoke:** product_smoke unit + e2e exit 0
-- **hard_gates / pytest:** PR_DRAFT evidence pack; `tests/test_shamir.py` recombine cases
-- **web_e2e:** check_web_e2e ok (strict, 7 specs)
-- **Note:** `validate.py full` system-python missing ruff/mypy/pytest; product smoke uses `.venv` and is green
-
-## Infra
-
-- No product INFRA_RUNBOOK surface → skipped
+- **web_e2e:** check_web_e2e ok (strict, 7 specs, 67 S-ids)
+- **hard_gates / secrets:** PR_DRAFT evidence pack; secrets diff clean on chore range
+- **validate:** `validate.py full` system-python missing ruff/mypy/pytest (known); product `.venv` smoke is green
 
 ## Rollback
 
-1. Redeploy previous tag: `git checkout v0.13.1` → sync `web/` to nginx root  
-2. Or revert merge commits for Shamir recombine gap-check + release closeout  
-3. Confirm live `data-site-version` / footer shows expected tag after deploy  
+1. `git checkout v0.13.2 -- web/ docs/ VERSION package.json pyproject.toml`
+2. Redeploy `web/` to nginx root; `python3 scripts/stamp_site_version.py` if needed
+3. Confirm https://bip39.catalyxt.xyz/ loads prior teach copy
 
-## §9 operator checks (≥3)
+## §9 (≥3)
 
-1. Offline CSP on Shamir page still `connect-src 'none'` (no share leak path)  
-2. Recombine under-threshold / bad input fails closed (no silent wrong secret)  
-3. Educational banner / not-for-real-funds copy present  
-4. Version chip shows `v0.13.2` after deploy  
-
-## Post-release
-
-1. Tag `v0.13.2` on release commit  
-2. Push `master` + tags to `buzz/main` (or product remote) when operator approves  
-3. Deploy `web/` to bip39.catalyxt.xyz  
-4. `/sync_docs` → pipeline `init`  
+1. Teach table is educational only — still **not SLIP-39**, not a funds path.
+2. Plugin coarse S13 IDs remain; exhaustive map lives in `docs/E2E_COMET_SCENARIOS.md`.
+3. Deploy is static `web/` copy; tag does not auto-push live until operator deploys.
+4. Portfolio harness reinstall N/A (product ship, not agent-harness SoT).

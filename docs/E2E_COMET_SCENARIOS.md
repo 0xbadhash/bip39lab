@@ -31,7 +31,7 @@ scenarios: S0–S56 exhaustive · 6-nav · human process flows per page
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
-`Product: 0.13.2 · Contract: 2 · Last aligned: 2026-08-09`
+`Product: 0.13.3 · Contract: 2 · Last aligned: 2026-08-09`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
