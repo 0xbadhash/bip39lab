@@ -262,6 +262,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] `#about` redirects to glossary; e2e + Comet updated
 - **Notes:** `v0.12.2`
 
+### [OPEN] Multisig teach UX polish
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-09-multisig-teach-ux.md`
+- **Acceptance:**
+  - [ ] Calculator-only banner; jump-link step rail
+  - [ ] Dual chips CSP offline + browser airgap
+  - [ ] BIP67 off warning; zpub ≠ xpub; before-fund verify
+  - [ ] Fair Ian Coleman note; CSP/crypto unchanged
+  - [ ] Unit + Playwright S26/S28 extended; product smoke
+- **Smoke:** pytest + e2e
+- **Notes:** Full FSM after Shamir v0.13.3; teach-first Multisig surface
+
 ## Current focus
 
 **Shipped:** Shamir left-nav tab v1 + educational recombine (non-SLIP-39).  

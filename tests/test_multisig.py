@@ -63,3 +63,22 @@ def test_multisig_static_page():
     # Lab links to multisig
     lab = (ROOT / "web/index.html").read_text(encoding="utf-8")
     assert "multisig.html" in lab
+
+
+def test_multisig_teach_ux_contracts():
+    """Teach UX polish: calculator banner, chips, BIP67 warn, zpub ≠ xpub."""
+    html = (ROOT / "web/multisig.html").read_text(encoding="utf-8")
+    js = (ROOT / "web/js/multisig-app.js").read_text(encoding="utf-8")
+    assert "Address calculator only" in html
+    assert "id=\"chipAirgap\"" in html
+    assert "id=\"chipOffline\"" in html
+    assert "id=\"msBip67Warn\"" in html
+    assert "jump links" in html.lower()
+    assert 'id="msCardIntro"' in html
+    assert "This is not an xpub" in html
+    assert "unsafe by nature" in html
+    assert "Before funding" in html
+    assert "connect-src 'none'" in html
+    assert "updateAirgapChip" in js
+    assert "syncBip67Warn" in js
+    assert "msBip67Warn" in js

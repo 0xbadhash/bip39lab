@@ -78,7 +78,7 @@
       <header class="topbar">
         <div>
           <h1>Multisig, explained</h1>
-          <p class="sub">M-of-N vault · offline · public keys only</p>
+          <p class="sub">A vault that needs M of N keys to spend — offline calculator, not a wallet</p>
         </div>
         <div class="topbar-actions">
           <span class="topbar-status">
@@ -88,23 +88,51 @@
               <span class="help-tip-panel" hidden></span>
             </span>
           </span>
-          <span class="chip">Offline</span>
+          <span class="topbar-status">
+            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+            <span class="help-tip help-tip-safety" data-term="CSP">
+              <button type="button" class="help-tip-btn" aria-label="About offline crypto CSP">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+            <span class="help-tip help-tip-safety" data-term="AIRGAP">
+              <button type="button" class="help-tip-btn" aria-label="Why show browser online/offline?">i</button>
+              <span class="help-tip-panel" hidden>
+                <strong>Why this chip?</strong>
+                Browser network signal (<code>navigator.onLine</code>) — green = online, red = offline.
+                Multisig crypto still never leaves this page (Offline crypto / CSP).
+                Same browser condition as Lab; this page is not “more offline.”
+              </span>
+            </span>
+          </span>
         </div>
       </header>
 
       <main class="content">
-        <nav class="step-rail teach-only" data-step-rail aria-label="Multisig process" id="msStepRail">
+        <div class="warn" role="note">
+          <strong>Address calculator only.</strong>
+          This page builds a multisig <em>address/script</em> from public keys. It does
+          <strong>not</strong> create a spendable wallet, hold keys, or sign spends.
+          To actually spend later you need a real wallet that imports the same policy plus each cosigner’s private material.
+        </div>
+
+        <p class="control-help teach-only" style="margin:0 0 0.5rem">
+          <strong>On this page</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
+        </p>
+        <nav class="step-rail teach-only" data-step-rail aria-label="Multisig page sections (jump links)" id="msStepRail">
           <button type="button" class="step-rail-btn is-active" data-step-target="#msCardIntro" aria-current="step">
-            1 · Learn<small>What M-of-N means</small>
+            Learn<small>What M-of-N means</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#msCardKeys">
-            2 · Keys<small>Demo or paste pubkeys</small>
+            Keys<small>Demo or paste pubkeys</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#msCardBuild">
-            3 · Build<small>M · BIP67 · address</small>
+            Build<small>M · BIP67 · address</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#msResult">
-            4 · Result<small>Copy P2SH / P2WSH</small>
+            Result<small>Copy P2SH / P2WSH</small>
           </button>
         </nav>
 
@@ -147,11 +175,13 @@
             <summary>Cosigner checklist</summary>
             <ul class="help-list">
               <li>☐ Each cosigner generated their own seed offline / on hardware</li>
-              <li>☐ Only <strong>public</strong> keys (or xpubs) are shared to build the vault</li>
+              <li>☐ Only <strong>public</strong> keys (or account xpubs/zpubs) are shared to build the vault</li>
               <li>☐ M and N written down for recovery (e.g. 2-of-3)</li>
               <li>☐ BIP67 sort agreed (recommended) so everyone builds the same address</li>
+              <li>☐ <strong>Before funding:</strong> every cosigner independently verifies the same address on their own device</li>
               <li>☐ Backup plan: who holds which key; how to replace a lost cosigner</li>
               <li>☐ No private keys or seeds pasted into this page</li>
+              <li>☐ This tool does not sign or spend — real wallet software is required later</li>
             </ul>
           </details>
         </div>
@@ -166,20 +196,28 @@
             <ul class="help-list">
               <li><strong>Real life:</strong> each person exports a public key from hardware / Sparrow; private keys never leave their device.</li>
               <li><strong>In this lab:</strong> <strong>Generate demo cosigners</strong> creates N throwaway seeds offline and fills pubkeys.</li>
-              <li>Demo seeds are for education only.</li>
+              <li>Demo seeds are for education only — do not fund them.</li>
             </ul>
           </details>
         </div>
 
-        <div class="card card-wide">
-          <h2>1 · Generate demo cosigners (optional)</h2>
+        <div class="card card-wide" id="msCardDemo">
+          <h2>Generate demo cosigners (optional)</h2>
           <p class="control-help">
-            This demo uses <strong>BIP84 native segwit</strong> only (purpose <code>84'</code>) — not BIP44/BIP86.
-            For each cosigner you get: BIP39 words, entropy bits, <strong>BIP84 zpub</strong>
-            (account <code>m/84'/0'/0'</code> — the SLIP-132 form of the BIP84 account public key people call “xpub”
-            in casual speech, but the prefix is <code>zpub</code>), plus the compressed pubkey at
-            <code>m/84'/0'/0'/0/0</code> used to build the simple M-of-N script in step 2.
+            Creates N throwaway BIP39 seeds and fills compressed pubkeys for Build.
+            Scheme: <strong>BIP84 native segwit</strong> only (path <code>m/84'/0'/0'/0/0</code>).
           </p>
+          <details class="help-fold teach-only">
+            <summary>What is a BIP84 zpub? (after you generate)</summary>
+            <p class="control-help">
+              Each demo card shows a <strong>BIP84 zpub</strong> — the SLIP-132 encoding of the
+              account public key at <code>m/84'/0'/0'</code>.
+              <strong>This is not an xpub.</strong> Do not paste a zpub into a tool that expects a BIP44 xpub
+              (or the reverse); wrong prefix is a common wallet-import error.
+              The M-of-N script here uses only the <strong>compressed pubkey</strong> at receive index 0,
+              not the full account zpub.
+            </p>
+          </details>
 
           <div class="control-block">
             <label class="field inline" for="msDemoN">How many cosigners (N)
@@ -190,7 +228,11 @@
                 <option value="5">5</option>
               </select>
             </label>
-            <p class="control-help">N people in the vault. Example: N=3 → often M=2 (2-of-3).</p>
+            <p class="control-help">
+              N people in the vault. Example only: N=3 often uses M=2 (2-of-3) for convenience —
+              not a universal best practice.
+              <span class="teach-only">Higher M means more security but more coordination; higher N means more redundancy but more key-management burden. Custody setups sometimes use 3-of-5 or stricter.</span>
+            </p>
           </div>
 
           <div class="seg-block">
@@ -210,7 +252,11 @@
           <label class="field" for="msDemoPass">Optional BIP39 passphrase (applied to every demo cosigner)
             <input id="msDemoPass" type="password" autocomplete="off" placeholder="empty = no passphrase" />
           </label>
-          <p class="control-help">Like the 25th word — changes seed and BIP84 zpub. Leave empty unless you are teaching passphrases.</p>
+          <p class="control-help">
+            Like the 25th word — changes seed and BIP84 zpub.
+            <strong>If you forget it, that cosigner key is permanently different / inaccessible</strong> (same words alone will not recover it).
+            Leave empty unless you are teaching passphrases.
+          </p>
 
           <div class="row">
             <button type="button" class="btn" id="msGenDemo">Generate N cosigners (BIP84)</button>
@@ -221,7 +267,7 @@
         </div>
 
         <div class="card card-wide" id="msCardBuild">
-          <div class="card-head"><h2>2 · Build an address (public keys only)</h2></div>
+          <div class="card-head"><h2>Build an address (public keys only)</h2></div>
           <p class="card-lede">
             Compressed pubkeys hex, one per line — or use the generator above. Private keys / WIF / xprv rejected.
           </p>
@@ -238,8 +284,13 @@
               </span>
             </span>
             <textarea id="msParts" rows="5" spellcheck="false" autocomplete="off"
-              placeholder="02abc…&#10;03def…&#10;02…"></textarea>
+              placeholder="0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798&#10;02c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5"></textarea>
           </label>
+          <p class="control-help teach-only">
+            Format: <strong>compressed</strong> secp256k1 — hex starting with <code>02</code> or <code>03</code>,
+            <strong>66 hex characters</strong> (33 bytes). Uncompressed keys start with <code>04</code> and are longer; this page rejects them.
+            Example (first line of placeholder): 66 chars, prefix <code>02</code>.
+          </p>
           <p id="msPartsSource" class="control-help" style="margin-top:0.35rem">
             Active source: paste compressed pubkeys below, or use Generate demo cosigners (warns before overwrite).
           </p>
@@ -255,6 +306,9 @@
                 </span>
                 <input id="msM" type="number" min="1" max="16" value="2" step="1" />
               </label>
+              <p class="control-help teach-only">
+                M must be ≤ N (number of pubkeys). More M → harder to spend without collusion; more N → more keys to back up.
+              </p>
             </div>
             <div class="control-block">
               <label class="check label-row" style="margin-top:1.5rem">
@@ -265,6 +319,14 @@
                   <span class="help-tip-panel" hidden></span>
                 </span>
               </label>
+              <p class="control-help teach-only" id="msBip67Help">
+                <strong>Recommended on.</strong> Deterministic sort so the same key set always yields the
+                <em>same</em> address regardless of paste order. Unchecking can produce a different address
+                for the same keys — usually a recovery foot-gun.
+              </p>
+              <p class="control-help" id="msBip67Warn" style="color:#f0d78c" hidden>
+                BIP67 sort is off: key order now affects the address. Only disable if you intentionally match a non-BIP67 setup.
+              </p>
             </div>
           </div>
 
@@ -280,12 +342,23 @@
             <div class="watch-item">
               <div class="watch-item-title" id="msSummary">—</div>
               <p class="watch-item-note" id="msOrderNote"></p>
-              <p class="control-help teach-only"><strong>P2SH</strong> (starts with 3) — classic multisig</p>
+              <p class="control-help teach-only" id="msAfterBuild" style="color:#f0d78c">
+                <strong>Before funding:</strong> each cosigner must independently verify this same address
+                on their own device / wallet. One mismatched key or M value funds an unspendable vault.
+                This page only computed the address — it cannot sign or spend.
+              </p>
+              <p class="control-help teach-only">
+                <strong>P2SH</strong> (starts with <code>3</code>) — legacy-wrapped multisig (script hash in a P2SH output).
+                Wider compatibility with older software; slightly larger on-chain footprint than native segwit.
+              </p>
               <div class="watch-item-key" id="msP2sh"></div>
               <div class="row">
                 <button type="button" class="btn-copy" id="msCopyP2sh" data-copy-idle="Copy">Copy</button>
               </div>
-              <p class="control-help teach-only" style="margin-top:0.75rem"><strong>P2WSH</strong> (bc1q… longer) — same policy, modern wrapper</p>
+              <p class="control-help teach-only" style="margin-top:0.75rem">
+                <strong>P2WSH</strong> (starts with <code>bc1q</code>, longer) — native segwit multisig.
+                Same M-of-N policy; usually lower fees and modern wallet defaults. Prefer when all cosigners support it.
+              </p>
               <div class="watch-item-key" id="msP2wsh"></div>
               <div class="row">
                 <button type="button" class="btn-copy" id="msCopyP2wsh" data-copy-idle="Copy">Copy</button>
@@ -306,7 +379,9 @@
           <h2>Compared to Ian Coleman’s multisig tool</h2>
           <p class="control-help">
             <a href="https://iancoleman.io/multisig/" style="color:var(--accent)">iancoleman.io/multisig</a>
-            can accept private keys and probe explorers. This page is <strong>public keys only</strong>, offline — safer teaching defaults.
+            is also usable offline if you disable explorer calls.
+            This page defaults to safer teaching settings: <strong>public keys only</strong>, no private-key fields,
+            and CSP that blocks network from this page. Different defaults, not “his tool is unsafe by nature.”
           </p>
         </div>
 

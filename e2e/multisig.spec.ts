@@ -14,6 +14,15 @@ test.describe("Multisig explainer E2E", () => {
     await expect(page.locator("body")).toContainText(/Where do the public keys come from/i);
     await expect(page.locator("body")).toContainText(/Cosigner checklist/i);
     await expect(page.locator("#msPolicy")).toBeVisible();
+    // Teach UX: calculator banner + dual chips + jump-link rail
+    await expect(page.locator("body")).toContainText(/Address calculator only/i);
+    await expect(page.locator("#chipOffline")).toBeVisible();
+    await expect(page.locator("#chipAirgap")).toBeVisible();
+    await expect(page.locator("#msStepRail")).toHaveAttribute(
+      "aria-label",
+      /jump links/i,
+    );
+    await expect(page.locator("#msCardIntro")).toBeVisible();
   });
 
   test("S12 build 2-of-2 golden + refuse private", async ({ page }) => {
@@ -65,12 +74,16 @@ test.describe("Multisig explainer E2E", () => {
 
   test("S28 BIP67 off changes messaging", async ({ page }) => {
     await page.goto("/multisig.html");
+    await expect(page.locator("#msBip67Warn")).toBeHidden();
     await page.locator("#msParts").fill(P1 + "\n" + P2);
     await page.locator("#msM").fill("2");
     await page.locator("#msBip67").uncheck();
+    await expect(page.locator("#msBip67Warn")).toBeVisible();
     await page.locator("#msBuild").click();
     await expect(page.locator("#msResult")).toBeVisible();
     await expect(page.locator("#msPolicy")).toContainText(/BIP67 sort OFF|OFF/i);
+    await page.locator("#msBip67").check();
+    await expect(page.locator("#msBip67Warn")).toBeHidden();
   });
 
   test("S29 clear resets result", async ({ page }) => {

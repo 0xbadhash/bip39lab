@@ -199,10 +199,10 @@
           "<div class=\"watch-item-key ms-demo-mnemonic\"></div>" +
           "<p class=\"control-help\"><strong>Entropy</strong></p>" +
           "<div class=\"watch-item-key ms-demo-ent\"></div>" +
-          "<p class=\"control-help\"><strong>BIP84 zpub</strong> (account <code>m/84'/0'/0'</code> — native segwit account public key; prefix <code>zpub</code>, not <code>xpub</code>)</p>" +
+          "<p class=\"control-help\"><strong>BIP84 zpub</strong> (account <code>m/84'/0'/0'</code> — SLIP-132; prefix <code>zpub</code>. <strong>Not an xpub</strong> — do not paste into tools that expect BIP44 xpub.)</p>" +
           "<div class=\"watch-item-key ms-demo-zpub\"></div>" +
           "<div class=\"row ms-demo-zpub-row\"></div>" +
-          "<p class=\"control-help\"><strong>Compressed pubkey</strong> at BIP84 path <code>m/84'/0'/0'/0/0</code> (pasted into step 2 for this lab’s M-of-N script)</p>" +
+          "<p class=\"control-help\"><strong>Compressed pubkey</strong> at BIP84 path <code>m/84'/0'/0'/0/0</code> (filled into Build for this lab’s M-of-N script)</p>" +
           "<div class=\"watch-item-key ms-demo-pub\"></div>";
         item.querySelector(".watch-item-title").textContent = c.label;
         item.querySelector(".ms-demo-meta").textContent =
@@ -244,6 +244,26 @@
     }
   }
 
+  function updateAirgapChip() {
+    const el = $("chipAirgap");
+    if (!el) return;
+    const on = typeof navigator !== "undefined" && navigator.onLine;
+    el.textContent = on ? "Browser online" : "Browser offline";
+    el.classList.toggle("chip-ok", !!on);
+    el.classList.toggle("chip-bad", !on);
+    el.classList.remove("chip-warn");
+    el.title = on
+      ? "Browser reports online. Multisig crypto still stays on-page via CSP."
+      : "Browser reports offline. Extra air-gap signal, not a guarantee.";
+  }
+
+  function syncBip67Warn() {
+    const box = $("msBip67");
+    const warn = $("msBip67Warn");
+    if (!box || !warn) return;
+    warn.hidden = !!box.checked;
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     $("msBuild").addEventListener("click", build);
     $("msClear").addEventListener("click", clearAll);
@@ -257,6 +277,16 @@
         }
       });
     }
+
+    const bip67 = $("msBip67");
+    if (bip67) {
+      bip67.addEventListener("change", syncBip67Warn);
+      syncBip67Warn();
+    }
+
+    updateAirgapChip();
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
 
     document.querySelectorAll("#msWordTabs .seg-tab").forEach((btn) => {
       // pointerdown: select before layout reflow from later generate; avoid mis-hit on 24-word tab
