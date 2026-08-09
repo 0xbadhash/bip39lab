@@ -1,8 +1,8 @@
 {
   "card_id": null,
-  "phase": "init",
-  "score": 100.0,
+  "phase": "approved",
+  "score": 100,
   "spec_id": ".agents/specs/2026-08-08-shamir-recombine.md",
-  "task": "Shamir recombine",
-  "waiver": null
+  "task": "Shamir teach + E2E align",
+  "waiver": "chore"
 }
