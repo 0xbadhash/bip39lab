@@ -1,70 +1,49 @@
-# PR Draft: Multisig teach UX polish
+# PR Draft: Teach-surface jump-link consistency
 
-**Range:** `buzz/main...HEAD`  
-**Spec:** `.agents/specs/2026-08-09-multisig-teach-ux.md`
+**Range:** working tree → next commit (Lab/Network/Shamir jump-link rails)
 
 ## What Problem This Solves
 
-Multisig page under-stated calculator-only scope, implied a locked wizard, and left BIP67-off / zpub-vs-xpub footguns under-documented.
+Multisig teach UX (`v0.13.4`) already frames step rails as jump links. Lab, Network, and Shamir still looked like numbered wizards, so teach IA was inconsistent.
 
 ## Why This Change Was Made
 
-Teach-first Multisig surface after Shamir ship: align framing with Lab (dual CSP/airgap chips), reduce funded-demo misuse, keep crypto offline and pubkey-only.
+Align all primary teach surfaces to the same “On this page — jump links (not a locked wizard)” pattern; tighten Network unknown-not-zero and Shamir use-case copy without crypto/CSP changes.
 
 ## User Impact
 
-- Clear **address calculator only** banner
-- Jump-link step rail (not numbered wizard)
-- Offline crypto + browser online/offline chips
-- BIP67-off warning; zpub ≠ xpub; before-fund verify
-- Fairer Ian Coleman comparison
+Learners can jump freely on Lab / Network / Shamir the same way as Multisig; clearer Network failure semantics and Shamir vs Multisig framing.
 
 ## Evidence
 
-- `python -m pytest tests/test_multisig.py -q`
-- `npx playwright test e2e/multisig.spec.ts`
-- `python3 scripts/check_web_e2e.py --root .`
-- Product smoke at release
+**Spec:** `.agents/specs/2026-08-09-teach-surface-jump-links.md`
 
-
-## Evidence pack
-
-| Item | Result |
-|------|--------|
-| hard_gates | run after this section |
-| smoke / pytest | `.venv/bin/python -m pytest -q` → 56 passed |
-| playwright | `npx playwright test e2e/multisig.spec.ts` → 8 passed |
-| validate / web_e2e | `python3 scripts/check_web_e2e.py --root .` → ok · 67 S-ids |
-| coverage | Multisig teach contracts in unit + S26/S28 |
-| SBOM / secrets | no dep change; no secrets in diff |
+| Check | Result |
+|-------|--------|
+| pytest teach surface | `python -m pytest tests/test_teach_surface_jump_links.py -q` |
+| product smoke | `python scripts/product_smoke.py --root .` (as available) |
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC-1 Calculator banner | `test_multisig_teach_ux_contracts` · e2e S26 |
-| AC-2 Jump-link rail + section ids | unit + S26 aria-label |
-| AC-3 Dual chips | unit chipAirgap/chipOffline · S26 |
-| AC-4 BIP67 warn toggle | unit · e2e S28 |
-| AC-5 zpub ≠ xpub · before-fund | unit HTML anchors · S12b |
-| AC-6 Ian Coleman fair note | unit substring |
-| AC-7 Golden + CSP | test_multisig_2of2 · S12 · connect-src none |
-| AC-8 Smoke + no secrets | product smoke · secrets review |
+| AC-1 On this page + jump links | `test_lab/network/shamir_jump_link_rail` |
+| AC-2 aria-label page sections | same (`page sections (jump links)`) |
+| AC-3 no forced `1 ·` numbering; targets | same + data-step-target asserts |
+| AC-4 Network unknown-not-zero; Shamir use-case | network/shamir tests |
+| AC-5 smoke / no secrets / CSP | product smoke; HTML-only touch |
 
 ## Threat notes
 
-- **Assets:** demo mnemonics / pubkeys remain in page memory only; no disk retention; CSP `connect-src 'none'`.
-- **Abuse:** calculator banner + “do not fund demo seeds” + before-fund verify reduce accidental funding of lab material; still refuse WIF/xprv paste.
+- HTML/teach copy only — no new network egress; Lab/Multisig/Shamir CSP unchanged.
+- Network remains opt-in address-only; copy re-states unknown ≠ silent zero.
+- No mnemonics/seeds/keys logged or stored by this change.
 
 ## Red-proof
 
 ```text
-red_cmd: (TDD) assert Address calculator only / chipAirgap / syncBip67Warn missing → fail; then green after HTML/JS
-green_cmd: python -m pytest tests/test_multisig.py -q && npx playwright test e2e/multisig.spec.ts
+red_cmd: python -m pytest tests/test_teach_surface_jump_links.py -q  # fails before HTML rail help
+green_cmd: python -m pytest tests/test_teach_surface_jump_links.py -q
 ```
 
-## Things that look bad but are actually fine
-
-1. Airgap chip can show “online” while Offline crypto chip stays CSP-safe — intentional dual signal.
-2. Step rail no longer numbered 1·2·3 — jump links, not process lock-in.
-3. No multisig.bundle.js change — teach/UI only; crypto path unchanged.
+TDD: contracts assert Multisig-aligned jump-link strings on Lab/Network/Shamir.

@@ -52,7 +52,7 @@
           <span class="site-version-chip" data-site-version title="Release tag">…</span>
           <br />
           This page may contact <strong>mempool.space</strong> after you opt in.
-          Lab &amp; Multisig stay offline for secrets.
+          Lab, Multisig &amp; Shamir stay offline for secrets.
         </p>
       </div>
     </aside>
@@ -76,22 +76,27 @@
       </header>
 
       <main class="content">
-        <nav class="step-rail teach-only" data-step-rail aria-label="Network process" id="netStepRail">
+        <p class="control-help teach-only" style="margin:0 0 0.5rem">
+          <strong>On this page</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
+          Balance Load/Fetch stay disabled until you tick the leak-ack (real gate, not cosmetic).
+        </p>
+        <nav class="step-rail teach-only" data-step-rail aria-label="Network page sections (jump links)" id="netStepRail">
           <button type="button" class="step-rail-btn is-active" data-step-target="#netCardIntro" aria-current="step">
-            1 · Understand<small>Address leak model</small>
+            Understand<small>Address leak model</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#netCardFees">
-            2 · Fees<small>Optional snapshot</small>
+            Fees<small>Optional snapshot</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#netCardBal">
-            3 · Balances<small>Ack · paste · fetch</small>
+            Balances<small>Ack · paste · fetch</small>
           </button>
         </nav>
 
         <div class="card" id="netCardIntro">
           <div class="card-head"><h2>What this page is</h2></div>
           <p class="card-lede">
-            Public fees and address-only balances — not your seed. Failures stay unknown (no fake zeros).
+            Public fees and address-only balances — never your seed.
+            If a lookup fails, status is <code>unknown</code>/<code>error</code> — never a silent fake 0 balance.
           </p>
           <!-- Safety always visible -->
           <p class="control-help">
@@ -120,7 +125,11 @@
               </span>
             </h2>
           </div>
-          <p class="card-lede teach-only">Optional public snapshot via mempool proxy.</p>
+          <p class="card-lede teach-only">
+            Optional public snapshot via mempool proxy.
+            Does <strong>not</strong> send any of your addresses — only general fee/mempool stats (still reveals your IP to the host).
+            Public APIs may rate-limit or fail under load; retry later if a fetch errors.
+          </p>
           <div class="row">
             <button type="button" class="btn" id="btnFetchSnap">Fetch fee + traffic snapshot</button>
           </div>
@@ -220,8 +229,12 @@
               </span>
             </h3>
             <p class="control-help">
-              Lab never loads balances (CSP). For privacy, query an address only with the CLI — never a seed.
-              Public explorers learn which address you care about; a local node does not.
+              Lab never loads balances (browser CSP blocks network from the Lab page). For privacy, query an address only with the CLI — never a seed.
+              Public explorers learn which address you care about; a local node does not send that lookup to a third party.
+              Full privacy still needs network hygiene (e.g. Tor / careful peer exposure) — a self-hosted node alone is not “invisible.”
+            </p>
+            <p class="control-help teach-only">
+              If the CLI below looks unfamiliar, use the public balance form above (after leak-ack) as the simpler path.
             </p>
             <p class="control-help"><strong>Your node (preferred)</strong> — Knots or Core, pruned is enough for current UTXOs:</p>
             <pre class="cli-block">python -m bip39lab balance bc1q… \
@@ -231,7 +244,8 @@
   --backend mempool --i-understand-address-leak</pre>
             <p class="control-help">
               Remote node: SSH tunnel <code>8332</code> to loopback, then same CLI with
-              <code>--rpc-url http://127.0.0.1:8332</code>. See <code>docs/BITCOIN_KNOTS.md</code>.
+              <code>--rpc-url http://127.0.0.1:8332</code>.
+              Guide: <a href="https://github.com/0xbadhash/bip39lab/blob/main/docs/BITCOIN_KNOTS.md">docs/BITCOIN_KNOTS.md</a>.
               Never expose RPC to the public internet.
             </p>
           </div>

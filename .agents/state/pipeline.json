@@ -1,8 +1,8 @@
 {
   "card_id": null,
   "phase": "init",
-  "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-09-multisig-teach-ux.md",
-  "task": "Multisig teach UX polish",
+  "score": 0.0,
+  "spec_id": ".agents/specs/2026-08-09-teach-surface-jump-links.md",
+  "task": "Teach-surface jump-link consistency",
   "waiver": null
 }

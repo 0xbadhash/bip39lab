@@ -262,20 +262,33 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] `#about` redirects to glossary; e2e + Comet updated
 - **Notes:** `v0.12.2`
 
-### [OPEN] Multisig teach UX polish
-- **Status:** open
+### [DONE] Multisig teach UX polish
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-09-multisig-teach-ux.md`
 - **Acceptance:**
-  - [ ] Calculator-only banner; jump-link step rail
-  - [ ] Dual chips CSP offline + browser airgap
-  - [ ] BIP67 off warning; zpub ≠ xpub; before-fund verify
-  - [ ] Fair Ian Coleman note; CSP/crypto unchanged
-  - [ ] Unit + Playwright S26/S28 extended; product smoke
+  - [x] Calculator-only banner; jump-link step rail
+  - [x] Dual chips CSP offline + browser airgap
+  - [x] BIP67 off warning; zpub ≠ xpub; before-fund verify
+  - [x] Fair Ian Coleman note; CSP/crypto unchanged
+  - [x] Unit + Playwright S26/S28 extended; product smoke
 - **Smoke:** pytest + e2e
-- **Notes:** Full FSM after Shamir v0.13.3; teach-first Multisig surface
+- **Notes:** Shipped `v0.13.4` — teach-first Multisig surface; no crypto path change
+
+### [OPEN] Teach-surface jump-link consistency
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-09-teach-surface-jump-links.md`
+- **Acceptance:**
+  - [ ] Lab/Network/Shamir “On this page” jump-link help + rail aria
+  - [ ] Drop forced step numbers; keep data-step-target anchors
+  - [ ] Network unknown-not-zero + Shamir use-case teach tighten
+  - [ ] Smoke green; CSP/crypto unchanged
+- **Smoke:** product smoke
+- **Notes:** Align with Multisig v0.13.4 rail pattern; HTML/teach only
 
 ## Current focus
 
-**Shipped:** Shamir left-nav tab v1 + educational recombine (non-SLIP-39).  
+**Shipped:** `v0.13.4` Multisig teach UX polish; Shamir left-nav tab v1 + educational recombine (non-SLIP-39).  
+**Next:** Teach-surface jump-link consistency (Lab · Network · Shamir).  
 **Later (not this ship):** SLIP-39 standard (integrity-checked wordlists + fixtures); private Knots proxy for Network.

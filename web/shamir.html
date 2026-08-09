@@ -82,18 +82,22 @@
           Prefer audited products for real threshold backups.
         </div>
 
-        <nav class="step-rail teach-only" data-step-rail aria-label="Shamir process" id="shStepRail">
+        <p class="control-help teach-only" style="margin:0 0 0.5rem">
+          <strong>On this page</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
+          Recombine needs M share lines (from a split or paste) — jumping there cold is OK; the box starts empty on purpose.
+        </p>
+        <nav class="step-rail teach-only" data-step-rail aria-label="Shamir page sections (jump links)" id="shStepRail">
           <button type="button" class="step-rail-btn is-active" data-step-target="#shCardTeach" aria-current="step">
-            1 · Understand<small>Shamir vs Multisig</small>
+            Understand<small>Shamir vs Multisig</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#shCardDemo">
-            2 · Practice secret<small>Generate demo bytes</small>
+            Practice<small>Generate demo bytes</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#shCardSplit">
-            3 · Split<small>M-of-N shares</small>
+            Split<small>M-of-N shares</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#shCardRecombine">
-            4 · Recombine<small>Verify M shares</small>
+            Recombine<small>Verify M shares</small>
           </button>
         </nav>
 
@@ -101,9 +105,15 @@
           <div class="card-head"><h2>What is Shamir sharing?</h2></div>
           <p class="card-lede teach-only">
             <strong>Shamir</strong> splits <em>one</em> secret into <strong>N shares</strong> so any
-            <strong>M</strong> shares rebuild it — fewer than M reveal nothing useful.
+            <strong>M</strong> shares rebuild it — with a correct implementation, fewer than M reveal nothing useful.
             That is different from <strong>Multisig</strong> (M-of-N <em>keys</em> that co-sign a spend)
             and from a <strong>BIP-39 phrase</strong> (one recovery word list — not a threshold split).
+          </p>
+          <p class="control-help teach-only">
+            <strong>When would you use this?</strong> Shamir is for <em>backup / inheritance</em> of one secret
+            (split custody of the phrase itself). Multisig is for <em>ongoing spend policy</em>
+            (several keys must sign). This page is a math demo only — format is not SLIP-39 and is not audited for real funds;
+            the “not for real funds” warning is about compatibility and hardening, not “the math is fake.”
           </p>
           <table class="compare-table" aria-label="Shamir vs Multisig vs BIP-39">
             <thead>
@@ -142,6 +152,11 @@
             </span>
             Threshold <em>secret sharing</em> ≠ multisig vault (spend policy). Shares here are not SLIP-39 words.
           </p>
+          <p class="control-help teach-only">
+            <strong>Ops (mental model):</strong> store each share in a separate place; M−1 shares should be useless alone.
+            You do not need a separate note of “M was 2” if you keep the share lines — recombination uses the share
+            <code>index</code> values (each share’s label / x-coordinate). Cap M,N ≤ 7 is a deliberate UI/demo limit, not a law of Shamir math.
+          </p>
         </div>
 
         <div class="card" id="shCardDemo">
@@ -154,8 +169,9 @@
             </h2>
           </div>
           <p class="control-help">
-            Use a throwaway secret. Hex (even length) is treated as raw bytes; other text is UTF-8.
-            Lab mnemonic is <strong>not</strong> imported automatically.
+            Use a throwaway secret.
+            Even-length hex is raw bytes (e.g. <code>deadbeef</code> = 4 bytes); other text is UTF-8 (e.g. <code>hello</code> = 5 bytes).
+            This page never reads your Lab mnemonic — paste practice text only.
           </p>
           <label class="field" for="shSecret">
             <span class="label-row">Practice secret
@@ -209,7 +225,7 @@
               <input id="shN" type="number" min="2" max="7" value="3" />
             </label>
           </div>
-          <p class="control-help">Defaults 2-of-3. Require 2 ≤ M ≤ N ≤ 7.</p>
+          <p class="control-help">Defaults 2-of-3. Require 2 ≤ M ≤ N ≤ 7 (demo cap for simple UI).</p>
           <div class="row">
             <button type="button" class="btn" id="btnShSplit">Split demo</button>
           </div>
@@ -229,7 +245,10 @@
             </h2>
           </div>
           <div id="shShares" class="shamir-shares"></div>
-          <p class="control-help" id="shSharesHint">Split to see labeled share cards (<code>share:index:hex</code> — not BIP-39 words).</p>
+          <p class="control-help" id="shSharesHint">
+            Split to see labeled share cards (<code>share:index:hex</code> — not BIP-39 words).
+            <span class="teach-only"><code>index</code> only labels which share this is (needed to rebuild).</span>
+          </p>
         </div>
 
         <div class="card" id="shCardRecombine">
@@ -245,7 +264,8 @@
             </h2>
           </div>
           <p class="control-help">
-            Paste M or more <code>share:index:hex</code> lines (e.g. copy two cards after a 2-of-3 split). Closes the teach loop without a production backup product.
+            Paste M or more <code>share:index:hex</code> lines (e.g. copy two cards after a 2-of-3 split).
+            Proves the demo works offline — this is not a production backup tool.
           </p>
           <label class="field" for="shRecombineIn">Shares to combine
             <textarea id="shRecombineIn" rows="4" spellcheck="false" autocomplete="off"
