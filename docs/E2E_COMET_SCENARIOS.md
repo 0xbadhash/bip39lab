@@ -26,7 +26,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S55 exhaustive · 6-nav · human process flows per page
+scenarios: S0–S56 exhaustive · 6-nav · human process flows per page
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -48,7 +48,7 @@ scenarios: S0–S55 exhaustive · 6-nav · human process flows per page
 
 **Playwright total:** `npm run test:e2e` → **64** tests (local `http://127.0.0.1:4173`).  
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S55** (scenario IDs below; some Playwright tests map 1:1).
+**Comet/Perplexity score sheet:** **S0–S56** (scenario IDs below; some Playwright tests map 1:1).
 
 ### Sidebar (every page) — **6 items**
 
@@ -89,7 +89,7 @@ Words to look up ──────► Glossary (always available; Teach optiona
 ## PROMPT FOR COMET / PERPLEXITY
 
 ```text
-You are a browser QA agent for bip39lab. Execute the FULL suite S0–S55 in
+You are a browser QA agent for bip39lab. Execute the FULL suite S0–S56 in
 docs/E2E_COMET_SCENARIOS.md (this file). Also complete the HUMAN COHERENCE
 checklist for EVERY page (section “Human process flows”).
 
@@ -116,6 +116,49 @@ RULES:
 For each page section: walk the process flow as a first-time human learner would.
 Mark scenarios PASS/FAIL with short evidence. Fill HUMAN COHERENCE (coherent /
 makes sense / intuitive) per page. End with the Report template (score __ / N).
+```
+
+### PROMPT — UI / copy / flow consistency (always run)
+
+```text
+You are a product-UX auditor for bip39lab (https://bip39.catalyxt.xyz).
+Run this pass on EVERY shell after (or with) S0–S56. Do not skip pages.
+
+GOAL: Verify the live UI, on-page descriptions, and security guidelines stay
+consistent with each other and with the product mental model in
+docs/E2E_COMET_SCENARIOS.md — and that a first-time learner can follow an
+intuitive flow without contradiction or dead ends.
+
+SURFACES (hard-refresh once each):
+  Lab (/) · Multisig · Shamir · Network · Tools (#tools) · Glossary (#glossary)
+  plus chrome: sidebar, header/branding, Teach On/Off, safety ⓘ tips
+
+CHECK A — UI consistency across shells
+  - Same 6-nav order/labels; current-page highlight correct
+  - Shared chrome (brand, Teach toggle, footer/legal tone) feels one product
+  - Step rails / panels / buttons use consistent patterns (primary vs danger,
+    empty states, error vs unknown balance language)
+  - Teach Off still keeps safety-critical tips; Teach On expands rails/help
+
+CHECK B — Description & guideline alignment
+  - Hero/subtitle/help copy matches what the page actually does
+  - Security guidelines match reality (offline CSP vs Network opt-in only)
+  - Multisig = public keys / M-of-N spend policy; Shamir = educational shares
+    (not SLIP-39 / not BIP-39 words); Lab = recovery phrase; Network = addresses
+  - No copy that invites pasting a seed into Network or funding demo keys
+  - Glossary definitions do not contradict Lab/Multisig/Shamir labels
+
+CHECK C — Flow intuitivity (first-time human)
+  - Clear “start here → next step → result” without hunting
+  - Primary action obvious; destructive/network actions gated or labeled
+  - Errors are actionable; success states explain what happened next
+  - Cross-links (e.g. Network→Tools, glossary tips) land where claimed
+  - Mental-model traps called out (keys vs shares vs words) where users mix them
+
+OUTPUT (per surface + overall):
+  ui_consistent=Y|N  copy_aligned=Y|N  flow_intuitive=Y|N
+  Evidence (1–3 bullets). List contradictions, confusing labels, or broken
+  flows as FAIL blockers. End with top 3 UX fixes if any FAIL.
 ```
 
 ### Goldens (mainnet · account 0 · change 0 · index 0 · empty passphrase)
@@ -369,7 +412,7 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 
 ---
 
-# Scenario catalogue (S0–S55)
+# Scenario catalogue (S0–S56)
 
 ## Lab shell
 
@@ -715,7 +758,7 @@ UX / coherence notes (what confused a human learner):
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (S0–S55 + human process flows) against Lab, Multisig, Shamir, Network. Return the Report template including Human coherence for every page.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (S0–S56 + human process flows) and the UI/copy/flow consistency prompt against Lab, Multisig, Shamir, Network. Return the Report template including Human coherence for every page plus ui_consistent / copy_aligned / flow_intuitive.
 
 ---
 
