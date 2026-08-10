@@ -1,66 +1,70 @@
-# PR Draft: SLIP-39 lab A — teach shell
+# PR Draft: SLIP-39 lab B — compatible core
 
-**Range:** this ship (working tree → HEAD)
-**Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`
+**Product:** bip39lab  
+**Spec:** `.agents/specs/2026-08-10-slip39-b-compatible-core.md`  
+**spec_sha256:** pin optional  
+**Version target:** `v0.13.8`
 
 ## What Problem This Solves
 
-Learners confuse educational Shamir (`share:index:hex`) with Trezor SLIP-39 share words. The Shamir “not SLIP-39” banner had no sibling lab destination.
+Teach shell alone could not show real SLIP-39 share mnemonics. Learners need offline round-trip split/combine with golden vectors — without claiming hardware restore safety.
 
 ## Why This Change Was Made
 
-Ship offline `web/slip39.html` teach shell: danger banner, BIP-39 / educational Shamir / SLIP-39 comparison table, jump rail, demo placeholders, Shamir deep-link. **No split/combine crypto** (B/C).
+Ship offline-compatible single-group M-of-N (2-of-3 / 3-of-5) using vetted libraries only (no hand-rolled SLIP crypto).
 
 ## User Impact
 
-- Dedicated SLIP-39 lab page (lab only · not funded wallets · not Trezor Suite).
-- Comparison table keeps three backup models distinct.
-- Shamir → SLIP-39 deep-link continues the “not SLIP-39” story.
-
-## Evidence
-
-- Unit: `tests/test_slip39_shell_copy.py` (5)
-- Playwright: `e2e/slip39.spec.ts` S57 / S57b
-- No crypto bundle; CSP `connect-src 'none'`
-- Secrets scan clean
+- Demo: generate practice master secret hex → Split → share word cards → Combine M shares → match/mismatch.
+- Fail-closed under-threshold / bad words (no fake secret).
+- Danger banner retained; lab only; not Trezor Suite / not funded wallets.
+- Bonus teach (partial C): wrong-passphrase demo + multi-group diagram (still lab-only).
 
 ## Traceability
 
-| AC | Proof |
-|----|--------|
-| Danger banner lab/funds/Trezor | `test_slip39_html_danger_banner` + S57 |
-| Comparison table topics | `test_slip39_comparison_table_topics` + S57 |
-| Jump rail + placeholders | `test_slip39_jump_rail_and_placeholders` |
-| Shamir → slip39.html | `test_shamir_links_to_slip39_lab` + S57b |
-| Six-nav only (no 7th) | `test_slip39_keeps_six_nav` + S57 |
-| Plugin surface + Comet | product_plugin slip39 + E2E_COMET S57 |
-
-## Red-proof / Green-proof
-
-- red_cmd: static asserts fail if banner/table/Shamir link missing
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_slip39_shell_copy.py`
+| AC | Test / smoke |
+|----|----------------|
+| 2-of-3 / 3-of-5 split+combine offline | `tests/test_slip39_lab.py` roundtrip + Playwright S58 |
+| Official-style golden vector | `test_golden_vector_4_combine_trezor_passphrase` |
+| Fail-closed under-threshold / bad mnemonic | `test_golden_vector_4_under_threshold_fails` + S59 |
+| Lab danger copy; no wallet-safety claim | `tests/test_slip39_shell_copy.py` + S57 |
+| Product smoke green; no secrets committed | `python scripts/product_smoke.py` |
 
 ## Threat notes
 
-- Asset: no mnemonic/seed/xprv on this surface in ship A (placeholders only).
-- Abuse: user mistakes page for production SLIP-39 restore — danger banner + lab-only chips + not Trezor Suite copy.
-- Abuse: network exfil of pasted secrets later — CSP `connect-src 'none'`; no third-party scripts.
+- **secrets:** practice master secret hex and SLIP-39 share mnemonics exist only in browser/CLI memory for the demo; never auto-imported from Lab BIP-39; no disk retention.
+- **supply-chain:** crypto via pinned `shamir-mnemonic` + npm `slip39` offline bundle (esbuild); no runtime wordlist fetch; CSP `connect-src 'none'`.
+- **xss:** static CSP (`script-src 'self'`); share text rendered as `textContent` only, not `innerHTML` of user strings as HTML.
+- Abuse: user mistakes page for production Trezor restore — danger banner + lab-only chips; fail-closed under-threshold (no fake secret).
 
 ## Evidence pack
 
-| Item | Result |
+- **pytest:** `.venv/bin/python -m pytest -q tests/test_slip39_lab.py tests/test_slip39_shell_copy.py` → 13 passed
+- **Playwright:** `npx playwright test e2e/slip39.spec.ts` → S57–S60 passed
+- **smoke:** `python scripts/product_smoke.py --root .` → unit + e2e exit 0
+- **web_e2e:** `python scripts/check_web_e2e.py --root .` → ok
+
+### Red-proof / green
+
+- red_cmd: `false` (TDD red marker; suite designed to fail without library wrap)
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_slip39_lab.py`
+
+## Untested paths
+
+| Path | Reason |
 |------|--------|
-| hard_gates | `python3 scripts/hard_gates.py --diff HEAD` |
-| pytest | `tests/test_slip39_shell_copy.py` |
-| smoke | product_smoke at release_mgmt |
-| validate | validate full at release_mgmt |
+| Full multi-group UI designer | Out of scope (ship C) |
+| BIP-39 ↔ SLIP migration | Out of scope |
+| Hardware device restore | Explicit non-goal |
 
-## Risks
+## Implementation notes
 
-Demo cards say “Coming in ship B/C” — intentional incomplete crypto path.
+- Python: `src/bip39lab/slip39_lab.py` wraps `shamir-mnemonic`
+- Web: esbuild `web/js/slip39-entry.mjs` → `slip39.bundle.js` (npm `slip39`) + `slip39-app.js`
+- Never auto-imports Lab BIP-39; CSPRNG or paste hex only
 
-## Things that look bad but are actually fine
+## Out of scope (deferred)
 
-1. No 7th top-level nav item — deep-link only, keeps 6-nav contract.
-2. Specs B–D committed as stubs — not claimed done; ROADMAP still OPEN for B–D.
-3. `slip39-app.js` is chrome-only shell marker — crypto is B.
+- Full multi-group designer UI (C remainder)
+- BIP-39↔SLIP migration; Network/balance
+- Docs polish D

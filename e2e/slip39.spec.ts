@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { expectNavCount, labCspOffline } from "./helpers";
 
-test.describe("SLIP-39 lab shell", () => {
+test.describe("SLIP-39 lab", () => {
   test("S57 shell · 6-nav · offline CSP · danger banner · compare table", async ({
     page,
   }) => {
@@ -17,7 +17,7 @@ test.describe("SLIP-39 lab shell", () => {
     await expect(page.locator("#s39CompareTable")).toContainText(/Passphrase/i);
     await expect(page.locator("#s39CompareTable")).toContainText(/Groups/i);
     await expect(page.locator("#s39StepRail")).toBeVisible();
-    await expect(page.locator("#s39DemoPlaceholder")).toContainText(/Coming in/i);
+    await expect(page.locator("#btnS39Split")).toBeVisible();
   });
 
   test("S57b Shamir deep-link to SLIP-39 lab", async ({ page }) => {
@@ -26,5 +26,43 @@ test.describe("SLIP-39 lab shell", () => {
     await page.locator("#shLinkSlip39").click();
     await expect(page).toHaveURL(/slip39\.html/);
     await expect(page.locator("#s39Danger")).toBeVisible();
+  });
+
+  test("S58 happy 2-of-3 split+combine match", async ({ page }) => {
+    await page.goto("/slip39.html");
+    await page.locator("#btnS39Gen").click();
+    await expect(page.locator("#s39Secret")).not.toHaveValue("");
+    await page.locator("#s39Preset").selectOption("2of3");
+    await page.locator("#btnS39Split").click();
+    await expect(page.locator("#s39Status")).toContainText(/Split OK/i);
+    await expect(page.locator("#s39Shares .card-sub")).toHaveCount(3);
+    await page.locator("#btnS39Combine").click();
+    await expect(page.locator("#s39CombineStatus")).toContainText(/Match/i);
+    await expect(page.locator("#s39Recovered")).not.toHaveText("—");
+  });
+
+  test("S59 under-threshold combine errors", async ({ page }) => {
+    await page.goto("/slip39.html");
+    await page.locator("#btnS39Gen").click();
+    await page.locator("#btnS39Split").click();
+    await expect(page.locator("#s39Shares .card-sub")).toHaveCount(3);
+    // Only one share line
+    const first = await page.locator("#s39Shares .share-line").first().innerText();
+    await page.locator("#s39CombineIn").fill(first);
+    await page.locator("#btnS39Combine").click();
+    await expect(page.locator("#s39CombineStatus")).toHaveClass(/err/);
+    await expect(page.locator("#s39CombineStatus")).not.toContainText(/^Match/i);
+  });
+
+  test("S60 wrong passphrase mismatch demo", async ({ page }) => {
+    await page.goto("/slip39.html");
+    await page.locator("#btnS39WrongPp").click();
+    await expect(page.locator("#s39CombineStatus")).toHaveClass(/err/);
+    await expect(page.locator("#s39CombineStatus")).toContainText(
+      /Mismatch|Wrong-passphrase|does not match/i
+    );
+    await expect(page.locator("#s39GroupDiagram")).toBeVisible();
+    await expect(page.locator("#s39GroupDiagram")).toContainText(/1-of-1/i);
+    await expect(page.locator("#s39GroupDiagram")).toContainText(/2-of-3/i);
   });
 });

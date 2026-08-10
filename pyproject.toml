@@ -4,10 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bip39lab"
-version = "0.13.6"
+version = "0.13.7"
 description = "Offline BIP-39 / derivation lab (no network, no secret retention)"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "shamir-mnemonic>=0.3.0",
+]
 
 [project.scripts]
 bip39lab = "bip39lab.cli:main"

@@ -665,15 +665,24 @@ Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered
 
 ## SLIP-39 lab (`/slip39.html`) — deep-link from Shamir (not 7th nav)
 
-Teach shell only (ship A). No split/combine crypto until ship B.
+Ship A shell + ship B offline split/combine (npm `slip39` bundle + Python `shamir-mnemonic`). Lab only — not Trezor Suite.
 
 ### S57 — Shell
-SLIP-39 lab heading; **6**-nav (no SLIP-39 top item); offline CSP `connect-src 'none'`; danger banner (lab / not funded wallets / not Trezor Suite); comparison table (wordlist, backup unit, checksum, passphrase, groups, downstream); jump rail; demo placeholders “Coming in B/C”.
+SLIP-39 lab heading; **6**-nav (no SLIP-39 top item); offline CSP `connect-src 'none'`; danger banner (lab / not funded wallets / not Trezor Suite); comparison table (wordlist, backup unit, checksum, passphrase, groups, downstream); jump rail; live demo controls (Generate / Split / Combine).
 
 ### S57b — Shamir → SLIP-39 deep-link
 From Shamir banner link `#shLinkSlip39` → `/slip39.html` danger visible.
 
-S57–S57b · `e2e/slip39.spec.ts`
+### S58 — Happy 2-of-3 split + combine match
+Generate practice hex → Split 2-of-3 → Combine M shares → status Match.
+
+### S59 — Under-threshold error
+After split, paste only one share → Combine → error status (no Match).
+
+### S60 — Wrong passphrase + group diagram
+`#btnS39WrongPp` → mismatch status; `#s39GroupDiagram` shows 1-of-1 + 2-of-3 policy.
+
+S57–S60 · `e2e/slip39.spec.ts`
 
 ---
 

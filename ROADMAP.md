@@ -303,7 +303,7 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 
 ### [DONE] SLIP-39 lab A — teach shell
-- **Status:** in progress (implement)
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`
 - **Acceptance:**
@@ -311,17 +311,17 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
   - [x] Jump rail + demo placeholders; Shamir→SLIP-39 link
   - [x] CSP offline; unit + S57; no 7-nav
 - **Smoke:** pytest + e2e S57
-- **Notes:** Lab only; not production Trezor restore; crypto in B
+- **Notes:** Shipped `v0.13.7`; lab only; crypto in B
 
-### [OPEN] SLIP-39 lab B — compatible core
-- **Status:** open
+### [DONE] SLIP-39 lab B — compatible core
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-10-slip39-b-compatible-core.md`
 - **Acceptance:**
-  - [ ] 2-of-3 / 3-of-5 split+combine offline
-  - [ ] Golden vector pytest; fail-closed errors
-- **Smoke:** pytest + e2e S58–S59
-- **Notes:** Library wrap only
+  - [x] 2-of-3 / 3-of-5 split+combine offline
+  - [x] Golden vector pytest; fail-closed errors
+- **Smoke:** pytest + e2e S58–S59 (+ S60 partial C)
+- **Notes:** Library wrap only (`shamir-mnemonic` + npm `slip39`)
 
 ### [OPEN] SLIP-39 lab C — passphrase + groups teach
 - **Status:** open
@@ -344,6 +344,6 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Shipped:** `v0.13.5` teach-surface jump-link consistency.  
-**Next:** GapFix Tools phrase source — ready_for_review (await `/pr_review --validate`).  
-**Later (not this ship):** SLIP-39 standard (integrity-checked wordlists + fixtures); private Knots proxy for Network.
+**Shipped:** `v0.13.7` SLIP-39 lab A teach shell; **shipping B** compatible core (`v0.13.8`).  
+**Next after B:** SLIP-39 lab C (passphrase/groups polish) or D docs.  
+**Later:** private Knots proxy for Network.

@@ -1,21 +1,24 @@
 {
   "name": "bip39lab-web",
   "private": true,
-  "version": "0.13.6",
+  "version": "0.13.7",
   "description": "Offline BIP-39 lab static web + e2e",
   "scripts": {
     "build:web": "esbuild web/js/build-entry.mjs --bundle --format=iife --outfile=web/js/bip39lab.bundle.js",
     "test:e2e": "playwright test",
     "test:e2e:live": "BASE_URL=https://bip39.catalyxt.xyz playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:report": "playwright show-report playwright-report"
+    "test:e2e:report": "playwright show-report playwright-report",
+    "build:slip39": "esbuild web/js/slip39-entry.mjs --bundle --format=iife --platform=browser --outfile=web/js/slip39.bundle.js --alias:crypto=./web/js/slip39-crypto-shim.js --inject:./web/js/slip39-buffer-inject.js"
   },
   "dependencies": {
     "@noble/curves": "^1.9.0",
     "@noble/hashes": "^1.8.0",
     "@scure/bip32": "^1.7.0",
     "@scure/bip39": "^1.6.0",
-    "qrcode": "^1.5.4"
+    "buffer": "^6.0.3",
+    "qrcode": "^1.5.4",
+    "slip39": "^0.1.9"
   },
   "devDependencies": {
     "@playwright/test": "^1.54.2",

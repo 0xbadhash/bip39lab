@@ -88,10 +88,10 @@
             Compare<small>BIP-39 · Shamir · SLIP-39</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#s39CardDemo">
-            Demo<small>Coming in B</small>
+            Demo<small>Split · combine</small>
           </button>
           <button type="button" class="step-rail-btn" data-step-target="#s39CardGroups">
-            Groups<small>Coming in C</small>
+            Groups<small>Passphrase · policy</small>
           </button>
         </nav>
 
@@ -153,28 +153,87 @@
 
         <div class="card card-wide" id="s39CardDemo">
           <div class="card-head"><h2>Demo — single group split / combine</h2></div>
-          <p class="control-help" id="s39DemoPlaceholder">
-            <strong>Coming in ship B</strong> — compatible-enough SLIP-39 split/combine offline
-            (practice master secret only; never auto-imported from Lab BIP-39).
-            Defaults planned: 2-of-3 and 3-of-5. This shell has no crypto yet.
+          <p class="control-help" id="s39DemoHelp">
+            Offline SLIP-39-compatible split/combine for a <strong>practice master secret</strong>
+            (hex only). Never auto-imports Lab BIP-39. Defaults: 2-of-3 or 3-of-5.
+            Lab only — not a funded-wallet restore tool.
           </p>
-          <pre class="out" id="s39SharesOut" aria-disabled="true">— demo disabled until ship B —</pre>
+          <label class="field" for="s39Secret">
+            <span>Practice master secret (hex, ≥16 bytes)</span>
+            <textarea id="s39Secret" rows="2" spellcheck="false" autocomplete="off"
+              placeholder="Generate or paste even-length hex (e.g. 32 hex chars)"></textarea>
+          </label>
+          <div class="row fields-inline">
+            <label class="field" for="s39Preset">
+              <span>Preset</span>
+              <select id="s39Preset">
+                <option value="2of3" selected>2-of-3</option>
+                <option value="3of5">3-of-5</option>
+              </select>
+            </label>
+            <label class="field" for="s39Passphrase">
+              <span>Passphrase (split)</span>
+              <input id="s39Passphrase" type="text" autocomplete="off" spellcheck="false"
+                placeholder="optional; empty default" />
+            </label>
+          </div>
+          <div class="row">
+            <button type="button" class="btn" id="btnS39Gen">Generate practice secret</button>
+            <button type="button" class="btn" id="btnS39Split">Split demo</button>
+            <button type="button" class="btn secondary" id="btnS39Clear">Clear</button>
+          </div>
+          <p id="s39Status" class="status" role="status">—</p>
+          <div id="s39Shares" class="shamir-shares" aria-live="polite"></div>
+
+          <div class="card-head" style="margin-top:1rem"><h3>Combine shares</h3></div>
+          <label class="field" for="s39CombineIn">
+            <span>Share mnemonics (one per line; need M lines)</span>
+            <textarea id="s39CombineIn" rows="4" spellcheck="false" autocomplete="off"
+              placeholder="Paste M share mnemonics, one per line"></textarea>
+          </label>
+          <div class="row fields-inline">
+            <label class="field" for="s39PassphraseCombine">
+              <span>Passphrase (combine)</span>
+              <input id="s39PassphraseCombine" type="text" autocomplete="off" spellcheck="false"
+                placeholder="must match split passphrase" />
+            </label>
+            <label class="field" for="s39Expected">
+              <span>Expected master hex (optional match)</span>
+              <input id="s39Expected" type="text" autocomplete="off" spellcheck="false"
+                placeholder="filled after split" />
+            </label>
+          </div>
+          <div class="row">
+            <button type="button" class="btn" id="btnS39Combine">Combine</button>
+          </div>
+          <p id="s39CombineStatus" class="status" role="status">—</p>
+          <pre class="out" id="s39Recovered">—</pre>
         </div>
 
         <div class="card card-wide" id="s39CardGroups">
           <div class="card-head"><h2>Groups &amp; passphrase (teach)</h2></div>
-          <p class="control-help teach-only" id="s39GroupsPlaceholder">
-            <strong>Coming in ship C</strong> — group-threshold diagram and wrong-passphrase teach demo.
+          <p class="control-help teach-only" id="s39GroupsHelp">
             Production SLIP-39 can require <strong>group thresholds</strong>
-            (e.g. need group A <em>and</em> any 2 of group B). Conceptual only here.
+            (e.g. need group A <em>and</em> any 2 of group B). Wrong passphrase at
+            <em>combine</em> yields a different master secret (or recovery error) —
+            not BIP-39’s optional “25th word” on seed derivation alone.
           </p>
           <div class="warn" id="s39GroupDiagram" role="img" aria-label="Multi-group conceptual diagram">
             <strong>Example multi-group policy (diagram only):</strong><br />
             Group&nbsp;1: <em>1-of-1</em> “owner” share &nbsp;+&nbsp;
             Group&nbsp;2: <em>2-of-3</em> “heirs” shares<br />
-            → Recover needs the owner share <strong>and</strong> any 2 heir shares.
-            Wrong passphrase at combine → fail / different secret.
+            → Recover needs the owner share <strong>and</strong> any 2 heir shares.<br />
+            Wrong passphrase at combine → mismatch / different secret (no silent wallet unlock).
           </div>
+          <div class="row" style="margin-top:0.75rem">
+            <button type="button" class="btn secondary" id="btnS39WrongPp">
+              Run wrong-passphrase demo
+            </button>
+          </div>
+          <p class="control-help teach-only">
+            Demo splits with passphrase <code>correct</code>, combines with <code>wrong</code>,
+            and shows mismatch vs the practice secret. Lab only.
+          </p>
         </div>
 
         <p class="footer-host">
@@ -189,6 +248,7 @@
   <script src="js/site-version.js"></script>
   <script src="js/glossary.js"></script>
   <script src="js/help-ui.js"></script>
+  <script src="js/slip39.bundle.js"></script>
   <script src="js/slip39-app.js"></script>
 </body>
 </html>

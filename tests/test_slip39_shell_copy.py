@@ -1,4 +1,4 @@
-"""SLIP-39 lab A — static copy contract (banner, compare table, Shamir link)."""
+"""SLIP-39 lab — static copy contract (banner, compare table, demo, Shamir link)."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,18 +25,19 @@ def test_slip39_comparison_table_topics():
     assert "compare-table" in html or 'id="s39CompareTable"' in html
 
 
-def test_slip39_jump_rail_and_placeholders():
+def test_slip39_jump_rail_and_demo_controls():
     html = (ROOT / "web/slip39.html").read_text(encoding="utf-8")
     low = html.lower()
     assert "on this page" in low
     assert "jump links" in low
     assert 'id="s39StepRail"' in html
-    assert 'data-step-target="#s39CardCompare"' in html
     assert 'data-step-target="#s39CardDemo"' in html
     assert 'data-step-target="#s39CardGroups"' in html
-    assert "coming in" in low
-    # Ship A: no crypto bundle
-    assert "slip39.bundle" not in html
+    assert 'id="btnS39Split"' in html
+    assert 'id="btnS39Combine"' in html
+    assert "slip39.bundle.js" in html
+    assert 'id="s39GroupDiagram"' in html
+    assert 'id="btnS39WrongPp"' in html
 
 
 def test_shamir_links_to_slip39_lab():
@@ -49,4 +50,10 @@ def test_shamir_links_to_slip39_lab():
 def test_slip39_keeps_six_nav():
     html = (ROOT / "web/slip39.html").read_text(encoding="utf-8")
     assert html.count('class="nav-item"') == 6
-    assert "data-nav=\"slip39\"" not in html  # deep-link only, no 7th top-level nav
+    assert 'data-nav="slip39"' not in html  # deep-link only, no 7th top-level nav
+
+
+def test_slip39_bundle_present():
+    bundle = ROOT / "web/js/slip39.bundle.js"
+    assert bundle.is_file()
+    assert bundle.stat().st_size > 10_000

@@ -2,7 +2,7 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-10
-- **Status:** ready-for-agent
+- **Status:** implemented
 - **Priority:** P1
 - **Roadmap:** ROADMAP.md → Open work
 - **Plan:** none (library wrap)
@@ -38,11 +38,11 @@ Wrap a vetted SLIP-39 implementation (Python `slip39` for CLI/tests; npm `slip39
 
 ## Acceptance Criteria
 
-- [ ] 2-of-3 (and 3-of-5) split+combine offline on web demo
-- [ ] At least one official-style golden vector passes in pytest
-- [ ] Fail-closed: under-threshold / bad mnemonic → error, no fake secret
-- [ ] Lab danger copy still present; no wallet-safety claim
-- [ ] Product smoke green; no secrets committed
+- [x] 2-of-3 (and 3-of-5) split+combine offline on web demo
+- [x] At least one official-style golden vector passes in pytest
+- [x] Fail-closed: under-threshold / bad mnemonic → error, no fake secret
+- [x] Lab danger copy still present; no wallet-safety claim
+- [x] Product smoke green; no secrets committed
 
 ## Out of Scope
 
