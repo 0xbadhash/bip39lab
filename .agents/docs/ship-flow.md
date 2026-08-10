@@ -387,11 +387,54 @@ python3 scripts/pr_validator.py --diff HEAD~1...HEAD --update-pipeline
 
 ## Soft gates
 
+### FSM enforcement (HSQ-2)
+
+`pipeline_state.set_phase` enforces **legal transitions** (see `ALLOWED_TRANSITIONS` in
+`scripts/pipeline_state.py`). Illegal jumps raise `ValueError`. Escape:
+`set-phase … --force-transition --force-reason "…"`.
+
+`run_ship_chain` does **not** auto-write CODE-REVIEW stubs unless
+`--allow-auto-markers`. Even then, hard_gates quality floor may reject thin stubs.
+
+
 - **Cross-review:** large diffs warn without evidence; optional `--strict-cross-review`  
   - Product paths come from `product_plugin.product_path_prefixes` (not hard-coded stack paths)
+  - Large-diff thresholds default to files≥8, churn≥200, non_test_loc≥150 (see `review_scope.py`); override via plugin `review_scope:` (HSQ-1)
 - **TDD process** in execute_dev (red before green) — **red-proof hard gate** records it for score
 - **Smoke:** `python3 scripts/product_smoke.py` reads plugin smoke[] at release
 - **PR score `suite_green`:** green type/lint/test suite only — **not** red-first proof (see hard Red-proof)
+
+### Spec waiver ledger (HSQ-1)
+
+When `spec_gate.py` accepts a **Spec waiver**, it appends one JSON line to
+`.agents/artifacts/WAIVER_LOG.jsonl`. Summarize with:
+
+```bash
+python3 scripts/waiver_report.py --days 30
+```
+
+No hard monthly cap in HSQ-1 — visibility only.
+
+### CI (daytime-gates)
+
+GitHub Actions workflow `.github/workflows/daytime-gates.yml` runs unit tests, daytime readiness,
+and **Skill conformance** via `scripts/agent_eval_checklist.py` (C5). That *is* the skill-conformance
+gate; there is no separate workflow name required.
+
+### Ops: Security IOC (not a PR hard gate)
+
+Weekly root/containerd seed-malware scan: `scripts/security_root_ioc_scan.py` +
+`deploy/security-root-ioc.timer`. Surfaces on OPS-DASHBOARD / `agent-tasks/security-ioc-status`.
+Does **not** block `/pr_review --validate`. Green IOC ≠ full 0-day coverage.
+
+### Portfolio install (HSQ-1)
+
+```bash
+python3 scripts/portfolio_install_report.py --protect-drift
+python3 scripts/portfolio_install_report.py --install --force   # reinstall even if VERSION matches
+```
+
+Protect-list forks are never overwritten; drift is reported only.
 
 ## Off-pipeline: night readiness (`/night_shift`)
 
@@ -408,3 +451,21 @@ Full ops doc: **[night-shift.md](night-shift.md)**.
 - [TDD](tdd.md)  
 - [Night shift](night-shift.md)  
 - [Skills catalog](skills-catalog.md)  
+
+## HSQ-3 quality gates (1.4.22–1.4.25)
+
+Wired into `hard_gates` / portfolio (fail closed unless noted):
+
+| Gate | Script | Ver |
+|------|--------|-----|
+| G1 AC map | `check_ac_traceability.py` | 1.4.22 |
+| G5 secrets | `check_secrets_diff.py` | 1.4.22 |
+| G14 diff compile | `check_diff_compile.py` | 1.4.22 |
+| G3 path tests | `check_changed_path_tests.py` | 1.4.23 |
+| G4 red/green | `check_red_green_cmds.py` | 1.4.23 |
+| G6 lockfile audit | `check_lockfile_audit.py` | 1.4.23 |
+| G2 spec hash | `check_spec_hash.py` | 1.4.24 |
+| G10 waiver budget | `check_waiver_budget.py` | 1.4.24 |
+| G7 threat tags | `check_threat_tags.py` | 1.4.24 |
+| G8 security_paths | `check_security_paths.py` | 1.4.24 |
+| G15 protect SoT pin | `check_protect_sot_pin.py` (warn) | 1.4.25 |

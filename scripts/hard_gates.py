@@ -332,13 +332,161 @@ def evaluate(
                     "hard_gates, smoke, pytest/unittest, validate, coverage, SBOM"
                 )
 
-    # Secrets on diff (fail closed when check fails)
+    # Secrets on diff (fail closed when check fails) — G5 patterns in check_secrets_diff
     if not _secrets_ok(root, diff):
         violations.append(
             "hard_gates: secrets scan failed on diff — fix or narrow before approve"
         )
     else:
         skipped.append("secrets (clean or skip)")
+
+    # HSQ-3 P0 G1: AC → test map (non-prose feature ships)
+    if not prose_only:
+        try:
+            from check_ac_traceability import check as _ac_check  # type: ignore
+
+            ac_ok, ac_msgs = _ac_check(root, pr_draft)
+            if not ac_ok:
+                for msg in ac_msgs:
+                    violations.append(f"hard_gates: AC map — {msg}")
+            else:
+                skipped.append("ac_map (" + (ac_msgs[0] if ac_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: AC map check error: {e}")
+    else:
+        skipped.append("ac_map (prose-only)")
+
+    # HSQ-3 P0 G14: py_compile changed .py (disk is truth)
+    if not prose_only:
+        try:
+            from check_diff_compile import check as _compile_check  # type: ignore
+
+            base, head = "HEAD~1", "HEAD"
+            if diff:
+                for sep in ("...", ".."):
+                    if sep in diff:
+                        parts = diff.split(sep, 1)
+                        if len(parts) == 2 and parts[0] and parts[1]:
+                            base, head = parts[0], parts[1]
+                        break
+            c_ok, c_msgs = _compile_check(root, base, head)
+            if not c_ok:
+                for msg in c_msgs:
+                    violations.append(f"hard_gates: diff_compile — {msg}")
+            else:
+                skipped.append("diff_compile (" + (c_msgs[0] if c_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: diff_compile error: {e}")
+    else:
+        skipped.append("diff_compile (prose-only)")
+
+    # HSQ-3 P2 G2/G10/G7/G8 — spec hash, waiver budget, threat tags, security paths
+    if not prose_only:
+        try:
+            from check_spec_hash import check as _spec_hash  # type: ignore
+
+            sh_ok, sh_msgs = _spec_hash(root, pr_draft)
+            if not sh_ok:
+                for msg in sh_msgs:
+                    violations.append(f"hard_gates: spec_hash — {msg}")
+            else:
+                skipped.append("spec_hash (" + (sh_msgs[0] if sh_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: spec_hash error: {e}")
+        try:
+            from check_waiver_budget import check as _wbudget  # type: ignore
+
+            wb_ok, wb_msgs = _wbudget(root, pr_draft)
+            if not wb_ok:
+                for msg in wb_msgs:
+                    violations.append(f"hard_gates: waiver_budget — {msg}")
+            else:
+                skipped.append("waiver_budget (" + (wb_msgs[0] if wb_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: waiver_budget error: {e}")
+        if runtime:
+            try:
+                from check_threat_tags import check as _threat  # type: ignore
+
+                th_ok, th_msgs = _threat(draft_text, runtime=True)
+                if not th_ok:
+                    for msg in th_msgs:
+                        violations.append(f"hard_gates: threat_tags — {msg}")
+                else:
+                    skipped.append("threat_tags (" + (th_msgs[0] if th_msgs else "ok") + ")")
+            except Exception as e:  # pragma: no cover
+                violations.append(f"hard_gates: threat_tags error: {e}")
+        else:
+            skipped.append("threat_tags (no runtime)")
+    else:
+        skipped.append("spec_hash (prose-only)")
+        skipped.append("waiver_budget (prose-only)")
+        skipped.append("threat_tags (prose-only)")
+
+    # HSQ-3 P1 G3/G4/G6 — path tests, red/green cmds, lockfile audit
+    base_g, head_g = "HEAD~1", "HEAD"
+    if diff:
+        for sep in ("...", ".."):
+            if sep in diff:
+                parts = diff.split(sep, 1)
+                if len(parts) == 2 and parts[0] and parts[1]:
+                    base_g, head_g = parts[0], parts[1]
+                break
+
+    if not prose_only:
+        try:
+            from check_changed_path_tests import check as _path_tests  # type: ignore
+
+            p_ok, p_msgs = _path_tests(root, base_g, head_g, pr_draft)
+            if not p_ok:
+                for msg in p_msgs:
+                    violations.append(f"hard_gates: path_tests — {msg}")
+            else:
+                skipped.append("path_tests (" + (p_msgs[0] if p_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: path_tests error: {e}")
+
+        try:
+            from check_red_green_cmds import check as _rg  # type: ignore
+
+            rg_ok, rg_msgs = _rg(root, pr_draft)
+            if not rg_ok:
+                for msg in rg_msgs:
+                    violations.append(f"hard_gates: red_green — {msg}")
+            else:
+                skipped.append("red_green (" + (rg_msgs[0] if rg_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: red_green error: {e}")
+    else:
+        skipped.append("path_tests (prose-only)")
+        skipped.append("red_green (prose-only)")
+
+    try:
+        from check_lockfile_audit import check as _lock_audit  # type: ignore
+
+        l_ok, l_msgs = _lock_audit(root, base_g, head_g)
+        if not l_ok:
+            for msg in l_msgs:
+                violations.append(f"hard_gates: lockfile_audit — {msg}")
+        else:
+            skipped.append("lockfile_audit (" + (l_msgs[0] if l_msgs else "ok") + ")")
+    except Exception as e:  # pragma: no cover
+        violations.append(f"hard_gates: lockfile_audit error: {e}")
+
+    if not prose_only:
+        try:
+            from check_security_paths import check as _sec_paths  # type: ignore
+
+            sp_ok, sp_msgs = _sec_paths(root, base_g, head_g)
+            if not sp_ok:
+                for msg in sp_msgs:
+                    violations.append(f"hard_gates: security_paths — {msg}")
+            else:
+                skipped.append("security_paths (" + (sp_msgs[0] if sp_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: security_paths error: {e}")
+    else:
+        skipped.append("security_paths (prose-only)")
 
     # Web E2E + Comet contract when product has a website (fail closed)
     if not prose_only:

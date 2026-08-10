@@ -71,8 +71,11 @@ web_e2e:
       title: SLIP-39 lab
       playwright: e2e/slip39.spec.ts
       scenarios:
-        - { id: shell, name: "S57 shell", steps: ["CSP offline", "danger banner", "compare table", "placeholders"] }
+        - { id: shell, name: "S57 shell", steps: ["CSP offline", "danger banner", "compare table"] }
         - { id: deep, name: "S57b Shamir link", steps: ["Shamir → slip39.html"] }
+        - { id: split, name: "S58 2-of-3", steps: ["generate", "split", "combine match"] }
+        - { id: under, name: "S59 under-threshold", steps: ["error no fake secret"] }
+        - { id: pp, name: "S60 wrong passphrase", steps: ["mismatch", "group diagram"] }
     - id: network
       order: 4
       path: /network.html
