@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "approved",
-  "score": 100,
+  "phase": "init",
+  "score": 100.0,
   "spec_id": ".agents/specs/2026-08-10-slip39-a-teach-shell.md",
   "task": "SLIP-39 lab A teach shell",
   "waiver": null
