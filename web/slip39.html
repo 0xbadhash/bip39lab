@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="description" content="SLIP-39 lab — Trezor-shaped share words for learning only. Offline. Not for funded wallets." />
+  <title>SLIP-39 lab · bip39.catalyxt.xyz</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">39</div>
+        <div>
+          <div class="brand-title">bip39lab</div>
+          <div class="brand-sub">Offline BTC lab · Catalyxt</div>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Site sections">
+        <a class="nav-item" data-nav="lab" href="index.html">
+          <span class="nav-step">1</span>
+          <span class="nav-label"><strong>Lab</strong><small>Generate and derive</small></span>
+        </a>
+        <a class="nav-item" data-nav="multisig" href="multisig.html">
+          <span class="nav-step">2</span>
+          <span class="nav-label"><strong>Multisig</strong><small>M-of-N explainer</small></span>
+        </a>
+        <a class="nav-item" data-nav="shamir" href="shamir.html">
+          <span class="nav-step">3</span>
+          <span class="nav-label"><strong>Shamir</strong><small>Share split demo</small></span>
+        </a>
+        <a class="nav-item" data-nav="network" href="network.html">
+          <span class="nav-step">4</span>
+          <span class="nav-label"><strong>Network</strong><small>Fees · balances</small></span>
+        </a>
+        <a class="nav-item" data-nav="tools" href="index.html#tools">
+          <span class="nav-step">5</span>
+          <span class="nav-label"><strong>Tools</strong><small>Path · PSBT</small></span>
+        </a>
+        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
+          <span class="nav-step">6</span>
+          <span class="nav-label"><strong>Glossary</strong><small>BIPs · security</small></span>
+        </a>
+      </nav>
+      <div class="sidebar-foot">
+        <p class="sidebar-note">
+          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <br />
+          SLIP-39 <strong>lab only</strong> — not a Trezor Suite substitute.
+          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
+        </p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <div>
+          <h1>SLIP-39 lab</h1>
+          <p class="sub">Trezor-shaped share mnemonics · offline · educational</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="topbar-status">
+            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
+          </span>
+          <span class="chip chip-warn">Lab only</span>
+          <span class="chip">Offline</span>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="warn" role="alert" id="s39Danger">
+          <strong>SLIP-39 lab (Trezor-shaped format) — educational only.</strong>
+          Compare BIP-39, educational Shamir hex shares, and the SLIP-39 word model.
+          <strong>Do not</strong> use this page for funded wallets.
+          This is <strong>not</strong> a substitute for Trezor Suite or audited production backups.
+          Prefer hardware-vendor tools for real threshold recovery.
+        </div>
+
+        <p class="control-help teach-only" style="margin:0 0 0.5rem">
+          <strong>On this page</strong> — jump links (not a locked wizard). Scroll freely.
+          Educational Shamir (hex shares) stays on <a href="shamir.html">Shamir</a> — intentional contrast.
+        </p>
+        <nav class="step-rail teach-only" data-step-rail aria-label="SLIP-39 page sections (jump links)" id="s39StepRail">
+          <button type="button" class="step-rail-btn is-active" data-step-target="#s39CardCompare" aria-current="step">
+            Compare<small>BIP-39 · Shamir · SLIP-39</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#s39CardDemo">
+            Demo<small>Coming in B</small>
+          </button>
+          <button type="button" class="step-rail-btn" data-step-target="#s39CardGroups">
+            Groups<small>Coming in C</small>
+          </button>
+        </nav>
+
+        <div class="card card-wide" id="s39CardCompare">
+          <div class="card-head"><h2>What differs? BIP-39 · educational Shamir · SLIP-39</h2></div>
+          <p class="card-lede teach-only">
+            Three different backup models. This lab shell names the <strong>SLIP-39 word format</strong>
+            so you can feel the difference — product promise stays <em>lab</em>, not “restore my Trezor.”
+          </p>
+          <table class="compare-table" aria-label="BIP-39 vs educational Shamir vs SLIP-39" id="s39CompareTable">
+            <thead>
+              <tr>
+                <th scope="col">Topic</th>
+                <th scope="col">BIP-39 (Lab)</th>
+                <th scope="col">Educational Shamir</th>
+                <th scope="col">SLIP-39 (this lab)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Wordlist</th>
+                <td>2048 English words</td>
+                <td>No wordlist — <code>share:index:hex</code></td>
+                <td>1024 SLIP-39 English words</td>
+              </tr>
+              <tr>
+                <th scope="row">Backup unit</th>
+                <td>One recovery phrase</td>
+                <td>N hex share lines</td>
+                <td>N share mnemonics (threshold M)</td>
+              </tr>
+              <tr>
+                <th scope="row">Checksum</th>
+                <td>CS bits in last word</td>
+                <td>Demo-only structure</td>
+                <td>Per-share checksum / identifier</td>
+              </tr>
+              <tr>
+                <th scope="row">Passphrase</th>
+                <td>Optional “25th word” on seed</td>
+                <td>N/A on hex demo</td>
+                <td>Passphrase at <em>combine</em> (wrong → different/fail)</td>
+              </tr>
+              <tr>
+                <th scope="row">Groups</th>
+                <td>None</td>
+                <td>Single secret split</td>
+                <td>Groups + member thresholds</td>
+              </tr>
+              <tr>
+                <th scope="row">Downstream</th>
+                <td>PBKDF2 seed → BIP32</td>
+                <td>Practice bytes only</td>
+                <td>Master secret (lab stops here)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card card-wide" id="s39CardDemo">
+          <div class="card-head"><h2>Demo — single group split / combine</h2></div>
+          <p class="control-help" id="s39DemoPlaceholder">
+            <strong>Coming in ship B</strong> — compatible-enough SLIP-39 split/combine offline
+            (practice master secret only; never auto-imported from Lab BIP-39).
+            Defaults planned: 2-of-3 and 3-of-5. This shell has no crypto yet.
+          </p>
+          <pre class="out" id="s39SharesOut" aria-disabled="true">— demo disabled until ship B —</pre>
+        </div>
+
+        <div class="card card-wide" id="s39CardGroups">
+          <div class="card-head"><h2>Groups &amp; passphrase (teach)</h2></div>
+          <p class="control-help teach-only" id="s39GroupsPlaceholder">
+            <strong>Coming in ship C</strong> — group-threshold diagram and wrong-passphrase teach demo.
+            Production SLIP-39 can require <strong>group thresholds</strong>
+            (e.g. need group A <em>and</em> any 2 of group B). Conceptual only here.
+          </p>
+          <div class="warn" id="s39GroupDiagram" role="img" aria-label="Multi-group conceptual diagram">
+            <strong>Example multi-group policy (diagram only):</strong><br />
+            Group&nbsp;1: <em>1-of-1</em> “owner” share &nbsp;+&nbsp;
+            Group&nbsp;2: <em>2-of-3</em> “heirs” shares<br />
+            → Recover needs the owner share <strong>and</strong> any 2 heir shares.
+            Wrong passphrase at combine → fail / different secret.
+          </div>
+        </div>
+
+        <p class="footer-host">
+          <span data-site-version class="site-version-inline">…</span>
+          · <a href="shamir.html">← Educational Shamir</a> ·
+          <a href="index.html">Lab</a> ·
+          <a href="https://bip39.catalyxt.xyz/slip39.html">bip39.catalyxt.xyz/slip39.html</a>
+        </p>
+      </main>
+    </div>
+  </div>
+  <script src="js/site-version.js"></script>
+  <script src="js/glossary.js"></script>
+  <script src="js/help-ui.js"></script>
+  <script src="js/slip39-app.js"></script>
+</body>
+</html>

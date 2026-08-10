@@ -26,7 +26,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S56 exhaustive · 6-nav · human process flows per page
+scenarios: S0–S57 exhaustive · 6-nav · human process flows per page
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -660,6 +660,20 @@ Empty secret → error status; **0** share cards (no fake success).
 
 ### S56 — Educational recombine
 Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered matches practice secret (offline).
+
+---
+
+## SLIP-39 lab (`/slip39.html`) — deep-link from Shamir (not 7th nav)
+
+Teach shell only (ship A). No split/combine crypto until ship B.
+
+### S57 — Shell
+SLIP-39 lab heading; **6**-nav (no SLIP-39 top item); offline CSP `connect-src 'none'`; danger banner (lab / not funded wallets / not Trezor Suite); comparison table (wordlist, backup unit, checksum, passphrase, groups, downstream); jump rail; demo placeholders “Coming in B/C”.
+
+### S57b — Shamir → SLIP-39 deep-link
+From Shamir banner link `#shLinkSlip39` → `/slip39.html` danger visible.
+
+S57–S57b · `e2e/slip39.spec.ts`
 
 ---
 

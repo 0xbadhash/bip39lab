@@ -1,24 +1,23 @@
-# BEHAVIOR-REPORT — GapFix Tools phrase source + teach clarity
+# BEHAVIOR-REPORT — SLIP-39 lab A teach shell
 
 **Marker:** BEHAVIOR-REPORT  
-**Date:** 2026-08-09  
-**Spec:** `.agents/specs/2026-08-09-gapfix-tools-phrase-source.md`  
-**Surfaces:** Tools / Lab teach (`web/index.html`, `web/js/app.js`) — no secret retention  
-**Method:** static contracts (`tests/test_tools_teach_copy.py`) + Playwright S17–S23 / S18c when e2e runs
+**Date:** 2026-08-10  
+**Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`  
+**Surfaces:** `web/slip39.html`, Shamir deep-link — offline teach shell  
+**Method:** static copy contracts + Playwright S57/S57b
 
 ## Contract clauses
 
 | # | Clause | Result | Evidence |
 |---|--------|--------|----------|
-| 1 | Tools shows Phrase source + TEST DATA chip | pass | INDEX + test_tools_teach_copy |
-| 2 | Compare/descriptors prefix `[TEST DATA]` or `[Lab phrase]` | pass | app.js + S18/S18b/S19 |
-| 3 | Clear secrets notes next auto-gen TEST DATA | pass | clearSecrets + S18c |
-| 4 | Entropy d6≈2.58 / coin=1 teach | pass | entPadMeta + S17 |
-| 5 | Descriptor definition + Load example | pass | INDEX + btnDescExample + S22 |
-| 6 | Lab G/D/?/Esc teach | pass | INDEX kbd + S23 |
-| 7 | No secret retention / no new crypto | pass | copy-only + educational zpub |
+| 1 | Danger banner (lab / not funded / not Trezor Suite) | pass | #s39Danger + pytest |
+| 2 | Comparison table BIP-39 / Shamir / SLIP-39 | pass | #s39CompareTable |
+| 3 | Jump rail + demo placeholders | pass | #s39StepRail / Coming in |
+| 4 | Shamir → slip39.html | pass | #shLinkSlip39 + S57b |
+| 5 | Six-nav; CSP offline | pass | nav count + connect-src none |
+| 6 | No crypto / no secret retention | pass | no slip39.bundle; chrome JS only |
 
 ## Runtime / black-box notes
 
-- No network in path for this ship; address-only balance unchanged.
-- Failure modes for balance remain **unknown**, not silent zero (out of scope for this GapFix).
+- No network path (`connect-src 'none'`).
+- No split/combine in this ship — demos deferred to B/C.

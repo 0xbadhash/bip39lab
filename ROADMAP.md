@@ -301,6 +301,47 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** pytest 63 · e2e S17–S23 (7)
 - **Notes:** Human-intuitiveness GapFix; no crypto path change
 
+
+### [IN PROGRESS] SLIP-39 lab A — teach shell
+- **Status:** in progress (implement)
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`
+- **Acceptance:**
+  - [x] Offline slip39.html danger banner + comparison table
+  - [x] Jump rail + demo placeholders; Shamir→SLIP-39 link
+  - [x] CSP offline; unit + S57; no 7-nav
+- **Smoke:** pytest + e2e S57
+- **Notes:** Lab only; not production Trezor restore; crypto in B
+
+### [OPEN] SLIP-39 lab B — compatible core
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-10-slip39-b-compatible-core.md`
+- **Acceptance:**
+  - [ ] 2-of-3 / 3-of-5 split+combine offline
+  - [ ] Golden vector pytest; fail-closed errors
+- **Smoke:** pytest + e2e S58–S59
+- **Notes:** Library wrap only
+
+### [OPEN] SLIP-39 lab C — passphrase + groups teach
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-10-slip39-c-passphrase-groups.md`
+- **Acceptance:**
+  - [ ] Wrong passphrase fail demo
+  - [ ] Multi-group diagram
+- **Smoke:** targeted e2e
+- **Notes:** Optional teach ship
+
+### [OPEN] SLIP-39 lab D — docs/release notes
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-10-slip39-d-docs-release.md`
+- **Acceptance:**
+  - [ ] ROADMAP/README/Comet S57+
+- **Smoke:** docs review
+- **Notes:** After A–C
+
 ## Current focus
 
 **Shipped:** `v0.13.5` teach-surface jump-link consistency.  

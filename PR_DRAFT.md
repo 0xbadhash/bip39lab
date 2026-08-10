@@ -1,70 +1,66 @@
-# PR Draft: GapFix — Tools phrase source + teach clarity
+# PR Draft: SLIP-39 lab A — teach shell
 
-**Range:** working tree (this ship)
-**Spec:** `.agents/specs/2026-08-09-gapfix-tools-phrase-source.md`
+**Range:** this ship (working tree → HEAD)
+**Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`
 
 ## What Problem This Solves
 
-Learners confuse auto-generated throwaway Tools phrases with a Lab mnemonic they typed or cleared, and several teach surfaces (entropy bits, descriptors, shortcuts) were opaque.
+Learners confuse educational Shamir (`share:index:hex`) with Trezor SLIP-39 share words. The Shamir “not SLIP-39” banner had no sibling lab destination.
 
 ## Why This Change Was Made
 
-Human-intuitiveness GapFix: explicit Phrase source + TEST DATA labeling, clear-secrets notes, entropy formula, descriptor definition + Load example, Lab keyboard teach.
+Ship offline `web/slip39.html` teach shell: danger banner, BIP-39 / educational Shamir / SLIP-39 comparison table, jump rail, demo placeholders, Shamir deep-link. **No split/combine crypto** (B/C).
 
 ## User Impact
 
-- Tools intro explains phrase provenance; outputs prefix `[TEST DATA]` or `[Lab phrase]`.
-- Clear secrets updates Tools outs + status for next auto-gen.
-- Entropy pad shows d6≈2.58 / coin=1; descriptors explainable with Load example.
-- Lab mnemonic card lists G/D/?/Esc.
+- Dedicated SLIP-39 lab page (lab only · not funded wallets · not Trezor Suite).
+- Comparison table keeps three backup models distinct.
+- Shamir → SLIP-39 deep-link continues the “not SLIP-39” story.
 
 ## Evidence
 
-- Unit: `tests/test_tools_teach_copy.py` (4)
-- Playwright: S17–S19, S18c, S22–S23 extended
-- Full pytest green
-- No crypto/CSP change; secrets scan clean
+- Unit: `tests/test_slip39_shell_copy.py` (5)
+- Playwright: `e2e/slip39.spec.ts` S57 / S57b
+- No crypto bundle; CSP `connect-src 'none'`
+- Secrets scan clean
 
 ## Traceability
 
 | AC | Proof |
 |----|--------|
-| AC-1 Phrase source + TEST DATA chip | `tests/test_tools_teach_copy.py` + S17 |
-| AC-2 `[TEST DATA]` / `[Lab phrase]` | `web/js/app.js` + S18/S18b/S19 |
-| AC-3 Clear secrets notes | `app.js` clearSecrets + S18c |
-| AC-4 Entropy formula | INDEX + entPadMeta + S17 + pytest |
-| AC-5 Descriptor definition | INDEX + `test_tools_teach_copy.py` |
-| AC-6 Load example | btnDescExample + S22 |
-| AC-7 Lab shortcuts teach | INDEX kbd + tools-shortcuts + S23 |
-| AC-8 Product smoke | `pytest` + product_smoke |
+| Danger banner lab/funds/Trezor | `test_slip39_html_danger_banner` + S57 |
+| Comparison table topics | `test_slip39_comparison_table_topics` + S57 |
+| Jump rail + placeholders | `test_slip39_jump_rail_and_placeholders` |
+| Shamir → slip39.html | `test_shamir_links_to_slip39_lab` + S57b |
+| Six-nav only (no 7th) | `test_slip39_keeps_six_nav` + S57 |
+| Plugin surface + Comet | product_plugin slip39 + E2E_COMET S57 |
 
 ## Red-proof / Green-proof
 
-- red_cmd: static asserts in `test_tools_teach_copy.py` against missing copy (TDD-style contracts on final tree)
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_tools_teach_copy.py`
+- red_cmd: static asserts fail if banner/table/Shamir link missing
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_slip39_shell_copy.py`
 
 ## Threat notes
 
-- Asset: Lab mnemonic / session-derived Tools phrase — must never look like a funded wallet secret; labels only, no retention to disk/logs.
-- Abuse: User mistakes auto-gen TEST DATA for their own phrase after Clear secrets — mitigated by clearSecrets notes + `[TEST DATA]` prefixes + S18c.
-- Abuse: Educational zpub Load example treated as user key material — copy marks format-teach only; no private keys in example.
+- Asset: no mnemonic/seed/xprv on this surface in ship A (placeholders only).
+- Abuse: user mistakes page for production SLIP-39 restore — danger banner + lab-only chips + not Trezor Suite copy.
+- Abuse: network exfil of pasted secrets later — CSP `connect-src 'none'`; no third-party scripts.
 
 ## Evidence pack
 
 | Item | Result |
 |------|--------|
-| hard_gates | run `python3 scripts/hard_gates.py --diff HEAD` after draft fix |
-| pytest | `tests/test_tools_teach_copy.py` + suite via compliance_engine |
-| smoke | `python3 scripts/product_smoke.py --root .` (release) |
-| validate | `python3 scripts/validate.py full` when release_mgmt runs |
+| hard_gates | `python3 scripts/hard_gates.py --diff HEAD` |
+| pytest | `tests/test_slip39_shell_copy.py` |
+| smoke | product_smoke at release_mgmt |
+| validate | validate full at release_mgmt |
 
 ## Risks
 
-Educational zpub example may fail checksum in Explain — intentional format teach; copy says so.
+Demo cards say “Coming in ship B/C” — intentional incomplete crypto path.
 
 ## Things that look bad but are actually fine
 
-1. Tools Compare/Descriptors still write a mnemonic into the Lab field on auto-gen — by design for shared session; provenance labels + Clear secrets notes make that explicit.
-2. Load-example zpub may fail full descriptor checksum — educational shape only, not a live watch-only import path.
-3. S18c lives under lab.spec.ts Tools group — Clear secrets is Lab control then Tools compare; not a separate page suite.
-4. Pipeline score may have been 96 from a prior partial ship on master; this GapFix ship re-validates from working tree.
+1. No 7th top-level nav item — deep-link only, keeps 6-nav contract.
+2. Specs B–D committed as stubs — not claimed done; ROADMAP still OPEN for B–D.
+3. `slip39-app.js` is chrome-only shell marker — crypto is B.

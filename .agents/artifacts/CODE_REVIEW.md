@@ -1,17 +1,17 @@
-# CODE-REVIEW — GapFix Tools phrase source + teach clarity
+# CODE-REVIEW — SLIP-39 lab A teach shell
 
 **Marker:** CODE-REVIEW  
-**Date:** 2026-08-09  
-**Base:** HEAD (working tree ship)  
-**Scope:** `web/index.html`, `web/js/app.js`, `tests/test_tools_teach_copy.py`, `e2e/lab.spec.ts`, spec/roadmap/PR_DRAFT/Comet
+**Date:** 2026-08-10  
+**Base:** HEAD pre-ship (`46f3c87`) · head: working tree ship A  
+**Scope:** `web/slip39.html`, `web/js/slip39-app.js`, `web/shamir.html`, tests/e2e, specs A–D stubs, ROADMAP/plugin/Comet
 
 ## Secrets
 
-`python3 scripts/check_secrets_diff.py --base HEAD` — clean (no real seed material; educational public zpub shape only).
+`python3 scripts/check_secrets_diff.py` — clean (no seed/mnemonic material; teach copy only).
 
 ## Scope governor
 
-In-scope teach/copy + provenance labels only. No CSP/crypto/API. LOC small, same owner boundary.
+In-scope teach shell + deep-link + static contracts. No SLIP-39 crypto library, no CSP relax, no 7th nav. LOC modest, same owner boundary.
 
 ## Findings
 
@@ -21,13 +21,13 @@ In-scope teach/copy + provenance labels only. No CSP/crypto/API. LOC small, same
 
 ### Notes (not P0)
 
-- Load-example zpub may fail BIP380 checksum on Explain — intentional; out text warns educational shape.
-- `ensureLabMnemonic` still writes auto-gen into Lab `#mnemonic` (pre-existing); copy now makes that explicit.
+- B/C/D specs staged as planning stubs; implementation not claimed.
+- Demo placeholders intentional for B/C handoff.
 
 ## Tests / smoke
 
-- `.venv/bin/python -m pytest -q` → 63 passed  
-- `npx playwright test e2e/lab.spec.ts -g "S17|S18|S19|S22|S23"` → 7 passed (incl S18c clear→TEST DATA)
+- `.venv/bin/python -m pytest -q tests/test_slip39_shell_copy.py` → 5 passed  
+- Playwright S57/S57b via e2e/slip39.spec.ts (release web_e2e)
 
 ## P0 count
 

@@ -65,8 +65,16 @@ web_e2e:
         - { id: shell, name: "S53 shell", steps: ["CSP offline", "danger banner", "6-nav"] }
         - { id: split, name: "S54 split demo", steps: ["generate", "2-of-3", "3 cards"] }
         - { id: err, name: "S55 empty secret", steps: ["no fake success"] }
-    - id: network
+    - id: slip39
       order: 3
+      path: /slip39.html
+      title: SLIP-39 lab
+      playwright: e2e/slip39.spec.ts
+      scenarios:
+        - { id: shell, name: "S57 shell", steps: ["CSP offline", "danger banner", "compare table", "placeholders"] }
+        - { id: deep, name: "S57b Shamir link", steps: ["Shamir → slip39.html"] }
+    - id: network
+      order: 4
       path: /network.html
       title: Network
       playwright: e2e/network.spec.ts
@@ -76,7 +84,7 @@ web_e2e:
         - { id: bal, name: "S13c–d balances", steps: ["reject seed", "fetch", "bridge"] }
         - { id: edge, name: "S33–S35 edge", steps: ["no ack", "empty", "tools link"] }
     - id: chrome
-      order: 4
+      order: 5
       path: /
       title: Site chrome
       playwright: e2e/site-chrome.spec.ts
