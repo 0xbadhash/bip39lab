@@ -49,9 +49,11 @@ green_cmd: true
 
 ## Evidence pack
 
-- hard_gates / CODE-REVIEW  
-- check_web_e2e  
-- secrets scan  
+- **hard_gates** — pack ok after this PR_DRAFT (docs-only waiver, threat tags, red_cmd/green_cmd)  
+- **smoke** — `python3 scripts/check_web_e2e.py --root .` exit 0 (web e2e contract; no UI change)  
+- **pytest** — not re-run required for pure docs; compliance still suite_green via `pr_validator`  
+- **validate** — secrets scan clean on `5bf5d63...HEAD`; no product `.py` in D range  
+- CODE-REVIEW p0=0 · marker `CODE-REVIEW`
 
 ## Things that look bad but are actually fine
 
