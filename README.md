@@ -56,6 +56,19 @@ Rebuild offline bundle (after cloning scure/noble deps):
 npx esbuild web/js/build-entry.mjs --bundle --format=iife --outfile=web/js/bip39lab.bundle.js
 ```
 
+### Pages (offline CSP unless Network)
+
+| Page | URL | Purpose |
+|------|-----|---------|
+| Lab | `/` or `web/index.html` | BIP-39 generate / derive |
+| Multisig | `/multisig.html` | M-of-N from **public keys** only |
+| Shamir | `/shamir.html` | Educational GF(256) share **hex** demo — **not** SLIP-39 |
+| **SLIP-39 lab** | `/slip39.html` | **Lab-only** Trezor-shaped share mnemonics (split/combine teach). Deep-link from Shamir; **not** a 7th nav item; **not** Trezor Suite |
+| Network | `/network.html` | Fees + opt-in address balances |
+| Tools / Glossary | `/#tools`, `/#glossary` | Offline utilities + terms |
+
+**SLIP-39 lab** is educational only (v0.13.7–0.13.9 ships A–C). Do **not** use it for funded wallets. Prefer hardware-vendor tools for real threshold recovery. Comet/Playwright scenarios: **S57–S60b** in `docs/E2E_COMET_SCENARIOS.md`.
+
 ## Tests
 
 ```bash

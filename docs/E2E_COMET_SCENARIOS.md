@@ -17,6 +17,9 @@ surfaces:
   - id: shamir
     path: /shamir.html
     playwright: e2e/shamir.spec.ts
+  - id: slip39
+    path: /slip39.html
+    playwright: e2e/slip39.spec.ts
   - id: network
     path: /network.html
     playwright: e2e/network.spec.ts
@@ -26,12 +29,12 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S57 exhaustive · 6-nav · human process flows per page
+scenarios: S0–S60b exhaustive · 6-nav · SLIP-39 lab deep-link · human process flows per page
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
-`Product: 0.13.3 · Contract: 2 · Last aligned: 2026-08-09`
+`Product: 0.13.9 · Contract: 2 · Last aligned: 2026-08-10`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -44,13 +47,14 @@ scenarios: S0–S57 exhaustive · 6-nav · human process flows per page
 | Glossary | `/#glossary` (same page as Lab) | `e2e/glossary.spec.ts`, lab S25 |
 | Multisig | `/multisig.html` | `e2e/multisig.spec.ts` |
 | Shamir | `/shamir.html` | `e2e/shamir.spec.ts` |
+| **SLIP-39 lab** | `/slip39.html` (deep-link; not 7th nav) | `e2e/slip39.spec.ts` |
 | Network | `/network.html` | `e2e/network.spec.ts` |
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **67** tests (local `http://127.0.0.1:4173`).  
+**Playwright total:** `npm run test:e2e` → **74** tests (local `http://127.0.0.1:4173`).  
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S56** (scenario IDs below; some Playwright tests map 1:1).
+**Comet/Perplexity score sheet:** **S0–S60b** (scenario IDs below; some Playwright tests map 1:1).
 
 ### Sidebar (every page) — **6 items**
 
@@ -70,14 +74,14 @@ There is **no** Balance nav (docs folded into Network). There is **no** separate
 ## Global mental model (must be coherent)
 
 ```text
-Secrets stay offline ──► Lab / Multisig / Shamir / Tools  (CSP connect-src 'none')
+Secrets stay offline ──► Lab / Multisig / Shamir / SLIP-39 lab / Tools  (CSP connect-src 'none')
 Addresses only online ─► Network (opt-in mempool.space) + CLI/Knots for private checks
 Words to look up ──────► Glossary (always available; Teach optional)
 ```
 
 | Idea | Where humans learn it | Must not confuse with |
 |------|----------------------|------------------------|
-| BIP-39 recovery phrase | Lab | Multisig keys / Shamir shares |
+| BIP-39 recovery phrase | Lab | Multisig keys / Shamir hex shares / SLIP-39 share words |
 | M-of-N **keys** (spend policy) | Multisig | Shamir M-of-N **shares** |
 | M-of-N **shares** of one secret | Shamir | Multisig / BIP-39 words |
 | Fees & public balance | Network | Pasting a seed |
@@ -663,26 +667,52 @@ Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered
 
 ---
 
-## SLIP-39 lab (`/slip39.html`) — deep-link from Shamir (not 7th nav)
+## Page 7 — SLIP-39 lab (`/slip39.html`) — deep-link from Shamir (not 7th nav)
 
-Ship A shell + ship B offline split/combine (npm `slip39` bundle + Python `shamir-mnemonic`). Lab only — not Trezor Suite.
+### Description
+**Lab-only** Trezor-shaped SLIP-39 share mnemonics (ships A–C: shell, single-group split/combine, passphrase/groups teach). Offline CSP. **Not** Trezor Suite; **not** educational Shamir hex shares.
 
-### S57 — Shell
+### Process flow (learner)
+
+```text
+1. Land via Shamir “SLIP-39 lab” link (or /slip39.html) · red lab-only banner
+2. Read compare table: BIP-39 vs educational Shamir vs SLIP-39
+3. (Teach On) Rail: Compare → Demo → Groups
+4. Generate practice master hex → Split 2-of-3 (or 3-of-5) → see share word cards
+5. Combine first M shares → Match (happy path)
+6. Groups card: read multi-group diagram (1-of-1 + 2-of-3) — diagram only
+7. Run wrong-passphrase demo (or manual combine with wrong pp) → mismatch, not silent Match
+8. Clear practice fields when done
+```
+
+### Human coherence checklist
+
+| Criterion | Expected | PASS/FAIL | Notes |
+|-----------|----------|-----------|-------|
+| Coherent | Compare → demo → groups teach | | |
+| Makes sense | Distinct from Shamir hex + BIP-39 phrase | | |
+| Intuitive | Generate/Split/Combine close the loop | | |
+| Safety | Lab-only banner; wrong-pp mismatch; no funded-wallet claim | | |
+| Teach Off | Rail hides; banner + demo + groups diagram remain | | |
+
+### Scenarios
+
+#### S57 — Shell
 SLIP-39 lab heading; **6**-nav (no SLIP-39 top item); offline CSP `connect-src 'none'`; danger banner (lab / not funded wallets / not Trezor Suite); comparison table (wordlist, backup unit, checksum, passphrase, groups, downstream); jump rail; live demo controls (Generate / Split / Combine).
 
-### S57b — Shamir → SLIP-39 deep-link
+#### S57b — Shamir → SLIP-39 deep-link
 From Shamir banner link `#shLinkSlip39` → `/slip39.html` danger visible.
 
-### S58 — Happy 2-of-3 split + combine match
+#### S58 — Happy 2-of-3 split + combine match
 Generate practice hex → Split 2-of-3 → Combine M shares → status Match.
 
-### S59 — Under-threshold error
+#### S59 — Under-threshold error
 After split, paste only one share → Combine → error status (no Match).
 
-### S60 — Wrong passphrase + group diagram
+#### S60 — Wrong passphrase + group diagram
 `#btnS39WrongPp` → mismatch status; `#s39GroupDiagram` shows 1-of-1 + 2-of-3 policy with `[data-group]` labels.
 
-### S60b — Manual wrong passphrase combine
+#### S60b — Manual wrong passphrase combine
 Generate → passphrase `correct` → Split → set `#s39PassphraseCombine` to `wrong` → Combine → mismatch / err (recovered ≠ expected). No silent success.
 
 S57–S60b · `e2e/slip39.spec.ts`
@@ -699,6 +729,7 @@ URLs:
   Lab:      https://bip39.catalyxt.xyz/
   Multisig: https://bip39.catalyxt.xyz/multisig.html
   Shamir:   https://bip39.catalyxt.xyz/shamir.html
+  SLIP-39:  https://bip39.catalyxt.xyz/slip39.html
   Network:  https://bip39.catalyxt.xyz/network.html
 Date (UTC):
 Agent: Comet / Perplexity / other:
@@ -709,9 +740,10 @@ Tools:    coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Glossary: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Multisig: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Shamir:   coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+SLIP-39:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Network:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Chrome/Teach: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
-Cross-product story (secrets offline / addresses online / shares≠keys): PASS|FAIL —
+Cross-product story (secrets offline / addresses online / shares≠keys / Shamir≠SLIP-39): PASS|FAIL —
 
 ## Scenarios
 S0 Smoke (6-nav + Shamir): PASS|FAIL —

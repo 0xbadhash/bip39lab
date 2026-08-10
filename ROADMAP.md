@@ -333,17 +333,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** e2e S60/S60b + pytest wrong-passphrase
 - **Notes:** Shipped `v0.13.9`; diagram-only multi-group (no live group split)
 
-### [OPEN] SLIP-39 lab D — docs/release notes
-- **Status:** open
+### [DONE] SLIP-39 lab D — docs/release notes
+- **Status:** done
 - **Priority:** P2
 - **Spec:** `.agents/specs/2026-08-10-slip39-d-docs-release.md`
 - **Acceptance:**
-  - [ ] ROADMAP/README/Comet S57+
-- **Smoke:** docs review
-- **Notes:** After A–C
+  - [x] ROADMAP A–C (and D) marked done; lab-only language retained
+  - [x] README pages table + SLIP-39 offline page
+  - [x] Comet S57–S60b + process flow Page 7
+- **Smoke:** docs review + `check_web_e2e`
+- **Notes:** Docs-only hygiene after A–C; no new crypto
 
 ## Current focus
 
-**Shipped:** through `v0.13.9` SLIP-39 lab A–C (teach shell, B core, passphrase/groups teach).  
-**Next:** SLIP-39 lab D (docs/Comet hygiene) or optional `/qa_campaign`.  
+**Shipped:** through `v0.13.9` SLIP-39 lab A–D (D = docs/Comet hygiene).  
+**Next:** optional Knots 2000-seed educational scan (see open work) or private Knots proxy.  
 **Later:** private Knots proxy for Network.

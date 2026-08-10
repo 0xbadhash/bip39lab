@@ -2,7 +2,7 @@
   "card_id": null,
   "phase": "init",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-10-slip39-c-passphrase-groups.md",
-  "task": "SLIP-39 lab C passphrase+groups",
-  "waiver": null
+  "spec_id": ".agents/specs/2026-08-10-slip39-d-docs-release.md",
+  "task": "SLIP-39 lab D docs",
+  "waiver": "docs-only"
 }

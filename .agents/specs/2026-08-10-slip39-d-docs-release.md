@@ -2,7 +2,7 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-10
-- **Status:** ready-for-agent
+- **Status:** done
 - **Priority:** P2
 - **Roadmap:** ROADMAP.md → Open work
 - **Plan:** none
@@ -15,19 +15,25 @@ Without ROADMAP/README/Comet notes, the SLIP-39 lab is invisible and “not SLIP
 
 ## Solution
 
-Document lab-only SLIP-39 in ROADMAP (DONE after A–C), README, Comet scenarios S57+, plugin web_e2e surface if needed. No production safety claim.
+Document lab-only SLIP-39 in ROADMAP (A–D done), README pages table, Comet scenarios S57–S60b + human process flow Page 7, plugin surface already present. No production safety claim. No secret material in docs.
+
+## User Stories
+
+1. As a learner, I find `/slip39.html` from README without mistaking it for Shamir or Trezor Suite.
+2. As a Comet/QA operator, I have S57–S60b and a process flow for the SLIP-39 page.
 
 ## Acceptance Criteria
 
-- [ ] ROADMAP open items A–C marked done when shipped; D notes lab-only
-- [ ] README mentions SLIP-39 lab offline page
-- [ ] Comet doc lists S57+ for slip39
-- [ ] No secret material in docs
+- [x] ROADMAP open items A–C marked done when shipped; D notes lab-only and is done
+- [x] README mentions SLIP-39 lab offline page
+- [x] Comet doc lists S57+ for slip39 (through S60b) + process flow
+- [x] No secret material in docs
 
 ## Out of Scope
 
-- Version tag/release_mgmt (separate after pr_review)
+- Version tag/release_mgmt (optional follow-up `/pr_review` → `/release_mgmt` if operator wants a docs stamp tag)
+- Product code / crypto changes
 
 ## Handoff
 
-- Next: `/execute_dev` then `/code_review` (docs-only waiver ok for pure docs if no code)
+- `/execute_dev` docs-only (TDD N/A) → `/code_review` → optional `/pr_review --validate`
