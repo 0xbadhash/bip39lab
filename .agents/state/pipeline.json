@@ -1,6 +1,6 @@
 {
   "card_id": null,
-  "phase": "init",
+  "phase": "ready_for_review",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-10-slip39-d-docs-release.md",
   "task": "SLIP-39 lab D docs",
