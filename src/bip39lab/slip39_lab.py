@@ -5,8 +5,8 @@ Lab only: practice master secrets, no BIP-39 import, no secret retention.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 from shamir_mnemonic import combine_mnemonics, generate_mnemonics
 

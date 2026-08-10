@@ -1,23 +1,20 @@
-# BEHAVIOR-REPORT — SLIP-39 lab A teach shell
+# BEHAVIOR-REPORT
 
 **Marker:** BEHAVIOR-REPORT  
-**Date:** 2026-08-10  
-**Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`  
-**Surfaces:** `web/slip39.html`, Shamir deep-link — offline teach shell  
-**Method:** static copy contracts + Playwright S57/S57b
+**Contract:** `.agents/artifacts/BEHAVIOR_CONTRACT.md`  
+**Mode:** Playwright black-box + live static files
 
-## Contract clauses
+| Clause | Result | Evidence |
+|--------|--------|----------|
+| Group diagram 1-of-1 + 2-of-3 + policy | pass | S60 `#s39GroupDiagram [data-group]` / `[data-policy]` |
+| Scripted wrong-pp demo mismatch | pass | S60 `#btnS39WrongPp` → err class + mismatch text |
+| Manual wrong-pp combine | pass | S60b recovered ≠ expected; status err |
+| Happy path still Match | pass | S58 2-of-3 Match |
+| Lab-only banner | pass | S57 `#s39Danger` |
+| Offline CSP | pass | S57 `labCspOffline` |
 
-| # | Clause | Result | Evidence |
-|---|--------|--------|----------|
-| 1 | Danger banner (lab / not funded / not Trezor Suite) | pass | #s39Danger + pytest |
-| 2 | Comparison table BIP-39 / Shamir / SLIP-39 | pass | #s39CompareTable |
-| 3 | Jump rail + demo placeholders | pass | #s39StepRail / Coming in |
-| 4 | Shamir → slip39.html | pass | #shLinkSlip39 + S57b |
-| 5 | Six-nav; CSP offline | pass | nav count + connect-src none |
-| 6 | No crypto / no secret retention | pass | no slip39.bundle; chrome JS only |
+fail: 0 · blocked: 0
 
-## Runtime / black-box notes
-
-- No network path (`connect-src 'none'`).
-- No split/combine in this ship — demos deferred to B/C.
+```text
+NEXT_SKILL=/pr_review --validate
+```

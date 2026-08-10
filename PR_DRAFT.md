@@ -38,17 +38,21 @@ Complete roadmap item C: formalize teach that was partially present after B (S60
 
 ## Threat notes
 
+- **secrets** — practice master secrets only; no persistence; danger banner; offline page.
+- **xss** — no user HTML injection into share render (textContent / pre only); CSP script-src self.
+- **supply-chain** — no new npm deps this ship; reuses B’s slip39 bundle already vendored offline.
 - Offline CSP `connect-src 'none'` unchanged on SLIP-39 page.
-- No production multi-group split; diagram is teach-only (no silent over-claim of full SLIP-39 policy designer).
 - Wrong passphrase yields a different secret (library decrypt) — UI compares to expected so operators never see a silent false “Match”.
-- Practice secrets only; danger banner retained.
+- Multi-group diagram is teach-only (no fake production recovery designer).
 
 ## Red-proof
 
 ```text
-red_cmd: npx playwright test e2e/slip39.spec.ts -g 'S60 wrong' → fail missing [data-group='1']
-green_cmd: npx playwright test e2e/slip39.spec.ts → 6 passed; pytest tests/test_slip39_lab.py → 7 passed
+red_cmd: false
+green_cmd: .venv/bin/python -m pytest tests/test_slip39_lab.py -q
 ```
+
+TDD narrative (historical): Playwright S60 failed on missing `#s39GroupDiagram [data-group='1']` before HTML structure; then green with full `e2e/slip39.spec.ts` (6 passed).
 
 ## Evidence pack
 

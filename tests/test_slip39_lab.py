@@ -17,10 +17,14 @@ from bip39lab.slip39_lab import (
 # Official-style vector 4 from slip39-js vectors (TREZOR passphrase).
 # Master secret hex built from int (avoid continuous hex false-positive scanners).
 VECTOR_4_SHARES = [
-    "shadow pistol academic always adequate wildlife fancy gross oasis cylinder "
-    "mustang wrist rescue view short owner flip making coding armed",
-    "shadow pistol academic acid actress prayer class unknown daughter sweater "
-    "depict flip twice unkind craft early superior advocate guest smoking",
+    (
+        "shadow pistol academic always adequate wildlife fancy gross oasis cylinder "
+        "mustang wrist rescue view short owner flip making coding armed"
+    ),
+    (
+        "shadow pistol academic acid actress prayer class unknown daughter sweater "
+        "depict flip twice unkind craft early superior advocate guest smoking"
+    ),
 ]
 VECTOR_4_SECRET = f"{0xB43CEB7E57A0EA8766221624D01B0864:032x}"
 
