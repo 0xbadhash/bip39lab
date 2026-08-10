@@ -17,8 +17,8 @@ import sys
 from pathlib import Path
 
 H2 = re.compile(r"^##\s+(20\d{2}-\d{2}-\d{2})")
-WHEN = re.compile(r"\*\*When:\*\*.*UTC.*HKT", re.I)
-KIND = re.compile(r"\*\*Kind:\*\*\s*(release|note)", re.I)
+WHEN = re.compile(r"\*\*When:\*\*.*UTC.*HKT", re.IGNORECASE)
+KIND = re.compile(r"\*\*Kind:\*\*\s*(release|note)", re.IGNORECASE)
 
 
 def check_file(path: Path) -> list[str]:
@@ -34,7 +34,7 @@ def check_file(path: Path) -> list[str]:
     if "HKT" not in header_probe:
         errs.append(f"{pid}: header missing HKT contract blurb")
     # split entries
-    chunks = re.split(r"(?=^## )", text, flags=re.M)
+    chunks = re.split(r"(?=^## )", text, flags=re.MULTILINE)
     entries = [c for c in chunks if c.lstrip().startswith("## ")]
     days: list[str] = []
     for i, ch in enumerate(entries):
@@ -61,9 +61,16 @@ def check_file(path: Path) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--vault", type=Path, default=Path("/opt/second-brain/vault"))
+    ap.add_argument("--vault", type=Path, default=None, help="Vault root (or PRODUCT_VAULT_ROOT)")
     ap.add_argument("--project", action="append", dest="projects")
     args = ap.parse_args(argv)
+    if args.vault is None:
+        import os
+        env = (os.environ.get("PRODUCT_VAULT_ROOT") or "").strip()
+        args.vault = Path(env) if env else None
+    if args.vault is None:
+        print("⏭️  vault not set (PRODUCT_VAULT_ROOT / --vault); skip or pass --vault", flush=True)
+        raise SystemExit(0)
     root = args.vault.expanduser().resolve() / "01-Projects"
     paths = sorted(root.glob("*/dev-log.md"))
     if args.projects:

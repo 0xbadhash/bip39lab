@@ -10,6 +10,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
+from datetime import UTC
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
@@ -18,30 +19,30 @@ if str(SCRIPTS) not in sys.path:
 
 SPEC_RE = re.compile(
     r"\*\*Spec:\*\*\s*(\S+)",
-    re.I,
+    re.IGNORECASE,
 )
 WAIVER_RE = re.compile(
     r"\*\*Spec waiver:\*\*\s*(hotfix|chore|docs-only|prose-only)\b",
-    re.I,
+    re.IGNORECASE,
 )
 RED_PROOF_RE = re.compile(
     r"(red.?proof|red_cmd|green_cmd|TDD\s*N/?A|docs-only.*TDD|TDD.*docs-only|"
     r"red\s*→\s*green|went red then green)",
-    re.I,
+    re.IGNORECASE,
 )
 # B2: AC → test/smoke mapping
-TRACE_HEADER_RE = re.compile(r"^##\s+Traceability\b", re.I | re.M)
+TRACE_HEADER_RE = re.compile(r"^##\s+Traceability\b", re.IGNORECASE | re.MULTILINE)
 TRACE_ROW_RE = re.compile(
     r"(AC-\d+|acceptance|smoke|pytest|test_|unittest|\.py\b|scripts/)",
-    re.I,
+    re.IGNORECASE,
 )
-THREAT_HEADER_RE = re.compile(r"^##\s+Threat notes\b", re.I | re.M)
-THREAT_BULLET_RE = re.compile(r"^\s*[-*]\s+\S+", re.M)
+THREAT_HEADER_RE = re.compile(r"^##\s+Threat notes\b", re.IGNORECASE | re.MULTILINE)
+THREAT_BULLET_RE = re.compile(r"^\s*[-*]\s+\S+", re.MULTILINE)
 # B5: release-style evidence pack in PR_DRAFT (code ships)
-EVIDENCE_HEADER_RE = re.compile(r"^##\s+Evidence pack\b", re.I | re.M)
+EVIDENCE_HEADER_RE = re.compile(r"^##\s+Evidence pack\b", re.IGNORECASE | re.MULTILINE)
 EVIDENCE_TOKEN_RE = re.compile(
     r"\b(hard_gates|smoke|pytest|unittest|validate|coverage|sbom|product_smoke)\b",
-    re.I,
+    re.IGNORECASE,
 )
 
 
@@ -75,7 +76,7 @@ def _scope_flags(root: Path, diff: str | None) -> tuple[bool, bool]:
                 break
     try:
         b = build_baseline(root, base=base, head=head)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False, True
     prose = bool(should_skip_heavy_review(b) or b.prose_only)
     runtime = _runtime_surface(b) if not prose else False
@@ -171,6 +172,49 @@ def _has_marker(path: Path, *needles: str) -> bool:
     return any(n in text for n in needles)
 
 
+# HSQ-2: minimum substance for CODE-REVIEW (auto-marker stubs fail this floor)
+CODE_REVIEW_MIN_CHARS = 180
+CODE_REVIEW_AUTO_MARKER = "Auto-written by run_ship_chain"
+
+
+def _code_review_quality(path: Path) -> tuple[bool, str]:
+    """Return (ok, detail). Marker required; thin/auto stubs fail quality floor."""
+    if not path.is_file():
+        return False, "missing"
+    text = path.read_text(encoding="utf-8", errors="replace")
+    if not any(n in text for n in ("CODE-REVIEW", "CODE_REVIEW", "**Marker:** CODE-REVIEW")):
+        return False, "no marker"
+    body = text.strip()
+    if CODE_REVIEW_AUTO_MARKER in text and len(body) < 400:
+        return False, "auto-marker stub too thin (expand /code_review or pass quality floor)"
+    if len(body) < CODE_REVIEW_MIN_CHARS:
+        return False, f"body < {CODE_REVIEW_MIN_CHARS} chars"
+    # require a verdict-ish word
+    low = body.lower()
+    if not any(w in low for w in ("verdict", "approve", "reject", "finding", "p0", "pass", "fail")):
+        return False, "missing verdict/findings language"
+    return True, "ok"
+
+
+def _log_skip_hard_gates(root: Path) -> None:
+    import os
+    from datetime import datetime
+    art = Path(root) / ".agents" / "artifacts"
+    try:
+        art.mkdir(parents=True, exist_ok=True)
+        log = art / "SKIP_HARD_GATES_LOG.jsonl"
+        row = {
+            "ts": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "actor": os.environ.get("USER") or os.environ.get("LOGNAME") or "unknown",
+            "cwd": str(Path(root).resolve()),
+        }
+        with log.open("a", encoding="utf-8") as f:
+            import json
+            f.write(json.dumps(row) + "\n")
+    except OSError:
+        pass
+
+
 def evaluate(
     root: Path,
     pr_draft: Path,
@@ -182,6 +226,7 @@ def evaluate(
     root = Path(root).resolve()
     pr_draft = Path(pr_draft)
     if skip:
+        _log_skip_hard_gates(root)
         return HardGatesResult(ok=True, skipped=["all (--skip-hard-gates)"])
 
     violations: list[str] = []
@@ -207,10 +252,14 @@ def evaluate(
         skipped.extend(["CODE-REVIEW", "Red-proof", "BEHAVIOR-REPORT (prose-only)"])
     else:
         code_art = root / ".agents" / "artifacts" / "CODE_REVIEW.md"
-        if not _has_marker(code_art, "CODE-REVIEW", "CODE_REVIEW", "**Marker:** CODE-REVIEW"):
+        ok_cr, detail_cr = _code_review_quality(code_art)
+        if not ok_cr:
             violations.append(
-                "hard_gates: CODE-REVIEW missing — write .agents/artifacts/CODE_REVIEW.md "
-                "with marker CODE-REVIEW"
+                "hard_gates: CODE-REVIEW "
+                + detail_cr
+                + " — write .agents/artifacts/CODE_REVIEW.md with marker CODE-REVIEW "
+                + f"and ≥{CODE_REVIEW_MIN_CHARS} chars + verdict/findings "
+                + "(auto-marker stubs from run_ship_chain fail this floor)"
             )
         if not RED_PROOF_RE.search(draft_text):
             violations.append(
@@ -226,7 +275,7 @@ def evaluate(
             m = re.search(
                 r"##\s+Traceability\b(.*?)(?=\n## |\Z)",
                 draft_text,
-                re.I | re.S,
+                re.IGNORECASE | re.DOTALL,
             )
             body = m.group(1) if m else ""
             if not TRACE_ROW_RE.search(body) or len(body.strip()) < 20:
@@ -251,7 +300,7 @@ def evaluate(
                 tm = re.search(
                     r"##\s+Threat notes\b(.*?)(?=\n## |\Z)",
                     draft_text,
-                    re.I | re.S,
+                    re.IGNORECASE | re.DOTALL,
                 )
                 tbody = tm.group(1) if tm else ""
                 bullets = THREAT_BULLET_RE.findall(tbody)
@@ -273,7 +322,7 @@ def evaluate(
             em = re.search(
                 r"^##\s+Evidence pack\b(.*?)(?=\n## |\Z)",
                 draft_text,
-                re.I | re.S | re.M,
+                re.IGNORECASE | re.DOTALL | re.MULTILINE,
             )
             ebody = em.group(1) if em else ""
             tokens = set(t.lower() for t in EVIDENCE_TOKEN_RE.findall(ebody))

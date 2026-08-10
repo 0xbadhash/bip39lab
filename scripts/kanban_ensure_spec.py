@@ -22,18 +22,24 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 SCRIPTS = Path(__file__).resolve().parent
 ROOT = SCRIPTS.parent
 sys.path.insert(0, str(SCRIPTS))
 
-from kanban_schema import (  # noqa: E402
-    KanbanCard,
-    parse_board,
-    render_board,
-)
+try:
+    from kanban_schema import (  # type: ignore[import-not-found]
+        KanbanCard,
+        parse_board,
+        render_board,
+    )
+except ImportError:  # pragma: no cover — schema lives in second-brain product
+    KanbanCard = Any  # type: ignore[misc,assignment]
+    parse_board = None  # type: ignore[assignment]
+    render_board = None  # type: ignore[assignment]
 
 PREFERRED_LANES = ["Backlog", "Spec", "Doing", "Blocked", "Done", "Archive"]
 SPEC_LANE = "Spec"
@@ -112,7 +118,7 @@ def _stub_body(
     git_rel: str,
     vault_rel: str,
 ) -> str:
-    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    day = datetime.now(UTC).strftime("%Y-%m-%d")
     return f"""---
 tags:
   - type/meta
@@ -153,7 +159,7 @@ Run full `/spec` to replace this stub with a real product-scoped spec, then re-s
 
 
 def _git_spec_rel(product: str, slug: str) -> str:
-    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    day = datetime.now(UTC).strftime("%Y-%m-%d")
     return f".agents/specs/{day}-{slug}.md"
 
 
@@ -274,7 +280,7 @@ def ensure_card(
 
 
 def run_ensure(vault: Path, *, dry_run: bool = False) -> tuple[str, list[dict]]:
-    from kanban_fs import board_lock  # noqa: WPS433
+    from kanban_fs import board_lock
 
     board = vault / "agent-tasks" / "kanban.md"
     with board_lock(board):
@@ -308,9 +314,16 @@ def run_ensure(vault: Path, *, dry_run: bool = False) -> tuple[str, list[dict]]:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--vault", type=Path, default=Path("/opt/second-brain/vault"))
+    ap.add_argument("--vault", type=Path, default=None, help="Vault root (or PRODUCT_VAULT_ROOT)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args(argv)
+    if args.vault is None:
+        import os
+        env = (os.environ.get("PRODUCT_VAULT_ROOT") or "").strip()
+        if not env:
+            print("Set --vault or PRODUCT_VAULT_ROOT", file=sys.stderr)
+            return 2
+        args.vault = Path(env)
     vault = args.vault.expanduser().resolve()
     board = vault / "agent-tasks" / "kanban.md"
     if not board.is_file():

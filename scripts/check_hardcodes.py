@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Scans source for hardcoded paths/URLs/credentials. Zero tolerance (with allowlists)."""
 from __future__ import annotations
 
@@ -34,9 +34,6 @@ SKIP_DIRS = {
     "skills",
     # Sample configs / fixtures (product-specific paths)
     "examples",
-    # Operator local run artifacts (gitignored in products; OCR dry-runs, CSVs)
-    "runs",
-    "runs_spec",
     # Product content / ingested data (URLs are the data, not secrets)
     "content",
     "secrets",
@@ -46,6 +43,8 @@ SKIP_DIRS = {
     "playwright-results",
     "coverage",
     "htmlcov",
+    "runs",
+    "runs_spec",
     "dist",
     "build",
     "out",
@@ -80,7 +79,7 @@ SKIP_FILES = {
     "credentials.json",
     ".rustc_info.json",
 }
-# Path substrings (posix) â€” vendored / artifact trees
+# Path substrings (posix) — vendored / artifact trees
 SKIP_PATH_SUBSTR = (
     "contracts/lib/",
     "node_modules/",
@@ -103,7 +102,7 @@ INLINE_SECRET_PLACEHOLDER = re.compile(
     re.I,
 )
 EXPOSED_KEY = re.compile(r"\b[A-Z0-9]{16}\b")
-# Any http(s) URL â€” then filtered by allowlist
+# Any http(s) URL — then filtered by allowlist
 ANY_URL = re.compile(r"https?://[\w.-]+\.\w{2,}[^\s)\]'\"`]*", re.I)
 
 # Documentation / public project URLs are not secrets
@@ -139,10 +138,7 @@ URL_HOST_ALLOW = re.compile(
     r"lobste\.rs|"
     r"([\w-]+\.)?substack\.com|"
     r"substackcdn\.com|"
-    r"([\w.-]+\.)?amazonaws\.com|"
-    # Product-allowed public explorers (address-only balance backends)
-    r"(www\.)?blockstream\.info|"
-    r"(www\.)?mempool\.space|"
+    r"([\w.-]+\.)?amazonaws\.com|"\n    r"(www\.)?blockstream\.info|"\n    r"(www\.)?mempool\.space"
     r")([/:?]|$)",
     re.I,
 )
@@ -150,6 +146,7 @@ URL_HOST_ALLOW = re.compile(
 # Host-bound deploy units and tests may contain machine paths
 ALLOW_PREFIXES = (
     "config/settings.py",
+    "config/newsjack/",  # RSS feed lists + setup docs (URLs are data, not secrets)
     "tests/",
     "test_",
     "conftest.py",
@@ -160,6 +157,7 @@ ALLOW_PREFIXES = (
     "USAGE.md",
     "CONTRIBUTING.md",
     ".github/",  # CI paths often use runner home paths
+    "product_plugin.example.yaml",  # template only
 )
 
 
@@ -204,24 +202,24 @@ def scan_root(root: Path) -> int:
 
         for m in ABS_HOME.finditer(text):
             line = text[: m.start()].count("\n") + 1
-            print(f"âŒ {rel}:{line} [absolute_user_path] {m.group(0)[:60]}")
+            print(f"❌ {rel}:{line} [absolute_user_path] {m.group(0)[:60]}")
             hits += 1
         for m in WIN_HOME.finditer(text):
             line = text[: m.start()].count("\n") + 1
-            print(f"âŒ {rel}:{line} [windows_user_path] {m.group(0)[:60]}")
+            print(f"❌ {rel}:{line} [windows_user_path] {m.group(0)[:60]}")
             hits += 1
         for m in INLINE_SECRET.finditer(text):
             if INLINE_SECRET_PLACEHOLDER.search(m.group(0)):
                 continue
             line = text[: m.start()].count("\n") + 1
-            print(f"âŒ {rel}:{line} [inline_secret] {m.group(0)[:60]}")
+            print(f"❌ {rel}:{line} [inline_secret] {m.group(0)[:60]}")
             hits += 1
         for m in ANY_URL.finditer(text):
             url = m.group(0)
             if URL_HOST_ALLOW.search(url):
                 continue
             line = text[: m.start()].count("\n") + 1
-            print(f"âŒ {rel}:{line} [external_url] {url[:60]}")
+            print(f"❌ {rel}:{line} [external_url] {url[:60]}")
             hits += 1
         for m in EXPOSED_KEY.finditer(text):
             # digit-only 16-char often false positive; require a letter
@@ -238,13 +236,13 @@ def scan_root(root: Path) -> int:
             if m.group(0) == "PYTHONUNBUFFERED":
                 continue
             line = text[: m.start()].count("\n") + 1
-            print(f"âŒ {rel}:{line} [exposed_api_key] {m.group(0)[:60]}")
+            print(f"❌ {rel}:{line} [exposed_api_key] {m.group(0)[:60]}")
             hits += 1
 
     if hits:
-        print(f"âŒ {hits} hardcode violation(s)")
+        print(f"❌ {hits} hardcode violation(s)")
         return 1
-    print("âœ… no hardcodes")
+    print("✅ no hardcodes")
     return 0
 
 
@@ -265,4 +263,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
