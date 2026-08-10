@@ -302,7 +302,7 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Notes:** Human-intuitiveness GapFix; no crypto path change
 
 
-### [IN PROGRESS] SLIP-39 lab A — teach shell
+### [DONE] SLIP-39 lab A — teach shell
 - **Status:** in progress (implement)
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-10-slip39-a-teach-shell.md`
