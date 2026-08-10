@@ -323,15 +323,15 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** pytest + e2e S58–S59 (+ S60 partial C)
 - **Notes:** Library wrap only (`shamir-mnemonic` + npm `slip39`)
 
-### [OPEN] SLIP-39 lab C — passphrase + groups teach
-- **Status:** open
+### [DONE] SLIP-39 lab C — passphrase + groups teach
+- **Status:** done
 - **Priority:** P2
 - **Spec:** `.agents/specs/2026-08-10-slip39-c-passphrase-groups.md`
 - **Acceptance:**
-  - [ ] Wrong passphrase fail demo
-  - [ ] Multi-group diagram
-- **Smoke:** targeted e2e
-- **Notes:** Optional teach ship
+  - [x] Wrong passphrase fail demo (scripted S60 + manual S60b)
+  - [x] Multi-group diagram (`#s39GroupDiagram` data-group 1-of-1 + 2-of-3)
+- **Smoke:** e2e S60/S60b + pytest wrong-passphrase
+- **Notes:** Shipped `v0.13.9`; diagram-only multi-group (no live group split)
 
 ### [OPEN] SLIP-39 lab D — docs/release notes
 - **Status:** open
@@ -344,6 +344,6 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Shipped:** `v0.13.7` SLIP-39 lab A teach shell; **shipping B** compatible core (`v0.13.8`).  
-**Next after B:** SLIP-39 lab C (passphrase/groups polish) or D docs.  
+**Shipped:** through `v0.13.9` SLIP-39 lab A–C (teach shell, B core, passphrase/groups teach).  
+**Next:** SLIP-39 lab D (docs/Comet hygiene) or optional `/qa_campaign`.  
 **Later:** private Knots proxy for Network.

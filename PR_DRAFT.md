@@ -1,70 +1,65 @@
-# PR Draft: SLIP-39 lab B — compatible core
+# PR Draft: SLIP-39 lab C — wrong passphrase + multi-group teach
 
-**Product:** bip39lab  
-**Spec:** `.agents/specs/2026-08-10-slip39-b-compatible-core.md`  
-**spec_sha256:** pin optional  
-**Version target:** `v0.13.8`
+**Range:** `68f47b8`…`HEAD`  
+**Spec:** `.agents/specs/2026-08-10-slip39-c-passphrase-groups.md`  
+**Tag intent:** `v0.13.9`
 
 ## What Problem This Solves
 
-Teach shell alone could not show real SLIP-39 share mnemonics. Learners need offline round-trip split/combine with golden vectors — without claiming hardware restore safety.
+Learners who finished SLIP-39 B (single-group split/combine) still miss two mental-model gaps vs BIP-39: **passphrase is applied at combine** (wrong passphrase → different master secret, not a quiet 25th-word derivation tweak), and **groups** (e.g. 1-of-1 owner + 2-of-3 heirs).
 
 ## Why This Change Was Made
 
-Ship offline-compatible single-group M-of-N (2-of-3 / 3-of-5) using vetted libraries only (no hand-rolled SLIP crypto).
+Complete roadmap item C: formalize teach that was partially present after B (S60), add **manual** wrong-passphrase path (S60b), structured group diagram labels, and shell marker `c`.
 
 ## User Impact
 
-- Demo: generate practice master secret hex → Split → share word cards → Combine M shares → match/mismatch.
-- Fail-closed under-threshold / bad words (no fake secret).
-- Danger banner retained; lab only; not Trezor Suite / not funded wallets.
-- Bonus teach (partial C): wrong-passphrase demo + multi-group diagram (still lab-only).
+- **S60** scripted “Run wrong-passphrase demo” + structured `#s39GroupDiagram` (`data-group` 1 / 2 + `data-policy`).
+- **S60b** manual: split with `correct` → combine with `wrong` → mismatch (recovered ≠ expected).
+- Split mirrors passphrase into combine field so happy path still matches.
+- Lab-only / not Trezor Suite copy retained.
+
+## Evidence
+
+- Unit: `tests/test_slip39_lab.py::test_wrong_passphrase_mismatches_expected`
+- E2E: S57–S60b in `e2e/slip39.spec.ts` (6 passed)
+- Comet: `docs/E2E_COMET_SCENARIOS.md` S60 / S60b
+- product_plugin slip39 surface includes S60 + S60b
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| 2-of-3 / 3-of-5 split+combine offline | `tests/test_slip39_lab.py` roundtrip + Playwright S58 |
-| Official-style golden vector | `test_golden_vector_4_combine_trezor_passphrase` |
-| Fail-closed under-threshold / bad mnemonic | `test_golden_vector_4_under_threshold_fails` + S59 |
-| Lab danger copy; no wallet-safety claim | `tests/test_slip39_shell_copy.py` + S57 |
-| Product smoke green; no secrets committed | `python scripts/product_smoke.py` |
+| AC-1 Wrong pp fail (scripted) | `e2e/slip39.spec.ts` S60; pytest `test_wrong_passphrase_mismatches_expected` |
+| AC-2 Wrong pp fail (manual) | `e2e/slip39.spec.ts` S60b |
+| AC-3 Multi-group diagram | S60 asserts `#s39GroupDiagram [data-group='1'|'2']` + `[data-policy]` |
+| AC-4 Lab-only copy | S57 danger banner; shell copy tests |
+| AC-5 Comet sync | `docs/E2E_COMET_SCENARIOS.md` S60/S60b; `check_web_e2e` |
 
 ## Threat notes
 
-- **secrets:** practice master secret hex and SLIP-39 share mnemonics exist only in browser/CLI memory for the demo; never auto-imported from Lab BIP-39; no disk retention.
-- **supply-chain:** crypto via pinned `shamir-mnemonic` + npm `slip39` offline bundle (esbuild); no runtime wordlist fetch; CSP `connect-src 'none'`.
-- **xss:** static CSP (`script-src 'self'`); share text rendered as `textContent` only, not `innerHTML` of user strings as HTML.
-- Abuse: user mistakes page for production Trezor restore — danger banner + lab-only chips; fail-closed under-threshold (no fake secret).
+- Offline CSP `connect-src 'none'` unchanged on SLIP-39 page.
+- No production multi-group split; diagram is teach-only (no silent over-claim of full SLIP-39 policy designer).
+- Wrong passphrase yields a different secret (library decrypt) — UI compares to expected so operators never see a silent false “Match”.
+- Practice secrets only; danger banner retained.
+
+## Red-proof
+
+```text
+red_cmd: npx playwright test e2e/slip39.spec.ts -g 'S60 wrong' → fail missing [data-group='1']
+green_cmd: npx playwright test e2e/slip39.spec.ts → 6 passed; pytest tests/test_slip39_lab.py → 7 passed
+```
 
 ## Evidence pack
 
-- **pytest:** `.venv/bin/python -m pytest -q tests/test_slip39_lab.py tests/test_slip39_shell_copy.py` → 13 passed
-- **Playwright:** `npx playwright test e2e/slip39.spec.ts` → S57–S60 passed
-- **smoke:** `python scripts/product_smoke.py --root .` → unit + e2e exit 0
-- **web_e2e:** `python scripts/check_web_e2e.py --root .` → ok
+- hard_gates / CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT  
+- product_smoke unit + e2e  
+- check_web_e2e  
+- secrets scan on ship range  
 
-### Red-proof / green
+## Things that look bad but are actually fine
 
-- red_cmd: `false` (TDD red marker; suite designed to fail without library wrap)
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_slip39_lab.py`
-
-## Untested paths
-
-| Path | Reason |
-|------|--------|
-| Full multi-group UI designer | Out of scope (ship C) |
-| BIP-39 ↔ SLIP migration | Out of scope |
-| Hardware device restore | Explicit non-goal |
-
-## Implementation notes
-
-- Python: `src/bip39lab/slip39_lab.py` wraps `shamir-mnemonic`
-- Web: esbuild `web/js/slip39-entry.mjs` → `slip39.bundle.js` (npm `slip39`) + `slip39-app.js`
-- Never auto-imports Lab BIP-39; CSPRNG or paste hex only
-
-## Out of scope (deferred)
-
-- Full multi-group designer UI (C remainder)
-- BIP-39↔SLIP migration; Network/balance
-- Docs polish D
+1. **C mostly lived under B commit** — partial S60 shipped with B; this tag formalizes C + S60b + structured diagram.  
+2. **Multi-group is diagram-only** — full group live split is out of scope; avoids fake designer UX.  
+3. **Wrong passphrase often does not throw** — SLIP-39 decrypts to a different secret; mismatch vs expected is the correct teach signal.  
+4. **VERSION 0.13.9 patch** — teach polish + AC closeout, not new crypto surface.  

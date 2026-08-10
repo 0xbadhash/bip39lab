@@ -219,11 +219,16 @@
             not BIP-39’s optional “25th word” on seed derivation alone.
           </p>
           <div class="warn" id="s39GroupDiagram" role="img" aria-label="Multi-group conceptual diagram">
-            <strong>Example multi-group policy (diagram only):</strong><br />
-            Group&nbsp;1: <em>1-of-1</em> “owner” share &nbsp;+&nbsp;
-            Group&nbsp;2: <em>2-of-3</em> “heirs” shares<br />
-            → Recover needs the owner share <strong>and</strong> any 2 heir shares.<br />
-            Wrong passphrase at combine → mismatch / different secret (no silent wallet unlock).
+            <strong>Example multi-group policy (diagram only — not a live split):</strong>
+            <ul class="s39-group-list" style="margin:0.5rem 0 0;padding-left:1.25rem">
+              <li data-group="1"><strong>Group 1:</strong> <em>1-of-1</em> “owner” share</li>
+              <li data-group="2"><strong>Group 2:</strong> <em>2-of-3</em> “heirs” shares</li>
+              <li data-policy>
+                Recover needs the owner share <strong>and</strong> any 2 heir shares
+                (group threshold = 2). Wrong passphrase at combine → mismatch / different secret
+                (no silent wallet unlock). Not BIP-39’s optional 25th word.
+              </li>
+            </ul>
           </div>
           <div class="row" style="margin-top:0.75rem">
             <button type="button" class="btn secondary" id="btnS39WrongPp">

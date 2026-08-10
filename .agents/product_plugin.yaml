@@ -75,7 +75,8 @@ web_e2e:
         - { id: deep, name: "S57b Shamir link", steps: ["Shamir → slip39.html"] }
         - { id: split, name: "S58 2-of-3", steps: ["generate", "split", "combine match"] }
         - { id: under, name: "S59 under-threshold", steps: ["error no fake secret"] }
-        - { id: pp, name: "S60 wrong passphrase", steps: ["mismatch", "group diagram"] }
+        - { id: pp, name: "S60 wrong passphrase", steps: ["mismatch", "group diagram data-group"] }
+        - { id: pp_manual, name: "S60b manual wrong pp", steps: ["split correct", "combine wrong", "mismatch"] }
     - id: network
       order: 4
       path: /network.html

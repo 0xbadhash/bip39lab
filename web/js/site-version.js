@@ -4,8 +4,8 @@
  */
 (function (g) {
   "use strict";
-  g.BIP39LAB_SITE_VERSION = "0.13.8";
-  g.BIP39LAB_SITE_TAG = "v0.13.8";
+  g.BIP39LAB_SITE_VERSION = "0.13.9";
+  g.BIP39LAB_SITE_TAG = "v0.13.9";
   function apply() {
     var label = g.BIP39LAB_SITE_TAG || ("v" + (g.BIP39LAB_SITE_VERSION || ""));
     if (!label || label === "v") return;

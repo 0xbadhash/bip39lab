@@ -680,9 +680,12 @@ Generate practice hex → Split 2-of-3 → Combine M shares → status Match.
 After split, paste only one share → Combine → error status (no Match).
 
 ### S60 — Wrong passphrase + group diagram
-`#btnS39WrongPp` → mismatch status; `#s39GroupDiagram` shows 1-of-1 + 2-of-3 policy.
+`#btnS39WrongPp` → mismatch status; `#s39GroupDiagram` shows 1-of-1 + 2-of-3 policy with `[data-group]` labels.
 
-S57–S60 · `e2e/slip39.spec.ts`
+### S60b — Manual wrong passphrase combine
+Generate → passphrase `correct` → Split → set `#s39PassphraseCombine` to `wrong` → Combine → mismatch / err (recovered ≠ expected). No silent success.
+
+S57–S60b · `e2e/slip39.spec.ts`
 
 ---
 

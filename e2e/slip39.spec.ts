@@ -64,5 +64,31 @@ test.describe("SLIP-39 lab", () => {
     await expect(page.locator("#s39GroupDiagram")).toBeVisible();
     await expect(page.locator("#s39GroupDiagram")).toContainText(/1-of-1/i);
     await expect(page.locator("#s39GroupDiagram")).toContainText(/2-of-3/i);
+    await expect(page.locator("#s39GroupDiagram [data-group='1']")).toBeVisible();
+    await expect(page.locator("#s39GroupDiagram [data-group='2']")).toBeVisible();
+    await expect(page.locator("#s39GroupDiagram [data-policy]")).toBeVisible();
+  });
+
+  test("S60b manual combine with wrong passphrase mismatches", async ({
+    page,
+  }) => {
+    await page.goto("/slip39.html");
+    await page.locator("#btnS39Gen").click();
+    await page.locator("#s39Passphrase").fill("correct");
+    await page.locator("#s39Preset").selectOption("2of3");
+    await page.locator("#btnS39Split").click();
+    await expect(page.locator("#s39Status")).toContainText(/Split OK/i);
+    // Clear split-passphrase fallback path: set combine field only to wrong
+    await page.locator("#s39PassphraseCombine").fill("wrong");
+    await page.locator("#btnS39Combine").click();
+    await expect(page.locator("#s39CombineStatus")).toHaveClass(/err/);
+    await expect(page.locator("#s39CombineStatus")).toContainText(
+      /Mismatch|wrong passphrase|does not match/i
+    );
+    await expect(page.locator("#s39Recovered")).not.toHaveText("—");
+    // Recovered must not equal expected practice hex
+    const expected = await page.locator("#s39Expected").inputValue();
+    const recovered = (await page.locator("#s39Recovered").innerText()).trim();
+    expect(recovered.toLowerCase()).not.toBe(expected.trim().toLowerCase());
   });
 });

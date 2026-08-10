@@ -1,11 +1,11 @@
 /**
- * SLIP-39 lab UI: single-group split/combine + passphrase mismatch teach (B/C).
+ * SLIP-39 lab UI: single-group split/combine + passphrase/groups teach (B+C).
  * Crypto: Slip39Lab from slip39.bundle.js (npm slip39 wrap). Offline only.
  */
 (function () {
   "use strict";
 
-  document.documentElement.setAttribute("data-slip39-shell", "b");
+  document.documentElement.setAttribute("data-slip39-shell", "c");
 
   var $ = function (id) {
     return document.getElementById(id);
@@ -84,6 +84,11 @@
       if ($("s39CombineIn")) {
         $("s39CombineIn").value = shares.slice(0, mn.m).join("\n");
       }
+      // Mirror split passphrase into combine so happy-path match uses the same value;
+      // wrong-pp demos overwrite #s39PassphraseCombine after split.
+      if ($("s39PassphraseCombine")) {
+        $("s39PassphraseCombine").value = pp;
+      }
       if ($("s39Expected")) $("s39Expected").value = hex;
       setStatus(
         $("s39Status"),
@@ -110,8 +115,8 @@
     try {
       var api = requireApi();
       var lines = parseShareLines($("s39CombineIn") && $("s39CombineIn").value);
+      // Prefer combine field (split mirrors passphrase into it; wrong-pp demos overwrite it)
       var pp = (($("s39PassphraseCombine") && $("s39PassphraseCombine").value) || "");
-      // Fall back to split passphrase field for simple demos
       if (!pp && $("s39Passphrase")) pp = $("s39Passphrase").value || "";
       var recovered = api.combineShares(lines, pp);
       if ($("s39Recovered")) $("s39Recovered").textContent = recovered;
@@ -153,10 +158,13 @@
       if ($("s39PassphraseCombine")) $("s39PassphraseCombine").value = "wrong";
       var recovered = api.combineShares(shares.slice(0, 2), "wrong");
       if ($("s39Recovered")) $("s39Recovered").textContent = recovered;
+      var mismatched = !api.matchExpected(recovered, hex);
       setStatus(
         $("s39CombineStatus"),
-        "Wrong-passphrase demo: recovered hex does not match practice secret (SLIP-39 differs from BIP-39 optional 25th word).",
-        "err"
+        mismatched
+          ? "Wrong-passphrase demo: recovered hex does not match practice secret (SLIP-39 differs from BIP-39 optional 25th word)."
+          : "Unexpected: wrong passphrase matched practice secret — report as lab bug.",
+        mismatched ? "err" : "err"
       );
       setStatus($("s39Status"), "Demo split with passphrase “correct”; combine used “wrong”.", "ok");
     } catch (e) {

@@ -2,12 +2,13 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-10
-- **Status:** ready-for-agent
+- **Status:** done
 - **Priority:** P2
-- **Roadmap:** ROADMAP.md → Open work
-- **Plan:** none
+- **Roadmap:** ROADMAP.md → Open work → SLIP-39 lab C
+- **Plan:** none (ship from this spec)
 - **Tracker:** local
 - **Constitution:** AGENTS.md
+- **Depends on:** lab B (`slip39_lab` / `Slip39Lab` single-group core)
 
 ## Problem Statement
 
@@ -15,7 +16,8 @@ SLIP-39 differs from BIP-39 on **passphrase-at-combine** and **groups**. Without
 
 ## Solution
 
-Add (1) wrong-passphrase fail demo on combine, (2) one multi-group teach diagram (e.g. 1-of-1 + 2-of-3) with optional simple split if library supports cheaply — else static diagram + copy only.
+1. **Wrong-passphrase fail demo** on combine (scripted button + manual combine path) — recovered master ≠ expected practice secret; status is error/mismatch (no silent success).
+2. **Multi-group teach diagram** (1-of-1 + 2-of-3) — static labeled policy; no full group designer.
 
 ## User Stories
 
@@ -24,23 +26,27 @@ Add (1) wrong-passphrase fail demo on combine, (2) one multi-group teach diagram
 
 ## Implementation Decisions
 
-- UI cards on `slip39.html`; reuse B core.
-- Prefer diagram + one scripted demo over full group-policy designer.
+- UI cards on `slip39.html` (`#s39CardGroups`); reuse B core (`splitSingleGroup` / `combineShares` / `matchExpected`).
+- Prefer diagram + scripted demo over full group-policy designer (out of scope).
+- Wrong passphrase often returns a **different** secret (decrypt) rather than throw — lab must **compare** to expected hex.
 
 ## Testing Decisions
 
-- Unit/e2e: wrong passphrase does not match master secret; diagram present.
+- Unit: `test_wrong_passphrase_mismatches_expected` (already B); retain.
+- E2E: **S60** scripted `#btnS39WrongPp`; **S60b** manual split(pp=correct) → combine(pp=wrong) → mismatch; diagram `#s39GroupDiagram` with 1-of-1 / 2-of-3 labels.
+- Comet: `docs/E2E_COMET_SCENARIOS.md` S60 / S60b.
 
 ## Acceptance Criteria
 
-- [ ] Wrong passphrase combine path shows fail / mismatch (no silent wrong success)
-- [ ] Multi-group diagram or labeled example on page
-- [ ] Smoke green; lab-only copy retained
+- [x] Wrong passphrase combine path shows fail / mismatch (no silent wrong success) — scripted **and** manual
+- [x] Multi-group diagram or labeled example on page (`#s39GroupDiagram`)
+- [x] Smoke green; lab-only copy retained
+- [x] Playwright S60/S60b + Comet IDs aligned
 
 ## Out of Scope
 
-- Full group designer; hardware restore; production claims
+- Full group designer; hardware restore; production claims; multi-group live split
 
 ## Handoff
 
-- Next: `/execute_dev` then `/code_review`
+- Next: `/execute_dev` → reviews → `/pr_review --validate` → `/release_mgmt` → `/sync_docs` → `/qa_campaign`
