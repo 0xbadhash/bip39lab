@@ -344,8 +344,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** docs review + `check_web_e2e`
 - **Notes:** Docs-only hygiene after A–C; no new crypto
 
+### [OPEN] Knots 2000-seed educational UTXO scan
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-10-knots-2000-seed-scan.md`
+- **Acceptance:**
+  - [ ] ≥2000 unique mnemonic **hashes** in `.local/seed_scan/` (resume from ~500)
+  - [ ] Knots `scantxoutset` only; no mnemonic logging/commit
+  - [ ] Summary counts only; hits redacted
+- **Smoke:** preflight RPC + single-seed dry run; bulk with resume
+- **Notes:** Ops/education only — **not** a product wallet scanner; prior 100/500 done (0 hits)
+
 ## Current focus
 
 **Shipped:** through `v0.13.9` SLIP-39 lab A–D (D = docs/Comet hygiene).  
-**Next:** optional Knots 2000-seed educational scan (see open work) or private Knots proxy.  
+**Next:** Knots 2000-seed educational scan (when RPC stable) or private Knots proxy.  
 **Later:** private Knots proxy for Network.
