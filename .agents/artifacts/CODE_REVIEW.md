@@ -1,22 +1,38 @@
-# CODE_REVIEW — teach-surface jump-link consistency
+# CODE-REVIEW — GapFix Tools phrase source + teach clarity
 
+**Marker:** CODE-REVIEW  
 **Date:** 2026-08-09  
-**Spec:** `.agents/specs/2026-08-09-teach-surface-jump-links.md`  
-**Verdict:** APPROVE (teach HTML only)
+**Base:** HEAD (working tree ship)  
+**Scope:** `web/index.html`, `web/js/app.js`, `tests/test_tools_teach_copy.py`, `e2e/lab.spec.ts`, spec/roadmap/PR_DRAFT/Comet
 
-## Scope
+## Secrets
 
-- `web/index.html`, `web/network.html`, `web/shamir.html` — jump-link rail help, drop forced step numbers, small teach copy.
-- `tests/test_teach_surface_jump_links.py` — static HTML contracts.
-- Roadmap: Multisig teach → DONE; new OPEN for this slice (closed by this ship once released).
+`python3 scripts/check_secrets_diff.py --base HEAD` — clean (no real seed material; educational public zpub shape only).
 
-## Checks
+## Scope governor
 
-- [x] No crypto/bundle/CSP change
-- [x] No secret retention / no new network from Lab or Shamir
-- [x] Multisig pattern parity (On this page / jump links / aria)
-- [x] pytest contracts + product smoke unit+e2e green
+In-scope teach/copy + provenance labels only. No CSP/crypto/API. LOC small, same owner boundary.
 
-## Residual
+## Findings
 
-- Full `/pr_review --validate` + `/release_mgmt` version bump (0.13.5) still operator-follow for tag ship if desired as separate release.
+| # | Severity | Class | Finding | Disposition |
+|---|----------|-------|---------|-------------|
+| — | — | — | No P0 blockers | accepted empty |
+
+### Notes (not P0)
+
+- Load-example zpub may fail BIP380 checksum on Explain — intentional; out text warns educational shape.
+- `ensureLabMnemonic` still writes auto-gen into Lab `#mnemonic` (pre-existing); copy now makes that explicit.
+
+## Tests / smoke
+
+- `.venv/bin/python -m pytest -q` → 63 passed  
+- `npx playwright test e2e/lab.spec.ts -g "S17|S18|S19|S22|S23"` → 7 passed (incl S18c clear→TEST DATA)
+
+## P0 count
+
+**p0=0** · follow_ups=0 material
+
+## Verdict
+
+Accept for `/pr_review --validate`.

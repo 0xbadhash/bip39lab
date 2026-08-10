@@ -1,8 +1,8 @@
 {
   "card_id": null,
-  "phase": "init",
+  "phase": "shipped",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-09-teach-surface-jump-links.md",
-  "task": "Teach-surface jump-link consistency",
+  "spec_id": ".agents/specs/2026-08-09-gapfix-tools-phrase-source.md",
+  "task": "GapFix Tools phrase source + teach clarity",
   "waiver": null
 }

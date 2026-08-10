@@ -258,40 +258,56 @@ test.describe("Lab Tools panel", () => {
 
   test("S17 entropy pad dice coin clear", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toContainText(/Phrase source/i);
+    await expect(page.locator("#panel-tools")).toContainText(/TEST DATA/);
     await page.locator("#btnDice").click();
     await page.locator("#btnDice").click();
     await page.locator("#btnCoin").click();
     await expect(page.locator("#entPadOut")).toContainText(/d6:/);
     await expect(page.locator("#entPadOut")).toContainText(/coin:/);
     await expect(page.locator("#entPadMeta")).toContainText(/events/);
+    await expect(page.locator("#entPadMeta")).toContainText(/2\.58/);
     await page.locator("#btnEntClear").click();
     await expect(page.locator("#entPadOut")).toHaveText("—");
   });
 
   test("S18 compare passphrases", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
-    // No Lab visit: Compare auto-generates a test phrase when empty
+    // beforeEach seeded Lab with abandon → Lab phrase provenance
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
     await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same address/);
     await expect(page.locator("#cmpPpOut")).toContainText(/A:/);
+    await expect(page.locator("#cmpPpOut")).toContainText(/\[Lab phrase\]/);
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
   });
 
   test("S18b tools generate test phrase then compare", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await page.locator("#btnCmpGen").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/Generated/);
+    await expect(page.locator("#cmpPpOut")).toContainText(/\[TEST DATA\]/);
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
     await expect(page.locator("#cmpPpOut")).toContainText(/Different/);
   });
 
+  test("S18c clear secrets then compare auto-gens TEST DATA", async ({ page }) => {
+    await page.locator("#btnClear").click();
+    await expect(page.locator("#mnemonic")).toHaveValue("");
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#cmpPpOut")).toContainText(/TEST DATA|cleared/i);
+    await page.locator("#cmpPpB").fill("test");
+    await page.locator("#btnCmpPp").click();
+    await expect(page.locator("#cmpPpOut")).toContainText(/\[TEST DATA\]/);
+    await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same address/);
+  });
+
   test("S19 descriptors refresh", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await page.locator("#btnDescRefresh").click();
     await expect(page.locator("#descOut")).toContainText(/wpkh\(|tr\(|pkh\(|sh\(/);
+    await expect(page.locator("#descOut")).toContainText(/\[Lab phrase\]/);
   });
 
   test("S20 PSBT inspector educational", async ({ page }) => {
@@ -310,6 +326,8 @@ test.describe("Lab Tools panel", () => {
 
   test("S22 descriptor explain public + refuse private", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#btnDescExample").click();
+    await expect(page.locator("#descExplainIn")).toHaveValue(/wpkh\(zpub/);
     await page.locator("#descExplainIn").fill("wpkh(zpub6demo/0/*)");
     await page.locator("#btnDescExplain").click();
     await expect(page.locator("#descExplainOut")).toContainText(/wpkh|ok/i);
@@ -321,8 +339,9 @@ test.describe("Lab Tools panel", () => {
 
   test("S23 tools keyboard shortcuts card present", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
-    await expect(page.locator("#panel-tools")).toContainText(/Keyboard shortcuts/i);
-    await expect(page.locator("#panel-tools")).toContainText(/Generate|derive/i);
+    await expect(page.locator("#tools-shortcuts")).toBeVisible();
+    await expect(page.locator("#tools-shortcuts")).toContainText(/Keyboard shortcuts/i);
+    await expect(page.locator("#tools-shortcuts")).toContainText(/Lab/i);
   });
 });
 

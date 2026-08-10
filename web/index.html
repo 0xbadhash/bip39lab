@@ -166,6 +166,10 @@
               <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
               <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
             </div>
+            <p class="control-help teach-only" style="margin:0.35rem 0 0">
+              Shortcuts (when not typing): <kbd>G</kbd> generate · <kbd>D</kbd> derive · <kbd>?</kbd> Tools shortcuts · <kbd>Esc</kbd> close QR.
+              Clear secrets empties Lab memory only; Tools cards that need a phrase will auto-generate <strong>TEST DATA</strong> next time.
+            </p>
 
             <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
 
@@ -402,6 +406,13 @@
             <strong>auto-generate a throwaway test phrase</strong> so you need not visit Lab first —
             that is intentional demo material, not imported from elsewhere.
           </p>
+          <p class="control-help" style="margin:0 0 0.75rem">
+            <strong>Phrase source:</strong>
+            Lab mnemonic wins when it is a valid BIP-39 phrase in this tab’s memory.
+            If empty/invalid (including after <strong>Clear secrets</strong> on Lab), Tools generates a new throwaway phrase into Lab and labels results
+            <span class="chip chip-warn" style="vertical-align:middle">TEST DATA</span>
+            — never assume results still use a phrase you cleared.
+          </p>
           <p class="control-help teach-only" style="margin:0 0 0.75rem">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
@@ -431,13 +442,17 @@
               </span>
             </h2>
             <p class="control-help">Build practice entropy offline. Not a substitute for OS CSPRNG for real funds.</p>
+            <p class="control-help teach-only">
+              Bit estimate (log₂): each d6 roll ≈ 2.58 bits (fair six faces), each coin flip = 1 bit.
+              Running total is rounded for display — educational only, not a CSPRNG quality meter.
+            </p>
             <div class="row">
               <button type="button" class="btn secondary" id="btnDice">Roll d6</button>
               <button type="button" class="btn secondary" id="btnCoin">Flip coin</button>
               <button type="button" class="btn danger" id="btnEntClear">Clear pad</button>
             </div>
             <pre class="out" id="entPadOut">—</pre>
-            <p class="control-help" id="entPadMeta">0 events · ~0 bits (estimate)</p>
+            <p class="control-help" id="entPadMeta">0 events · ~0 bits (estimate; d6≈2.58, coin=1)</p>
           </div>
 
           <div class="card">
@@ -472,7 +487,11 @@
                 <span class="help-tip-panel" hidden></span>
               </span>
             </h2>
-            <p class="control-help">Built from Lab watch-only export — public material only. Auto-generates a test phrase if Lab is empty.</p>
+            <p class="control-help">
+              An <strong>output descriptor</strong> is a standardized string encoding key origin + path + script type
+              (importable into descriptor-aware wallets for watch-only). Built here from Lab watch-only export — public material only.
+              Auto-generates a test phrase if Lab is empty; results then show a TEST DATA banner.
+            </p>
             <div class="row">
               <button type="button" class="btn secondary" id="btnDescRefresh">Refresh descriptors</button>
             </div>
@@ -508,22 +527,29 @@
               </span>
             </h2>
             <p class="control-help">Paste a <em>public</em> descriptor. Private keys / seeds are refused.</p>
+            <p class="control-help teach-only">
+              Example shape (not a funded key): <code>wpkh([deadbeef/84h/0h/0h]xpub…/0/*)</code>
+              or plain <code>wpkh(zpub…/0/*)</code>. Prefer pasting from a wallet’s watch-only export, or use
+              <strong>Refresh descriptors</strong> above then paste one line here.
+            </p>
             <label class="field" for="descExplainIn">Descriptor text
-              <textarea id="descExplainIn" rows="3" spellcheck="false" autocomplete="off" placeholder="wpkh(zpub…/0/*)"></textarea>
+              <textarea id="descExplainIn" rows="3" spellcheck="false" autocomplete="off" placeholder="wpkh(zpub…/0/*)#checksum"></textarea>
             </label>
             <div class="row">
               <button type="button" class="btn secondary" id="btnDescExplain">Explain</button>
+              <button type="button" class="btn secondary" id="btnDescExample" title="Fill a public educational example">Load example</button>
             </div>
             <pre class="out" id="descExplainOut">—</pre>
           </div>
 
-          <div class="card">
+          <div class="card" id="tools-shortcuts">
             <h2>Keyboard shortcuts</h2>
+            <p class="control-help">Global on this page when focus is not in an input (Lab actions + this list).</p>
             <ul class="help-list">
-              <li><kbd>G</kbd> — Generate (when not typing in a field)</li>
-              <li><kbd>D</kbd> — Validate &amp; derive</li>
+              <li><kbd>G</kbd> — Generate (Lab mnemonic; when not typing in a field)</li>
+              <li><kbd>D</kbd> — Validate &amp; derive (Lab)</li>
               <li><kbd>Esc</kbd> — Close QR modal</li>
-              <li><kbd>?</kbd> — Jump to Tools shortcuts</li>
+              <li><kbd>?</kbd> — Jump here (Tools shortcuts)</li>
             </ul>
           </div>
         </section>

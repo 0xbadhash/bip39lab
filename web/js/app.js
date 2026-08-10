@@ -674,7 +674,17 @@
     $("passphrase").value = "";
     clearAddressTable();
     clearEntropyFields();
-    setPlainStatus("Cleared — nothing was saved to disk.", "");
+    const cmp = $("cmpPpOut");
+    if (cmp) {
+      cmp.textContent =
+        "Lab phrase cleared. Next Compare / Refresh descriptors will auto-generate [TEST DATA] if still empty.";
+    }
+    const desc = $("descOut");
+    if (desc) {
+      desc.textContent =
+        "Lab phrase cleared. Click refresh for a new throwaway test phrase (or set one on Lab first).";
+    }
+    setPlainStatus("Cleared — nothing was saved to disk. Tools will use TEST DATA if you run them next.", "");
     setStatus("Cleared (memory fields only; nothing was stored).", "");
   }
 
@@ -800,11 +810,11 @@
     if (!out) return;
     if (!entEvents.length) {
       out.textContent = "—";
-      if (meta) meta.textContent = "0 events · ~0 bits (estimate)";
+      if (meta) meta.textContent = "0 events · ~0 bits (estimate; d6≈2.58, coin=1)";
       return;
     }
     out.textContent = entEvents.join(" ");
-    // rough: d6 ~ 2.58 bits, coin 1 bit
+    // rough log2: d6 ~ log2(6) ≈ 2.58 bits, coin 1 bit
     let bits = 0;
     entEvents.forEach((e) => {
       if (e.indexOf("d6:") === 0) bits += 2.58;
@@ -812,7 +822,10 @@
     });
     if (meta) {
       meta.textContent =
-        entEvents.length + " events · ~" + Math.round(bits) + " bits (estimate, not CSPRNG)";
+        entEvents.length +
+        " events · ~" +
+        Math.round(bits) +
+        " bits (estimate: d6≈2.58 + coin=1 each; not CSPRNG)";
     }
   }
 
@@ -856,8 +869,10 @@
     const aa = ra.rows[0][field];
     const bb = rb.rows[0][field];
     const note = ens.generated
-      ? "Generated a " + m.split(/\s+/).length + "-word test phrase on Lab (shared).\n"
-      : "";
+      ? "[TEST DATA] Auto-generated a " +
+        m.split(/\s+/).length +
+        "-word throwaway phrase (not from Lab input). Written into Lab for this session only.\n"
+      : "[Lab phrase] Using the mnemonic currently in Lab memory.\n";
     out.textContent =
       note +
       "A: " +
@@ -887,8 +902,10 @@
     });
     const pack = BIP39Lab.descriptorsFromWatchOnly(wo, getDeriveOptions().network);
     const note = ens.generated
-      ? "Generated a " + m.split(/\s+/).length + "-word test phrase on Lab (shared).\n\n"
-      : "";
+      ? "[TEST DATA] Auto-generated a " +
+        m.split(/\s+/).length +
+        "-word throwaway phrase (not from Lab input). Written into Lab for this session only.\n\n"
+      : "[Lab phrase] Using the mnemonic currently in Lab memory.\n\n";
     out.textContent =
       note +
       pack.descriptors
@@ -1086,9 +1103,9 @@
             if (out) {
               const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
               out.textContent =
-                "Generated " +
+                "[TEST DATA] Generated " +
                 (m ? m.split(/\s+/).length : "?") +
-                "-word test phrase on Lab (shared). Click Compare to run.";
+                "-word throwaway phrase into Lab (session memory). Click Compare to run.";
             }
           })
           .catch(console.error);
@@ -1097,6 +1114,20 @@
     if ($("btnDescRefresh")) $("btnDescRefresh").addEventListener("click", () => refreshDescriptors().catch(console.error));
     if ($("btnPsbt")) $("btnPsbt").addEventListener("click", inspectPsbtUi);
     if ($("btnDescExplain")) $("btnDescExplain").addEventListener("click", explainDescUi);
+    if ($("btnDescExample")) {
+      $("btnDescExample").addEventListener("click", () => {
+        const ta = $("descExplainIn");
+        const out = $("descExplainOut");
+        // Educational public-shape example only (checksum may fail explain — still teaches format).
+        if (ta) {
+          ta.value = "wpkh(zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs/0/*)";
+        }
+        if (out) {
+          out.textContent =
+            "Filled an educational zpub-shaped example (public watch-only style). Click Explain — refuse any xprv/WIF/seed paste.";
+        }
+      });
+    }
     if ($("btnTheme")) {
       $("btnTheme").addEventListener("click", () => {
         const cur = document.documentElement.getAttribute("data-theme") || "dark";

@@ -1,4 +1,4 @@
-"""Teach-surface jump-link consistency (Lab · Network · Shamir)."""
+"""Teach-surface jump-link consistency (Lab · Multisig · Network · Shamir)."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,6 +22,12 @@ def test_lab_jump_link_rail():
     assert 'data-step-target="#card-addresses"' in html
     assert 'data-step-target="#addrTable"' in html
     assert 'data-step-target="#watchOnlyPanel"' in html
+
+
+def test_multisig_jump_link_rail():
+    html = (ROOT / "web/multisig.html").read_text(encoding="utf-8")
+    _assert_jump_rail(html, "msStepRail")
+    assert 'data-step-target="#msCardBuild"' in html or "msCardBuild" in html
 
 
 def test_network_jump_link_rail():

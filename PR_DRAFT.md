@@ -1,66 +1,70 @@
-# PR Draft: Teach-surface jump-link consistency
+# PR Draft: GapFix — Tools phrase source + teach clarity
 
-**Range:** working tree → next commit (Lab/Network/Shamir jump-link rails)
+**Range:** working tree (this ship)
+**Spec:** `.agents/specs/2026-08-09-gapfix-tools-phrase-source.md`
 
 ## What Problem This Solves
 
-Multisig teach UX (`v0.13.4`) already frames step rails as jump links. Lab, Network, and Shamir still looked like numbered wizards, so teach IA was inconsistent.
+Learners confuse auto-generated throwaway Tools phrases with a Lab mnemonic they typed or cleared, and several teach surfaces (entropy bits, descriptors, shortcuts) were opaque.
 
 ## Why This Change Was Made
 
-Align all primary teach surfaces to the same “On this page — jump links (not a locked wizard)” pattern; tighten Network unknown-not-zero and Shamir use-case copy without crypto/CSP changes.
+Human-intuitiveness GapFix: explicit Phrase source + TEST DATA labeling, clear-secrets notes, entropy formula, descriptor definition + Load example, Lab keyboard teach.
 
 ## User Impact
 
-Learners can jump freely on Lab / Network / Shamir the same way as Multisig; clearer Network failure semantics and Shamir vs Multisig framing.
+- Tools intro explains phrase provenance; outputs prefix `[TEST DATA]` or `[Lab phrase]`.
+- Clear secrets updates Tools outs + status for next auto-gen.
+- Entropy pad shows d6≈2.58 / coin=1; descriptors explainable with Load example.
+- Lab mnemonic card lists G/D/?/Esc.
 
 ## Evidence
 
-**Spec:** `.agents/specs/2026-08-09-teach-surface-jump-links.md`
-
-| Check | Result |
-|-------|--------|
-| pytest teach surface | `python -m pytest tests/test_teach_surface_jump_links.py -q` → 3 passed |
-| product smoke | `python scripts/product_smoke.py --root .` (release gate) |
-
-## Evidence pack
-
-| Artifact | Result |
-|----------|--------|
-| hard_gates | `python3 scripts/hard_gates.py --diff b32f07b...HEAD` |
-| pytest | `.venv/bin/python -m pytest tests/test_teach_surface_jump_links.py -q` → 3 passed |
-| behavior | `.agents/artifacts/BEHAVIOR_REPORT.md` (BEHAVIOR-REPORT) PASS |
-| CODE-REVIEW | `.agents/artifacts/CODE_REVIEW.md` APPROVE |
+- Unit: `tests/test_tools_teach_copy.py` (4)
+- Playwright: S17–S19, S18c, S22–S23 extended
+- Full pytest green
+- No crypto/CSP change; secrets scan clean
 
 ## Traceability
 
-| AC | Test / smoke |
-|----|----------------|
-| AC-1 On this page + jump links | `test_lab/network/shamir_jump_link_rail` |
-| AC-2 aria-label page sections | same (`page sections (jump links)`) |
-| AC-3 no forced `1 ·` numbering; targets | same + data-step-target asserts |
-| AC-4 Network unknown-not-zero; Shamir use-case | network/shamir tests |
-| AC-5 smoke / no secrets / CSP | product smoke; HTML-only touch |
+| AC | Proof |
+|----|--------|
+| AC-1 Phrase source + TEST DATA chip | `tests/test_tools_teach_copy.py` + S17 |
+| AC-2 `[TEST DATA]` / `[Lab phrase]` | `web/js/app.js` + S18/S18b/S19 |
+| AC-3 Clear secrets notes | `app.js` clearSecrets + S18c |
+| AC-4 Entropy formula | INDEX + entPadMeta + S17 + pytest |
+| AC-5 Descriptor definition | INDEX + `test_tools_teach_copy.py` |
+| AC-6 Load example | btnDescExample + S22 |
+| AC-7 Lab shortcuts teach | INDEX kbd + tools-shortcuts + S23 |
+| AC-8 Product smoke | `pytest` + product_smoke |
+
+## Red-proof / Green-proof
+
+- red_cmd: static asserts in `test_tools_teach_copy.py` against missing copy (TDD-style contracts on final tree)
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_tools_teach_copy.py`
 
 ## Threat notes
 
-- HTML/teach copy only — no new network egress; Lab/Multisig/Shamir CSP unchanged.
-- Network remains opt-in address-only; copy re-states unknown ≠ silent zero.
-- No mnemonics/seeds/keys logged or stored by this change.
+- Asset: Lab mnemonic / session-derived Tools phrase — must never look like a funded wallet secret; labels only, no retention to disk/logs.
+- Abuse: User mistakes auto-gen TEST DATA for their own phrase after Clear secrets — mitigated by clearSecrets notes + `[TEST DATA]` prefixes + S18c.
+- Abuse: Educational zpub Load example treated as user key material — copy marks format-teach only; no private keys in example.
 
-## Red-proof
+## Evidence pack
 
-```text
-red_cmd: python -m pytest tests/test_teach_surface_jump_links.py -q  # fails before HTML rail help
-green_cmd: python -m pytest tests/test_teach_surface_jump_links.py -q
-```
+| Item | Result |
+|------|--------|
+| hard_gates | run `python3 scripts/hard_gates.py --diff HEAD` after draft fix |
+| pytest | `tests/test_tools_teach_copy.py` + suite via compliance_engine |
+| smoke | `python3 scripts/product_smoke.py --root .` (release) |
+| validate | `python3 scripts/validate.py full` when release_mgmt runs |
 
-TDD: contracts assert Multisig-aligned jump-link strings on Lab/Network/Shamir.
+## Risks
+
+Educational zpub example may fail checksum in Explain — intentional format teach; copy says so.
 
 ## Things that look bad but are actually fine
 
-1. Step rails still list a suggested order (1-ish visual sequence via label order) — they are **jump links**, not a forced wizard; copy says so explicitly.
-2. Network page still has CSP allowing mempool/API for opt-in balance — intentional; Lab/Shamir stay offline CSP; failure copy still unknown ≠ zero.
-3. Shamir still says “not SLIP-39” repeatedly — educational safety, not incomplete product copy.
-4. HTML-only diff with no JS crypto change — correct scope for teach IA consistency.
-5. BEHAVIOR_REPORT uses static HTML + pytest contracts rather than live browser this turn — black-box clauses still satisfied for static teach surfaces.
+1. Tools Compare/Descriptors still write a mnemonic into the Lab field on auto-gen — by design for shared session; provenance labels + Clear secrets notes make that explicit.
+2. Load-example zpub may fail full descriptor checksum — educational shape only, not a live watch-only import path.
+3. S18c lives under lab.spec.ts Tools group — Clear secrets is Lab control then Tools compare; not a separate page suite.
+4. Pipeline score may have been 96 from a prior partial ship on master; this GapFix ship re-validates from working tree.

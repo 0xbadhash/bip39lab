@@ -240,7 +240,7 @@ Same shell as Lab. Offline utilities: derivation path playground, dice/coin entr
 2. Path playground reflects Lab account/change/network/type
 3. Entropy pad: roll dice / flip coin · clear (practice only, not CSPRNG)
 4. Compare passphrases: optional Generate test phrase → Compare idx 0
-5. Descriptors: Refresh → public descriptor text (auto-gen phrase if Lab empty)
+5. Descriptors: Refresh → public descriptor text; prefix `[TEST DATA]` or `[Lab phrase]`; Phrase source blurb + TEST DATA chip on Tools intro
 6. PSBT: paste base64/hex from a wallet → Inspect (structure only)
 7. Descriptor explain: public string only · refuse seeds
 ```
@@ -259,7 +259,7 @@ Path out · Dice/Coin/Clear · Generate test phrase · Compare · Refresh descri
 | Teach Off | Long Tools intro hides; tool cards still usable | | |
 
 ### Playwright / scenarios
-S14, S17–S23, S18b · `e2e/lab.spec.ts`
+S14, S17–S23, S18b, S18c · `e2e/lab.spec.ts`
 
 ---
 
@@ -489,6 +489,9 @@ Tools only (no Lab visit required); B=`test` → A/B addresses; Different or Sam
 ### S18b — Generate test phrase then compare
 Generate test phrase → Compare → Different.
 
+### S18c — Clear secrets then compare auto-gens TEST DATA
+Clear secrets (Lab empty) → Tools → cmp out notes TEST DATA/cleared → Compare with B=`test` → output has `[TEST DATA]` and Different/Same.
+
 ### S19 — Descriptors refresh
 Refresh → wpkh/tr/pkh/sh descriptors.
 
@@ -712,6 +715,7 @@ S16 Send→Network: PASS|FAIL —
 S17 Entropy pad: PASS|FAIL —
 S18 Compare PP: PASS|FAIL —
 S18b Tools gen+compare: PASS|FAIL —
+S18c Clear secrets → TEST DATA compare: PASS|FAIL —
 S19 Descriptors: PASS|FAIL —
 S20 PSBT ok: PASS|FAIL —
 S21 PSBT refuse: PASS|FAIL —
@@ -753,7 +757,7 @@ S54 Shamir split 2-of-3: PASS|FAIL —
 S55 Shamir empty error: PASS|FAIL —
 S56 Shamir recombine: PASS|FAIL —
 
-Score: __ / 67 PASS   (count Playwright S-ids: S0,S0b,S0c + S1–S56 incl. S1b,S2b,S12b,S13b–d,S18b,S39b,S48b)
+Score: __ / 68 PASS   (count Playwright S-ids: S0,S0b,S0c + S1–S56 incl. S1b,S2b,S12b,S13b–d,S18b,S18c,S39b,S48b)
 Blockers:
 UX / coherence notes (what confused a human learner):
 ```

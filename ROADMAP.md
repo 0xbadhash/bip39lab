@@ -275,20 +275,34 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** pytest + e2e
 - **Notes:** Shipped `v0.13.4` — teach-first Multisig surface; no crypto path change
 
-### [OPEN] Teach-surface jump-link consistency
-- **Status:** open
+### [DONE] Teach-surface jump-link consistency
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-09-teach-surface-jump-links.md`
 - **Acceptance:**
-  - [ ] Lab/Network/Shamir “On this page” jump-link help + rail aria
-  - [ ] Drop forced step numbers; keep data-step-target anchors
-  - [ ] Network unknown-not-zero + Shamir use-case teach tighten
-  - [ ] Smoke green; CSP/crypto unchanged
+  - [x] Lab/Network/Shamir “On this page” jump-link help + rail aria
+  - [x] Drop forced step numbers; keep data-step-target anchors
+  - [x] Network unknown-not-zero + Shamir use-case teach tighten
+  - [x] Smoke green; CSP/crypto unchanged
 - **Smoke:** product smoke
-- **Notes:** Align with Multisig v0.13.4 rail pattern; HTML/teach only
+- **Notes:** Shipped `v0.13.5`
+
+### [DONE] GapFix — Tools phrase source + teach clarity
+- **Status:** done (ready_for_review)
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-09-gapfix-tools-phrase-source.md`
+- **Acceptance:**
+  - [x] Phrase source blurb + TEST DATA chip; `[TEST DATA]` / `[Lab phrase]` prefixes
+  - [x] Clear secrets → Tools outs + status note next auto-gen TEST DATA
+  - [x] Entropy d6≈2.58 / coin=1 teach + meta formula
+  - [x] Descriptor definition; explain shapes + Load example
+  - [x] Lab G/D/?/Esc teach; Tools shortcuts Lab-scoped
+  - [x] pytest + no secrets
+- **Smoke:** pytest 63 · e2e S17–S23 (7)
+- **Notes:** Human-intuitiveness GapFix; no crypto path change
 
 ## Current focus
 
-**Shipped:** `v0.13.4` Multisig teach UX polish; Shamir left-nav tab v1 + educational recombine (non-SLIP-39).  
-**Next:** Teach-surface jump-link consistency (Lab · Network · Shamir).  
+**Shipped:** `v0.13.5` teach-surface jump-link consistency.  
+**Next:** GapFix Tools phrase source — ready_for_review (await `/pr_review --validate`).  
 **Later (not this ship):** SLIP-39 standard (integrity-checked wordlists + fixtures); private Knots proxy for Network.
