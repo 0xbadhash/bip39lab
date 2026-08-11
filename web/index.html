@@ -618,8 +618,12 @@
                 <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip49" data-term="BIP49">BIP49 · nested</button>
                 <button type="button" class="seg-tab" role="tab" aria-selected="false" data-addr-type="bip44" data-term="BIP44">BIP44 · legacy</button>
               </div>
-              <p id="addrTypeHelp" class="control-help teach-only is-compact">
-                <strong>Taproot (bc1p…)</strong> — newest common format. Path <code>m/86'/…</code>.
+              <p id="addrTypeHelp" class="control-help is-compact label-row" style="flex-wrap:wrap;gap:0.35rem">
+                <span id="addrTypeHelpText"><strong>BIP-86 Taproot (bc1p…)</strong> — default modern receive style in this lab — set by these tabs. Path <code>m/86'/…</code>.</span>
+                <span class="help-tip" id="addrTypeLiveTip" data-term="BIP86">
+                  <button type="button" class="help-tip-btn" id="addrTypeLiveTipBtn" aria-label="About current address type">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
               </p>
             </div>
 
@@ -727,7 +731,15 @@
             <p class="control-help">
               <strong>What this is:</strong> a <em>derivation path</em> is the folder path inside your seed tree
               that produces one receive (or change) address. It is <strong>not</strong> the seed itself —
-              only “which branch” of BIP-32 HD keys Lab is using right now.
+              only “which branch” of
+              <span class="label-row" style="display:inline-flex;align-items:center;gap:0.25rem;vertical-align:middle">
+                BIP-32 HD keys
+                <span class="help-tip" data-term="BIP32">
+                  <button type="button" class="help-tip-btn" aria-label="About BIP-32 HD keys">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
+              Lab is using right now.
             </p>
             <p class="control-help teach-only">
               Change <strong>Lab</strong> controls (address-type tabs, network, account, change, count) and this card updates live.
@@ -754,7 +766,15 @@
                 <tr>
                   <th scope="row">purpose'</th>
                   <td id="pathCellPurpose">86'</td>
-                  <td id="pathCellPurposeWhy">Which address style (BIP number)</td>
+                  <td>
+                    <span class="label-row" style="align-items:flex-start;gap:0.35rem">
+                      <span id="pathCellPurposeWhy">BIP-86 Taproot (bc1p…) — default modern receive style in this lab — set by Lab address-type tabs</span>
+                      <span class="help-tip" id="pathPurposeHelpTip" data-term="BIP86">
+                        <button type="button" class="help-tip-btn" id="pathPurposeHelpBtn" aria-label="About this address style (BIP purpose)">i</button>
+                        <span class="help-tip-panel" hidden></span>
+                      </span>
+                    </span>
+                  </td>
                 </tr>
                 <tr>
                   <th scope="row">coin_type'</th>

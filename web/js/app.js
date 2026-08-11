@@ -215,16 +215,48 @@
     el.textContent = last === 0 ? path0 : path0 + "  →  …  →  " + pathLast;
 
     const purposeWhy = {
-      86: "BIP-86 Taproot (bc1p…) — default modern receive style in this lab",
-      84: "BIP-84 native SegWit (bc1q…)",
-      49: "BIP-49 nested SegWit (3…)",
-      44: "BIP-44 legacy (1…)",
+      86: "BIP-86 Taproot (bc1p…) — default modern receive style in this lab — set by Lab address-type tabs",
+      84: "BIP-84 native SegWit (bc1q…) — set by Lab address-type tabs",
+      49: "BIP-49 nested SegWit (3…) — set by Lab address-type tabs",
+      44: "BIP-44 legacy (1…) — set by Lab address-type tabs",
+    };
+    const purposeTerm = {
+      86: "BIP86",
+      84: "BIP84",
+      49: "BIP49",
+      44: "BIP44",
+    };
+    const purposeHelpAria = {
+      86: "About BIP-86 Taproot",
+      84: "About BIP-84 native SegWit",
+      49: "About BIP-49 nested SegWit",
+      44: "About BIP-44 legacy",
+    };
+    const addrTypeHelpHtml = {
+      86: "<strong>BIP-86 Taproot (bc1p…)</strong> — default modern receive style in this lab — set by these tabs. Path <code>m/86'/…</code>.",
+      84: "<strong>BIP-84 native SegWit (bc1q…)</strong> — widely used receive style — set by these tabs. Path <code>m/84'/…</code>.",
+      49: "<strong>BIP-49 nested SegWit (3…)</strong> — compatibility style — set by these tabs. Path <code>m/49'/…</code>.",
+      44: "<strong>BIP-44 legacy (1…)</strong> — oldest style — set by these tabs. Path <code>m/44'/…</code>.",
     };
 
     if ($("pathCellPurpose")) $("pathCellPurpose").textContent = meta.purpose + "'";
     if ($("pathCellPurposeWhy")) {
       $("pathCellPurposeWhy").textContent =
-        (purposeWhy[meta.purpose] || "BIP purpose / script type") + " — set by Lab address-type tabs";
+        purposeWhy[meta.purpose] || "BIP purpose / script type — set by Lab address-type tabs";
+    }
+    // Keep ⓘ next to purpose line; retarget glossary term to active BIP
+    const purposeTip = $("pathPurposeHelpTip");
+    const purposeBtn = $("pathPurposeHelpBtn");
+    const pTerm = purposeTerm[meta.purpose] || "BIP86";
+    if (purposeTip) purposeTip.setAttribute("data-term", pTerm);
+    if (purposeBtn) purposeBtn.setAttribute("aria-label", purposeHelpAria[meta.purpose] || "About address style");
+    const liveTip = $("addrTypeLiveTip");
+    const liveBtn = $("addrTypeLiveTipBtn");
+    if (liveTip) liveTip.setAttribute("data-term", pTerm);
+    if (liveBtn) liveBtn.setAttribute("aria-label", purposeHelpAria[meta.purpose] || "About current address type");
+    if ($("addrTypeHelpText")) {
+      $("addrTypeHelpText").innerHTML =
+        addrTypeHelpHtml[meta.purpose] || addrTypeHelpHtml[86];
     }
     if ($("pathCellCoin")) $("pathCellCoin").textContent = coin + "'";
     if ($("pathCellCoinWhy")) {

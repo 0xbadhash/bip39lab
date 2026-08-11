@@ -641,14 +641,7 @@
           markQuiz(q);
         });
     });
-    document.querySelectorAll("[data-quiz-back]").forEach(function (btn) {
-      btn.addEventListener("click", function (ev) {
-        ev.preventDefault();
-        returnToQuiz();
-      });
-    });
-    var scrollTop = $("quizScrollTop");
-    if (scrollTop) scrollTop.addEventListener("click", returnToQuiz);
+    // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
     if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
       try {
         sessionStorage.removeItem(QUIZ_RETURN_KEY);
