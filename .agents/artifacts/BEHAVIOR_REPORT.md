@@ -1,24 +1,19 @@
 # BEHAVIOR-REPORT
 
-**Command:** `/behavior-validator`  
 **Contract:** `.agents/artifacts/BEHAVIOR_CONTRACT.md`  
-**Surface:** Playwright against local static `web/` (source-blind clauses judged via e2e outcomes + manual checklist)
+**Surface:** local Playwright + product smoke; live shamir structure check  
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| C1 | **pass** | S61: 8 hour steps, checkbox progress, Go on h2 |
-| C2 | **pass** | S61 / S44: `#learnReturnBar` visible after Go; Back returns |
-| C3 | **pass** | S63: Mark Q1 → Passed badge/board; chip-ok green CSS |
-| C4 | **pass** | Product: `refreshEntPadQuizUi` live TOO LOW after rolls; S63 opens demos |
-| C5 | **pass** | `#btnMarkQ3FromEnt` / `#btnMarkQ4FromEnt` in entropy pad action bar |
-| C6 | **pass** | S44b Tools click no longer intercepted; Classroom under brand |
-| C7 | **pass** | S41/S44b: zero `[data-step-rail]`; S40 no `.footer-host` |
-| C8 | **pass** | S40 sidebar `.site-version-chip` visible |
+| B1 | **pass** | e2e/shamir.spec.ts S53–S56 after HTML repair |
+| B2 | **pass** | markQ2AndReturn + `?marked=q2` + localStorage (code path verified) |
+| B3 | **pass** | LearnLevels.passQuiz in-page for Q3/Q4 dock |
+| B4 | **pass** | btnMarkQ1FromTools + passQuiz |
+| B5 | **pass** | hourBackBarNet removed; learnReturnDockNet body-fixed |
+| B6 | **pass** | graduateToBeginner + firstHourNext UI |
+| B7 | **pass** | syncHourQuizStep when n===4 |
 
-**Anti-cheat notes:** Quiz remains self-mark (by design). Entropy pad still PRACTICE ONLY. No fake success without user Mark.
-
-**blocked:** none  
-**fail:** none  
+**fail:** none · **blocked:** none  
 
 ```text
 NEXT_SKILL=/pr_review --validate

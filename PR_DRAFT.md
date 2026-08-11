@@ -1,70 +1,69 @@
-# PR Draft: Classroom UX polish + entropy quiz Q3/Q4 (post v0.14.0)
+# PR Draft: v0.15.1 classroom dock + quiz mark reliability
 
 **Spec:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md`  
 **Spec waiver:** chore  
 
 ## What Problem This Solves
-First-hour / quiz navigation was hard to follow (stacked sticky bars, ambiguous Teach rails, quiz without clear return/pass on entropy). Level/Teach chrome crowded the left nav. Entropy lesson stopped at “too low” without teaching that ~128 bits / ~50 d6 is required.
+Post-v0.15.0: Mark Q1–Q4 dock buttons often failed to pass/return; Shamir/related pages HTML shell broken; duplicate top return bars; unclear path after Set Beginner.
 
 ## Why This Change Was Made
-Ship human-path UX polish after v0.14.0 education levels: navigable first hour + quiz, single amber return dock, slim Classroom pane, remove mid-page step rails, entropy Q3 live TOO LOW + Q4 enough-bits, green Passed chips.
+Patch release for classroom reliability and layout integrity.
 
 ## User Impact
-- First hour: Go / Mark done / checkboxes; sticky amber Back dock  
-- Quiz: status board, Go try, self-mark; Q2 Shamir evidence; Q3 live TOO LOW + pad Mark button; Q4 ~50 d6 / 128 bits  
-- Classroom left pane: Level, Extra help, Reset — no Host/status chips over Glossary  
-- Offline crypto + online chips in topbar; version only in sidebar  
-- No mid-page step-rail path wizard  
-- Passed chips solid green  
+- Mark Q1/Q3/Q4 on bottom dock actually marks Passed and returns to quiz  
+- Mark Q2 on Shamir dock saves + navigates with `?marked=q2`  
+- Dock pinned to viewport bottom (body)  
+- Shamir/Multisig/Network/SLIP-39 sidebar HTML repaired  
+- Network/Shamir: no top duplicate Back bar  
+- Set Beginner auto-completes step 8 + “what’s next”  
+- All four quiz Passed → first-hour step 6 auto-done  
+- Extra help beside Theme  
 
 ## Evidence pack
-- hard_gates: `python3 scripts/hard_gates.py --diff f668e6e...HEAD`  
-- smoke: product_smoke + check_web_e2e at release  
-- Playwright: e2e/learn.spec.ts, help-ux.spec.ts, site-chrome.spec.ts  
-- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT under `.agents/artifacts/`  
+- hard_gates / smoke / pytest / check_web_e2e  
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT  
 
 ## Evidence
-| Surface | Result |
-|---------|--------|
-| secrets diff f668e6e…HEAD | clean |
+| Check | Result |
+|-------|--------|
+| secrets v0.15.0…HEAD | clean |
 | CODE-REVIEW | p0=0 |
 | CROSS-REVIEW | blockers=0 |
-| BEHAVIOR | C1–C8 pass |
-| Playwright focused | S61–S67 + help-ux + site-chrome after e2e fix |
+| BEHAVIOR | B1–B7 pass |
 
 ## Traceability
 | AC | Test |
 |----|------|
-| AC-1 First hour Go/Back/checkboxes | e2e/learn.spec.ts S61 · smoke learn |
-| AC-2 Quiz status + Mark passed green | e2e/learn.spec.ts S63 · chip-ok CSS |
-| AC-3 No mid-page step rails | e2e/help-ux.spec.ts S41 S44b |
-| AC-4 Version sidebar only, no footer host | e2e/site-chrome.spec.ts S40 |
-| AC-5 Extra help on/off | e2e/help-ux.spec.ts S42 S48 |
-| AC-6 Entropy Q3 TOO LOW + Q4 128 bits | e2e/learn.spec.ts S63 shell + Tools entropy pad UI |
-| AC-7 Tools/Glossary clickable | e2e/help-ux.spec.ts S44b |
-| AC-8 Level soft gates | e2e/learn.spec.ts S62 |
+| AC-1 Shamir page usable | e2e/shamir.spec.ts S53–S56 · pytest shell |
+| AC-2 Quiz dock mark Q1–Q4 | learn-levels passQuiz · app.js markQuizFromEntPad · e2e learn S63 |
+| AC-3 Q2 Shamir mark return | shamir-app markQ2AndReturn · marked=q2 |
+| AC-4 No top Network back bar | network.html · network-app.js |
+| AC-5 Beginner what’s next | firstHourNext · graduateToBeginner |
+| AC-6 Hour step 6 auto | syncHourQuizStep · e2e learn |
+| AC-7 HTML shell fix | structure balance · e2e shamir/multisig |
+| AC-8 Extra help foot | e2e/help-ux.spec.ts |
 
 ## Red-proof / TDD
-TDD N/A — UI/UX chore on static web classroom; no new pure function requiring red→green unit cycle.  
-
-## Things that look bad but are actually fine
-1. Self-graded quiz (no server grading) — intentional classroom design.  
-2. Math.random entropy pad — labeled simulated; never fund.  
-3. Soft level gates dim cards instead of hard-hide — skip/explore allowed.  
-4. Amber dock shared for hour + quiz (one mode at a time) — avoids stacked overlays.  
+TDD N/A — UI reliability chore; green via pytest + playwright smoke.
 
 ## Untested paths
 | Path | Reason |
 |------|--------|
-| web/js/glossary.js | Covered via tip open e2e (S43, S45) and term panels; no unit module import |
-| web/js/help-ui.js | e2e/help-ux.spec.ts (Extra help, tips, no rails) |
-| web/js/learn-levels.js | e2e/learn.spec.ts S61–S67 |
+| web/js/learn-levels.js | e2e/learn.spec.ts |
+| web/js/app.js | e2e/lab.spec.ts + learn |
+| web/js/shamir-app.js | e2e/shamir.spec.ts |
+| web/js/network-app.js | e2e/network.spec.ts |
 
 ## Threat notes
-- **secrets** — localStorage prefs/progress only; practice phrases; never fund pad words  
-- **xss** — controlled verdict HTML from numbers/templates  
-- **integrity** — quiz self-check is educational, not exam proctoring  
+- **secrets** — quiz/hour localStorage only; practice demos  
+- **xss** — static UI strings; no untrusted HTML in mark path  
+- **integrity** — self-check quiz educational  
 
+## Things that look bad but are actually fine
+1. Self-graded quiz (no server).  
+2. Math.random entropy pad (labeled simulated).  
+3. Soft level gates.  
+4. Dual localStorage + `?marked=` for Shamir→Lab Q2 handoff.  
 
 ## Cross-review
 See `.agents/artifacts/CROSS_REVIEW.md` — blockers=0.
