@@ -246,7 +246,7 @@ Same shell as Lab. Offline utilities: derivation path playground, dice/coin entr
 3. Entropy pad: roll dice / flip coin · clear (practice only, not CSPRNG)
 4. Compare passphrases: optional Generate test phrase → Compare idx 0
 5. Descriptors: Refresh → public descriptor text; prefix `[TEST DATA]` or `[Lab phrase]`; Phrase source blurb + TEST DATA chip on Tools intro
-6. PSBT: paste base64/hex from a wallet → Inspect (structure only)
+6. PSBT: open teach fold “When does partial make sense?” · Sample: multisig/HWW story or minimal · Inspect (structure + teach footer only — no sign)
 7. Descriptor explain: public string only · refuse seeds
 ```
 
@@ -500,8 +500,13 @@ Clear secrets (Lab empty) → Tools → cmp out notes TEST DATA/cleared → Comp
 ### S19 — Descriptors refresh
 Refresh → wpkh/tr/pkh/sh descriptors.
 
-### S20 — PSBT inspector
-Paste educational PSBT → status/detail (no sign).
+### S20 — PSBT inspector + samples
+Tools → PSBT card explains partial signing (multisig / HWW / air-gap).  
+**Sample: multisig / HWW story** loads synthetic PSBT → Inspect → ok/educational + story line; never signs.
+
+### S20b — PSBT teach fold + minimal sample
+Open “When does a partial transaction make sense?” fold (Multisig, Hardware, Lifecycle).  
+**Sample: minimal structure** → Inspect + story about empty global map.
 
 ### S21 — PSBT refuse secrets
 Refuse seed-like paste if applicable.

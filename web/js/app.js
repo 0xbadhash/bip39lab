@@ -913,6 +913,46 @@
         .join("\n\n");
   }
 
+  // Educational samples only — valid psbt\xff framing, not funded spends.
+  // minimal: magic + empty global map terminator
+  var PSBT_SAMPLE_MINIMAL = "cHNidP8A";
+  // slightly longer placeholder used in e2e / docs (still synthetic)
+  var PSBT_SAMPLE_STORY = "cHNidP8BAAoCAAAAAA==";
+
+  var PSBT_STORY_MINIMAL =
+    "Sample story: empty global map after magic. In a real wallet this is “package opened, no fields filled yet” — " +
+    "before anyone attaches inputs, outputs, or partial signatures.";
+
+  var PSBT_STORY_MS =
+    "Sample story (multisig / hardware): wallet software creates a PSBT for a spend; cosigner A or a hardware " +
+    "wallet adds a partial signature; cosigner B adds another; only after enough partials exist can someone " +
+    "finalize and broadcast. This lab never performs those steps — Inspect only shows that the blob looks like a PSBT.";
+
+  function setPsbtStory(text) {
+    var el = $("psbtStory");
+    if (!el) return;
+    if (!text) {
+      el.hidden = true;
+      el.textContent = "";
+      return;
+    }
+    el.hidden = false;
+    el.textContent = text;
+  }
+
+  function loadPsbtSample(kind) {
+    var input = $("psbtIn");
+    if (!input) return;
+    if (kind === "story") {
+      input.value = PSBT_SAMPLE_STORY;
+      setPsbtStory(PSBT_STORY_MS);
+    } else {
+      input.value = PSBT_SAMPLE_MINIMAL;
+      setPsbtStory(PSBT_STORY_MINIMAL);
+    }
+    inspectPsbtUi();
+  }
+
   function inspectPsbtUi() {
     const out = $("psbtOut");
     if (!out) return;
@@ -921,11 +961,17 @@
       return;
     }
     const r = BIP39Lab.inspectPsbt($("psbtIn").value);
+    var teach =
+      "\n\n— teach —\n" +
+      "Partial signatures exist so signing can cross devices/people (multisig, HWW, air-gap) without " +
+      "moving the seed. Lifecycle: create → partial sign(s) → combine → finalize → broadcast. " +
+      "This inspector only checks structure (magic + maps); it does not sign or broadcast.";
     out.textContent =
       r.status +
       ": " +
       r.detail +
-      (r.globalKeys != null ? "\nglobalKeys≈" + r.globalKeys + " maps=" + r.mapCount : "");
+      (r.globalKeys != null ? "\nglobalKeys≈" + r.globalKeys + " maps=" + r.mapCount : "") +
+      (r.status === "ok" ? teach : "");
   }
 
   function explainDescUi() {
@@ -1113,6 +1159,16 @@
     }
     if ($("btnDescRefresh")) $("btnDescRefresh").addEventListener("click", () => refreshDescriptors().catch(console.error));
     if ($("btnPsbt")) $("btnPsbt").addEventListener("click", inspectPsbtUi);
+    if ($("btnPsbtSampleMinimal")) {
+      $("btnPsbtSampleMinimal").addEventListener("click", function () {
+        loadPsbtSample("minimal");
+      });
+    }
+    if ($("btnPsbtSampleStory")) {
+      $("btnPsbtSampleStory").addEventListener("click", function () {
+        loadPsbtSample("story");
+      });
+    }
     if ($("btnDescExplain")) $("btnDescExplain").addEventListener("click", explainDescUi);
     if ($("btnDescExample")) {
       $("btnDescExample").addEventListener("click", () => {

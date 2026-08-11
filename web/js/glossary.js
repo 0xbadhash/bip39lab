@@ -72,7 +72,10 @@
       group: "BIPs",
       short: "Partially Signed Bitcoin Transaction",
       body:
-        "Standard container for incomplete transactions that can move between devices for signing. This lab only inspects PSBTs educationally — it does not sign or broadcast.",
+        "Portable package for an incomplete spend that can move between software, hardware wallets, and cosigners. " +
+        "Why partial? Multisig needs M signatures; hardware wallets sign offline; air-gap keeps seeds off the internet. " +
+        "Lifecycle: create PSBT → each party adds partial signatures → combine → finalize → broadcast. " +
+        "Tools → PSBT inspector only explains structure offline — it does not sign, finalize, or broadcast. Use the sample buttons to see framing without real funds.",
     },
     {
       id: "P2PKH",
@@ -384,7 +387,9 @@
       group: "Network & fees",
       short: "Partially Signed Bitcoin Transaction",
       body:
-        "See BIP-174. Tools → PSBT inspector only explains structure offline — no signing or broadcasting.",
+        "Short name for BIP-174. Think “shipping label for an unfinished transaction”: inputs/outputs and partial signatures travel together so different keys can sign without sharing seeds. " +
+        "Common when: 2-of-3 multisig, hardware wallet signing a draft from a watch-only app, two operators in different places. " +
+        "Tools → PSBT: load synthetic samples or paste an export; Inspect shows magic/maps only — no signing or broadcasting.",
     },
     {
       id: "RPC",

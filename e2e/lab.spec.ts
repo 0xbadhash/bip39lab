@@ -312,9 +312,23 @@ test.describe("Lab Tools panel", () => {
 
   test("S20 PSBT inspector educational", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
-    await page.locator("#psbtIn").fill("cHNidP8BAAoCAAAAAA==");
-    await page.locator("#btnPsbt").click();
-    await expect(page.locator("#psbtOut")).toContainText(/ok|Educational|PSBT|magic/i);
+    await expect(page.locator("#cardPsbt")).toBeVisible();
+    await expect(page.locator("#cardPsbt")).toContainText(/partial|multisig|never signs/i);
+    await page.locator("#btnPsbtSampleStory").click();
+    await expect(page.locator("#psbtIn")).not.toHaveValue("");
+    await expect(page.locator("#psbtOut")).toContainText(/ok|Educational|PSBT|magic|teach/i);
+    await expect(page.locator("#psbtStory")).toBeVisible();
+    await expect(page.locator("#psbtStory")).toContainText(/multisig|hardware|partial/i);
+  });
+
+  test("S20b PSBT sample minimal + teach fold", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#psbtTeachWhy summary").click();
+    await expect(page.locator("#psbtTeachWhy")).toHaveAttribute("open", "");
+    await expect(page.locator("#psbtTeachWhy")).toContainText(/Multisig|Hardware|Lifecycle/i);
+    await page.locator("#btnPsbtSampleMinimal").click();
+    await expect(page.locator("#psbtOut")).toContainText(/ok|Educational|teach/i);
+    await expect(page.locator("#psbtStory")).toContainText(/empty global map|magic/i);
   });
 
   test("S21 PSBT refuse secrets", async ({ page }) => {
