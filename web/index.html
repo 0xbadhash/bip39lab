@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.15.5" />
+  <link rel="stylesheet" href="css/app.css?v=0.15.7" />
 </head>
 <body>
   <div class="app">
@@ -269,23 +269,51 @@
                 <div class="hour-step-main">
                   <label class="hour-step-label">
                     <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>8.</strong> Raise Level to Beginner when ready</span>
+                    <span><strong>8.</strong> Raise Level to Beginner when ready
+                      <span class="control-help" style="font-weight:500"> (one click — no separate Mark done)</span>
+                    </span>
                   </label>
                   <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go" id="hourGoBeginner">Set Beginner</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                    <button type="button" class="btn btn-sm" id="hourGoBeginner" title="Sets Level to Beginner and marks this step done">
+                      Set Beginner
+                    </button>
                   </div>
                 </div>
               </li>
             </ol>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
-              <button type="button" class="btn secondary" data-level-set="beginner">I’m ready for Beginner</button>
+              <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner">I’m ready for Beginner</button>
               <button type="button" class="btn secondary btn-sm" id="hourScrollTop" title="Jump back to this checklist">
                 Back to this checklist
               </button>
               <button type="button" class="btn secondary btn-sm" id="btnResetFirstHour" title="Clear first-hour checkboxes in this browser">
                 Reset checklist
               </button>
+            </div>
+            <!-- Shown after Level is Beginner (and ideally first hour finished) -->
+            <div id="firstHourNext" class="first-hour-next" hidden role="region" aria-label="What to do next">
+              <h3 class="first-hour-next-title">You’re a Beginner — what’s next?</h3>
+              <p class="control-help" style="margin:0.35rem 0 0.65rem">
+                Level is a <strong>curriculum soft gate</strong>, not a wallet. Raising it unlocks the next Lab cards
+                so you know what to study. You can always raise Level further in the left pane anytime.
+              </p>
+              <ol class="first-hour-next-list">
+                <li>
+                  <strong>Now (Beginner):</strong> complete the <em>Guided quiz</em> (Q1–Q4) below —
+                  passphrase, Shamir, entropy too-low, then ~128 bits.
+                </li>
+                <li>
+                  <strong>Next (Intermediate):</strong> Level → Intermediate unlocks the
+                  <em>three-splits tour</em> (Multisig ≠ Shamir ≠ SLIP-39) and deeper Tools (entropy pad, PSBT).
+                </li>
+                <li>
+                  <strong>Later (Advanced):</strong> BIP-85 idea shell + Knots / ops notes.
+                </li>
+              </ol>
+              <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.65rem">
+                <button type="button" class="btn" id="btnNextGoQuiz">Go to Guided quiz</button>
+                <button type="button" class="btn secondary" id="btnNextGoIntermediate">Raise Level to Intermediate</button>
+              </div>
             </div>
           </div>
 
@@ -1223,7 +1251,7 @@
   <script src="js/bip39lab.bundle.js?v=0.15.0"></script>
   <script src="js/glossary.js?v=0.15.0"></script>
   <script src="js/help-ui.js?v=0.15.0"></script>
-  <script src="js/learn-levels.js?v=0.15.6"></script>
+  <script src="js/learn-levels.js?v=0.15.7"></script>
   <script src="js/app.js?v=0.15.6"></script>
 </body>
 </html>

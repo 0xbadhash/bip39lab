@@ -412,6 +412,28 @@ code {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
+.first-hour-next {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(34, 160, 107, 0.5);
+  background: rgba(34, 160, 107, 0.1);
+}
+.first-hour-next-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+.first-hour-next-list {
+  margin: 0.35rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.first-hour-next-list li {
+  margin: 0.35rem 0;
+}
 /* Return bars: amber/gold so they don’t blend into blue UI / dark panels */
 .hour-back-bar {
   display: flex;

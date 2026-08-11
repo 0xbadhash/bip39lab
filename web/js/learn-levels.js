@@ -58,7 +58,7 @@
     starter:
       "Starter: orientation + First hour checklist. Quiz / tour stay dimmed until you raise Level.",
     beginner:
-      "Beginner: Guided quiz self-checks open. Next: Intermediate = three-splits tour + more tools depth.",
+      "Beginner: Guided quiz is open (Q1–Q4). Do that next, then raise Level to Intermediate for the tour.",
     intermediate:
       "Intermediate: Tour (Multisig ≠ Shamir ≠ SLIP-39) + deeper Tools (e.g. entropy pad). Next: Advanced ops.",
     advanced:
@@ -67,7 +67,7 @@
 
   var LEVEL_UNLOCKS = {
     starter: "Orientation + First hour",
-    beginner: "Guided quiz",
+    beginner: "Guided quiz (Q1–Q4)",
     intermediate: "Three-splits tour · deeper Tools",
     advanced: "BIP-85 shell · Ops / Knots notes",
   };
@@ -86,19 +86,55 @@
       level.slice(1) +
       ": " +
       (LEVEL_UNLOCKS[level] || "") +
-      ". Soft gates only — not a wallet lock. See left pane for details.";
+      ". Soft gates only — not a wallet lock.";
     if (prev && prev !== level) {
       var pi = LEVELS.indexOf(prev);
       var ni = LEVELS.indexOf(level);
-      if (ni > pi) msg = "Unlocked for " + level + ": " + (LEVEL_UNLOCKS[level] || "") + ". Scroll Lab for newly open cards.";
-      else if (ni < pi) msg = "Level lowered to " + level + ". Higher cards dim again (soft gate).";
+      if (ni > pi) {
+        if (level === "beginner") {
+          msg =
+            "Beginner unlocked: Guided quiz is next. Scroll to the green “what’s next” box or open the quiz below.";
+        } else if (level === "intermediate") {
+          msg = "Intermediate unlocked: start the three-splits tour on Lab.";
+        } else if (level === "advanced") {
+          msg = "Advanced unlocked: BIP-85 + Ops cards are open.";
+        } else {
+          msg = "Unlocked for " + level + ": " + (LEVEL_UNLOCKS[level] || "") + ".";
+        }
+      } else if (ni < pi) msg = "Level lowered to " + level + ". Higher cards dim again (soft gate).";
     }
     toast.textContent = msg;
     toast.hidden = false;
     clearTimeout(showLevelToast._t);
     showLevelToast._t = setTimeout(function () {
       toast.hidden = true;
-    }, 6000);
+    }, 9000);
+  }
+
+  function updateFirstHourNext() {
+    var box = $("firstHourNext");
+    if (!box) return;
+    var level = getLevel();
+    var hour = loadJson(HOUR_KEY, {});
+    // Show path after user reaches Beginner (especially after first-hour step 8)
+    var show = LEVELS.indexOf(level) >= LEVELS.indexOf("beginner");
+    box.hidden = !show;
+  }
+
+  function graduateToBeginner() {
+    setLevel("beginner", { announce: true });
+    markHourStep("h8", true);
+    updateFirstHourNext();
+    setTimeout(function () {
+      var next = $("firstHourNext");
+      var quiz = $("cardQuiz");
+      if (next) {
+        next.hidden = false;
+        next.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } else if (quiz) {
+        quiz.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 150);
   }
 
   function applyLevel(level, opts) {
@@ -147,9 +183,17 @@
       var min = b.getAttribute("data-level-gate-banner") || "intermediate";
       b.hidden = LEVELS.indexOf(level) >= LEVELS.indexOf(min);
     });
+    updateFirstHourNext();
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
-      if (firstUnlocked) {
+      // For beginner, prefer the “what’s next” box over a random unlocked card jump
+      if (level === "beginner") {
+        setTimeout(function () {
+          var next = $("firstHourNext");
+          if (next && !next.hidden) next.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          else if (firstUnlocked) firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 120);
+      } else if (firstUnlocked) {
         setTimeout(function () {
           firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }, 120);
