@@ -1,5 +1,10 @@
-import { generateMnemonic, validateMnemonic, mnemonicToSeedSync } from "@scure/bip39";
-import { wordlist } from "@scure/bip39/wordlists/english.js";
+import {
+  generateMnemonic,
+  validateMnemonic,
+  mnemonicToSeedSync,
+  entropyToMnemonic,
+} from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 import { HDKey } from "@scure/bip32";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { ripemd160 } from "@noble/hashes/legacy.js";
@@ -351,6 +356,20 @@ function validate(m) {
   return validateMnemonic(m, wordlist);
 }
 
+/**
+ * Educational: BIP-39 mnemonic from raw entropy bytes (16/20/24/28/32).
+ * Callers must not claim this is suitable for funded wallets.
+ */
+function mnemonicFromEntropyBytes(bytes) {
+  const arr =
+    bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes || []);
+  const n = arr.length;
+  if (![16, 20, 24, 28, 32].includes(n)) {
+    throw new Error("entropy must be 16, 20, 24, 28, or 32 bytes");
+  }
+  return entropyToMnemonic(arr, wordlist);
+}
+
 /** Base58 alphabet decode → bytes (includes leading zero pad for '1's). */
 function b58decode(s) {
   const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -513,6 +532,7 @@ async function qrDataUrl(text, options) {
 const api = {
   generateMnemonic: async (n) => generate(n),
   validateMnemonic: async (m) => validate(m),
+  mnemonicFromEntropyBytes: (bytes) => mnemonicFromEntropyBytes(bytes),
   deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
   exportWatchOnly: async (m, p, options) => exportWatchOnly(m, p, options),
   descriptorsFromWatchOnly: (wo, network) => descriptorsFromWatchOnly(wo, network),

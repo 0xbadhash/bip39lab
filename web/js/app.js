@@ -804,6 +804,16 @@
     applyTheme(t);
   }
 
+  function estimateEntPadBits() {
+    // rough log2: d6 ~ log2(6) ≈ 2.58 bits, coin 1 bit
+    let bits = 0;
+    entEvents.forEach((e) => {
+      if (e.indexOf("d6:") === 0) bits += 2.58;
+      else if (e.indexOf("coin:") === 0) bits += 1;
+    });
+    return bits;
+  }
+
   function refreshEntPad() {
     const out = $("entPadOut");
     const meta = $("entPadMeta");
@@ -814,19 +824,116 @@
       return;
     }
     out.textContent = entEvents.join(" ");
-    // rough log2: d6 ~ log2(6) ≈ 2.58 bits, coin 1 bit
-    let bits = 0;
-    entEvents.forEach((e) => {
-      if (e.indexOf("d6:") === 0) bits += 2.58;
-      else if (e.indexOf("coin:") === 0) bits += 1;
-    });
+    const bits = estimateEntPadBits();
     if (meta) {
       meta.textContent =
         entEvents.length +
         " events · ~" +
         Math.round(bits) +
-        " bits (estimate: d6≈2.58 + coin=1 each; not CSPRNG)";
+        " bits (estimate: d6≈2.58 + coin=1 each; not CSPRNG). " +
+        "12-word BIP-39 needs 128 bits of real entropy; 24-word needs 256.";
     }
+  }
+
+  async function sha256Bytes(text) {
+    const data = new TextEncoder().encode(String(text || ""));
+    if (globalThis.crypto && crypto.subtle) {
+      const dig = await crypto.subtle.digest("SHA-256", data);
+      return new Uint8Array(dig);
+    }
+    // Extremely unlikely offline path: refuse rather than weak hash
+    throw new Error("Web Crypto SHA-256 unavailable");
+  }
+
+  async function buildPracticeSeedFromPad() {
+    const box = $("entPadSeedBox");
+    const warn = $("entPadSeedWarn");
+    const note = $("entPadSeedNote");
+    const ta = $("entPadSeedWords");
+    if (!entEvents.length) {
+      if (box) box.hidden = false;
+      if (warn) warn.innerHTML = "<strong>PRACTICE ONLY — do not fund.</strong> Pad is empty — roll dice / flip coins first.";
+      if (note) note.textContent = "No events yet.";
+      if (ta) ta.value = "";
+      return;
+    }
+    if (!BIP39Lab.mnemonicFromEntropyBytes) {
+      if (box) box.hidden = false;
+      if (note) note.textContent = "This build lacks mnemonicFromEntropyBytes — rebuild the offline bundle.";
+      return;
+    }
+    const words = parseInt(($("entPadWords") && $("entPadWords").value) || "12", 10) || 12;
+    const needBits = words >= 24 ? 256 : 128;
+    const needBytes = needBits / 8;
+    const est = estimateEntPadBits();
+    const estRound = Math.round(est * 10) / 10;
+    const gap = needBits - est;
+    const low = est + 0.001 < needBits;
+
+    // Hash the event log → 32 bytes; take ENT length for BIP-39 (educational stretch/compress)
+    const digest = await sha256Bytes(entEvents.join("|"));
+    const ent = digest.slice(0, needBytes);
+    let mnemonic;
+    try {
+      mnemonic = BIP39Lab.mnemonicFromEntropyBytes(ent);
+    } catch (e) {
+      if (box) box.hidden = false;
+      if (note) note.textContent = "Could not build words: " + (e && e.message ? e.message : e);
+      return;
+    }
+
+    if ($("entPadBitsEst")) $("entPadBitsEst").textContent = "~" + estRound + " (pad estimate)";
+    if ($("entPadBitsNeed")) $("entPadBitsNeed").textContent = String(needBits) + " (BIP-39 ENT for " + words + " words)";
+    if ($("entPadBitsGap")) {
+      $("entPadBitsGap").textContent = low
+        ? "TOO LOW by ~" + Math.ceil(gap) + " bits — pad entropy estimate is below BIP-39 ENT. Words below are still PRACTICE ONLY."
+        : "Estimate ≥ ENT size on paper — still NEVER for real funds (browser rolls use Math.random; not physical dice / OS CSPRNG).";
+    }
+    if (warn) {
+      warn.innerHTML = low
+        ? "<strong>PRACTICE ONLY — do not fund.</strong> Pad estimate is <em>below</em> the " +
+          needBits +
+          "-bit BIP-39 requirement. These words demonstrate low-entropy risk; they are not a real wallet backup."
+        : "<strong>PRACTICE ONLY — do not fund.</strong> Even when the pad bit estimate looks high, this tool is educational. " +
+          "Real funds need OS CSPRNG (Lab Generate) or a careful physical-dice process outside this browser demo.";
+    }
+    if (note) {
+      note.textContent =
+        "Built by SHA-256(pad events) → " +
+        needBytes +
+        " entropy bytes → BIP-39 " +
+        words +
+        "-word checksummed phrase. " +
+        "Same pad always yields the same practice words (deterministic demo). " +
+        "Do not treat this as a funded recovery phrase.";
+    }
+    if (ta) ta.value = mnemonic;
+    if (box) {
+      box.hidden = false;
+      box.classList.toggle("chip-bad", low);
+    }
+  }
+
+  function copyPracticePadToLab() {
+    const ta = $("entPadSeedWords");
+    const m = (ta && ta.value.trim()) || "";
+    if (!m) {
+      setStatus("Build a practice seed from the pad first.", "err");
+      return;
+    }
+    if (!confirm(
+      "Copy PRACTICE pad words into Lab?\n\n" +
+        "They are TEST DATA only — never use for real funds.\n" +
+        "This overwrites the Lab mnemonic field in this session."
+    )) {
+      return;
+    }
+    if ($("mnemonic")) $("mnemonic").value = m;
+    if (typeof refreshMnemonicEntropy === "function") {
+      refreshMnemonicEntropy().catch(function () {});
+    }
+    setStatus("Lab now holds PRACTICE pad words (TEST DATA). Do not fund this phrase.", "err");
+    setPlainStatus("Entropy pad → Lab: practice words only. Use Lab Generate (CSPRNG) for real demos of proper generation.", "");
   }
 
   /** Ensure #mnemonic is a valid BIP-39 phrase; generate one on Tools if empty/invalid. */
@@ -1214,7 +1321,19 @@
       $("btnEntClear").addEventListener("click", () => {
         entEvents = [];
         refreshEntPad();
+        if ($("entPadSeedBox")) $("entPadSeedBox").hidden = true;
+        if ($("entPadSeedWords")) $("entPadSeedWords").value = "";
       });
+    }
+    if ($("btnEntToSeed")) {
+      $("btnEntToSeed").addEventListener("click", () => {
+        buildPracticeSeedFromPad().catch(function (e) {
+          setStatus(String(e && e.message ? e.message : e), "err");
+        });
+      });
+    }
+    if ($("btnEntToLab")) {
+      $("btnEntToLab").addEventListener("click", copyPracticePadToLab);
     }
     if ($("btnCmpPp")) $("btnCmpPp").addEventListener("click", () => comparePassphrases().catch(console.error));
     if ($("btnCmpUseLab")) {

@@ -437,7 +437,8 @@
       group: "Security",
       short: "Randomness for keys",
       body:
-        "Unpredictable bits used to create a mnemonic. BIP-39 “128 bits” for 12 words is the ENT size. Dice/coin pads here are educational — prefer OS CSPRNG for real funds.",
+        "Unpredictable bits used to create a mnemonic. BIP-39 needs 128 bits of ENT for 12 words, 256 for 24. " +
+        "Tools → Entropy pad estimates dice/coin bits and can build PRACTICE words from the pad hash so you can see low-entropy risk — never fund those words. Prefer Lab Generate (OS CSPRNG) for real wallets.",
     },
     {
       id: "CSPRNG",

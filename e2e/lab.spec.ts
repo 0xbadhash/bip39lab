@@ -271,6 +271,21 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#entPadOut")).toHaveText("—");
   });
 
+  test("S17b entropy pad builds practice seed with low-entropy warning", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    // few rolls → estimate << 128 bits
+    for (let i = 0; i < 5; i++) await page.locator("#btnDice").click();
+    await page.locator("#entPadWords").selectOption("12");
+    await page.locator("#btnEntToSeed").click();
+    await expect(page.locator("#entPadSeedBox")).toBeVisible();
+    await expect(page.locator("#entPadSeedWarn")).toContainText(/PRACTICE ONLY|do not fund/i);
+    await expect(page.locator("#entPadBitsNeed")).toContainText(/128/);
+    await expect(page.locator("#entPadBitsGap")).toContainText(/TOO LOW|NEVER for real funds/i);
+    const words = await page.locator("#entPadSeedWords").inputValue();
+    expect(words.trim().split(/\s+/).length).toBe(12);
+    await expect(page.locator("#entPadSeedNote")).toContainText(/SHA-256|practice/i);
+  });
+
   test("S18 compare passphrases", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#cardCmpPp")).toBeVisible();
