@@ -65,6 +65,10 @@ test.describe("Network page E2E", () => {
     await expect(page.locator("#balTableBody")).toContainText(GOLDEN.bip84);
     const rowText = await page.locator("#balTableBody tr").first().innerText();
     expect(rowText).toMatch(/ok|unknown|error/i);
+    // Never silent fake zero without a status word
+    if (/0(\.0+)?\s*(btc|sats)?/i.test(rowText) && !/ok|unknown|error/i.test(rowText)) {
+      throw new Error("balance row looks like bare zero without ok|unknown|error");
+    }
   });
 
   test("S13d Lab session bridge", async ({ page }) => {

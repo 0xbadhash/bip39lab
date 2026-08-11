@@ -29,12 +29,12 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S71 · Playwright 88 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
-`Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 88`
+`Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 89`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -52,7 +52,7 @@ scenarios: S0–S71 · Playwright 88 tests · auto-stamped from e2e/ + VERSION
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **88** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **89** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
 **Comet/Perplexity score sheet:** **S0–S71** (scenario IDs below; Playwright titles map 1:1 where listed).
 
@@ -728,8 +728,12 @@ SLIP-39 lab heading; **6**-nav (**no 7th** SLIP-39 top item — deep-link only);
 Comet-style review: S57–S60b Playwright green; live 6-nav on `/slip39.html`; Shamir→SLIP-39 deep-link present; teach copy states “not a 7th nav step.” No new P0 UX defects. Nits fixed: parent Shamir highlight + explicit 6-nav teach line.
 
 #### S57b — Shamir → SLIP-39 deep-link
-On Shamir, danger banner includes link **`#shLinkSlip39`** text “SLIP-39 lab” (not a 7th nav item).
-Click → `/slip39.html` with lab-only danger banner visible. (DOM attribute `id="shLinkSlip39"` — scrapers that only grab titles may miss it; Playwright asserts visibility.)
+On Shamir, danger banner includes link **`#shLinkSlip39`** (“Open SLIP-39 lab”).
+Click → `/slip39.html` with lab-only danger banner visible.
+
+#### S57c — SLIP-39 is not a 7th nav item
+Lab / Shamir / Multisig / SLIP-39: primary nav has **exactly 6** items and **no** “SLIP-39” nav label.
+`#shLinkSlip39` remains on Shamir only (deep-link).
 
 #### S58 — Happy 2-of-3 split + combine match
 Generate practice hex → Split 2-of-3 → Combine M shares → status Match.
@@ -743,7 +747,7 @@ After split, paste only one share → Combine → error status (no Match).
 #### S60b — Manual wrong passphrase combine
 Generate → passphrase `correct` → Split → set `#s39PassphraseCombine` to `wrong` → Combine → mismatch / err (recovered ≠ expected). No silent success.
 
-S57–S60b · `e2e/slip39.spec.ts`
+S57–S60b · S57c · `e2e/slip39.spec.ts`
 
 ---
 
@@ -755,6 +759,7 @@ S57–S60b · `e2e/slip39.spec.ts`
 Lab: What this is/isn’t table; first hour checklist 8 steps; checkbox persists.
 Go on h2 shows mnemonic card + sticky Back bar; Mark done returns to checklist;
 I’m ready for Beginner sets level + marks h8.
+**Persistence:** after hard reload, checked steps + Beginner level remain (`localStorage`).
 
 ### S62 — Level chip
 Level select starter→advanced; data-level on html; advanced shows BIP-85 + Ops cards.
@@ -906,14 +911,15 @@ S54 Shamir split 2-of-3: PASS|FAIL —
 S55 Shamir empty error: PASS|FAIL —
 S56 Shamir recombine: PASS|FAIL —
 S57 SLIP-39 shell: PASS|FAIL —
-S57b Shamir #shLinkSlip39 → SLIP-39: PASS|FAIL|NEEDS-DOM —
+S57b Shamir #shLinkSlip39 → SLIP-39: PASS|FAIL —
+S57c SLIP-39 not 7th nav: PASS|FAIL —
 S58 SLIP-39 2-of-3 match: PASS|FAIL —
 S59 Under-threshold: PASS|FAIL —
 S60 Wrong-pp demo: PASS|FAIL —
 S60b Manual wrong-pp mismatch: PASS|FAIL —
 
 ### Learning levels
-S61 First hour checklist: PASS|FAIL —
+S61 First hour checklist (+ localStorage after reload): PASS|FAIL —
 S62 Level chip: PASS|FAIL —
 S63 Guided quiz Q1–Q4: PASS|FAIL —
 S64 Three-splits tour: PASS|FAIL —

@@ -4,13 +4,32 @@ test.describe("Learning levels E0–E6", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       try {
-        localStorage.setItem("bip39lab.level", "starter");
-        localStorage.setItem("bip39lab.teach", "on");
+        // Seed defaults only when missing — never clobber mid-test progress on reload
+        if (localStorage.getItem("bip39lab.level") == null) {
+          localStorage.setItem("bip39lab.level", "starter");
+        }
+        if (localStorage.getItem("bip39lab.teach") == null) {
+          localStorage.setItem("bip39lab.teach", "on");
+        }
       } catch (e) {
         /* ignore */
       }
     });
+    // Clean slate for each test (not on later reload within the test)
     await page.goto("/");
+    await page.evaluate(() => {
+      try {
+        localStorage.setItem("bip39lab.level", "starter");
+        localStorage.setItem("bip39lab.teach", "on");
+        localStorage.removeItem("bip39lab.firstHour");
+        localStorage.removeItem("bip39lab.quiz");
+        localStorage.removeItem("bip39lab.intQuiz");
+        localStorage.removeItem("bip39lab.advQuiz");
+      } catch (e) {
+        /* ignore */
+      }
+    });
+    await page.reload();
   });
 
   test("S61 orientation + first hour", async ({ page }) => {
@@ -34,6 +53,12 @@ test.describe("Learning levels E0–E6", () => {
     // Ready for Beginner marks h8 + level
     await page.getByRole("button", { name: /I’m ready for Beginner|I'm ready for Beginner/i }).click();
     await expect(page.locator("#learnLevel")).toHaveValue("beginner");
+    await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
+    // localStorage persistence: hard reload keeps checklist ticks + level
+    await page.reload();
+    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
+    await expect(page.locator('[data-hour-step="h1"] input')).toBeChecked();
+    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked();
     await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
   });
 

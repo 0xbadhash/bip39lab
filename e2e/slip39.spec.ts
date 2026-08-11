@@ -32,6 +32,19 @@ test.describe("SLIP-39 lab", () => {
     await expect(page.locator("#s39Danger")).toBeVisible();
   });
 
+  test("S57c SLIP-39 is not a 7th nav item", async ({ page }) => {
+    // Regression: deep-link only — primary nav must stay 6 and omit SLIP-39
+    for (const path of ["/", "/shamir.html", "/slip39.html", "/multisig.html"]) {
+      await page.goto(path);
+      const nav = page.locator("nav.nav .nav-item, .nav .nav-item, a.nav-item");
+      await expect(nav).toHaveCount(6);
+      const labels = (await nav.allTextContents()).join(" ");
+      expect(labels).not.toMatch(/SLIP-?39/i);
+    }
+    await page.goto("/shamir.html");
+    await expect(page.locator("#shLinkSlip39")).toBeVisible();
+  });
+
   test("S58 happy 2-of-3 split+combine match", async ({ page }) => {
     await page.goto("/slip39.html");
     await page.locator("#btnS39Gen").click();

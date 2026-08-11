@@ -254,6 +254,15 @@ test.describe("Lab mnemonic & derive", () => {
     const addrs = await page.locator("#balAddrs").inputValue();
     expect(addrs).toMatch(/bc1/i);
     expect(addrs.toLowerCase()).not.toContain("abandon");
+    // Mechanical: only address-shaped tokens — no BIP-39 wordlist tokens in the box
+    const tokens = addrs.split(/[\s,;]+/).filter(Boolean);
+    expect(tokens.length).toBeGreaterThan(0);
+    for (const t of tokens) {
+      expect(t).toMatch(/^(bc1|tb1|bcrt1|[13mn2])/i);
+      expect(t.toLowerCase()).not.toMatch(
+        /^(abandon|about|ability|above|absent|absorb|abstract|absurd|abuse|access)$/
+      );
+    }
   });
 });
 
