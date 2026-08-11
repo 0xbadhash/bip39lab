@@ -56,18 +56,42 @@
 }
 
 .chip-ok {
-  border-color: var(--ok);
-  color: var(--ok);
+  background: rgba(34, 160, 107, 0.22);
+  border-color: #22a06b;
+  color: #3dd68c;
+  font-weight: 750;
+}
+[data-theme="light"] .chip-ok {
+  background: rgba(21, 128, 61, 0.16);
+  border-color: #15803d;
+  color: #15803d;
 }
 
 .chip-warn {
+  background: rgba(207, 159, 2, 0.16);
   border-color: var(--warn);
-  color: var(--warn);
+  color: #e8c547;
+  font-weight: 650;
+}
+[data-theme="light"] .chip-warn {
+  background: var(--warn-soft);
+  border-color: var(--warn);
+  color: #a16207;
 }
 
 .chip-bad {
+  background: var(--bad-soft);
   border-color: var(--bad);
+  color: #f07167;
+  font-weight: 650;
+}
+[data-theme="light"] .chip-bad {
   color: var(--bad);
+}
+
+/* Explicit Passed label on quiz badges */
+.chip.chip-ok {
+  box-shadow: 0 0 0 1px rgba(34, 160, 107, 0.35);
 }
 
 .compare-table {
