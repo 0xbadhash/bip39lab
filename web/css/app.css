@@ -444,7 +444,7 @@ code {
   border-color: #ffe08a;
   color: #1a1406;
 }
-/* Floating bottom dock — high-contrast amber, not panel-blue */
+/* Floating bottom dock — high-contrast amber; wide so Q2 mark/return text isn’t cramped */
 .learn-return-dock {
   position: fixed;
   left: max(0.75rem, env(safe-area-inset-left));
@@ -454,18 +454,20 @@ code {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.75rem;
-  max-width: 36rem;
+  gap: 0.55rem 0.85rem;
+  max-width: min(56rem, calc(100vw - 1.5rem));
+  width: 100%;
   margin-inline: auto;
-  padding: 0.65rem 0.75rem 0.65rem 0.85rem;
+  padding: 0.75rem 1rem 0.75rem 1.1rem;
   background: linear-gradient(135deg, #4a3508 0%, #6b4e12 45%, #3a2a0a 100%);
   border: 2px solid #f0c14d;
-  border-radius: 999px;
+  border-radius: 16px;
   box-shadow:
     0 0 0 1px rgba(255, 220, 120, 0.35),
     0 10px 32px rgba(0, 0, 0, 0.55),
     0 0 28px rgba(240, 193, 77, 0.28);
   color: #fff8e7;
+  box-sizing: border-box;
 }
 html[data-theme="light"] .learn-return-dock,
 html.theme-light .learn-return-dock,
@@ -500,13 +502,22 @@ body.theme-light .learn-return-dock {
   color: #1a1406;
 }
 .learn-return-hint {
-  flex: 1 1 10rem;
-  font-size: 0.84rem;
-  line-height: 1.35;
+  flex: 1 1 16rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
   color: #fff1c2;
   margin: 0;
-  min-width: 0;
+  min-width: 12rem;
+  max-width: none;
   font-weight: 550;
+}
+.learn-return-dock .btn,
+.learn-return-dock a.btn {
+  flex: 0 0 auto;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+  max-width: 100%;
 }
 html[data-theme="light"] .learn-return-hint,
 html.theme-light .learn-return-hint,
