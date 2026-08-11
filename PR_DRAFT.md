@@ -53,6 +53,7 @@ green_cmd: true
 | Path | Reason |
 |------|--------|
 | web/js/learn-levels.js | Covered by e2e/learn.spec.ts S61–S66 |
+| web/js/glossary.js | Glossary BIP-85 entry is static copy; no unit file — browser glossary/e2e elsewhere |
 
 ## Things that look bad but are actually fine
 1. BIP-85 demo is mental-model only, not full HMAC derivation.
