@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Stamp web/js/site-version.js from VERSION (run before each release / deploy)."""
+"""Stamp web/js/site-version.js from VERSION (run before each release / deploy).
+
+Also stamps ``docs/E2E_COMET_SCENARIOS.md`` header (product version + S-id range)
+via ``stamp_comet_header.py`` so Comet blurb cannot lag Playwright.
+"""
 from __future__ import annotations
 
 import re
@@ -9,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 VERSION_FILE = ROOT / "VERSION"
 OUT = ROOT / "web" / "js" / "site-version.js"
+SCRIPTS = ROOT / "scripts"
 
 
 def main() -> int:
@@ -62,6 +67,16 @@ def main() -> int:
         if new != text:
             html.write_text(new, encoding="utf-8")
             print(f"  cache-bust scripts in {html.relative_to(ROOT)}")
+    # Keep Comet header in lockstep with VERSION + Playwright S-ids
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    try:
+        from stamp_comet_header import stamp_comet_doc
+
+        print(stamp_comet_doc(ROOT))
+    except Exception as e:  # noqa: BLE001 — release path must not hide stamp failure
+        print(f"stamp_comet_header failed: {e}", file=sys.stderr)
+        return 1
     return 0
 
 

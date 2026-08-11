@@ -29,12 +29,12 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S60b exhaustive · 6-nav · SLIP-39 lab deep-link · human process flows per page
+scenarios: S0–S70 · Playwright 87 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
-`Product: 0.13.9 · Contract: 2 · Last aligned: 2026-08-10`
+`Product: 0.16.0 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S70 · Playwright S-ids: 87`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -52,9 +52,9 @@ scenarios: S0–S60b exhaustive · 6-nav · SLIP-39 lab deep-link · human proce
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **74** tests (local `http://127.0.0.1:4173`).  
+**Playwright total:** `npm run test:e2e` → **87** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S60b** (scenario IDs below; some Playwright tests map 1:1).
+**Comet/Perplexity score sheet:** **S0–S70** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 

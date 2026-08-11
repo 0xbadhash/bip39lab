@@ -97,6 +97,13 @@ test.describe("Help UX hybrid", () => {
     await det.locator("summary").click();
     await expect(det).toHaveAttribute("open", "");
     await expect(det).toContainText(/hardware|public/i);
+    // BIP67 checklist row has ⓘ next to “same address”
+    await expect(det).toContainText(/BIP67 sort agreed/i);
+    const bip67Tip = det.locator('.help-tip[data-term="BIP67"]');
+    await expect(bip67Tip).toBeVisible();
+    await bip67Tip.locator(".help-tip-btn").click();
+    await expect(bip67Tip.locator(".help-tip-panel")).toBeVisible();
+    await expect(bip67Tip.locator(".help-tip-panel")).toContainText(/same address|lexicographic|BIP67/i);
   });
 
   test("S47 Network Extra help · leak always visible · fee tip", async ({ page }) => {
