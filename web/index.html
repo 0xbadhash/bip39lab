@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.15.3" />
+  <link rel="stylesheet" href="css/app.css?v=0.15.4" />
 </head>
 <body>
   <div class="app">
@@ -130,8 +130,14 @@
       <main class="content">
         <!-- Single floating return dock (not sticky top — avoids stacking/overlay on content) -->
         <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
-          <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back</button>
+          <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Guided quiz</button>
           <span class="learn-return-hint" id="learnReturnBarHint"></span>
+          <button type="button" class="btn btn-sm" id="btnMarkQ3FromEnt" hidden>
+            Mark Q3 passed &amp; return
+          </button>
+          <button type="button" class="btn btn-sm" id="btnMarkQ4FromEnt" hidden>
+            Mark Q4 passed &amp; return
+          </button>
           <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
         </div>
         <div class="warn" role="note">
@@ -867,15 +873,8 @@
               <p class="control-help" id="entPadMeta">0 events · ~0 bits estimated</p>
               <p id="entPadLiveVerdict" class="ent-pad-live-verdict" role="status" aria-live="polite">
                 No rolls yet. For Q3: roll ~3 times (expect TOO LOW). For Q4: keep going to ~50 d6 (~128 bits).
+                When ready, use the <strong>amber bar at the bottom</strong> to mark Q3/Q4 or go back to the quiz.
               </p>
-              <div id="entQuizActionBar" class="ent-quiz-action-bar" hidden>
-                <p class="control-help" id="entQuizActionHint" style="margin:0;color:inherit"></p>
-                <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.4rem">
-                  <button type="button" class="btn" id="btnMarkQ3FromEnt" hidden>Mark Q3 passed &amp; return to quiz</button>
-                  <button type="button" class="btn" id="btnMarkQ4FromEnt" hidden>Mark Q4 passed &amp; return to quiz</button>
-                  <a class="btn secondary" href="index.html?from=quiz" id="entBackToQuizLink">← Back to Guided quiz</a>
-                </div>
-              </div>
             </div>
 
             <div class="cmp-step" data-ent-step="2" style="margin-top:1rem">
@@ -1221,7 +1220,7 @@
   <script src="js/bip39lab.bundle.js?v=0.15.0"></script>
   <script src="js/glossary.js?v=0.15.0"></script>
   <script src="js/help-ui.js?v=0.15.0"></script>
-  <script src="js/learn-levels.js?v=0.15.0"></script>
-  <script src="js/app.js?v=0.15.0"></script>
+  <script src="js/learn-levels.js?v=0.15.4"></script>
+  <script src="js/app.js?v=0.15.4"></script>
 </body>
 </html>

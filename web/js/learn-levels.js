@@ -179,12 +179,17 @@
     var bar = $("learnReturnBar");
     var btn = $("learnReturnBarBtn");
     var hintEl = $("learnReturnBarHint");
+    var m3 = $("btnMarkQ3FromEnt");
+    var m4 = $("btnMarkQ4FromEnt");
     if (!bar) return;
     if (!mode) {
       learnReturnMode = null;
       bar.hidden = true;
       bar.removeAttribute("data-return-mode");
       setBodyReturnOpen(false);
+      // Hide pad mark buttons when dock is fully dismissed
+      if (m3) m3.hidden = true;
+      if (m4) m4.hidden = true;
       return;
     }
     learnReturnMode = mode;
@@ -201,7 +206,25 @@
           ? "Experiment, then mark passed only when clear."
           : "Finish, then Mark done on the checklist.");
     }
+    // Mark Q3/Q4 only appear when entropy pad logic shows them (app.js)
+    if (mode !== "quiz") {
+      if (m3) m3.hidden = true;
+      if (m4) m4.hidden = true;
+    }
   }
+
+  // Used by entropy pad (app.js) so dock stays single bottom chrome
+  window.LearnReturnDock = {
+    showQuiz: function (hint) {
+      showLearnReturn("quiz", hint || "");
+    },
+    hideMarkButtons: function () {
+      var m3 = $("btnMarkQ3FromEnt");
+      var m4 = $("btnMarkQ4FromEnt");
+      if (m3) m3.hidden = true;
+      if (m4) m4.hidden = true;
+    },
+  };
 
   function setHourReturn() {
     try {

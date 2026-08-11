@@ -958,7 +958,7 @@
     const need = 128;
     const low = n > 0 && bits + 0.001 < need;
     const enough = bits + 0.001 >= need;
-    // Q3: saw too-low with a short pad (1–12 events keeps “few rolls” lesson)
+    // Q3: saw too-low with a short pad (1–20 events keeps “few rolls” lesson)
     const q3Ready = low && n >= 1 && n <= 20;
     // Q4: estimate reaches 128 bits (~50 d6)
     const q4Ready = enough;
@@ -970,7 +970,8 @@
       live.classList.remove("is-low", "is-ok");
       if (!n) {
         live.textContent =
-          "No rolls yet. Q3: roll ~3× d6 (expect TOO LOW vs 128 bits). Q4: keep rolling to ~50 d6 (~128 bits). Less is not better.";
+          "No rolls yet. Q3: roll ~3× d6 (expect TOO LOW vs 128 bits). Q4: keep rolling to ~50 d6 (~128 bits). " +
+          "Mark pass / return uses the amber bar at the bottom of the screen.";
       } else if (low) {
         live.classList.add("is-low");
         const needRolls = Math.max(0, Math.ceil((need - bits) / 2.58));
@@ -986,49 +987,75 @@
           Math.ceil(need - bits) +
           " bits (~" +
           needRolls +
-          " more d6). <em>Fewer rolls is worse, not safer.</em>";
+          " more d6). <em>Fewer rolls is worse, not safer.</em> " +
+          "Use the <strong>bottom amber bar</strong> to mark Q3 or go back to the quiz.";
       } else {
         live.classList.add("is-ok");
         live.innerHTML =
           "Estimate ~" +
           Math.round(bits) +
           " bits ≥ 128 — enough <em>on paper</em> for a 12-word ENT size. " +
-          "Still <strong>PRACTICE ONLY</strong> (simulated rolls, not OS CSPRNG). Never fund pad words.";
+          "Still <strong>PRACTICE ONLY</strong> (simulated rolls, not OS CSPRNG). Never fund pad words. " +
+          "Use the <strong>bottom amber bar</strong> to mark Q4 or return.";
       }
     }
 
-    const bar = $("entQuizActionBar");
-    const hint = $("entQuizActionHint");
+    // Drive the fixed bottom learn-return dock (not mid-page chrome)
+    const dock = $("learnReturnBar");
+    const dockBtn = $("learnReturnBarBtn");
+    const dockHint = $("learnReturnBarHint");
     const b3 = $("btnMarkQ3FromEnt");
     const b4 = $("btnMarkQ4FromEnt");
     const quiz = loadQuizState();
-    const showBar = q3Ready || q4Ready || n > 0;
-    if (bar) bar.hidden = !showBar;
+    let quizReturn = false;
+    try {
+      quizReturn =
+        sessionStorage.getItem("bip39lab.quizReturn") === "1" ||
+        /from=quiz/.test(location.search || "");
+    } catch (e) {
+      quizReturn = false;
+    }
+    const showDock = quizReturn || q3Ready || q4Ready || n > 0;
+    if (dock) {
+      dock.hidden = !showDock;
+      try {
+        document.body.classList.toggle("learn-return-open", !!showDock);
+      } catch (e2) {
+        /* ignore */
+      }
+    }
+    if (dockBtn) {
+      dockBtn.textContent = "← Back to Guided quiz";
+    }
     if (b3) {
       b3.hidden = !(q3Ready && !quiz.q3);
-      if (quiz.q3) b3.hidden = true;
     }
     if (b4) {
       b4.hidden = !(q4Ready && !quiz.q4);
-      if (quiz.q4) b4.hidden = true;
     }
-    if (hint) {
+    if (dockHint) {
       if (q3Ready && !quiz.q3 && q4Ready && !quiz.q4) {
-        hint.textContent =
-          "Q3: you saw TOO LOW on a short pad. Q4: estimate now ≥ 128 bits. Mark each when you understand.";
+        dockHint.textContent =
+          "Q3: TOO LOW on a short pad · Q4: estimate ≥ 128 bits. Mark each when clear (self-check).";
       } else if (q3Ready && !quiz.q3) {
-        hint.textContent =
-          "Q3 ready: short pad is TOO LOW vs 128 bits. Mark Q3 when that is clear, then keep rolling for Q4 (~50 d6).";
+        dockHint.textContent =
+          "Q3 ready: short pad is TOO LOW vs 128 bits. Mark Q3 when clear, then keep rolling for Q4 (~50 d6).";
       } else if (q4Ready && !quiz.q4) {
-        hint.textContent =
+        dockHint.textContent =
           "Q4 ready: estimate ≥ 128 bits (~50 d6). Less was never better — that was the lesson.";
       } else if (low) {
-        hint.textContent =
-          "Keep rolling toward ~50 d6 for Q4. Optional: Build practice seed below to see TOO LOW in Step 3 too.";
+        dockHint.textContent =
+          "Keep rolling toward ~50 d6 for Q4. Optional: Build practice seed below to see TOO LOW in Step 3.";
+      } else if (n > 0) {
+        dockHint.textContent = "Entropy pad quiz — mark pass when ready, or go back.";
       } else {
-        hint.textContent = "Pad progress for the Guided quiz (self-check).";
+        dockHint.textContent =
+          "Entropy pad: roll for Q3 (few = TOO LOW) then Q4 (~50 d6 / 128 bits).";
       }
     }
+    // Hide legacy mid-page bar if still in DOM
+    const mid = $("entQuizActionBar");
+    if (mid) mid.hidden = true;
   }
 
   function refreshEntPad() {
