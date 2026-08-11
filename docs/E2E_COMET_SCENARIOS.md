@@ -754,8 +754,8 @@ I’m ready for Beginner sets level + marks h8.
 Level select starter→advanced; data-level on html; advanced shows BIP-85 + Ops cards.
 
 ### S63 — Quiz shell
-Beginner+: three quiz items with status board + Not yet hints; Go try shows sticky
-Back to quiz; Mark passed updates badge/board; keep experimenting until self-check clear.
+Beginner+: four quiz items (incl. Q3 TOO LOW + Q4 ~128 bits) with status board;
+Go try + amber return dock; Mark passed → green Passed chips; entropy pad Mark Q3/Q4.
 
 ### S64 — Three splits tour
 Intermediate+: start tour; Multisig then Shamir titles.

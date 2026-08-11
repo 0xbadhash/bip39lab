@@ -61,7 +61,8 @@ test.describe("Site chrome cross-page", () => {
     await page.goto("/");
     await expect(page.locator(".footer-host")).toHaveCount(0);
     await expect(page.locator(".sidebar .site-version-chip")).toBeVisible();
-    await expect(page.locator(".sidebar-note")).toContainText(/bip39\.catalyxt\.xyz/i);
+    // Host brand in document title (not required in slim sidebar foot)
+    await expect(page).toHaveTitle(/bip39|catalyxt/i);
     await page.goto("/multisig.html");
     await expect(page.locator(".footer-host")).toHaveCount(0);
     await expect(page.locator(".sidebar .site-version-chip")).toBeVisible();

@@ -1,61 +1,70 @@
-# PR Draft: Education levels E0–E6 (v0.14.0)
+# PR Draft: Classroom UX polish + entropy quiz Q3/Q4 (post v0.14.0)
 
-**Spec:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md` (+ e1–e6)  
+**Spec:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md`  
 **Spec waiver:** chore  
 
 ## What Problem This Solves
-Flat toolbox overwhelmed starters; thin human onboarding; mobile unusable; no quiz/tour/BIP-85/ops framing.
+First-hour / quiz navigation was hard to follow (stacked sticky bars, ambiguous Teach rails, quiz without clear return/pass on entropy). Level/Teach chrome crowded the left nav. Entropy lesson stopped at “too low” without teaching that ~128 bits / ~50 d6 is required.
 
 ## Why This Change Was Made
-Ship leveled classroom E0–E6: orientation, level chip, quiz, mobile CSS, three-splits tour, BIP-85 idea, private ops card.
+Ship human-path UX polish after v0.14.0 education levels: navigable first hour + quiz, single amber return dock, slim Classroom pane, remove mid-page step rails, entropy Q3 live TOO LOW + Q4 enough-bits, green Passed chips.
 
 ## User Impact
-- What this is/isn’t + First hour checklist (localStorage)
-- Level select Starter→Advanced with soft gates
-- Quiz Q1–Q3 self-check
-- Mobile stack ≤720px
-- Tour Multisig→Shamir→SLIP-39
-- Advanced BIP-85 mental model + Ops/Knots links
-- docs/FIRST_HOUR.md + LEARNING_PATH.md
+- First hour: Go / Mark done / checkboxes; sticky amber Back dock  
+- Quiz: status board, Go try, self-mark; Q2 Shamir evidence; Q3 live TOO LOW + pad Mark button; Q4 ~50 d6 / 128 bits  
+- Classroom left pane: Level, Extra help, Reset — no Host/status chips over Glossary  
+- Offline crypto + online chips in topbar; version only in sidebar  
+- No mid-page step-rail path wizard  
+- Passed chips solid green  
+
+## Evidence pack
+- hard_gates: `python3 scripts/hard_gates.py --diff f668e6e...HEAD`  
+- smoke: product_smoke + check_web_e2e at release  
+- Playwright: e2e/learn.spec.ts, help-ux.spec.ts, site-chrome.spec.ts  
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT under `.agents/artifacts/`  
 
 ## Evidence
-- e2e/learn.spec.ts S61–S67
-- product_smoke + check_web_e2e
-- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR
+| Surface | Result |
+|---------|--------|
+| secrets diff f668e6e…HEAD | clean |
+| CODE-REVIEW | p0=0 |
+| CROSS-REVIEW | blockers=0 |
+| BEHAVIOR | C1–C8 pass |
+| Playwright focused | S61–S67 + help-ux + site-chrome after e2e fix |
 
 ## Traceability
 | AC | Test |
 |----|------|
-| AC-1 Orientation | S61 |
-| AC-2 First hour | S61 |
-| AC-3 Level chip | S62 |
-| AC-4 Quiz | S63 |
-| AC-5 Mobile | S67 |
-| AC-6 Tour | S64 |
-| AC-7 BIP-85 | S65 |
-| AC-8 Ops | S66 |
+| AC-FH First hour Go/Back/checkboxes | e2e/learn.spec.ts S61 |
+| AC-QZ Quiz status + Mark passed green | e2e/learn.spec.ts S63 |
+| AC-RAIL No mid-page step rails | e2e/help-ux.spec.ts S41 S44b |
+| AC-SIDE Version sidebar only, no footer host | e2e/site-chrome.spec.ts S40 |
+| AC-TEACH Extra help on/off | e2e/help-ux.spec.ts S42 S48 |
+| AC-ENT Q3 TOO LOW + Q4 128 bits lesson | web entropy pad + quiz Q3/Q4 (manual demo; S63 shell) |
+| AC-NAV Tools/Glossary clickable | e2e/help-ux.spec.ts S44b |
 
-## Threat notes
-- **secrets** — localStorage prefs only; practice phrases; no server
-- **xss** — static copy; no user HTML into orientation
-- **supply-chain** — no new npm deps (learn-levels.js vanilla)
-
-## Red-proof
-```text
-red_cmd: false
-green_cmd: true
-```
-
-## Evidence pack
-- hard_gates / smoke / pytest / validate secrets
+## Red-proof / TDD
+**TDD N/A** — UI/UX chore on static web classroom; no new pure function contract requiring red-then-green unit cycle.  
+**red_cmd:** N/A (chore UX)  
+**green_cmd:** `npx playwright test e2e/learn.spec.ts e2e/help-ux.spec.ts e2e/site-chrome.spec.ts`  
 
 ## Untested paths
 | Path | Reason |
 |------|--------|
-| web/js/learn-levels.js | Covered by e2e/learn.spec.ts S61–S66 |
-| web/js/glossary.js | Glossary BIP-85 entry is static copy; no unit file — browser glossary/e2e elsewhere |
+| web/js/glossary.js | Covered via tip open e2e (S43, S45) and term panels; no unit module import |
+| web/js/help-ui.js | e2e/help-ux.spec.ts (Extra help, tips, no rails) |
+| web/js/learn-levels.js | e2e/learn.spec.ts S61–S67 |
 
-## Things that look bad but are actually fine
-1. BIP-85 demo is mental-model only, not full HMAC derivation.
-2. Soft gates opacity, not hard locks.
-3. Seven education specs shipped in one minor release for coherence.
+## Threat notes
+- **secrets** — localStorage prefs/progress only; practice phrases; never fund pad words  
+- **xss** — controlled verdict HTML from numbers/templates  
+- **integrity** — quiz self-check is educational, not exam proctoring  
+
+## §9 Intentional oddities
+1. Self-graded quiz (no server).  
+2. Math.random entropy pad (labeled simulated).  
+3. Soft level gates (dim, not hard hide).  
+4. Amber dock shared for hour + quiz (one mode at a time).  
+
+## Cross-review
+See `.agents/artifacts/CROSS_REVIEW.md` — blockers=0.  

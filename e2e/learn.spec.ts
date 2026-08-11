@@ -66,7 +66,7 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#quizBoard-q1")).toContainText(/Passed/i);
     await expect(page.locator("#quizHint-q1")).toBeHidden();
     await expect(page.locator("#quizHintPass-q1")).toBeVisible();
-    await expect(page.locator("#quizSummary")).toContainText(/1\s*\/\s*3/);
+    await expect(page.locator("#quizSummary")).toContainText(/1\s*\/\s*4/);
   });
 
   test("S64 three splits tour", async ({ page }) => {
