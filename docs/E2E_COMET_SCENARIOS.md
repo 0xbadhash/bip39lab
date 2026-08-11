@@ -698,7 +698,10 @@ Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered
 ### Scenarios
 
 #### S57 — Shell
-SLIP-39 lab heading; **6**-nav (no SLIP-39 top item); offline CSP `connect-src 'none'`; danger banner (lab / not funded wallets / not Trezor Suite); comparison table (wordlist, backup unit, checksum, passphrase, groups, downstream); jump rail; live demo controls (Generate / Split / Combine).
+SLIP-39 lab heading; **6**-nav (**no 7th** SLIP-39 top item — deep-link only); Shamir nav may show active as parent entry; offline CSP `connect-src 'none'`; danger banner (lab / not funded wallets / not Trezor Suite); comparison table (wordlist, backup unit, checksum, passphrase, groups, downstream); jump rail; live demo controls (Generate / Split / Combine).
+
+#### Human pass note (2026-08-11)
+Comet-style review: S57–S60b Playwright green; live 6-nav on `/slip39.html`; Shamir→SLIP-39 deep-link present; teach copy states “not a 7th nav step.” No new P0 UX defects. Nits fixed: parent Shamir highlight + explicit 6-nav teach line.
 
 #### S57b — Shamir → SLIP-39 deep-link
 From Shamir banner link `#shLinkSlip39` → `/slip39.html` danger visible.

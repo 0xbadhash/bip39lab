@@ -18,6 +18,10 @@ test.describe("SLIP-39 lab", () => {
     await expect(page.locator("#s39CompareTable")).toContainText(/Groups/i);
     await expect(page.locator("#s39StepRail")).toBeVisible();
     await expect(page.locator("#btnS39Split")).toBeVisible();
+    // Not a 7th primary nav item — sidebar stays 6; Shamir marked as deep-link parent
+    await expect(page.locator("aside.sidebar nav.nav .nav-item")).toHaveCount(6);
+    await expect(page.locator('aside.sidebar a[data-nav="slip39"]')).toHaveCount(0);
+    await expect(page.locator('aside.sidebar a[data-nav="shamir"]')).toHaveClass(/active/);
   });
 
   test("S57b Shamir deep-link to SLIP-39 lab", async ({ page }) => {

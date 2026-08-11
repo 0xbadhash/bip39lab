@@ -3,6 +3,6 @@
   "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-10-knots-2000-seed-scan.md",
-  "task": "Knots 2000-seed educational scan",
-  "waiver": null
+  "task": "hygiene: Comet SLIP-39 pass + stamp drift",
+  "waiver": "chore"
 }

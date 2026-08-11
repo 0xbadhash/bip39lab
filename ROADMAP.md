@@ -359,6 +359,7 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Shipped:** through `v0.13.9` SLIP-39 lab A–D (D = docs/Comet hygiene).  
-**Next:** Knots 2000-seed educational scan (when RPC stable) or private Knots proxy.  
-**Later:** private Knots proxy for Network.
+**Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`).  
+**Next:** Pruned Knots on Pi/SSD until IBD complete → finish **2000-seed** hash campaign (CLI tooling already shipped).  
+**Later (optional):** private Knots balance proxy for Network; private operator scan console — not public Network.  
+**Out of scope:** 7th sidebar nav item for SLIP-39 (deep-link from Shamir only — keeps 6-nav mental model).

@@ -1,65 +1,68 @@
-# PR Draft: Knots educational seed-scan tooling (2000 campaign blocked on IBD)
+# PR Draft: Hygiene — Comet SLIP-39 pass + stamp drift + 6-nav clarity
 
-**Range:** seed_scan module + CLI + tests + BITCOIN_KNOTS note  
-**Spec:** `.agents/specs/2026-08-10-knots-2000-seed-scan.md`
+**Spec waiver:** chore  
+**Range:** docs + slip39.html UX nit + e2e S57 assert
 
 ## What Problem This Solves
 
-Operators need a **safe, resumable** way to sample random practice seeds against local Knots `scantxoutset` with **hash-only** dedup — without logging mnemonics or shipping a public “wallet finder.”
+1. ROADMAP “Current focus” still said **v0.13.9** after site **v0.13.10**.  
+2. Stashed harness script noise risked accidental apply.  
+3. Comet-style SLIP-39 review: clarify **why there is no 7th nav item**.  
+4. SLIP-39 page had no sidebar “you are here” cue.
 
 ## Why This Change Was Made
 
-Prior 100/500 runs used ad-hoc ops; 2000 was deferred on RPC instability. Productize helpers with fail-closed **IBD preflight** so bulk runs cannot silently produce garbage balances.
+Housekeeping after feature-complete SLIP-39 A–D; no new product surface.
 
 ## User Impact
 
-- New library: `bip39lab.seed_scan` (hash store, preflight, batch scantxoutset).  
-- CLI: `scripts/seed_scan_educational.py` (preflight / resume to target).  
-- Docs: `docs/BITCOIN_KNOTS.md` educational scan section.  
-- **Live bulk to 2000 not completed this ship:** Knots still **IBD** (`blocks≈941k` / `headers≈961k`); preflight exits 2; `scantxoutset` timed out at 300s during IBD. Hash file remains **500** lines.
+- ROADMAP focus matches **v0.13.10** + Pi/Knots next step.  
+- SLIP-39: Shamir nav highlighted as **deep-link parent**; teach text says sidebar stays 6 items.  
+- Harness drift stashes **dropped** (not applied).  
+- Playwright S57 asserts 6 nav items and no `data-nav="slip39"`.
 
 ## Evidence
 
-- Unit: `tests/test_seed_scan.py` (7 passed)  
-- Live preflight: `PREFLIGHT FAIL: … initialblockdownload=true`  
-- Hash file: `.local/seed_scan/tested_mnemonic_sha256.txt` still 500 (gitignored)
+- `npx playwright test e2e/slip39.spec.ts` (S57+ suite)  
+- Live: 6 `nav-item` on `/` and `/slip39.html`  
+- Comet note in `docs/E2E_COMET_SCENARIOS.md` (2026-08-11)
 
 ## Traceability
 
-| AC | Status / evidence |
-|----|-------------------|
-| AC-1 ≥2000 unique hashes | **blocked** — IBD; tooling ready; file still 500 |
-| AC-2 Knots scantxoutset only | code path `scan_mnemonic_utxos` only scantxoutset |
-| AC-3 No mnemonic in git/logs | unit asserts public dict; hash file only |
-| AC-4 Summary counts | `summary_to_public_dict` / CLI JSON report |
-| AC-5 Preflight IBD | `preflight_rpc` + live fail |
-| AC-6 Docs note | `docs/BITCOIN_KNOTS.md` educational scan |
+| AC | Evidence |
+|----|----------|
+| Stamp drift fixed | ROADMAP Current focus v0.13.10 |
+| Comet pass documented | E2E_COMET human pass note |
+| No 7th nav | S57 e2e + teach copy |
+| Stash noise cleared | `git stash list` empty of harness WIP |
 
 ## Threat notes
 
-- **secrets** — mnemonics never written; only sha256 hex; path gitignored.  
-- **supply-chain** — reuses existing bip39lab derive + balance RPC; no new deps.  
-- **xss** — N/A (ops CLI).  
-- Fail closed on IBD prevents false “empty wallet” conclusions on incomplete UTXO set.
+- **secrets** — no secrets in docs/UI copy.  
+- **xss** — text-only HTML copy change.  
+- No CSP change; offline SLIP-39 retained.
 
 ## Red-proof
 
 ```text
+TDD N/A for pure copy; e2e extended
 red_cmd: false
-green_cmd: .venv/bin/python -m pytest tests/test_seed_scan.py -q
+green_cmd: true
 ```
-
-TDD: collection failed `ModuleNotFoundError bip39lab.seed_scan` → green 7 passed after implement.
 
 ## Evidence pack
 
 - **hard_gates** / CODE-REVIEW  
-- **pytest** `tests/test_seed_scan.py`  
-- **smoke** product unit suite (targeted)  
-- **validate** secrets scan on ship range  
+- **smoke** / check_web_e2e  
+- **pytest** N/A (no py change)  
 
 ## Things that look bad but are actually fine
 
-1. **Target 2000 not met** — constitution prefers pause on unhealthy RPC over force-complete.  
-2. **BIP86 not in address set** — Python core lacks BIP86; BIP84+BIP44 index 0 is documented minimal set.  
-3. **Ops script under scripts/** — intentional; not web UI.  
+1. **Shamir “active” on SLIP-39 page** — intentional parent cue; not a 7th step.  
+2. **Dropped stashes** — harness reinstall noise, not product WIP.  
+3. **7th-nav SLIP-39 never shipped** — by design (see below).  
+
+### What is “7th-nav SLIP-39”?
+
+The site sidebar is fixed at **6** destinations: Lab → Multisig → Shamir → Network → Tools → Glossary.  
+**SLIP-39 lab** lives at `/slip39.html` but is **not** step 7 in that rail — entry is **deep-link from Shamir** (`#shLinkSlip39`). That keeps Multisig vs Shamir vs SLIP-39 from overcrowding the primary IA and avoids implying SLIP-39 is a first-class funded-wallet backup path.
