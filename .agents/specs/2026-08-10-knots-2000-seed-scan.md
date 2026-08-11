@@ -2,7 +2,7 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-10
-- **Status:** ready-for-agent
+- **Status:** in-progress (tooling done; bulk blocked on IBD)
 - **Priority:** P2
 - **Roadmap:** ROADMAP.md → Open work
 - **Plan:** none (ops/script task; optional thin plan if productized CLI)

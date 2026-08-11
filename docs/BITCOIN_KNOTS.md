@@ -108,6 +108,28 @@ First sync: plan bandwidth and several days unless you copy a trusted snapshot (
 3. Never paste mnemonics into balance tools — **address only**.  
 4. Knots policy filters affect **relay/mempool**, not your ability to verify the chain or run `scantxoutset` for balances.
 
+## Educational seed UTXO scan (ops only — not a product feature)
+
+Optional **hash-only** campaign: generate throwaway BIP-39 practice mnemonics, derive a tiny fixed address set (BIP84 + BIP44 index 0), run Knots `scantxoutset`, record **only** `sha256(normalized mnemonic)` under gitignored `.local/seed_scan/tested_mnemonic_sha256.txt`.
+
+```bash
+# Preflight (fails closed while IBD)
+PYTHONPATH=src python3 scripts/seed_scan_educational.py \
+  --rpc-cookie /tmp/knots.cookie --preflight-only
+
+# Resume toward 2000 unique hashes (requires synced node)
+PYTHONPATH=src python3 scripts/seed_scan_educational.py \
+  --rpc-cookie /tmp/knots.cookie --target 2000
+```
+
+| Rule | Why |
+|------|-----|
+| **No mnemonic logging** | Constitution / AGENTS.md — never commit seed material |
+| **Abort while IBD** | UTXO set incomplete; `scantxoutset` often times out under load |
+| **Not a wallet finder** | Educational null-result sampling only; vanishingly unlikely hits are redacted hashes |
+
+Spec: `.agents/specs/2026-08-10-knots-2000-seed-scan.md`.
+
 ## Relation to Network “Failed to fetch”
 
 Public fee/balance via mempool.space is independent. Knots replaces the **privacy-sensitive address balance** path on the CLI (and optionally a future private host API), not the public fee snapshot.

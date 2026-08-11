@@ -345,15 +345,17 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Notes:** Docs-only hygiene after A–C; no new crypto
 
 ### [OPEN] Knots 2000-seed educational UTXO scan
-- **Status:** open
+- **Status:** open (tooling shipped; bulk blocked on IBD)
 - **Priority:** P2
 - **Spec:** `.agents/specs/2026-08-10-knots-2000-seed-scan.md`
 - **Acceptance:**
-  - [ ] ≥2000 unique mnemonic **hashes** in `.local/seed_scan/` (resume from ~500)
-  - [ ] Knots `scantxoutset` only; no mnemonic logging/commit
-  - [ ] Summary counts only; hits redacted
-- **Smoke:** preflight RPC + single-seed dry run; bulk with resume
-- **Notes:** Ops/education only — **not** a product wallet scanner; prior 100/500 done (0 hits)
+  - [ ] ≥2000 unique mnemonic **hashes** in `.local/seed_scan/` (resume from ~500) — **blocked 2026-08-11:** IBD + scantxoutset timeout
+  - [x] Knots `scantxoutset` only; no mnemonic logging/commit — `bip39lab.seed_scan` + CLI
+  - [x] Summary counts only; hits redacted — `summary_to_public_dict`
+  - [x] Preflight fails closed on IBD — live verified
+  - [x] Docs note — `docs/BITCOIN_KNOTS.md`
+- **Smoke:** `scripts/seed_scan_educational.py --preflight-only`; pytest `tests/test_seed_scan.py`
+- **Notes:** Ops only. Re-run CLI when `initialblockdownload=false`. Hash file still **500**.
 
 ## Current focus
 
