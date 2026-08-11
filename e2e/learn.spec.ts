@@ -22,11 +22,12 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator('[data-hour-step="h1"] .hour-done')).toBeVisible();
     await page.locator('[data-hour-step="h1"] input').check();
     await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*8/);
-    // Go → sticky Back bar → Mark done returns to checklist
+    // Go → floating return dock → Mark done returns to checklist
     await page.locator('[data-hour-step="h2"] .hour-go').click();
-    await expect(page.locator("#hourBackBar")).toBeVisible();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    await expect(page.locator("#learnReturnBarBtn")).toContainText(/First hour/i);
     await expect(page.locator("#card-mnemonic")).toBeVisible();
-    await page.locator("#hourBackBarBtn").click();
+    await page.locator("#learnReturnBarBtn").click();
     await expect(page.locator("#cardFirstHour")).toBeInViewport();
     await page.locator('[data-hour-step="h2"] .hour-done').click();
     await expect(page.locator("#firstHourProgress")).toContainText(/2\s*\/\s*8/);
@@ -52,12 +53,13 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#quizStatusBoard")).toBeVisible();
     await expect(page.locator("#quizHint-q1")).toBeVisible();
     await expect(page.locator("#quizHint-q1")).toContainText(/Not yet|experiment/i);
-    // Go try → sticky back bar → return to quiz
+    // Go try → single floating dock (not stacked sticky bars) → return to quiz
     await page.locator("#quizOpenPp").click();
-    await expect(page.locator("#quizBackBar")).toBeVisible();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    await expect(page.locator("#learnReturnBarBtn")).toContainText(/Guided quiz|quiz/i);
     await expect(page.locator("#panel-tools")).toBeVisible();
     await expect(page.locator("#cardCmpPp")).toBeVisible();
-    await page.locator("#quizBackBarBtn").click();
+    await page.locator("#learnReturnBarBtn").click();
     await expect(page.locator("#cardQuiz")).toBeInViewport();
     await page.locator("#quizPass-q1").click();
     await expect(page.locator("#quizBadge-q1")).toContainText(/Passed/i);

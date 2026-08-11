@@ -86,14 +86,60 @@
   }
 
   var HOUR_RETURN_KEY = "bip39lab.hourReturn";
+  var QUIZ_RETURN_KEY = "bip39lab.quizReturn";
+  var QUIZ_ACTIVE_KEY = "bip39lab.quizActive";
+  /** @type {"hour"|"quiz"|null} */
+  var learnReturnMode = null;
+
+  function setBodyReturnOpen(on) {
+    try {
+      document.body.classList.toggle("learn-return-open", !!on);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  /**
+   * One floating dock only — never stack hour + quiz sticky bars over content.
+   * mode: "hour" | "quiz" | null (hide)
+   */
+  function showLearnReturn(mode, hint) {
+    var bar = $("learnReturnBar");
+    var btn = $("learnReturnBarBtn");
+    var hintEl = $("learnReturnBarHint");
+    if (!bar) return;
+    if (!mode) {
+      learnReturnMode = null;
+      bar.hidden = true;
+      bar.removeAttribute("data-return-mode");
+      setBodyReturnOpen(false);
+      return;
+    }
+    learnReturnMode = mode;
+    bar.hidden = false;
+    bar.setAttribute("data-return-mode", mode);
+    setBodyReturnOpen(true);
+    if (btn) {
+      btn.textContent = mode === "quiz" ? "← Back to Guided quiz" : "← Back to First hour";
+    }
+    if (hintEl) {
+      hintEl.textContent =
+        hint ||
+        (mode === "quiz"
+          ? "Experiment, then mark passed only when clear."
+          : "Finish, then Mark done on the checklist.");
+    }
+  }
 
   function setHourReturn() {
     try {
       sessionStorage.setItem(HOUR_RETURN_KEY, "1");
+      // Prefer quiz if both somehow set — but Go hour clears quiz first
+      sessionStorage.removeItem(QUIZ_RETURN_KEY);
     } catch (e) {
       /* ignore */
     }
-    showHourBackBar(true);
+    showLearnReturn("hour");
   }
 
   function clearHourReturn() {
@@ -102,17 +148,19 @@
     } catch (e) {
       /* ignore */
     }
-    showHourBackBar(false);
+    if (learnReturnMode === "hour") showLearnReturn(null);
   }
 
   function showHourBackBar(on) {
-    var bar = $("hourBackBar");
-    if (!bar) return;
-    bar.hidden = !on;
+    // Compat shim for older call sites
+    if (on) showLearnReturn("hour");
+    else if (learnReturnMode === "hour") showLearnReturn(null);
   }
 
   function returnToFirstHour() {
     clearHourReturn();
+    clearQuizReturn();
+    showLearnReturn(null);
     goTab("lab");
     setTimeout(function () {
       var card = $("cardFirstHour");
@@ -219,28 +267,20 @@
     });
     var back = $("hourScrollTop");
     if (back) back.addEventListener("click", returnToFirstHour);
-    var barBtn = $("hourBackBarBtn");
-    if (barBtn) barBtn.addEventListener("click", returnToFirstHour);
-    try {
-      if (sessionStorage.getItem(HOUR_RETURN_KEY) === "1") showHourBackBar(true);
-    } catch (e) {
-      /* ignore */
-    }
-    // Returning from network.html?from=firsthour — open checklist and keep back bar until dismiss
+    // Returning from network.html?from=firsthour — open checklist (dock not needed on return)
     if (typeof location !== "undefined" && /from=firsthour/.test(location.search || "")) {
       try {
-        sessionStorage.setItem(HOUR_RETURN_KEY, "1");
+        sessionStorage.removeItem(HOUR_RETURN_KEY);
       } catch (e) {
         /* ignore */
       }
-      showHourBackBar(true);
+      showLearnReturn(null);
       setTimeout(function () {
         var card = $("cardFirstHour");
         if (card) {
           card.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 120);
-      // Drop query so refresh does not re-jump forever
       try {
         if (window.history && history.replaceState) {
           history.replaceState(null, "", location.pathname + location.hash);
@@ -248,21 +288,51 @@
       } catch (e2) {
         /* ignore */
       }
+    } else {
+      try {
+        // Resume dock only if still mid-step (not when sitting on checklist)
+        if (sessionStorage.getItem(HOUR_RETURN_KEY) === "1" && sessionStorage.getItem(QUIZ_RETURN_KEY) !== "1") {
+          showLearnReturn("hour");
+        }
+      } catch (e3) {
+        /* ignore */
+      }
     }
     refreshFirstHour();
   }
 
-  var QUIZ_RETURN_KEY = "bip39lab.quizReturn";
-  var QUIZ_ACTIVE_KEY = "bip39lab.quizActive";
+  function quizHintFor(activeQ) {
+    var st = loadJson(QUIZ_KEY, {});
+    var q = activeQ || "";
+    try {
+      q = q || sessionStorage.getItem(QUIZ_ACTIVE_KEY) || "";
+    } catch (e) {
+      /* ignore */
+    }
+    if (q && st[q]) {
+      return q.toUpperCase() + " already marked passed.";
+    }
+    if (q === "q1") {
+      return "Q1: empty vs test must change first address. Keep trying, then Back → Mark passed.";
+    }
+    if (q === "q2") {
+      return "Q2: one share alone must fail recombine. Keep trying, then Back → Mark passed.";
+    }
+    if (q === "q3") {
+      return "Q3: few rolls = TOO LOW vs 128 bits. Keep trying, then Back → Mark passed.";
+    }
+    return "Experiment until clear, then Back → Mark passed. Leave Not yet if unsure.";
+  }
 
   function setQuizReturn(activeQ) {
     try {
       sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+      sessionStorage.removeItem(HOUR_RETURN_KEY);
       if (activeQ) sessionStorage.setItem(QUIZ_ACTIVE_KEY, activeQ);
     } catch (e) {
       /* ignore */
     }
-    showQuizBackBar(true, activeQ);
+    showLearnReturn("quiz", quizHintFor(activeQ));
   }
 
   function clearQuizReturn() {
@@ -272,49 +342,23 @@
     } catch (e) {
       /* ignore */
     }
-    showQuizBackBar(false);
+    if (learnReturnMode === "quiz") showLearnReturn(null);
   }
 
   function showQuizBackBar(on, activeQ) {
-    var bar = $("quizBackBar");
-    if (!bar) return;
-    bar.hidden = !on;
-    var hint = $("quizBackBarHint");
-    if (hint && on) {
-      var st = loadJson(QUIZ_KEY, {});
-      var q = activeQ || "";
-      try {
-        q = q || sessionStorage.getItem(QUIZ_ACTIVE_KEY) || "";
-      } catch (e) {
-        /* ignore */
-      }
-      if (q && st[q]) {
-        hint.textContent = (q.toUpperCase() + " already marked passed. Return anytime to review status.");
-      } else if (q === "q1") {
-        hint.textContent =
-          "Q1: empty vs test must change the first address. Keep trying until obvious, then Back → Mark passed.";
-      } else if (q === "q2") {
-        hint.textContent =
-          "Q2: one share alone must fail recombine. Experiment, then Back → Mark passed when clear.";
-      } else if (q === "q3") {
-        hint.textContent =
-          "Q3: few rolls = TOO LOW vs 128 bits. Experiment, then Back → Mark passed when clear.";
-      } else {
-        hint.textContent =
-          "Try the demo until the idea clicks, then return and mark passed. Leave Not yet if still unsure.";
-      }
-    }
+    // Compat shim
+    if (on) showLearnReturn("quiz", quizHintFor(activeQ));
+    else if (learnReturnMode === "quiz") showLearnReturn(null);
   }
 
   function returnToQuiz() {
     clearQuizReturn();
-    // Hide hour bar if both were up
-    showHourBackBar(false);
+    clearHourReturn();
+    showLearnReturn(null);
     goTab("lab");
     setTimeout(function () {
       var card = $("cardQuiz");
       if (card) {
-        // Soft-unlock if still gated
         card.setAttribute("data-level-force", "show");
         card.classList.remove("level-gated");
         card.hidden = false;
@@ -327,6 +371,22 @@
         }
       }
     }, 80);
+  }
+
+  function onLearnReturnClick() {
+    if (learnReturnMode === "quiz") returnToQuiz();
+    else returnToFirstHour();
+  }
+
+  function wireLearnReturnDock() {
+    var btn = $("learnReturnBarBtn");
+    if (btn) btn.addEventListener("click", onLearnReturnClick);
+    var dismiss = $("learnReturnBarDismiss");
+    if (dismiss)
+      dismiss.addEventListener("click", function () {
+        // Hide only; keep progress — user can use in-card Back buttons
+        showLearnReturn(null);
+      });
   }
 
   function refreshQuiz() {
@@ -453,24 +513,15 @@
         returnToQuiz();
       });
     });
-    var barBtn = $("quizBackBarBtn");
-    if (barBtn) barBtn.addEventListener("click", returnToQuiz);
     var scrollTop = $("quizScrollTop");
     if (scrollTop) scrollTop.addEventListener("click", returnToQuiz);
-    try {
-      if (sessionStorage.getItem(QUIZ_RETURN_KEY) === "1") {
-        showQuizBackBar(true, sessionStorage.getItem(QUIZ_ACTIVE_KEY));
-      }
-    } catch (e) {
-      /* ignore */
-    }
     if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
       try {
-        sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+        sessionStorage.removeItem(QUIZ_RETURN_KEY);
       } catch (e2) {
         /* ignore */
       }
-      showQuizBackBar(true);
+      showLearnReturn(null);
       setTimeout(function () {
         returnToQuiz();
       }, 60);
@@ -479,6 +530,14 @@
           history.replaceState(null, "", location.pathname + location.hash);
         }
       } catch (e3) {
+        /* ignore */
+      }
+    } else {
+      try {
+        if (sessionStorage.getItem(QUIZ_RETURN_KEY) === "1") {
+          showLearnReturn("quiz", quizHintFor(sessionStorage.getItem(QUIZ_ACTIVE_KEY)));
+        }
+      } catch (e) {
         /* ignore */
       }
     }
@@ -591,6 +650,7 @@
           "Never fund educational parents or children. Prefer hardware/vendor tools for real BIP-85.";
       });
 
+    wireLearnReturnDock();
     wireFirstHour();
     applyLevel(getLevel());
   }

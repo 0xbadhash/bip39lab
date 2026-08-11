@@ -129,19 +129,11 @@
       </header>
 
       <main class="content">
-        <div id="hourBackBar" class="hour-back-bar" hidden role="navigation" aria-label="Return to First hour">
-          <button type="button" class="btn secondary btn-sm" id="hourBackBarBtn">
-            ← Back to First hour checklist
-          </button>
-          <span class="control-help" style="margin:0">Finish the step, then mark it done on the checklist.</span>
-        </div>
-        <div id="quizBackBar" class="hour-back-bar quiz-back-bar" hidden role="navigation" aria-label="Return to Guided quiz">
-          <button type="button" class="btn secondary btn-sm" id="quizBackBarBtn">
-            ← Back to Guided quiz
-          </button>
-          <span class="control-help" style="margin:0" id="quizBackBarHint">
-            Try the demo, then return and mark passed only when you understand the result.
-          </span>
+        <!-- Single floating return dock (not sticky top — avoids stacking/overlay on content) -->
+        <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
+          <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back</button>
+          <span class="learn-return-hint" id="learnReturnBarHint"></span>
+          <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
         </div>
         <div class="warn" role="note">
           <strong>Air-gap recommended.</strong>
@@ -1204,7 +1196,7 @@
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.0"></script>
   <script src="js/help-ui.js?v=0.14.0"></script>
-  <script src="js/learn-levels.js?v=0.14.2"></script>
+  <script src="js/learn-levels.js?v=0.14.3"></script>
   <script src="js/app.js?v=0.14.0"></script>
 </body>
 </html>

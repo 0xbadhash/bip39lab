@@ -297,6 +297,7 @@ code {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
+/* Legacy class: non-sticky inline bars on Network/Shamir (document flow, no overlay) */
 .hour-back-bar {
   display: flex;
   flex-wrap: wrap;
@@ -307,9 +308,64 @@ code {
   background: var(--accent-soft);
   border: 1px solid rgba(61, 139, 253, 0.4);
   border-radius: var(--radius-sm);
-  position: sticky;
-  top: 0;
-  z-index: 5;
+  position: static;
+  z-index: auto;
+}
+/* One shared floating dock on Lab — bottom, not sticky top (no text cover / no stack) */
+.learn-return-dock {
+  position: fixed;
+  left: max(0.75rem, env(safe-area-inset-left));
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 0.55rem 0.65rem 0.55rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid rgba(61, 139, 253, 0.55);
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+.learn-return-dock[hidden] {
+  display: none !important;
+}
+.learn-return-hint {
+  flex: 1 1 10rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--muted);
+  margin: 0;
+  min-width: 0;
+}
+.learn-return-dismiss {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  border-radius: 999px;
+}
+.learn-return-dismiss:hover {
+  color: var(--text);
+  background: var(--panel-2);
+}
+@media (min-width: 721px) {
+  .learn-return-dock {
+    /* Sit in main column, not under 280px sidebar */
+    left: calc(280px + 1rem);
+    right: auto;
+    width: min(36rem, calc(100vw - 280px - 2rem));
+  }
+}
+body.learn-return-open {
+  /* Keep last content clear of the dock */
+  padding-bottom: 4.5rem;
 }
 .quiz-item h3,
 .quiz-item-title {
@@ -364,10 +420,6 @@ code {
   border: 1px solid rgba(34, 160, 107, 0.35);
   color: var(--text);
 }
-.quiz-back-bar {
-  /* same sticky pattern as hour-back-bar */
-}
-
 /* E3 mobile */
 @media (max-width: 720px) {
   .app {
