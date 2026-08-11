@@ -20,6 +20,25 @@
         </div>
       </div>
 
+      <div class="sidebar-prefs" id="sidebarPrefs">
+        <div class="sidebar-prefs-title">Classroom</div>
+        <label class="sidebar-prefs-row learn-level-label" for="learnLevel" title="Soft curriculum gates — not a security lock">
+          <span class="sidebar-prefs-k">Level</span>
+          <select id="learnLevel" class="select-compact learn-level-select" aria-label="Learning level" aria-describedby="learnLevelHint">
+            <option value="starter">Starter</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </label>
+        <p class="sidebar-prefs-hint" id="learnLevelHint" role="status" aria-live="polite">
+          Starter: orientation + first-hour checklist.
+        </p>
+        <button type="button" class="btn secondary btn-sm" id="btnResetClassroom" title="Clear first-hour checklist + quiz + tour progress">
+          Reset progress
+        </button>
+      </div>
+
       <nav class="nav" aria-label="Site sections">
         <a class="nav-item" data-nav="lab" href="index.html">
           <span class="nav-step">1</span>
@@ -294,6 +313,7 @@
   <script src="js/site-version.js?v=0.16.1"></script>
   <script src="js/glossary.js?v=0.16.1"></script>
   <script src="js/help-ui.js?v=0.16.1"></script>
+  <script src="js/learn-levels.js?v=0.16.1"></script>
   <script src="js/shamir-core.js?v=0.16.1"></script>
   <script src="js/shamir-app.js?v=0.16.1"></script>
 </body>

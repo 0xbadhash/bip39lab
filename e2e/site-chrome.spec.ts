@@ -70,4 +70,14 @@ test.describe("Site chrome cross-page", () => {
     await expect(page.locator(".footer-host")).toHaveCount(0);
     await expect(page.locator(".sidebar .site-version-chip")).toBeVisible();
   });
+
+  test("S40b Classroom panel on every shell (level select + reset)", async ({ page }) => {
+    for (const path of ["/", "/multisig.html", "/shamir.html", "/network.html", "/slip39.html"]) {
+      await page.goto(path);
+      await expect(page.locator("#sidebarPrefs")).toBeVisible();
+      await expect(page.locator(".sidebar-prefs-title")).toHaveText("Classroom");
+      await expect(page.locator("#learnLevel")).toBeVisible();
+      await expect(page.locator("#btnResetClassroom")).toBeVisible();
+    }
+  });
 });
