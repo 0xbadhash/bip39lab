@@ -416,7 +416,7 @@
           <p class="control-help teach-only" style="margin:0 0 0.75rem">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
-          <div class="card">
+          <div class="card card-wide" id="cardPathPlay">
             <div class="card-head">
               <h2 class="label-row">Path playground
                 <span class="help-tip" data-term="PATH">
@@ -425,9 +425,66 @@
                 </span>
               </h2>
             </div>
-            <p class="card-lede teach-only">Live BIP path from Lab controls (account / change / network / type).</p>
-            <pre class="out" id="pathPlayOut">m/86'/0'/0'/0/0</pre>
-            <p class="control-help" id="pathPlayHelp">Purpose' / coin_type' / account' / change / index</p>
+            <p class="control-help">
+              <strong>What this is:</strong> a <em>derivation path</em> is the folder path inside your seed tree
+              that produces one receive (or change) address. It is <strong>not</strong> the seed itself —
+              only “which branch” of BIP-32 HD keys Lab is using right now.
+            </p>
+            <p class="control-help teach-only">
+              Change <strong>Lab</strong> controls (address-type tabs, network, account, change, count) and this card updates live.
+              Hardened levels end with <code>'</code> (purpose, coin, account). The last number is the address index (0, 1, 2…).
+            </p>
+            <p class="control-help" style="margin:0.35rem 0 0.25rem"><strong>Full path for index 0</strong> (first address of this branch)</p>
+            <pre class="out" id="pathPlayOut" style="font-size:1.05rem;font-weight:650;letter-spacing:0.02em">m/86'/0'/0'/0/0</pre>
+            <p class="control-help" id="pathPlayRange">Address indices in the Lab table: 0 … 0</p>
+
+            <table class="compare-table" id="pathPlayTable" aria-label="Path levels explained">
+              <thead>
+                <tr>
+                  <th scope="col">Level</th>
+                  <th scope="col">Value now</th>
+                  <th scope="col">What it means</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code>m</code></th>
+                  <td>master</td>
+                  <td>Root of the HD tree (from mnemonic + optional passphrase)</td>
+                </tr>
+                <tr>
+                  <th scope="row">purpose'</th>
+                  <td id="pathCellPurpose">86'</td>
+                  <td id="pathCellPurposeWhy">Which address style (BIP number)</td>
+                </tr>
+                <tr>
+                  <th scope="row">coin_type'</th>
+                  <td id="pathCellCoin">0'</td>
+                  <td id="pathCellCoinWhy">0 = Bitcoin mainnet · 1 = testnet/signet</td>
+                </tr>
+                <tr>
+                  <th scope="row">account'</th>
+                  <td id="pathCellAccount">0'</td>
+                  <td id="pathCellAccountWhy">Wallet “slot” (0 is the usual first account)</td>
+                </tr>
+                <tr>
+                  <th scope="row">change</th>
+                  <td id="pathCellChange">0</td>
+                  <td id="pathCellChangeWhy">0 = receive (people pay you) · 1 = change (leftovers back to you)</td>
+                </tr>
+                <tr>
+                  <th scope="row">index</th>
+                  <td id="pathCellIndex">0 … n</td>
+                  <td id="pathCellIndexWhy">Which receive address in that branch (Lab table lists several)</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="control-help" id="pathPlayHelp" style="margin-top:0.65rem">—</p>
+            <div class="row" style="margin-top:0.5rem">
+              <button type="button" class="btn secondary" id="btnPathToLab" title="Open Lab tab where you change type / network / account">
+                Open Lab path controls
+              </button>
+            </div>
           </div>
 
           <div class="card card-wide" id="cardEntPad">

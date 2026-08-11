@@ -199,24 +199,84 @@
   function updatePathPlayground(opts) {
     const o = opts || getDeriveOptions();
     const t = getActiveAddrType();
-    const meta = ADDR_TYPE_META[t];
+    const meta = ADDR_TYPE_META[t] || ADDR_TYPE_META.bip86;
     const el = $("pathPlayOut");
     if (!el) return;
+    const coin = o.network === "test" ? 1 : 0;
+    const last = Math.max(0, (o.count || 1) - 1);
     const path0 =
       typeof BIP39Lab !== "undefined" && BIP39Lab.formatPath
         ? BIP39Lab.formatPath(meta.purpose, o.network, o.account, o.change, 0)
-        : "m/" + meta.purpose + "'/…";
-    el.textContent = path0 + "   … through index " + (o.count - 1);
+        : "m/" + meta.purpose + "'/" + coin + "'/" + o.account + "'/" + o.change + "/0";
+    const pathLast =
+      typeof BIP39Lab !== "undefined" && BIP39Lab.formatPath
+        ? BIP39Lab.formatPath(meta.purpose, o.network, o.account, o.change, last)
+        : path0;
+    el.textContent = last === 0 ? path0 : path0 + "  →  …  →  " + pathLast;
+
+    const purposeWhy = {
+      86: "BIP-86 Taproot (bc1p…) — default modern receive style in this lab",
+      84: "BIP-84 native SegWit (bc1q…)",
+      49: "BIP-49 nested SegWit (3…)",
+      44: "BIP-44 legacy (1…)",
+    };
+
+    if ($("pathCellPurpose")) $("pathCellPurpose").textContent = meta.purpose + "'";
+    if ($("pathCellPurposeWhy")) {
+      $("pathCellPurposeWhy").textContent =
+        (purposeWhy[meta.purpose] || "BIP purpose / script type") + " — set by Lab address-type tabs";
+    }
+    if ($("pathCellCoin")) $("pathCellCoin").textContent = coin + "'";
+    if ($("pathCellCoinWhy")) {
+      $("pathCellCoinWhy").textContent =
+        coin === 0
+          ? "0 = Bitcoin mainnet (real network paths) — Lab network = main"
+          : "1 = testnet/signet paths — Lab network = test (not mainnet coins)";
+    }
+    if ($("pathCellAccount")) $("pathCellAccount").textContent = o.account + "'";
+    if ($("pathCellAccountWhy")) {
+      $("pathCellAccountWhy").textContent =
+        "Account " + o.account + " — like a sub-wallet slot (Lab “account” field)";
+    }
+    if ($("pathCellChange")) $("pathCellChange").textContent = String(o.change);
+    if ($("pathCellChangeWhy")) {
+      $("pathCellChangeWhy").textContent =
+        o.change === 1
+          ? "1 = change/internal (leftovers from your spends) — Lab change = 1"
+          : "0 = receive chain (addresses you give people) — Lab change = 0";
+    }
+    if ($("pathCellIndex")) {
+      $("pathCellIndex").textContent = last === 0 ? "0" : "0 … " + last;
+    }
+    if ($("pathCellIndexWhy")) {
+      $("pathCellIndexWhy").textContent =
+        "Lab “count” is " +
+        (o.count || 1) +
+        " address(es) on this branch (indices 0" +
+        (last ? "–" + last : "") +
+        ")";
+    }
+    if ($("pathPlayRange")) {
+      $("pathPlayRange").textContent =
+        last === 0
+          ? "Lab table shows 1 address at index 0 on this path."
+          : "Lab table shows indices 0 through " + last + " (count = " + o.count + ").";
+    }
     const help = $("pathPlayHelp");
     if (help) {
-      help.textContent =
+      help.innerHTML =
+        "<strong>In plain words:</strong> “Start from the seed, walk to " +
         meta.label +
-        " · coin_type " +
-        (o.network === "test" ? "1 (test)" : "0 (main)") +
-        " · account " +
+        " on " +
+        (coin === 0 ? "mainnet" : "testnet") +
+        ", account " +
         o.account +
-        " · change " +
-        o.change;
+        ", " +
+        (o.change === 1 ? "change" : "receive") +
+        " chain, then pick address number 0" +
+        (last ? "…" + last : "") +
+        ".” " +
+        "Same mnemonic + same path → same address (offline).";
     }
   }
 
@@ -1334,6 +1394,26 @@
     }
     if ($("btnEntToLab")) {
       $("btnEntToLab").addEventListener("click", copyPracticePadToLab);
+    }
+    if ($("btnPathToLab")) {
+      $("btnPathToLab").addEventListener("click", function () {
+        showTab("lab");
+        window.setTimeout(function () {
+          const target =
+            $("card-addresses") ||
+            $("addrTypeTabs") ||
+            document.querySelector("[data-addr-type]");
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            try {
+              if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+              target.focus({ preventScroll: true });
+            } catch (e) {
+              /* ignore */
+            }
+          }
+        }, 60);
+      });
     }
     if ($("btnCmpPp")) $("btnCmpPp").addEventListener("click", () => comparePassphrases().catch(console.error));
     if ($("btnCmpUseLab")) {

@@ -242,7 +242,7 @@ Same shell as Lab. Offline utilities: derivation path playground, dice/coin entr
 
 ```text
 1. Open Tools from sidebar (or press ? on Lab when not typing)
-2. Path playground reflects Lab account/change/network/type
+2. Path playground: full path + table of each level (purpose/coin/account/change/index) · Open Lab path controls
 3. Entropy pad: roll dice / flip coin · **Build practice seed from pad** → see bit table (pad vs 128/256) + PRACTICE ONLY words · never fund
 4. Compare passphrases (3 steps): Use Lab phrase or Generate throwaway → type A/B (plain text) → Compare → table of addresses
 5. Descriptors: Refresh → public descriptor text; prefix `[TEST DATA]` or `[Lab phrase]`; Phrase source blurb + TEST DATA chip on Tools intro
@@ -483,7 +483,7 @@ Lab addresses → Network session Load works (no mnemonic in Network).
 ## Lab Tools panel
 
 ### S14 — Path playground
-Tools open; path matches Lab controls (`m/…`).
+Tools → path card: path string + level table (purpose/coin/account/change/index) + plain-words summary; **Open Lab path controls** jumps to Lab.
 
 ### S17 — Entropy pad
 Dice + coin events; Clear → empty pad.

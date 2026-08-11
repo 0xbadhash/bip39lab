@@ -253,7 +253,13 @@ test.describe("Lab Tools panel", () => {
   test("S14 path playground + tools open", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#cardPathPlay")).toBeVisible();
     await expect(page.locator("#pathPlayOut")).toContainText(/m\/\d+'/);
+    await expect(page.locator("#pathPlayTable")).toBeVisible();
+    await expect(page.locator("#pathCellPurpose")).toContainText(/'/);
+    await expect(page.locator("#pathPlayHelp")).toContainText(/plain words|seed|address/i);
+    await page.locator("#btnPathToLab").click();
+    await expect(page.locator("#panel-lab")).toBeVisible();
   });
 
   test("S17 entropy pad dice coin clear", async ({ page }) => {

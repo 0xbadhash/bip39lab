@@ -243,7 +243,9 @@
       group: "Keys",
       short: "m/purpose'/coin'/account'/change/index",
       body:
-        "Address of a key in the HD tree. Hardened levels use ' (e.g. 84'). Purpose selects BIP44/49/84/86; coin 0 = mainnet, 1 = testnet.",
+        "Folder path inside the BIP-32 HD tree to one key/address — not the seed itself. " +
+        "Example m/86'/0'/0'/0/0 = Taproot (86), mainnet (0), account 0, receive (0), first address (0). " +
+        "Hardened levels use ' (purpose, coin, account). Tools → Path playground shows each level live from Lab controls.",
     },
     {
       id: "ACCOUNT",
