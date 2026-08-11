@@ -124,27 +124,27 @@
           Do not paste a real recovery phrase on a machine you do not trust.
         </div>
 
-        <!-- P2 step rail: jump links, not a locked wizard -->
-        <p class="control-help teach-only" style="margin:0 0 0.5rem">
-          <strong>On this page</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
-        </p>
-        <nav class="step-rail teach-only" data-step-rail aria-label="Lab page sections (jump links)" id="labStepRail">
-          <button type="button" class="step-rail-btn is-active" data-step-target="#card-mnemonic" aria-current="step">
-            Phrase<small>Generate or paste</small>
-          </button>
-          <button type="button" class="step-rail-btn" data-step-target="#card-addresses">
-            Path<small>Network · account · type</small>
-          </button>
-          <button type="button" class="step-rail-btn" data-step-target="#addrTable">
-            Addresses<small>Copy or QR</small>
-          </button>
-          <button type="button" class="step-rail-btn" data-step-target="#watchOnlyPanel">
-            Watch-only<small>zpub / xpub export</small>
-          </button>
-        </nav>
-
         <!-- Panel: Lab -->
         <section id="panel-lab" class="panel active" role="tabpanel">
+          <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
+          <p class="control-help teach-only" style="margin:0 0 0.5rem">
+            <strong>On Lab</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
+          </p>
+          <nav class="step-rail teach-only" data-step-rail aria-label="Lab page sections (jump links)" id="labStepRail">
+            <button type="button" class="step-rail-btn is-active" data-step-target="#card-mnemonic" aria-current="step">
+              Phrase<small>Generate or paste</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#card-addresses">
+              Path<small>Network · account · type</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#addrTable">
+              Addresses<small>Copy or QR</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#watchOnlyPanel">
+              Watch-only<small>zpub / xpub export</small>
+            </button>
+          </nav>
+
           <div class="card" id="card-mnemonic">
             <div class="card-head">
               <h2>Mnemonic</h2>
@@ -413,6 +413,29 @@
             <span class="chip chip-warn" style="vertical-align:middle">TEST DATA</span>
             — never assume results still use a phrase you cleared.
           </p>
+          <p class="control-help teach-only" style="margin:0 0 0.5rem">
+            <strong>On Tools</strong> — jump to a card (not Lab’s Phrase/Path rail). Order is a suggestion only.
+          </p>
+          <nav class="step-rail teach-only" data-step-rail aria-label="Tools cards (jump links)" id="toolsStepRail">
+            <button type="button" class="step-rail-btn is-active" data-step-target="#cardPathPlay" aria-current="step">
+              Path<small>BIP derivation</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#cardEntPad">
+              Entropy<small>Dice / coin pad</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#cardCmpPp">
+              Passphrase<small>Compare A vs B</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#cardDescriptors">
+              Descriptors<small>Output strings</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#cardPsbt">
+              PSBT<small>Inspect only</small>
+            </button>
+            <button type="button" class="step-rail-btn" data-step-target="#cardDescExplain">
+              Explain<small>Public descriptor</small>
+            </button>
+          </nav>
           <p class="control-help teach-only" style="margin:0 0 0.75rem">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
@@ -509,9 +532,13 @@
                 Each d6 ≈ 2.58 bits · each coin flip = 1 bit (estimate). Real 12-word BIP-39 needs
                 <strong>128 bits</strong> of good entropy; 24-word needs <strong>256</strong>.
               </p>
+              <p class="control-help" style="margin:0.25rem 0 0.5rem">
+                <span class="chip chip-warn" style="vertical-align:middle">Simulated rolls</span>
+                Buttons use the browser’s <code>Math.random</code> — <strong>not</strong> physical dice/coins and not OS CSPRNG.
+              </p>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.35rem">
-                <button type="button" class="btn secondary" id="btnDice">Roll d6</button>
-                <button type="button" class="btn secondary" id="btnCoin">Flip coin</button>
+                <button type="button" class="btn secondary" id="btnDice" title="Simulated d6 (Math.random) — practice only">Roll d6 (simulated)</button>
+                <button type="button" class="btn secondary" id="btnCoin" title="Simulated coin (Math.random) — practice only">Flip coin (simulated)</button>
                 <button type="button" class="btn danger" id="btnEntClear">Clear pad</button>
               </div>
               <pre class="out" id="entPadOut">—</pre>
@@ -612,6 +639,7 @@
               <p class="control-help teach-only" style="margin-top:0">
                 Leave A empty (no passphrase vault) and put something in B (e.g. <code>test</code>) to see addresses diverge.
                 Fields are plain text here so you can see what you typed (Lab’s passphrase field stays password-masked).
+                <strong>Shoulder-surf:</strong> anyone looking at your screen can read A/B — fine for throwaway demos, not for real secrets.
               </p>
               <div class="fields-inline" style="align-items:flex-start">
                 <label class="field" for="cmpPpA">Passphrase A
@@ -659,7 +687,7 @@
             </div>
           </div>
 
-          <div class="card card-wide">
+          <div class="card card-wide" id="cardDescriptors">
             <h2 class="label-row">Output descriptors (watch-only)
               <span class="help-tip" data-term="DESCRIPTOR">
                 <button type="button" class="help-tip-btn" aria-label="About output descriptors">i</button>
@@ -741,7 +769,7 @@
             <p class="control-help teach-only" id="psbtStory" hidden style="margin-top:0.5rem"></p>
           </div>
 
-          <div class="card">
+          <div class="card card-wide" id="cardDescExplain">
             <h2 class="label-row">Descriptor explain
               <span class="help-tip" data-term="DESCRIPTOR">
                 <button type="button" class="help-tip-btn" aria-label="About descriptors">i</button>

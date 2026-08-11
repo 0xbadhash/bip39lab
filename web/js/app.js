@@ -979,21 +979,28 @@
         needBits + " bits (BIP-39 ENT for a " + words + "-word phrase)";
     }
     if ($("entPadBitsGap")) {
-      $("entPadBitsGap").textContent = low
-        ? "TOO LOW — pad estimate is short by about " +
+      const gapEl = $("entPadBitsGap");
+      if (low) {
+        gapEl.innerHTML =
+          '<strong class="ent-pad-verdict-low">TOO LOW</strong> — pad estimate is short by about <strong>' +
           Math.ceil(gap) +
-          " bits. The words below are only a classroom demo of a weak pad."
-        : "Pad estimate looks high enough on paper — still NEVER fund these words (this browser pad is not a real dice ceremony / CSPRNG).";
+          "</strong> bits. Words below are only a classroom demo of a weak pad.";
+        gapEl.className = "ent-pad-gap-low";
+      } else {
+        gapEl.innerHTML =
+          "Pad estimate looks high enough on paper — still <strong>NEVER fund</strong> these words (simulated rolls / not OS CSPRNG).";
+        gapEl.className = "ent-pad-gap-ok";
+      }
     }
     if (warn) {
       warn.innerHTML = low
-        ? "<strong>PRACTICE ONLY — do not fund.</strong> Your rolls only account for ~" +
+        ? '<strong class="ent-pad-verdict-low">TOO LOW + PRACTICE ONLY — do not fund.</strong> Your simulated rolls only account for ~' +
           estRound +
           " bits, but a real " +
           words +
           "-word wallet wants " +
           needBits +
-          " bits of good randomness. That gap is the lesson."
+          " bits of good randomness. <em>That gap is the lesson.</em>"
         : "<strong>PRACTICE ONLY — do not fund.</strong> Even with a large pad estimate, use Lab → Generate (OS CSPRNG) for a proper random demo — not this pad.";
     }
     if (note) {

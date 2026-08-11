@@ -83,6 +83,22 @@ test.describe("Help UX hybrid", () => {
     }
   });
 
+  test("S44b Tools has Tools rail not Lab Phrase/Path rail", async ({ page }) => {
+    await forceTeach(page, "on");
+    await page.goto("/");
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    // Lab rail must not be visible on Tools
+    await expect(page.locator("#labStepRail")).toBeHidden();
+    await expect(page.locator("#toolsStepRail")).toBeVisible();
+    await expect(page.locator("#toolsStepRail")).toContainText(/Path|Entropy|PSBT/i);
+    await expect(page.locator("#toolsStepRail")).not.toContainText(/Generate or paste|zpub|Watch-only/i);
+    await expect(page.locator('#toolsStepRail [data-step-target="#card-mnemonic"]')).toHaveCount(0);
+    await page.locator('#toolsStepRail [data-step-target="#cardPsbt"]').click();
+    await expect(page.locator("#cardPsbt")).toBeVisible();
+    await expect(page.locator("#cardPsbt")).toHaveAttribute("data-step-focused", "true");
+  });
+
   test("S45 Multisig step rail + teach + tip BIP67", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/multisig.html");

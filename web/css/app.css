@@ -1206,6 +1206,21 @@ button:focus-visible {
   margin-top: 0.55rem;
 }
 
+.ent-pad-verdict-low {
+  color: var(--bad, #e2483d);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+#entPadBitsGap.ent-pad-gap-low {
+  color: var(--bad, #e2483d);
+  font-weight: 700;
+}
+
+#entPadSeedBox .ent-pad-verdict-low {
+  display: inline;
+}
+
 .ent-pad-words {
   display: inline-flex;
   align-items: center;

@@ -126,6 +126,39 @@
     }, 1600);
   }
 
+  function getScrollParent(el) {
+    var node = el && el.parentElement;
+    while (node && node !== document.body && node !== document.documentElement) {
+      var st = window.getComputedStyle(node);
+      var oy = st.overflowY || st.overflow;
+      if (
+        (oy === "auto" || oy === "scroll" || oy === "overlay") &&
+        node.scrollHeight > node.clientHeight + 4
+      ) {
+        return node;
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }
+
+  function scrollStepTargetIntoView(el) {
+    if (!el) return;
+    var parent = getScrollParent(el);
+    if (parent) {
+      var er = el.getBoundingClientRect();
+      var pr = parent.getBoundingClientRect();
+      var top = parent.scrollTop + (er.top - pr.top) - 12;
+      try {
+        parent.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      } catch (e) {
+        parent.scrollTop = Math.max(0, top);
+      }
+    } else {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   function initStepRails() {
     document.querySelectorAll("[data-step-rail]").forEach(function (rail) {
       const steps = rail.querySelectorAll("[data-step-target]");
@@ -155,14 +188,13 @@
             if (prev !== el) prev.removeAttribute("data-step-focused");
           });
 
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          scrollStepTargetIntoView(el);
           flashStepTarget(el);
-          // Focus after scroll starts so keyboard users land in the section
           window.requestAnimationFrame(function () {
             focusStepTarget(el);
           });
-          // Second pass after smooth scroll settles (layout / sticky header)
           window.setTimeout(function () {
+            scrollStepTargetIntoView(el);
             focusStepTarget(el);
             flashStepTarget(el);
           }, 400);

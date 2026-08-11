@@ -634,6 +634,9 @@ Lab Teach On · click each rail step (**Phrase** / **Path** / **Addresses** / **
 
 Same behavior on Multisig / Network / Shamir / SLIP-39 rails (shared `help-ui.js`).
 
+### S44b — Tools rail is Tools-only
+Tools tab: Lab rail **hidden**; **toolsStepRail** visible (Path · Entropy · Passphrase · Descriptors · PSBT · Explain). Jump to PSBT focuses `#cardPsbt`. No Lab “Watch-only / zpub” labels on Tools rail.
+
 ### S45 — Multisig rail + BIP67 tip
 Rail + BIP67 **i**.
 

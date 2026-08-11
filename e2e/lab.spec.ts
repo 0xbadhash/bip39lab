@@ -266,6 +266,7 @@ test.describe("Lab Tools panel", () => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toContainText(/Phrase source/i);
     await expect(page.locator("#panel-tools")).toContainText(/TEST DATA/);
+    await expect(page.locator("#cardEntPad")).toContainText(/Simulated rolls/i);
     await page.locator("#btnDice").click();
     await page.locator("#btnDice").click();
     await page.locator("#btnCoin").click();
@@ -286,7 +287,8 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#entPadSeedBox")).toBeVisible();
     await expect(page.locator("#entPadSeedWarn")).toContainText(/PRACTICE ONLY|do not fund/i);
     await expect(page.locator("#entPadBitsNeed")).toContainText(/128/);
-    await expect(page.locator("#entPadBitsGap")).toContainText(/TOO LOW|NEVER for real funds/i);
+    await expect(page.locator("#entPadBitsGap")).toContainText(/TOO LOW/i);
+    await expect(page.locator("#entPadSeedWarn")).toContainText(/TOO LOW|do not fund/i);
     const words = await page.locator("#entPadSeedWords").inputValue();
     expect(words.trim().split(/\s+/).length).toBe(12);
     await expect(page.locator("#entPadSeedNote")).toContainText(/SHA-256|roll log|practice/i);
