@@ -851,14 +851,66 @@
     return { ok: true, mnemonic: m, generated: true };
   }
 
+  function maskPpLabel(pp) {
+    if (pp == null || pp === "") return "(empty — no passphrase)";
+    return "“" + String(pp) + "”";
+  }
+
+  function refreshCmpMnemonicPreview() {
+    const preview = $("cmpMnPreview");
+    const source = $("cmpMnSource");
+    const el = $("mnemonic");
+    const m = (el && el.value.trim()) || "";
+    if (!preview) return { ok: false, mnemonic: "" };
+    if (!m) {
+      if (source) source.textContent = "Source: none yet — use Lab phrase or generate a throwaway test phrase.";
+      preview.textContent = "—";
+      return { ok: false, mnemonic: "" };
+    }
+    const n = m.split(/\s+/).filter(Boolean).length;
+    if (source) {
+      source.textContent =
+        "Source: Lab mnemonic field (" + n + " words) — same words used for A and B below.";
+    }
+    preview.textContent = m;
+    return { ok: true, mnemonic: m };
+  }
+
+  function updateCmpPathHint() {
+    const hint = $("cmpPathHint");
+    if (!hint || typeof getDeriveOptions !== "function") return;
+    try {
+      const o = getDeriveOptions();
+      const type = getActiveAddrType();
+      const meta = ADDR_TYPE_META[type] || {};
+      hint.innerHTML =
+        "Uses Lab settings: <strong>" +
+        (o.network || "mainnet") +
+        "</strong>, account <strong>" +
+        o.account +
+        "</strong>, change <strong>" +
+        o.change +
+        "</strong>, type <strong>" +
+        (meta.label || type) +
+        "</strong>, <strong>index 0</strong> only.";
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   async function comparePassphrases() {
     const out = $("cmpPpOut");
-    if (!out) return;
+    const resultBox = $("cmpPpResult");
     const ens = await ensureLabMnemonic({ generate: true });
     if (!ens.ok) {
-      out.textContent = "Could not generate a mnemonic. Check that BIP39Lab is loaded.";
+      if (out) {
+        out.hidden = false;
+        out.textContent = "Could not generate a mnemonic. Check that BIP39Lab is loaded.";
+      }
       return;
     }
+    refreshCmpMnemonicPreview();
+    updateCmpPathHint();
     const m = ens.mnemonic;
     const a = ($("cmpPpA") && $("cmpPpA").value) || "";
     const b = ($("cmpPpB") && $("cmpPpB").value) || "";
@@ -871,16 +923,40 @@
     const note = ens.generated
       ? "[TEST DATA] Auto-generated a " +
         m.split(/\s+/).length +
-        "-word throwaway phrase (not from Lab input). Written into Lab for this session only.\n"
-      : "[Lab phrase] Using the mnemonic currently in Lab memory.\n";
-    out.textContent =
-      note +
-      "A: " +
-      aa +
-      "\nB: " +
-      bb +
-      "\n" +
-      (aa === bb ? "Same address (passphrases match or both empty)." : "Different — passphrase changed the vault.");
+        "-word throwaway phrase into Lab for this session."
+      : "[Lab phrase] Using the mnemonic currently in Lab.";
+    const same = aa === bb;
+    const verdict = same
+      ? "Same address — passphrases match (or both empty). Same vault."
+      : "Different addresses — the passphrase changed the wallet. Same words, two vaults.";
+
+    if ($("cmpCellPpA")) $("cmpCellPpA").textContent = maskPpLabel(a);
+    if ($("cmpCellPpB")) $("cmpCellPpB").textContent = maskPpLabel(b);
+    if ($("cmpCellAddrA")) $("cmpCellAddrA").textContent = aa;
+    if ($("cmpCellAddrB")) $("cmpCellAddrB").textContent = bb;
+    if ($("cmpPpVerdict")) {
+      $("cmpPpVerdict").textContent = note + " " + verdict;
+      $("cmpPpVerdict").classList.remove("ok", "err");
+      $("cmpPpVerdict").classList.add(same ? "ok" : "err");
+    }
+    if (resultBox) resultBox.hidden = false;
+
+    // Keep pre for a11y / tests that still scrape text
+    if (out) {
+      out.hidden = true;
+      out.textContent =
+        note +
+        "\nA (" +
+        maskPpLabel(a) +
+        "): " +
+        aa +
+        "\nB (" +
+        maskPpLabel(b) +
+        "): " +
+        bb +
+        "\n" +
+        verdict;
+    }
   }
 
   async function refreshDescriptors() {
@@ -1141,18 +1217,39 @@
       });
     }
     if ($("btnCmpPp")) $("btnCmpPp").addEventListener("click", () => comparePassphrases().catch(console.error));
+    if ($("btnCmpUseLab")) {
+      $("btnCmpUseLab").addEventListener("click", () => {
+        const r = refreshCmpMnemonicPreview();
+        updateCmpPathHint();
+        if ($("cmpPpVerdict")) {
+          $("cmpPpVerdict").textContent = r.ok
+            ? "Lab phrase loaded in Step 1. Set passphrases in Step 2, then Compare."
+            : "Lab has no valid phrase yet — Generate throwaway or open Lab tab first.";
+          $("cmpPpVerdict").classList.remove("ok", "err");
+        }
+        if ($("cmpPpResult") && r.ok) {
+          /* keep prior table if any */
+        }
+      });
+    }
     if ($("btnCmpGen")) {
       $("btnCmpGen").addEventListener("click", () => {
         onGenerate()
           .then(() => {
-            const out = $("cmpPpOut");
-            if (out) {
-              const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
-              out.textContent =
-                "[TEST DATA] Generated " +
-                (m ? m.split(/\s+/).length : "?") +
-                "-word throwaway phrase into Lab (session memory). Click Compare to run.";
+            refreshCmpMnemonicPreview();
+            updateCmpPathHint();
+            const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
+            const n = m ? m.split(/\s+/).length : "?";
+            if ($("cmpMnSource")) {
+              $("cmpMnSource").textContent =
+                "Source: [TEST DATA] new " + n + "-word throwaway phrase written into Lab. Click Compare after Step 2.";
             }
+            if ($("cmpPpVerdict")) {
+              $("cmpPpVerdict").textContent =
+                "[TEST DATA] Generated " + n + "-word phrase. Fill passphrases (e.g. leave A empty, B = test), then Compare.";
+              $("cmpPpVerdict").classList.remove("ok", "err");
+            }
+            if ($("cmpPpResult")) $("cmpPpResult").hidden = false;
           })
           .catch(console.error);
       });
@@ -1202,9 +1299,22 @@
       } else if (ev.key === "d" || ev.key === "D") {
         ev.preventDefault();
         deriveNow({ quiet: false }).catch(console.error);
-      } else if (ev.key === "?") {
+      } else if (ev.key === "?" || (ev.key === "/" && ev.shiftKey)) {
         ev.preventDefault();
         showTab("tools");
+        window.setTimeout(function () {
+          const card = $("tools-shortcuts");
+          if (card) {
+            if (card.tagName === "DETAILS") card.open = true;
+            card.scrollIntoView({ behavior: "smooth", block: "start" });
+            try {
+              card.setAttribute("tabindex", "-1");
+              card.focus({ preventScroll: true });
+            } catch (e) {
+              /* ignore */
+            }
+          }
+        }, 50);
       }
     });
 

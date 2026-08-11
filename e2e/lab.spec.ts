@@ -273,34 +273,42 @@ test.describe("Lab Tools panel", () => {
 
   test("S18 compare passphrases", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#cardCmpPp")).toBeVisible();
+    await page.locator("#btnCmpUseLab").click();
+    await expect(page.locator("#cmpMnPreview")).not.toHaveText("—");
     // beforeEach seeded Lab with abandon → Lab phrase provenance
+    await page.locator("#cmpPpA").fill("");
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same address/);
-    await expect(page.locator("#cmpPpOut")).toContainText(/A:/);
-    await expect(page.locator("#cmpPpOut")).toContainText(/\[Lab phrase\]/);
+    await expect(page.locator("#cmpPpResult")).toBeVisible();
+    await expect(page.locator("#cmpCellAddrA")).not.toHaveText("—");
+    await expect(page.locator("#cmpCellAddrB")).not.toHaveText("—");
+    await expect(page.locator("#cmpPpVerdict")).toContainText(/Different|Same/);
+    await expect(page.locator("#cmpPpVerdict")).toContainText(/\[Lab phrase\]/);
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
   });
 
   test("S18b tools generate test phrase then compare", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await page.locator("#btnCmpGen").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/\[TEST DATA\]/);
+    await expect(page.locator("#cmpMnPreview")).not.toHaveText("—");
+    await expect(page.locator("#cmpMnSource")).toContainText(/TEST DATA/i);
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/Different/);
+    await expect(page.locator("#cmpPpVerdict")).toContainText(/Different/);
+    await expect(page.locator("#cmpCellAddrA")).not.toHaveText("—");
   });
 
   test("S18c clear secrets then compare auto-gens TEST DATA", async ({ page }) => {
     await page.locator("#btnClear").click();
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await page.locator('.nav-item[data-nav="tools"]').click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/TEST DATA|cleared/i);
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpOut")).toContainText(/\[TEST DATA\]/);
-    await expect(page.locator("#cmpPpOut")).toContainText(/Different|Same address/);
+    await expect(page.locator("#cmpPpVerdict")).toContainText(/\[TEST DATA\]/);
+    await expect(page.locator("#cmpPpVerdict")).toContainText(/Different|Same/);
+    await expect(page.locator("#cmpMnPreview")).not.toHaveText("—");
   });
 
   test("S19 descriptors refresh", async ({ page }) => {
@@ -351,11 +359,15 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#descExplainOut")).toContainText(/refus|error|private/i);
   });
 
-  test("S23 tools keyboard shortcuts card present", async ({ page }) => {
+  test("S23 tools keyboard shortcuts optional fold", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
-    await expect(page.locator("#tools-shortcuts")).toBeVisible();
-    await expect(page.locator("#tools-shortcuts")).toContainText(/Keyboard shortcuts/i);
-    await expect(page.locator("#tools-shortcuts")).toContainText(/Lab/i);
+    // teach-only details — open to read
+    const det = page.locator("#tools-shortcuts");
+    await expect(det).toBeVisible();
+    await det.locator("summary").click();
+    await expect(det).toHaveAttribute("open", "");
+    await expect(det).toContainText(/Optional keyboard shortcuts/i);
+    await expect(det).toContainText(/Generate/i);
   });
 });
 

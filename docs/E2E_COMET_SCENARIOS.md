@@ -244,7 +244,7 @@ Same shell as Lab. Offline utilities: derivation path playground, dice/coin entr
 1. Open Tools from sidebar (or press ? on Lab when not typing)
 2. Path playground reflects Lab account/change/network/type
 3. Entropy pad: roll dice / flip coin · clear (practice only, not CSPRNG)
-4. Compare passphrases: optional Generate test phrase → Compare idx 0
+4. Compare passphrases (3 steps): Use Lab phrase or Generate throwaway → type A/B (plain text) → Compare → table of addresses
 5. Descriptors: Refresh → public descriptor text; prefix `[TEST DATA]` or `[Lab phrase]`; Phrase source blurb + TEST DATA chip on Tools intro
 6. PSBT: open teach fold “When does partial make sense?” · Sample: multisig/HWW story or minimal · Inspect (structure + teach footer only — no sign)
 7. Descriptor explain: public string only · refuse seeds

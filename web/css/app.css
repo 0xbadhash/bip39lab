@@ -656,6 +656,19 @@ html[data-teach="off"] .help-fold.teach-only {
   display: none !important;
 }
 
+/* Tools passphrase compare steps */
+.cmp-step-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.cmp-result .compare-table .addr-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
 /* Step rail */
 .step-rail {
   display: flex;
