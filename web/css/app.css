@@ -231,6 +231,88 @@ code {
   width: 100%;
 }
 
+/* E1 level soft gates */
+.learn-level-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+.learn-level-select {
+  min-width: 7.5rem;
+  max-width: 10rem;
+}
+.level-gated {
+  opacity: 0.55;
+  position: relative;
+}
+.level-gated::after {
+  content: "Raise Level to unlock (or use as-is — soft gate)";
+  display: block;
+  font-size: 0.78rem;
+  color: var(--warn);
+  margin-top: 0.35rem;
+}
+.hour-list,
+.quiz-item {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.1rem;
+}
+.hour-list li {
+  margin: 0.35rem 0;
+}
+.quiz-item h3 {
+  font-size: 0.95rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+/* E3 mobile */
+@media (max-width: 720px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: relative;
+    height: auto;
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .nav-item {
+    flex: 1 1 42%;
+    min-width: 8rem;
+  }
+  .content {
+    padding: 0.75rem 1rem 2rem;
+  }
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .step-rail {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .step-rail-btn {
+    flex: 0 0 auto;
+    min-width: 7.5rem;
+  }
+  .fields-inline {
+    flex-direction: column;
+  }
+  button.btn,
+  button.btn.secondary {
+    min-height: 2.5rem;
+  }
+}
+
 .sidebar {
   position: sticky;
   top: 0;

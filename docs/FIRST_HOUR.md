@@ -1,0 +1,26 @@
+# First hour — human path (bip39lab)
+
+**Audience:** Starter → Beginner. **Time:** 15–30 minutes.  
+**Rule:** Use only **practice** phrases. Never paste a funded recovery phrase on a machine you do not trust.
+
+## What this is / isn’t
+
+| Is | Isn’t |
+|----|--------|
+| Offline classroom for BIP-39 | A wallet (no send) |
+| Practice generate / derive | Safe place for real seeds on a public PC |
+| Educational Multisig / Shamir / SLIP-39 | Production SLIP-39 / Trezor Suite |
+| Tools inspect PSBT structure | Signer or broadcaster |
+
+## Checklist
+
+1. Read the air-gap banner and **What this is / isn’t** on Lab.  
+2. **Generate** a 12-word practice phrase.  
+3. Confirm the address table fills (same phrase → same addresses).  
+4. Open **Tools → Path playground** — read purpose / coin / account / change / index.  
+5. **Tools → Passphrase compare**: leave A empty, B = `test` → addresses differ.  
+6. Complete the three **quiz** self-checks (wrong pp, under-threshold Shamir, low entropy pad).  
+7. Optional: **Network** fees; understand leak ack before any address query.  
+8. Set **Level → Beginner** when ready.
+
+See also: `docs/LEARNING_PATH.md` (Starter → Advanced).

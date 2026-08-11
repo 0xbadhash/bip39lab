@@ -741,6 +741,31 @@ S57–S60b · `e2e/slip39.spec.ts`
 
 ---
 
+
+
+## Learning levels (E0–E6)
+
+### S61 — Orientation + first hour
+Lab: What this is/isn’t table; first hour checklist 8 steps; checkbox persists.
+
+### S62 — Level chip
+Level select starter→advanced; data-level on html; advanced shows BIP-85 + Ops cards.
+
+### S63 — Quiz shell
+Beginner+: three quiz items; mark pass; open passphrase compare.
+
+### S64 — Three splits tour
+Intermediate+: start tour; Multisig then Shamir titles.
+
+### S65 — BIP-85 shell
+Advanced: BIP-85 card; explain demo PRACTICE.
+
+### S66 — Ops card
+Advanced: Knots / seed-scan ops card.
+
+### S67 — Mobile layout
+Viewport ~390px: orientation + generate visible; sidebar stacks.
+
 # Report template
 
 ```text

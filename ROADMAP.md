@@ -357,6 +357,11 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** `scripts/seed_scan_educational.py --preflight-only`; pytest `tests/test_seed_scan.py`
 - **Notes:** Ops only. Re-run CLI when `initialblockdownload=false`. Hash file still **500**.
 
+### [DONE] Education levels E0–E6 (leveled classroom)
+- **Status:** done
+- **Specs:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md` … `e6-private-knots-ops.md`
+- **Notes:** Orientation, level chip, quiz, mobile CSS, three-splits tour, BIP-85 idea, ops card
+
 ## Current focus
 
 **Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`).  

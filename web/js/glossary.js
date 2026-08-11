@@ -248,6 +248,15 @@
         "Hardened levels use ' (purpose, coin, account). Tools → Path playground shows each level live from Lab controls.",
     },
     {
+      id: "BIP85",
+      title: "BIP-85",
+      group: "BIPs",
+      short: "Deterministic entropy from a master seed",
+      body:
+        "Way to derive many application-specific secrets/mnemonics from one master backup (different index → different app). " +
+        "Lab Advanced card teaches the idea only — not a full production BIP-85 wallet. Never fund educational demos.",
+    },
+    {
       id: "ACCOUNT",
       title: "Account",
       group: "Keys",

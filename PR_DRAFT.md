@@ -1,81 +1,60 @@
-# PR Draft: Tools teach UX pack + panel jump rails (v0.13.12)
+# PR Draft: Education levels E0–E6 (v0.14.0)
 
-**Range:** `fba40c0` (v0.13.11) … `204bbe0` (HEAD)  
+**Spec:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md` (+ e1–e6)  
 **Spec waiver:** chore  
 
 ## What Problem This Solves
-
-Tools became hard to learn: Lab jump rail (Phrase/Path/Addresses/Watch-only) still showed on Tools; PSBT/path/entropy/passphrase cards lacked clear teach steps; entropy pad could show empty results or stale-bundle errors; step-rail jumps needed clearer focus/scroll.
+Flat toolbox overwhelmed starters; thin human onboarding; mobile unusable; no quiz/tour/BIP-85/ops framing.
 
 ## Why This Change Was Made
-
-Close Tools UX follow-ups from Comet feedback and code review: panel-scoped jump rails, educational samples, low-entropy honesty, cache-bust, without adding a 7th primary nav item.
+Ship leveled classroom E0–E6: orientation, level chip, quiz, mobile CSS, three-splits tour, BIP-85 idea, private ops card.
 
 ## User Impact
-
-- **Lab rail only on Lab**; **Tools rail** (Path · Entropy · Passphrase · Descriptors · PSBT · Explain).  
-- Path playground: level-by-level table + “Open Lab path controls”.  
-- Entropy pad: 3 steps, simulated rolls label, TOO LOW verdict, practice seed from pad (never fund).  
-- Passphrase compare: 3 steps, plain-text A/B + address table + shoulder-surf note.  
-- PSBT: teach fold + synthetic samples.  
-- Step-rail: focus + flash + scroll-parent aware.  
-- JS assets `?v=VERSION` cache-bust.
+- What this is/isn’t + First hour checklist (localStorage)
+- Level select Starter→Advanced with soft gates
+- Quiz Q1–Q3 self-check
+- Mobile stack ≤720px
+- Tour Multisig→Shamir→SLIP-39
+- Advanced BIP-85 mental model + Ops/Knots links
+- docs/FIRST_HOUR.md + LEARNING_PATH.md
 
 ## Evidence
-
-- Playwright: S14, S17, S17b, S18*, S20*, S23, S44, S44b (and suite via product_smoke at release)  
-- `check_web_e2e`  
-- CODE-REVIEW + CROSS-REVIEW p0=0 / blockers=0  
-- secrets clean on range  
+- e2e/learn.spec.ts S61–S67
+- product_smoke + check_web_e2e
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR
 
 ## Traceability
-
-| AC | Test / smoke |
-|----|----------------|
-| AC-1 Tools rail ≠ Lab rail | `e2e/help-ux.spec.ts` S44b; `#labStepRail` hidden on Tools |
-| AC-2 Lab rail jumps focus | S44 Phrase/Path/Addresses/Watch-only |
-| AC-3 Entropy pad practice seed + TOO LOW | S17b |
-| AC-4 Simulated rolls messaging | S17 contains “Simulated rolls” |
-| AC-5 Passphrase compare steps + table | S18 / S18b / S18c |
-| AC-6 PSBT samples + teach | S20 / S20b |
-| AC-7 Path playground table | S14 |
-| AC-8 Comet S-ids synced | `docs/E2E_COMET_SCENARIOS.md` S17b S44b; check_web_e2e |
-| AC-9 Cache-bust scripts | HTML `js/*?v=`; stamp_site_version |
+| AC | Test |
+|----|------|
+| AC-1 Orientation | S61 |
+| AC-2 First hour | S61 |
+| AC-3 Level chip | S62 |
+| AC-4 Quiz | S63 |
+| AC-5 Mobile | S67 |
+| AC-6 Tour | S64 |
+| AC-7 BIP-85 | S65 |
+| AC-8 Ops | S66 |
 
 ## Threat notes
-
-- **secrets** — practice pad words labeled never-fund; no server retention; compare is offline.  
-- **xss** — textContent/innerHTML only for controlled teach strings (verdict HTML uses fixed templates, not user HTML).  
-- **supply-chain** — bundle rebuild from existing @scure/bip39 entropyToMnemonic; no new npm deps.  
-- CSP offline on Lab/Tools unchanged; PSBT never signs/broadcasts.  
-- Math.random dice labeled **simulated** (not physical / CSPRNG).  
+- **secrets** — localStorage prefs only; practice phrases; no server
+- **xss** — static copy; no user HTML into orientation
+- **supply-chain** — no new npm deps (learn-levels.js vanilla)
 
 ## Red-proof
-
 ```text
 red_cmd: false
 green_cmd: true
 ```
 
-TDD narrative: e2e extended for S17b/S44b/Tools rail; green under Playwright.
-
 ## Evidence pack
-
-- **hard_gates** — CODE-REVIEW, CROSS-REVIEW, chore waiver, secrets, threat tags  
-- **smoke** — product_smoke unit + e2e; check_web_e2e  
-- **pytest** — unit suite in product_smoke  
-- **validate** — secrets scan on `v0.13.11...HEAD`  
+- hard_gates / smoke / pytest / validate secrets
 
 ## Untested paths
-
 | Path | Reason |
 |------|--------|
-| `web/js/glossary.js` | Tip bodies covered via browser UI e2e (help tips / glossary panel); no unit file — static content map only |
-| `web/js/help-ui.js` | Covered by Playwright `e2e/help-ux.spec.ts` S41–S48 / S44 / S44b (step rail + teach); no separate pytest module |
+| web/js/learn-levels.js | Covered by e2e/learn.spec.ts S61–S66 |
 
 ## Things that look bad but are actually fine
-
-1. **Large bip39lab.bundle.js diff** — rebuild after wordlist import path fix + entropyToMnemonic export.  
-2. **Pad can emit valid BIP-39 from weak rolls** — intentional teach; TOO LOW verdict is the lesson.  
-3. **Plain-text passphrases on Tools compare** — intentional; shoulder-surf disclosed.  
-4. **Still 6 primary nav items** — Tools jump rail is in-panel only.  
+1. BIP-85 demo is mental-model only, not full HMAC derivation.
+2. Soft gates opacity, not hard locks.
+3. Seven education specs shipped in one minor release for coherence.
