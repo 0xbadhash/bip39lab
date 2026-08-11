@@ -118,8 +118,22 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page).toHaveURL(/multisig\.html/);
     await expect(page.locator("#learnReturnDockMs")).toBeVisible();
     await expect(page.locator("#learnReturnDockMs a")).toContainText(/Intermediate/i);
-    await page.locator("#learnReturnDockMs a").click();
-    await expect(page).toHaveURL(/index\.html|\/$/);
+    // Mark I1 on Multisig dock (same pattern as Q2 Shamir) — pass + return
+    await expect(page.locator("#btnMarkI1FromMs")).toBeVisible();
+    await page.locator("#btnMarkI1FromMs").click();
+    await expect(page).toHaveURL(/from=intquiz|index|\/$/);
+    await expect(page.locator("#cardIntQuiz")).toBeInViewport();
+    await expect(page.locator("#quizBadge-i1")).toContainText(/Passed/i);
+  });
+
+  test("S71 intermediate I4 mark on Lab dock", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("intermediate");
+    await page.locator('[data-quiz-go="i4"]').click();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    await expect(page.locator("#btnMarkPathFromDock")).toBeVisible();
+    await expect(page.locator("#btnMarkPathFromDock")).toContainText(/I4/i);
+    await page.locator("#btnMarkPathFromDock").click();
+    await expect(page.locator("#quizBadge-i4")).toContainText(/Passed/i);
     await expect(page.locator("#cardIntQuiz")).toBeInViewport();
   });
 

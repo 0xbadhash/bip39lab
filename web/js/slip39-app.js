@@ -197,6 +197,12 @@
           dock.hidden = false;
           document.body.classList.add("learn-return-open");
         }
+        try {
+          sessionStorage.setItem("bip39lab.quizReturn", "intquiz");
+          sessionStorage.setItem("bip39lab.quizActive", "i3");
+        } catch (eS) {
+          /* ignore */
+        }
         var dismiss = $("learnReturnDockS39Dismiss");
         if (dismiss && dock) {
           dismiss.addEventListener("click", function () {
@@ -204,6 +210,32 @@
             document.body.classList.remove("learn-return-open");
           });
         }
+        document.body.addEventListener("click", function (ev) {
+          var t = ev.target && ev.target.closest ? ev.target.closest("#btnMarkI3FromS39") : null;
+          if (!t) return;
+          ev.preventDefault();
+          try {
+            var st = {};
+            try {
+              st = JSON.parse(localStorage.getItem("bip39lab.intQuiz") || "{}") || {};
+            } catch (eJ) {
+              st = {};
+            }
+            st.i3 = true;
+            localStorage.setItem("bip39lab.intQuiz", JSON.stringify(st));
+            sessionStorage.setItem("bip39lab.quizReturn", "intquiz");
+            sessionStorage.setItem("bip39lab.quizActive", "i3");
+            sessionStorage.setItem("bip39lab.quizJustMarked", "i3");
+          } catch (eM) {
+            console.error("mark I3 failed", eM);
+          }
+          var dest = "index.html?from=intquiz&marked=i3&_=" + Date.now();
+          try {
+            window.location.assign(dest);
+          } catch (eNav) {
+            window.location.href = dest;
+          }
+        });
       }
     } catch (eDock) {
       /* ignore */

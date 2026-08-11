@@ -338,7 +338,7 @@
       ""
     );
 
-    // Intermediate I1 return dock
+    // Intermediate I1 return dock — Back + Mark passed & return (same pattern as Q1/Q2/Q3/Q4)
     try {
       if (/from=intquiz/.test(location.search || "")) {
         var dock = $("learnReturnDockMs");
@@ -353,6 +353,12 @@
           dock.hidden = false;
           document.body.classList.add("learn-return-open");
         }
+        try {
+          sessionStorage.setItem("bip39lab.quizReturn", "intquiz");
+          sessionStorage.setItem("bip39lab.quizActive", "i1");
+        } catch (eS) {
+          /* ignore */
+        }
         var dismiss = $("learnReturnDockMsDismiss");
         if (dismiss && dock) {
           dismiss.addEventListener("click", function () {
@@ -360,6 +366,32 @@
             document.body.classList.remove("learn-return-open");
           });
         }
+        document.body.addEventListener("click", function (ev) {
+          var t = ev.target && ev.target.closest ? ev.target.closest("#btnMarkI1FromMs") : null;
+          if (!t) return;
+          ev.preventDefault();
+          try {
+            var st = {};
+            try {
+              st = JSON.parse(localStorage.getItem("bip39lab.intQuiz") || "{}") || {};
+            } catch (eJ) {
+              st = {};
+            }
+            st.i1 = true;
+            localStorage.setItem("bip39lab.intQuiz", JSON.stringify(st));
+            sessionStorage.setItem("bip39lab.quizReturn", "intquiz");
+            sessionStorage.setItem("bip39lab.quizActive", "i1");
+            sessionStorage.setItem("bip39lab.quizJustMarked", "i1");
+          } catch (eM) {
+            console.error("mark I1 failed", eM);
+          }
+          var dest = "index.html?from=intquiz&marked=i1&_=" + Date.now();
+          try {
+            window.location.assign(dest);
+          } catch (eNav) {
+            window.location.href = dest;
+          }
+        });
       }
     } catch (eDock) {
       /* ignore */

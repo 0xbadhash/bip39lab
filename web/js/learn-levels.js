@@ -227,10 +227,12 @@
    * mode: "hour" | "quiz" | "intquiz" | "advquiz" | null (hide)
    */
   function hideAllQuizMarkBtns() {
-    ["btnMarkQ1FromTools", "btnMarkQ3FromEnt", "btnMarkQ4FromEnt"].forEach(function (id) {
-      var el = $(id);
-      if (el) el.hidden = true;
-    });
+    ["btnMarkQ1FromTools", "btnMarkQ3FromEnt", "btnMarkQ4FromEnt", "btnMarkPathFromDock"].forEach(
+      function (id) {
+        var el = $(id);
+        if (el) el.hidden = true;
+      }
+    );
   }
 
   function updateQuizMarkButtonsOnDock() {
@@ -249,6 +251,44 @@
     // Q3/Q4: controlled by entropy pad (app.js) — only hide here if wrong active quiz
     if (m3 && active && active !== "q3" && active !== "q4") m3.hidden = true;
     if (m4 && active && active !== "q3" && active !== "q4") m4.hidden = true;
+    // Path quizzes (I4, A1–A4) use btnMarkPathFromDock when active
+    updatePathQuizMarkOnDock(active);
+  }
+
+  function updatePathQuizMarkOnDock(activeOpt) {
+    var btn = $("btnMarkPathFromDock");
+    if (!btn) return;
+    var active = activeOpt || "";
+    try {
+      active = active || sessionStorage.getItem(QUIZ_ACTIVE_KEY) || "";
+    } catch (e) {
+      /* ignore */
+    }
+    var mode = learnReturnMode;
+    try {
+      if (!mode) {
+        var ret = sessionStorage.getItem(QUIZ_RETURN_KEY) || "";
+        if (ret === "intquiz") mode = "intquiz";
+        else if (ret === "advquiz") mode = "advquiz";
+      }
+    } catch (e2) {
+      /* ignore */
+    }
+    var isPath = /^i[1-4]$/.test(active) || /^a[1-4]$/.test(active);
+    // I1–I3 are marked on external pages; Lab dock is for I4 + A1–A4
+    var onLabPath =
+      active === "i4" || active === "a1" || active === "a2" || active === "a3" || active === "a4";
+    if (!isPath || !onLabPath || (mode !== "intquiz" && mode !== "advquiz")) {
+      btn.hidden = true;
+      return;
+    }
+    var st = loadJson(quizStorageFor(active), {});
+    if (st[active]) {
+      btn.hidden = true;
+      return;
+    }
+    btn.hidden = false;
+    btn.textContent = "Mark " + labelForQuizId(active) + " passed & return";
   }
 
   function returnBtnLabel(mode) {
@@ -285,7 +325,10 @@
     if (btn) btn.textContent = returnBtnLabel(mode);
     if (hintEl) hintEl.textContent = hint || returnDefaultHint(mode);
     if (mode === "quiz") updateQuizMarkButtonsOnDock();
-    else hideAllQuizMarkBtns();
+    else if (mode === "intquiz" || mode === "advquiz") {
+      hideAllQuizMarkBtns();
+      updatePathQuizMarkOnDock();
+    } else hideAllQuizMarkBtns();
   }
 
   function markQuizFromDock(q) {
@@ -620,6 +663,15 @@
       } else if (t.id === "btnMarkQ4FromEnt") {
         ev.preventDefault();
         markQuiz("q4");
+      } else if (t.id === "btnMarkPathFromDock") {
+        ev.preventDefault();
+        var act = "";
+        try {
+          act = sessionStorage.getItem(QUIZ_ACTIVE_KEY) || "";
+        } catch (eA) {
+          act = "";
+        }
+        if (/^i[1-4]$/.test(act) || /^a[1-4]$/.test(act)) markPathQuiz(act);
       }
     });
   }
@@ -1184,6 +1236,23 @@
     // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
     if (typeof location !== "undefined" && /from=intquiz/.test(location.search || "")) {
       try {
+        var mI = /[?&]marked=(i[1-4])/.exec(location.search || "");
+        if (mI && mI[1]) {
+          var stI = loadJson(INT_QUIZ_KEY, {});
+          stI[mI[1]] = true;
+          saveJson(INT_QUIZ_KEY, stI);
+        }
+        var justI = sessionStorage.getItem("bip39lab.quizJustMarked");
+        if (justI && /^i[1-4]$/.test(justI)) {
+          var stJI = loadJson(INT_QUIZ_KEY, {});
+          stJI[justI] = true;
+          saveJson(INT_QUIZ_KEY, stJI);
+          sessionStorage.removeItem("bip39lab.quizJustMarked");
+        }
+      } catch (eMarkI) {
+        /* ignore */
+      }
+      try {
         sessionStorage.removeItem(QUIZ_RETURN_KEY);
       } catch (eI) {
         /* ignore */
@@ -1200,6 +1269,23 @@
         /* ignore */
       }
     } else if (typeof location !== "undefined" && /from=advquiz/.test(location.search || "")) {
+      try {
+        var mA = /[?&]marked=(a[1-4])/.exec(location.search || "");
+        if (mA && mA[1]) {
+          var stA = loadJson(ADV_QUIZ_KEY, {});
+          stA[mA[1]] = true;
+          saveJson(ADV_QUIZ_KEY, stA);
+        }
+        var justA = sessionStorage.getItem("bip39lab.quizJustMarked");
+        if (justA && /^a[1-4]$/.test(justA)) {
+          var stJA = loadJson(ADV_QUIZ_KEY, {});
+          stJA[justA] = true;
+          saveJson(ADV_QUIZ_KEY, stJA);
+          sessionStorage.removeItem("bip39lab.quizJustMarked");
+        }
+      } catch (eMarkA) {
+        /* ignore */
+      }
       try {
         sessionStorage.removeItem(QUIZ_RETURN_KEY);
       } catch (eA) {

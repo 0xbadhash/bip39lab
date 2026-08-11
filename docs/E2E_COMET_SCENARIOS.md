@@ -29,12 +29,12 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S70 · Playwright 87 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S71 · Playwright 88 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
-`Product: 0.16.0 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S70 · Playwright S-ids: 87`
+`Product: 0.16.0 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 88`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -52,9 +52,9 @@ scenarios: S0–S70 · Playwright 87 tests · auto-stamped from e2e/ + VERSION
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **87** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **88** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S70** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S71** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -771,7 +771,11 @@ Level Intermediate: `#cardIntQuiz` status board; Mark I1 → Passed;
 I4 Go try opens PSBT + amber “Back to Intermediate quiz” dock; Mark I4.
 
 ### S70 — Intermediate I1 Multisig return dock
-I1 Go try → multisig.html shows Intermediate return dock; Back → Lab Intermediate quiz.
+I1 Go try → multisig.html shows Intermediate return dock + **Mark I1 passed & return**;
+marks I1 Passed on Lab Intermediate quiz.
+
+### S71 — Intermediate I4 mark on Lab dock
+I4 Go try → Tools PSBT + **Mark I4 passed & return** on amber dock → Passed.
 
 ### S69 — Advanced A1–A4 self-check
 Level Advanced: `#cardAdvQuiz`; A4 Go try → orientation + Advanced return dock;

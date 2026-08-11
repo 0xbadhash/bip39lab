@@ -332,6 +332,7 @@
       var backA = dock.querySelector("a.btn");
       var hint = $("learnReturnDockShamirHint");
       var markQ2 = $("btnMarkQ2FromShamir");
+      var markI2 = $("btnMarkI2FromShamir");
       if (fromInt || retKey === "intquiz") {
         if (backA) {
           backA.href = "index.html?from=intquiz";
@@ -339,14 +340,16 @@
         }
         if (hint)
           hint.textContent =
-            "I2: Shamir = hex shares (not BIP-39 words). Then Mark I2 on Lab.";
+            "I2: Shamir = hex shares (not BIP-39 words). Mark I2 when clear.";
         if (markQ2) markQ2.hidden = true;
+        if (markI2) markI2.hidden = false;
       } else {
         if (backA) {
           backA.href = "index.html?from=quiz";
           backA.textContent = "← Back to Guided quiz";
         }
         if (hint) hint.textContent = "Q2: fail with 1 share, then succeed with M.";
+        if (markI2) markI2.hidden = true;
       }
     }
     if (fromInt || retKey === "intquiz") {
@@ -406,6 +409,32 @@
     }
   }
 
+  function markI2AndReturn(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    try {
+      var st = {};
+      try {
+        st = JSON.parse(localStorage.getItem("bip39lab.intQuiz") || "{}") || {};
+      } catch (e) {
+        st = {};
+      }
+      st.i2 = true;
+      localStorage.setItem("bip39lab.intQuiz", JSON.stringify(st));
+      sessionStorage.setItem("bip39lab.quizReturn", "intquiz");
+      sessionStorage.setItem("bip39lab.quizActive", "i2");
+      sessionStorage.setItem("bip39lab.quizJustMarked", "i2");
+    } catch (e2) {
+      console.error("mark I2 failed", e2);
+    }
+    var dest = "index.html?from=intquiz&marked=i2&_=" + Date.now();
+    try {
+      window.location.assign(dest);
+    } catch (eNav) {
+      window.location.href = dest;
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     if ($("btnShGen")) $("btnShGen").addEventListener("click", onGenerate);
     if ($("btnShSplit")) $("btnShSplit").addEventListener("click", onSplit);
@@ -415,7 +444,12 @@
     // Delegation: works after dock is moved to <body>
     document.body.addEventListener("click", function (ev) {
       var t = ev.target && ev.target.closest ? ev.target.closest("#btnMarkQ2FromShamir") : null;
-      if (t) markQ2AndReturn(ev);
+      if (t) {
+        markQ2AndReturn(ev);
+        return;
+      }
+      var t2 = ev.target && ev.target.closest ? ev.target.closest("#btnMarkI2FromShamir") : null;
+      if (t2) markI2AndReturn(ev);
     });
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
     showQuizReturn();
