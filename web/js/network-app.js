@@ -266,6 +266,18 @@
     );
   }
 
+  function showFirstHourReturn() {
+    var fromQ = typeof location !== "undefined" && /from=firsthour/.test(location.search || "");
+    var fromS = false;
+    try {
+      fromS = sessionStorage.getItem("bip39lab.hourReturn") === "1";
+    } catch (e) {
+      /* ignore */
+    }
+    var bar = $("hourBackBarNet");
+    if (bar && (fromQ || fromS)) bar.hidden = false;
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     $("balAck").addEventListener("change", updateAck);
     updateAck();
@@ -274,5 +286,6 @@
     $("btnFetchBal").addEventListener("click", () => fetchBalances().catch(console.error));
     setStatus($("snapStatus"), "Idle — click Fetch when you want public fee/traffic data.", "");
     setStatus($("balStatus"), "Idle — ack leak, then load/paste addresses.", "");
+    showFirstHourReturn();
   });
 })();

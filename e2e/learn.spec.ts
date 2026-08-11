@@ -18,8 +18,22 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#orientationTable")).toContainText(/wallet|practice|PSBT/i);
     await expect(page.locator("#cardFirstHour")).toBeVisible();
     await expect(page.locator("[data-hour-step]")).toHaveCount(8);
+    await expect(page.locator('[data-hour-step="h1"] .hour-go')).toBeVisible();
+    await expect(page.locator('[data-hour-step="h1"] .hour-done')).toBeVisible();
     await page.locator('[data-hour-step="h1"] input').check();
     await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*8/);
+    // Go → sticky Back bar → Mark done returns to checklist
+    await page.locator('[data-hour-step="h2"] .hour-go').click();
+    await expect(page.locator("#hourBackBar")).toBeVisible();
+    await expect(page.locator("#card-mnemonic")).toBeVisible();
+    await page.locator("#hourBackBarBtn").click();
+    await expect(page.locator("#cardFirstHour")).toBeInViewport();
+    await page.locator('[data-hour-step="h2"] .hour-done').click();
+    await expect(page.locator("#firstHourProgress")).toContainText(/2\s*\/\s*8/);
+    // Ready for Beginner marks h8 + level
+    await page.getByRole("button", { name: /I’m ready for Beginner|I'm ready for Beginner/i }).click();
+    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
+    await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
   });
 
   test("S62 level chip soft gates", async ({ page }) => {

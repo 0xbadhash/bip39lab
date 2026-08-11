@@ -747,6 +747,8 @@ S57–S60b · `e2e/slip39.spec.ts`
 
 ### S61 — Orientation + first hour
 Lab: What this is/isn’t table; first hour checklist 8 steps; checkbox persists.
+Go on h2 shows mnemonic card + sticky Back bar; Mark done returns to checklist;
+I’m ready for Beginner sets level + marks h8.
 
 ### S62 — Level chip
 Level select starter→advanced; data-level on html; advanced shows BIP-85 + Ops cards.

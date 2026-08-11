@@ -85,19 +85,101 @@
     });
   }
 
+  var HOUR_RETURN_KEY = "bip39lab.hourReturn";
+
+  function setHourReturn() {
+    try {
+      sessionStorage.setItem(HOUR_RETURN_KEY, "1");
+    } catch (e) {
+      /* ignore */
+    }
+    showHourBackBar(true);
+  }
+
+  function clearHourReturn() {
+    try {
+      sessionStorage.removeItem(HOUR_RETURN_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    showHourBackBar(false);
+  }
+
+  function showHourBackBar(on) {
+    var bar = $("hourBackBar");
+    if (!bar) return;
+    bar.hidden = !on;
+  }
+
+  function returnToFirstHour() {
+    clearHourReturn();
+    goTab("lab");
+    setTimeout(function () {
+      var card = $("cardFirstHour");
+      if (card) {
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        try {
+          if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+          card.focus({ preventScroll: true });
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }, 80);
+  }
+
+  function markHourStep(id, done) {
+    var st = loadJson(HOUR_KEY, {});
+    st[id] = !!done;
+    saveJson(HOUR_KEY, st);
+    refreshFirstHour();
+  }
+
+  function goHourStep(li) {
+    if (!li) return;
+    var href = li.getAttribute("data-hour-href");
+    var tab = li.getAttribute("data-hour-tab");
+    var target = li.getAttribute("data-hour-target");
+    var needLevel = li.querySelector(".hour-go") && li.querySelector(".hour-go").getAttribute("data-hour-level");
+    if (needLevel) setLevel(needLevel);
+    setHourReturn();
+    if (href) {
+      // Network (or external page): return via bar on index after user navigates back, or query
+      try {
+        sessionStorage.setItem(HOUR_RETURN_KEY, "1");
+      } catch (e) {
+        /* ignore */
+      }
+      window.location.href = href + (href.indexOf("?") >= 0 ? "&" : "?") + "from=firsthour";
+      return;
+    }
+    if (tab) goTab(tab);
+    setTimeout(function () {
+      var el = target ? document.querySelector(target) : null;
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        try {
+          if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+          el.focus({ preventScroll: true });
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }, 100);
+  }
+
   function refreshFirstHour() {
     var st = loadJson(HOUR_KEY, {});
     document.querySelectorAll("[data-hour-step]").forEach(function (el) {
       var id = el.getAttribute("data-hour-step");
-      var cb = el.querySelector('input[type="checkbox"]');
+      var cb = el.querySelector(".hour-step-cb") || el.querySelector('input[type="checkbox"]');
       if (cb) {
         cb.checked = !!st[id];
         cb.onchange = function () {
-          st[id] = !!cb.checked;
-          saveJson(HOUR_KEY, st);
-          refreshFirstHour();
+          markHourStep(id, cb.checked);
         };
       }
+      el.classList.toggle("hour-step-done", !!st[id]);
     });
     var done = 0;
     var total = 0;
@@ -107,7 +189,67 @@
       if (st[id]) done++;
     });
     var prog = $("firstHourProgress");
-    if (prog) prog.textContent = done + " / " + total + " steps checked";
+    if (prog) prog.textContent = done + " / " + total + " steps done";
+  }
+
+  function wireFirstHour() {
+    document.querySelectorAll("[data-hour-step]").forEach(function (li) {
+      var id = li.getAttribute("data-hour-step");
+      var go = li.querySelector(".hour-go");
+      var doneBtn = li.querySelector(".hour-done");
+      if (go) {
+        go.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          if (go.id === "hourGoBeginner") {
+            setLevel("beginner");
+            markHourStep(id, true);
+            returnToFirstHour();
+            return;
+          }
+          goHourStep(li);
+        });
+      }
+      if (doneBtn) {
+        doneBtn.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          markHourStep(id, true);
+          returnToFirstHour();
+        });
+      }
+    });
+    var back = $("hourScrollTop");
+    if (back) back.addEventListener("click", returnToFirstHour);
+    var barBtn = $("hourBackBarBtn");
+    if (barBtn) barBtn.addEventListener("click", returnToFirstHour);
+    try {
+      if (sessionStorage.getItem(HOUR_RETURN_KEY) === "1") showHourBackBar(true);
+    } catch (e) {
+      /* ignore */
+    }
+    // Returning from network.html?from=firsthour — open checklist and keep back bar until dismiss
+    if (typeof location !== "undefined" && /from=firsthour/.test(location.search || "")) {
+      try {
+        sessionStorage.setItem(HOUR_RETURN_KEY, "1");
+      } catch (e) {
+        /* ignore */
+      }
+      showHourBackBar(true);
+      setTimeout(function () {
+        var card = $("cardFirstHour");
+        if (card) {
+          card.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 120);
+      // Drop query so refresh does not re-jump forever
+      try {
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.hash);
+        }
+      } catch (e2) {
+        /* ignore */
+      }
+    }
+    refreshFirstHour();
   }
 
   function refreshQuiz() {
@@ -144,7 +286,10 @@
     }
     document.querySelectorAll("[data-level-set]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        setLevel(btn.getAttribute("data-level-set"));
+        var lvl = btn.getAttribute("data-level-set");
+        setLevel(lvl);
+        // Footer “I’m ready for Beginner” completes first-hour step 8
+        if (lvl === "beginner") markHourStep("h8", true);
       });
     });
     document.querySelectorAll("[data-level-skip]").forEach(function (btn) {
@@ -268,7 +413,7 @@
           "Never fund educational parents or children. Prefer hardware/vendor tools for real BIP-85.";
       });
 
-    refreshFirstHour();
+    wireFirstHour();
     refreshQuiz();
     applyLevel(getLevel());
   }

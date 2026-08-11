@@ -129,6 +129,12 @@
       </header>
 
       <main class="content">
+        <div id="hourBackBar" class="hour-back-bar" hidden role="navigation" aria-label="Return to First hour">
+          <button type="button" class="btn secondary btn-sm" id="hourBackBarBtn">
+            ← Back to First hour checklist
+          </button>
+          <span class="control-help" style="margin:0">Finish the step, then mark it done on the checklist.</span>
+        </div>
         <div class="warn" role="note">
           <strong>Air-gap recommended.</strong>
           All cryptography runs in this page. Nothing is written to disk or sent to a server from here.
@@ -171,18 +177,118 @@
 
           <div class="card card-wide" id="cardFirstHour">
             <h2>First hour checklist <span id="firstHourProgress" class="chip">0 / 0</span></h2>
-            <p class="control-help">Starter path (~15–30 min). Check items as you go (saved in this browser only).</p>
-            <ul class="hour-list">
-              <li data-hour-step="h1"><label><input type="checkbox" /> Read air-gap warn + “What this is / isn’t”</label></li>
-              <li data-hour-step="h2"><label><input type="checkbox" /> Lab: Generate a <em>practice</em> 12-word phrase (not funded)</label></li>
-              <li data-hour-step="h3"><label><input type="checkbox" /> See addresses fill (same phrase → same addresses)</label></li>
-              <li data-hour-step="h4"><label><input type="checkbox" /> Tools: Path playground — read purpose / coin / account / change / index</label></li>
-              <li data-hour-step="h5"><label><input type="checkbox" /> Tools: Passphrase compare — empty vs <code>test</code> → different addresses</label></li>
-              <li data-hour-step="h6"><label><input type="checkbox" /> Quiz: mark the three self-checks when you understand them</label></li>
-              <li data-hour-step="h7"><label><input type="checkbox" /> Optional: Network — fees only; understand address leak ack</label></li>
-              <li data-hour-step="h8"><label><input type="checkbox" /> Raise Level to Beginner when ready</label></li>
-            </ul>
-            <button type="button" class="btn secondary" data-level-set="beginner">I’m ready for Beginner</button>
+            <p class="control-help">
+              Starter path (~15–30 min). Per step:
+              <strong>Go</strong> jumps there (sticky <strong>← Back</strong> bar appears),
+              <strong>Mark done</strong> checks the box and returns here,
+              or tick the <strong>checkbox</strong> yourself. Progress is this browser only.
+              Full write-up: <a href="docs/FIRST_HOUR.md" id="linkFirstHourDoc">docs/FIRST_HOUR.md</a>
+              (also under repo <code>docs/</code> if this host has no <code>/docs</code>).
+            </p>
+            <ol class="hour-list" id="firstHourList">
+              <li class="hour-step" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#cardOrientation">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>1.</strong> Read air-gap warn + “What this is / isn’t”</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h2" data-hour-tab="lab" data-hour-target="#card-mnemonic">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>2.</strong> Lab: Generate a <em>practice</em> 12-word phrase (not funded)</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h3" data-hour-tab="lab" data-hour-target="#addrTable">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>3.</strong> See addresses fill (same phrase → same addresses)</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h4" data-hour-tab="tools" data-hour-target="#cardPathPlay">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>4.</strong> Tools: Path playground — purpose / coin / account / change / index</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h5" data-hour-tab="tools" data-hour-target="#cardCmpPp">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>5.</strong> Tools: Passphrase compare — empty vs <code>test</code> → different addresses</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#cardQuiz">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>6.</strong> Quiz: mark the three self-checks when you understand them</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go" data-hour-level="beginner">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h7" data-hour-href="network.html">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>7.</strong> Optional: Network — fees only; understand address leak ack</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+              <li class="hour-step" data-hour-step="h8" data-hour-tab="lab" data-hour-target="#cardFirstHour">
+                <div class="hour-step-main">
+                  <label class="hour-step-label">
+                    <input type="checkbox" class="hour-step-cb" />
+                    <span><strong>8.</strong> Raise Level to Beginner when ready</span>
+                  </label>
+                  <div class="hour-step-actions">
+                    <button type="button" class="btn secondary btn-sm hour-go" id="hourGoBeginner">Set Beginner</button>
+                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
+                  </div>
+                </div>
+              </li>
+            </ol>
+            <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
+              <button type="button" class="btn secondary" data-level-set="beginner">I’m ready for Beginner</button>
+              <button type="button" class="btn secondary btn-sm" id="hourScrollTop" title="Jump back to this checklist">
+                Back to this checklist
+              </button>
+            </div>
           </div>
 
           <div class="card card-wide" id="cardQuiz" data-level-min="beginner">
@@ -1025,7 +1131,7 @@
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.0"></script>
   <script src="js/help-ui.js?v=0.14.0"></script>
-  <script src="js/learn-levels.js?v=0.14.0"></script>
+  <script src="js/learn-levels.js?v=0.14.1"></script>
   <script src="js/app.js?v=0.14.0"></script>
 </body>
 </html>
