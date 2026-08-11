@@ -1,8 +1,8 @@
 {
   "card_id": null,
-  "phase": "ready_for_review",
-  "score": 100.0,
+  "phase": "approved",
+  "score": 100,
   "spec_id": ".agents/specs/2026-08-10-knots-2000-seed-scan.md",
-  "task": "Tools rail + pad honesty follow-ups",
+  "task": "Tools UX pack v0.13.12",
   "waiver": "chore"
 }

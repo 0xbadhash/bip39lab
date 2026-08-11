@@ -33,9 +33,9 @@ test.describe("Help UX hybrid", () => {
     await expect(page.locator("#btnTeach")).toContainText(/Teach: Off/i);
     await expect(page.locator("html")).toHaveAttribute("data-teach", "off");
     await expect(page.locator("#labStepRail")).toBeHidden();
-    // air-gap warn always on
-    await expect(page.locator(".warn")).toBeVisible();
-    await expect(page.locator(".warn")).toContainText(/Air-gap/i);
+    // air-gap warn always on (not the hidden entropy-pad result box)
+    await expect(page.locator('.warn[role="note"]')).toBeVisible();
+    await expect(page.locator('.warn[role="note"]')).toContainText(/Air-gap/i);
     // tip buttons without safety class hidden when teach off
     await expect(page.locator(".help-tip:not(.help-tip-safety)").first()).toBeHidden();
   });
