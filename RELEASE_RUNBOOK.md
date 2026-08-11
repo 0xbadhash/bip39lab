@@ -1,37 +1,47 @@
-# RELEASE RUNBOOK — v0.15.1
+# RELEASE_RUNBOOK — v0.16.0 Intermediate I1–I4 + Advanced A1–A4
 
+**Marker:** RELEASE-RUNBOOK  
 **Date:** 2026-08-11  
-**Score:** 100  
-**Base:** v0.15.0  
-
-## What ships
-Classroom reliability patch: quiz dock mark Q1–Q4, Shamir Q2 mark return, viewport-bottom dock, sidebar HTML repair, Beginner what’s-next, hour step 6 auto-complete, Extra help beside Theme.
+**Version:** 0.16.0  
+**Tag:** v0.16.0  
+**Spec:** `.agents/specs/2026-08-11-intermediate-advanced-paths.md`  
+**Score:** 100 · phase approved → shipped  
 
 ## Smoke table
-| Step | Exit |
-|------|------|
-| pytest -q | 0 (84) |
-| npm run test:e2e | 0 (84) |
-| product_smoke | 0 |
-| check_web_e2e | ok |
-| hard_gates v0.15.0…HEAD | ok |
-| pr_validator | 100 |
+
+| Step | Command | Exit |
+|------|---------|------|
+| unit | `.venv/bin/python -m pytest -q` | 0 |
+| e2e | `npm run test:e2e` | 0 |
+| web_e2e | `python3 scripts/check_web_e2e.py --root .` | 0 |
+| secrets | `check_secrets_diff` e82fabe…HEAD | clean |
+| hard_gates | `hard_gates.py --diff e82fabe...HEAD` | ok |
 
 ## Evidence pack
-- hard_gates ok · secrets clean  
-- CODE-REVIEW p0=0 · CROSS-REVIEW blockers=0 · BEHAVIOR B1–B7 pass  
+
+| Item | Result |
+|------|--------|
+| hard_gates | ok · pr_validator score 100 |
+| CODE-REVIEW | p0=0 |
+| CROSS-REVIEW | blockers=0 |
+| BEHAVIOR-REPORT | B1–B7 pass |
+| pytest | test_int_adv_paths + full unit suite |
+| Playwright | S68/S69 + full e2e suite |
+| Comet | S68 Intermediate · S69 Advanced |
+
+## Infra
+
+None required (static web + offline lab).
 
 ## Rollback
-```bash
-git checkout v0.15.0 -- .
-python3 scripts/stamp_site_version.py
-```
 
-## §9
-1. Self-graded quiz  
-2. Simulated entropy pad  
-3. Soft level gates  
-4. Dual localStorage + `?marked=` for Q2  
+1. `git checkout v0.15.1` / redeploy prior tree  
+2. Restore `VERSION` + stamped `web/js/site-version.js` and `?v=` cache-busts  
+3. Level gates still soft — no data migration  
 
-## Tag
-`v0.15.1`
+## §9 Things that look bad but are fine
+
+1. Self-graded Intermediate/Advanced quizzes (no server).  
+2. BIP-85 demo is idea-only, not full derivation.  
+3. I1–I3 Mark on Lab after external page visit (Back dock only).  
+4. Soft level gates dim higher cards but remain readable.  
