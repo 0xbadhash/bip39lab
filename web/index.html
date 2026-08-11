@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.15.0" />
+  <link rel="stylesheet" href="css/app.css?v=0.15.2" />
 </head>
 <body>
   <div class="app">
@@ -34,16 +34,6 @@
         </label>
         <p class="sidebar-prefs-hint" id="learnLevelHint" role="status" aria-live="polite">
           Starter: orientation + first-hour checklist.
-        </p>
-        <div class="sidebar-prefs-row">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Extra help: On</button>
-          <span class="help-tip help-tip-safety" data-term="TEACH">
-            <button type="button" class="help-tip-btn" aria-label="About Extra help">i</button>
-            <span class="help-tip-panel" hidden></span>
-          </span>
-        </div>
-        <p class="sidebar-prefs-hint" id="teachModeHint">
-          On = longer explanations under cards. Off = compact (safety ⓘ stay).
         </p>
         <button type="button" class="btn secondary btn-sm" id="btnResetClassroom" title="Clear first-hour checklist + quiz + tour progress">
           Reset progress
@@ -100,9 +90,15 @@
           <span class="site-version-chip" data-site-version title="Release tag">…</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
-          <br />
-          <button type="button" class="btn secondary btn-sm" id="btnTheme" style="margin-top:0.75rem">Theme: dark</button>
         </p>
+        <div class="sidebar-foot-actions" role="group" aria-label="Display preferences">
+          <button type="button" class="btn secondary btn-sm" id="btnTheme">Theme: dark</button>
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Extra help: On</button>
+          <span class="help-tip help-tip-safety" data-term="TEACH">
+            <button type="button" class="help-tip-btn" aria-label="About Extra help">i</button>
+            <span class="help-tip-panel" hidden id="teachModeHint"></span>
+          </span>
+        </div>
       </div>
     </aside>
 
