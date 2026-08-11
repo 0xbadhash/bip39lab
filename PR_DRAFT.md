@@ -35,18 +35,23 @@ Ship human-path UX polish after v0.14.0 education levels: navigable first hour +
 ## Traceability
 | AC | Test |
 |----|------|
-| AC-FH First hour Go/Back/checkboxes | e2e/learn.spec.ts S61 |
-| AC-QZ Quiz status + Mark passed green | e2e/learn.spec.ts S63 |
-| AC-RAIL No mid-page step rails | e2e/help-ux.spec.ts S41 S44b |
-| AC-SIDE Version sidebar only, no footer host | e2e/site-chrome.spec.ts S40 |
-| AC-TEACH Extra help on/off | e2e/help-ux.spec.ts S42 S48 |
-| AC-ENT Q3 TOO LOW + Q4 128 bits lesson | web entropy pad + quiz Q3/Q4 (manual demo; S63 shell) |
-| AC-NAV Tools/Glossary clickable | e2e/help-ux.spec.ts S44b |
+| AC-1 First hour Go/Back/checkboxes | e2e/learn.spec.ts S61 · smoke learn |
+| AC-2 Quiz status + Mark passed green | e2e/learn.spec.ts S63 · chip-ok CSS |
+| AC-3 No mid-page step rails | e2e/help-ux.spec.ts S41 S44b |
+| AC-4 Version sidebar only, no footer host | e2e/site-chrome.spec.ts S40 |
+| AC-5 Extra help on/off | e2e/help-ux.spec.ts S42 S48 |
+| AC-6 Entropy Q3 TOO LOW + Q4 128 bits | e2e/learn.spec.ts S63 shell + Tools entropy pad UI |
+| AC-7 Tools/Glossary clickable | e2e/help-ux.spec.ts S44b |
+| AC-8 Level soft gates | e2e/learn.spec.ts S62 |
 
 ## Red-proof / TDD
-**TDD N/A** — UI/UX chore on static web classroom; no new pure function contract requiring red-then-green unit cycle.  
-**red_cmd:** N/A (chore UX)  
-**green_cmd:** `npx playwright test e2e/learn.spec.ts e2e/help-ux.spec.ts e2e/site-chrome.spec.ts`  
+TDD N/A — UI/UX chore on static web classroom; no new pure function requiring red→green unit cycle.  
+
+## Things that look bad but are actually fine
+1. Self-graded quiz (no server grading) — intentional classroom design.  
+2. Math.random entropy pad — labeled simulated; never fund.  
+3. Soft level gates dim cards instead of hard-hide — skip/explore allowed.  
+4. Amber dock shared for hour + quiz (one mode at a time) — avoids stacked overlays.  
 
 ## Untested paths
 | Path | Reason |
@@ -60,11 +65,6 @@ Ship human-path UX polish after v0.14.0 education levels: navigable first hour +
 - **xss** — controlled verdict HTML from numbers/templates  
 - **integrity** — quiz self-check is educational, not exam proctoring  
 
-## §9 Intentional oddities
-1. Self-graded quiz (no server).  
-2. Math.random entropy pad (labeled simulated).  
-3. Soft level gates (dim, not hard hide).  
-4. Amber dock shared for hour + quiz (one mode at a time).  
 
 ## Cross-review
-See `.agents/artifacts/CROSS_REVIEW.md` — blockers=0.  
+See `.agents/artifacts/CROSS_REVIEW.md` — blockers=0.

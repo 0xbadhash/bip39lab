@@ -73,7 +73,7 @@ def test_multisig_teach_ux_contracts():
     assert "id=\"chipAirgap\"" in html
     assert "id=\"chipOffline\"" in html
     assert "id=\"msBip67Warn\"" in html
-    assert "jump links" in html.lower()
+    assert "data-step-rail" not in html.lower()
     assert 'id="msCardIntro"' in html
     assert "This is not an xpub" in html
     assert "unsafe by nature" in html

@@ -25,14 +25,11 @@ def test_slip39_comparison_table_topics():
     assert "compare-table" in html or 'id="s39CompareTable"' in html
 
 
-def test_slip39_jump_rail_and_demo_controls():
+def test_slip39_demo_controls_no_step_rail():
     html = (ROOT / "web/slip39.html").read_text(encoding="utf-8")
     low = html.lower()
-    assert "on this page" in low
-    assert "jump links" in low
-    assert 'id="s39StepRail"' in html
-    assert 'data-step-target="#s39CardDemo"' in html
-    assert 'data-step-target="#s39CardGroups"' in html
+    assert "data-step-rail" not in low
+    assert 'id="s39StepRail"' not in html
     assert 'id="btnS39Split"' in html
     assert 'id="btnS39Combine"' in html
     assert "slip39.bundle.js" in html
@@ -49,13 +46,14 @@ def test_shamir_links_to_slip39_lab():
 
 def test_slip39_keeps_six_nav():
     html = (ROOT / "web/slip39.html").read_text(encoding="utf-8")
-    # class may be "nav-item" or "nav-item active" (Shamir parent cue on deep-link page)
     import re
 
-    nav_items = re.findall(r'class="nav-item(?:\s+active)?"', html)
+    # class may include "active" and/or trailing spaces from template
+    nav_items = re.findall(r'class="nav-item[^"]*"', html)
     assert len(nav_items) == 6
     assert 'data-nav="slip39"' not in html  # deep-link only, no 7th top-level nav
-    assert 'data-nav="shamir"' in html and "active" in html
+    assert 'data-nav="shamir"' in html
+    assert "active" in html
 
 
 def test_slip39_bundle_present():
