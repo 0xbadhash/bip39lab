@@ -30,19 +30,19 @@
       /* ignore */
     }
     document.querySelectorAll("[data-teach-toggle]").forEach(function (btn) {
-      btn.textContent = m === "on" ? "Teach: On" : "Teach: Off";
+      btn.textContent = m === "on" ? "Extra help: On" : "Extra help: Off";
       btn.setAttribute("aria-pressed", m === "on" ? "true" : "false");
       btn.title =
         m === "on"
-          ? "Teaching copy visible — click to hide tips and long help"
-          : "Compact UI — click to show teaching tips";
+          ? "Longer explanations under cards are visible — click for a compact UI"
+          : "Compact UI — click to show longer teaching explanations under cards";
     });
     var th = document.getElementById("teachModeHint");
     if (th) {
       th.textContent =
         m === "on"
-          ? "On: step rails, long help folds, most ⓘ tips. Toggle Off for a compact UI."
-          : "Off: compact UI. Safety ⓘ (phrase / air-gap / CSP) stay. Toggle On to learn.";
+          ? "On: longer explanations under cards + most ⓘ tips. Off keeps the page compact."
+          : "Off: compact UI. Safety ⓘ (phrase / air-gap / CSP) stay. Turn On for more teaching text.";
     }
     if (m === "off") closeAllTips();
   }

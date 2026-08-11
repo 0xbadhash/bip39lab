@@ -9,11 +9,11 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://mempool.space; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
   <title>Network · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.14.5" />
+  <link rel="stylesheet" href="css/app.css?v=0.14.7" />
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar" aria-label="Primary">
+        <aside class="sidebar" aria-label="Primary">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">39</div>
         <div>
@@ -21,52 +21,69 @@
           <div class="brand-sub">Offline BTC lab · Catalyxt</div>
         </div>
       </div>
-      <nav class="nav" aria-label="Site sections">
-        <a class="nav-item" data-nav="lab" href="index.html">
-          <span class="nav-step">1</span>
-          <span class="nav-label"><strong>Lab</strong><small>Generate and derive</small></span>
-        </a>
-        <a class="nav-item" data-nav="multisig" href="multisig.html">
-          <span class="nav-step">2</span>
-          <span class="nav-label"><strong>Multisig</strong><small>M-of-N explainer</small></span>
-        </a>
-        <a class="nav-item" data-nav="shamir" href="shamir.html">
-          <span class="nav-step">3</span>
-          <span class="nav-label"><strong>Shamir</strong><small>Share split demo</small></span>
-        </a>
-        <a class="nav-item active" data-nav="network" href="network.html" aria-current="page">
-          <span class="nav-step">4</span>
-          <span class="nav-label"><strong>Network</strong><small>Fees · balances</small></span>
-        </a>
-        <a class="nav-item" data-nav="tools" href="index.html#tools">
-          <span class="nav-step">5</span>
-          <span class="nav-label"><strong>Tools</strong><small>Path · PSBT</small></span>
-        </a>
-        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
-          <span class="nav-step">6</span>
-          <span class="nav-label"><strong>Glossary</strong><small>BIPs · security</small></span>
-        </a>
-      </nav>
+
       <div class="sidebar-prefs" id="sidebarPrefs">
         <div class="sidebar-prefs-title">Classroom</div>
         <div class="sidebar-prefs-row">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Teach: On</button>
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Extra help: On</button>
           <span class="help-tip help-tip-safety" data-term="TEACH">
-            <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+            <button type="button" class="help-tip-btn" aria-label="About Extra help">i</button>
             <span class="help-tip-panel" hidden></span>
           </span>
         </div>
-        <p class="sidebar-prefs-hint" id="teachModeHint">On = step rails &amp; long help. Off = compact (safety ⓘ stay).</p>
-        <div class="sidebar-prefs-chips">
-          <span class="chip">mempool.space</span>
-        </div>
+        <p class="sidebar-prefs-hint" id="teachModeHint">On = longer explanations. Off = compact (safety ⓘ stay).</p>
       </div>
+
+      <nav class="nav" aria-label="Site sections">
+        <a class="nav-item " data-nav="lab" href="index.html">
+          <span class="nav-step">1</span>
+          <span class="nav-label">
+            <strong>Lab</strong>
+            <small>Generate and derive</small>
+          </span>
+        </a>
+        <a class="nav-item " data-nav="multisig" href="multisig.html">
+          <span class="nav-step">2</span>
+          <span class="nav-label">
+            <strong>Multisig</strong>
+            <small>M-of-N explainer</small>
+          </span>
+        </a>
+        <a class="nav-item " data-nav="shamir" href="shamir.html">
+          <span class="nav-step">3</span>
+          <span class="nav-label">
+            <strong>Shamir</strong>
+            <small>Share split demo</small>
+          </span>
+        </a>
+        <a class="nav-item active" data-nav="network" href="network.html" aria-current="page">
+          <span class="nav-step">4</span>
+          <span class="nav-label">
+            <strong>Network</strong>
+            <small>Fees · balances</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="tools" href="index.html#tools">
+          <span class="nav-step">5</span>
+          <span class="nav-label">
+            <strong>Tools</strong>
+            <small>Path · PSBT · backup</small>
+          </span>
+        </a>
+        <a class="nav-item" data-nav="glossary" href="index.html#glossary">
+          <span class="nav-step">6</span>
+          <span class="nav-label">
+            <strong>Glossary</strong>
+            <small>BIPs · security</small>
+          </span>
+        </a>
+      </nav>
+
       <div class="sidebar-foot">
         <p class="sidebar-note">
           <span class="site-version-chip" data-site-version title="Release tag">…</span>
           <br />
-          This page may contact <strong>mempool.space</strong> after you opt in.
-          Lab, Multisig &amp; Shamir stay offline for secrets.
+          May contact mempool.space after you opt in.
         </p>
       </div>
     </aside>
@@ -77,7 +94,7 @@
           <h1>Network (opt-in)</h1>
           <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
         </div>
-      </header>
+            </header>
 
       <main class="content">
         <div id="hourBackBarNet" class="hour-back-bar" hidden role="navigation" aria-label="Return to First hour">
@@ -90,23 +107,7 @@
           <a class="btn secondary btn-sm" href="index.html?from=firsthour">← Back to First hour</a>
           <span class="learn-return-hint">Fees only; understand leak ack, then mark step 7 done on the checklist.</span>
         </div>
-        <p class="control-help teach-only" style="margin:0 0 0.5rem">
-          <strong>On this page</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
-          Balance Load/Fetch stay disabled until you tick the leak-ack (real gate, not cosmetic).
-        </p>
-        <nav class="step-rail teach-only" data-step-rail aria-label="Network page sections (jump links)" id="netStepRail">
-          <button type="button" class="step-rail-btn is-active" data-step-target="#netCardIntro" aria-current="step">
-            Understand<small>Address leak model</small>
-          </button>
-          <button type="button" class="step-rail-btn" data-step-target="#netCardFees">
-            Fees<small>Optional snapshot</small>
-          </button>
-          <button type="button" class="step-rail-btn" data-step-target="#netCardBal">
-            Balances<small>Ack · paste · fetch</small>
-          </button>
-        </nav>
-
-        <div class="card" id="netCardIntro">
+<div class="card" id="netCardIntro">
           <div class="card-head"><h2>What this page is</h2></div>
           <p class="card-lede">
             Public fees and address-only balances — never your seed.
@@ -268,8 +269,8 @@
     </div>
   </div>
   <script src="js/site-version.js?v=0.14.0"></script>
-  <script src="js/glossary.js?v=0.14.0"></script>
-  <script src="js/help-ui.js?v=0.14.4"></script>
+  <script src="js/glossary.js?v=0.14.6"></script>
+  <script src="js/help-ui.js?v=0.14.7"></script>
   <script src="js/network.bundle.js?v=0.14.0"></script>
   <script src="js/network-app.js?v=0.14.5"></script>
 </body>

@@ -14,14 +14,11 @@ test.describe("Multisig explainer E2E", () => {
     await expect(page.locator("body")).toContainText(/Where do the public keys come from/i);
     await expect(page.locator("body")).toContainText(/Cosigner checklist/i);
     await expect(page.locator("#msPolicy")).toBeVisible();
-    // Teach UX: calculator banner + dual chips + jump-link rail
+    // Calculator banner + dual chips in topbar (no mid-page step rail)
     await expect(page.locator("body")).toContainText(/Address calculator only/i);
     await expect(page.locator("#chipOffline")).toBeVisible();
     await expect(page.locator("#chipAirgap")).toBeVisible();
-    await expect(page.locator("#msStepRail")).toHaveAttribute(
-      "aria-label",
-      /jump links/i,
-    );
+    await expect(page.locator("[data-step-rail], #msStepRail")).toHaveCount(0);
     await expect(page.locator("#msCardIntro")).toBeVisible();
   });
 

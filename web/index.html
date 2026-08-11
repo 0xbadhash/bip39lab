@@ -8,11 +8,11 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.14.5" />
+  <link rel="stylesheet" href="css/app.css?v=0.14.7" />
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar" aria-label="Primary">
+        <aside class="sidebar" aria-label="Primary">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">39</div>
         <div>
@@ -21,7 +21,35 @@
         </div>
       </div>
 
-      <!-- Keep identical labels/order on every page (Lab / Multisig / …) -->
+      <div class="sidebar-prefs" id="sidebarPrefs">
+        <div class="sidebar-prefs-title">Classroom</div>
+        <label class="sidebar-prefs-row learn-level-label" for="learnLevel" title="Soft curriculum gates — not a security lock">
+          <span class="sidebar-prefs-k">Level</span>
+          <select id="learnLevel" class="select-compact learn-level-select" aria-label="Learning level" aria-describedby="learnLevelHint">
+            <option value="starter">Starter</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </label>
+        <p class="sidebar-prefs-hint" id="learnLevelHint" role="status" aria-live="polite">
+          Starter: orientation + first-hour checklist.
+        </p>
+        <div class="sidebar-prefs-row">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Extra help: On</button>
+          <span class="help-tip help-tip-safety" data-term="TEACH">
+            <button type="button" class="help-tip-btn" aria-label="About Extra help">i</button>
+            <span class="help-tip-panel" hidden></span>
+          </span>
+        </div>
+        <p class="sidebar-prefs-hint" id="teachModeHint">
+          On = longer explanations under cards. Off = compact (safety ⓘ stay).
+        </p>
+        <button type="button" class="btn secondary btn-sm" id="btnResetClassroom" title="Clear first-hour checklist + quiz + tour progress">
+          Reset progress
+        </button>
+      </div>
+
       <nav class="nav" aria-label="Site sections">
         <a class="nav-item active" data-nav="lab" href="index.html" aria-current="page">
           <span class="nav-step">1</span>
@@ -30,21 +58,21 @@
             <small>Generate and derive</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="multisig" href="multisig.html">
+        <a class="nav-item " data-nav="multisig" href="multisig.html">
           <span class="nav-step">2</span>
           <span class="nav-label">
             <strong>Multisig</strong>
             <small>M-of-N explainer</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="shamir" href="shamir.html">
+        <a class="nav-item " data-nav="shamir" href="shamir.html">
           <span class="nav-step">3</span>
           <span class="nav-label">
             <strong>Shamir</strong>
             <small>Share split demo</small>
           </span>
         </a>
-        <a class="nav-item" data-nav="network" href="network.html">
+        <a class="nav-item " data-nav="network" href="network.html">
           <span class="nav-step">4</span>
           <span class="nav-label">
             <strong>Network</strong>
@@ -67,68 +95,11 @@
         </a>
       </nav>
 
-      <!-- Sticky classroom prefs: stay visible while main content scrolls -->
-      <div class="sidebar-prefs" id="sidebarPrefs">
-        <div class="sidebar-prefs-title">Classroom</div>
-        <label class="sidebar-prefs-row learn-level-label" for="learnLevel" title="Soft curriculum gates — not a security lock">
-          <span class="sidebar-prefs-k">Level</span>
-          <select id="learnLevel" class="select-compact learn-level-select" aria-label="Learning level" aria-describedby="learnLevelHint">
-            <option value="starter">Starter</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </label>
-        <p class="sidebar-prefs-hint" id="learnLevelHint" role="status" aria-live="polite">
-          Starter: orientation + first-hour checklist.
-        </p>
-        <div class="sidebar-prefs-row">
-          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Teach: On</button>
-          <span class="help-tip help-tip-safety" data-term="TEACH">
-            <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
-            <span class="help-tip-panel" hidden></span>
-          </span>
-        </div>
-        <p class="sidebar-prefs-hint" id="teachModeHint">
-          On = step rails, long help, tips. Off = compact UI (safety ⓘ stay).
-        </p>
-        <div class="sidebar-prefs-row">
-          <button type="button" class="btn secondary btn-sm" id="btnResetClassroom" title="Clear first-hour checklist + quiz + tour progress in this browser">
-            Reset progress
-          </button>
-        </div>
-        <p class="sidebar-prefs-hint">Clears checklist ticks, quiz passes, and tour step (this browser only).</p>
-        <div class="sidebar-prefs-chips">
-          <span class="topbar-status">
-            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
-            <span class="help-tip help-tip-safety" data-term="CSP">
-              <button type="button" class="help-tip-btn" aria-label="About offline crypto CSP">i</button>
-              <span class="help-tip-panel" hidden></span>
-            </span>
-          </span>
-          <span class="topbar-status" id="airgapStatus">
-            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
-            <span class="help-tip help-tip-safety" data-term="AIRGAP">
-              <button type="button" class="help-tip-btn" aria-label="Why show browser online/offline?">i</button>
-              <span class="help-tip-panel" hidden>
-                <strong>Why this chip?</strong>
-                Browser network signal (<code>navigator.onLine</code>) — green = online, red = offline.
-                Lab crypto still never leaves this page (Offline crypto / CSP).
-                Red/offline is a better air-gap hint for real recovery phrases; green is fine for demos.
-                Not a perfect air-gap detector.
-              </span>
-            </span>
-          </span>
-        </div>
-      </div>
-
       <div class="sidebar-foot">
         <p class="sidebar-note">
           <span class="site-version-chip" data-site-version title="Release tag">…</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
-          <br /><br />
-          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
           <br />
           <button type="button" class="btn secondary btn-sm" id="btnTheme" style="margin-top:0.75rem">Theme: dark</button>
         </p>
@@ -141,8 +112,22 @@
           <h1 id="panel-title">Offline BIP-39 lab</h1>
           <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
         </div>
-        <div class="topbar-actions" id="topbarLevelToastWrap">
+        <div class="topbar-actions" id="topbarStatusChips">
           <p class="level-change-toast" id="learnLevelToast" hidden role="status" aria-live="polite"></p>
+          <span class="topbar-status">
+            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+            <span class="help-tip help-tip-safety" data-term="CSP">
+              <button type="button" class="help-tip-btn" aria-label="About offline crypto CSP">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+            <span class="help-tip help-tip-safety" data-term="AIRGAP">
+              <button type="button" class="help-tip-btn" aria-label="Why show browser online/offline?">i</button>
+              <span class="help-tip-panel" hidden></span>
+            </span>
+          </span>
         </div>
       </header>
 
@@ -459,25 +444,7 @@
           </div>
 
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
-          <p class="control-help teach-only" style="margin:0 0 0.5rem">
-            <strong>On Lab</strong> — jump links (not a locked wizard). Scroll freely; order below is a suggested path.
-          </p>
-          <nav class="step-rail teach-only" data-step-rail aria-label="Lab page sections (jump links)" id="labStepRail">
-            <button type="button" class="step-rail-btn is-active" data-step-target="#card-mnemonic" aria-current="step">
-              Phrase<small>Generate or paste</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#card-addresses">
-              Path<small>Network · account · type</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#addrTable">
-              Addresses<small>Copy or QR</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#watchOnlyPanel">
-              Watch-only<small>zpub / xpub export</small>
-            </button>
-          </nav>
-
-          <div class="card" id="card-mnemonic">
+<div class="card" id="card-mnemonic">
             <div class="card-head">
               <h2>Mnemonic</h2>
             </div>
@@ -745,30 +712,7 @@
             <span class="chip chip-warn" style="vertical-align:middle">TEST DATA</span>
             — never assume results still use a phrase you cleared.
           </p>
-          <p class="control-help teach-only" style="margin:0 0 0.5rem">
-            <strong>On Tools</strong> — jump to a card (not Lab’s Phrase/Path rail). Order is a suggestion only.
-          </p>
-          <nav class="step-rail teach-only" data-step-rail aria-label="Tools cards (jump links)" id="toolsStepRail">
-            <button type="button" class="step-rail-btn is-active" data-step-target="#cardPathPlay" aria-current="step">
-              Path<small>BIP derivation</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#cardEntPad">
-              Entropy<small>Dice / coin pad</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#cardCmpPp">
-              Passphrase<small>Compare A vs B</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#cardDescriptors">
-              Descriptors<small>Output strings</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#cardPsbt">
-              PSBT<small>Inspect only</small>
-            </button>
-            <button type="button" class="step-rail-btn" data-step-target="#cardDescExplain">
-              Explain<small>Public descriptor</small>
-            </button>
-          </nav>
-          <p class="control-help teach-only" style="margin:0 0 0.75rem">
+<p class="control-help teach-only" style="margin:0 0 0.75rem">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
           <div class="card card-wide" id="cardPathPlay">
@@ -1218,9 +1162,9 @@
 
   <script src="js/site-version.js?v=0.14.0"></script>
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
-  <script src="js/glossary.js?v=0.14.0"></script>
-  <script src="js/help-ui.js?v=0.14.4"></script>
-  <script src="js/learn-levels.js?v=0.14.5"></script>
+  <script src="js/glossary.js?v=0.14.6"></script>
+  <script src="js/help-ui.js?v=0.14.7"></script>
+  <script src="js/learn-levels.js?v=0.14.6"></script>
   <script src="js/app.js?v=0.14.0"></script>
 </body>
 </html>

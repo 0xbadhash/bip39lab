@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { expectNavCount } from "./helpers";
 
 /**
- * Help UX hybrid P0–P4: tips, teach mode, step rails.
+ * Help UX hybrid P0–P4: tips, Extra help (no mid-page step rails).
  * Comet S41–S48.
  */
 test.describe("Help UX hybrid", () => {
@@ -16,23 +16,22 @@ test.describe("Help UX hybrid", () => {
     }, mode);
   }
 
-  test("S41 Lab teach toggle On by default · step rail visible", async ({ page }) => {
+  test("S41 Lab Extra help On · teach-only copy visible · no step rail", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
     await expect(page.locator("#btnTeach")).toBeVisible();
-    await expect(page.locator("#btnTeach")).toContainText(/Teach: On/i);
+    await expect(page.locator("#btnTeach")).toContainText(/Extra help: On|Teach: On/i);
     await expect(page.locator("html")).toHaveAttribute("data-teach", "on");
-    await expect(page.locator("#labStepRail")).toBeVisible();
-    await expect(page.locator("#labStepRail .step-rail-btn")).toHaveCount(4);
+    await expect(page.locator("[data-step-rail], #labStepRail")).toHaveCount(0);
+    await expect(page.locator("#card-mnemonic .card-lede, #card-mnemonic .teach-only").first()).toBeVisible();
   });
 
-  test("S42 Teach Off hides teach-only · keeps safety", async ({ page }) => {
+  test("S42 Extra help Off hides teach-only · keeps safety", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
     await page.locator("#btnTeach").click();
-    await expect(page.locator("#btnTeach")).toContainText(/Teach: Off/i);
+    await expect(page.locator("#btnTeach")).toContainText(/Extra help: Off|Teach: Off/i);
     await expect(page.locator("html")).toHaveAttribute("data-teach", "off");
-    await expect(page.locator("#labStepRail")).toBeHidden();
     // air-gap warn always on (not the hidden entropy-pad result box)
     await expect(page.locator('.warn[role="note"]')).toBeVisible();
     await expect(page.locator('.warn[role="note"]')).toContainText(/Air-gap/i);
@@ -55,57 +54,32 @@ test.describe("Help UX hybrid", () => {
     await expect(tip).not.toHaveClass(/is-open/);
   });
 
-  test("S44 step rail jumps focus + flash on target", async ({ page }) => {
+  test("S44 first-hour Go jumps to Lab sections (replaces step rail)", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    // Phrase → Path → Addresses → Watch-only each move focus to section
-    const jumps: { btn: string; target: string }[] = [
-      { btn: '#labStepRail [data-step-target="#card-mnemonic"]', target: "#card-mnemonic" },
-      { btn: '#labStepRail [data-step-target="#card-addresses"]', target: "#card-addresses" },
-      { btn: '#labStepRail [data-step-target="#addrTable"]', target: "#addrTable" },
-      { btn: '#labStepRail [data-step-target="#watchOnlyPanel"]', target: "#watchOnlyPanel" },
-    ];
-    for (const j of jumps) {
-      await page.locator(j.btn).click();
-      await expect(page.locator(j.btn)).toHaveClass(/is-active/);
-      const target = page.locator(j.target);
-      await expect(target).toBeVisible();
-      await expect(target).toHaveAttribute("data-step-focused", "true");
-      // Document focus lands on the section (tabindex=-1 + focus())
-      await expect
-        .poll(async () =>
-          page.evaluate((sel) => {
-            const el = document.querySelector(sel);
-            return el === document.activeElement;
-          }, j.target)
-        )
-        .toBe(true);
-    }
+    await page.locator('[data-hour-step="h2"] .hour-go').click();
+    await expect(page.locator("#card-mnemonic")).toBeVisible();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    await page.locator("#learnReturnBarBtn").click();
+    await expect(page.locator("#cardFirstHour")).toBeInViewport();
   });
 
-  test("S44b Tools has Tools rail not Lab Phrase/Path rail", async ({ page }) => {
+  test("S44b Tools panel opens without mid-page rails", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
-    // Lab rail must not be visible on Tools
-    await expect(page.locator("#labStepRail")).toBeHidden();
-    await expect(page.locator("#toolsStepRail")).toBeVisible();
-    await expect(page.locator("#toolsStepRail")).toContainText(/Path|Entropy|PSBT/i);
-    await expect(page.locator("#toolsStepRail")).not.toContainText(/Generate or paste|zpub|Watch-only/i);
-    await expect(page.locator('#toolsStepRail [data-step-target="#card-mnemonic"]')).toHaveCount(0);
-    await page.locator('#toolsStepRail [data-step-target="#cardPsbt"]').click();
+    await expect(page.locator("[data-step-rail], #labStepRail, #toolsStepRail")).toHaveCount(0);
+    await expect(page.locator("#cardPathPlay")).toBeVisible();
     await expect(page.locator("#cardPsbt")).toBeVisible();
-    await expect(page.locator("#cardPsbt")).toHaveAttribute("data-step-focused", "true");
   });
 
-  test("S45 Multisig step rail + teach + tip BIP67", async ({ page }) => {
+  test("S45 Multisig Extra help + tip BIP67", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/multisig.html");
-    await expect(page.locator("#msStepRail")).toBeVisible();
     await expect(page.locator("#btnTeach")).toBeVisible();
-    await page.locator('#msStepRail [data-step-target="#msCardBuild"]').click();
     await expect(page.locator("#msCardBuild")).toBeVisible();
+    await page.locator("#msCardBuild").scrollIntoViewIfNeeded();
     const tip = page.locator("#msCardBuild .help-tip").filter({
       has: page.locator('[aria-label="About BIP67"]'),
     });
@@ -125,13 +99,13 @@ test.describe("Help UX hybrid", () => {
     await expect(det).toContainText(/hardware|public/i);
   });
 
-  test("S47 Network step rail · leak always visible · fee tip", async ({ page }) => {
+  test("S47 Network Extra help · leak always visible · fee tip", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/network.html");
-    await expect(page.locator("#netStepRail")).toBeVisible();
+    await expect(page.locator("[data-step-rail], #netStepRail")).toHaveCount(0);
     await expect(page.locator("#netCardIntro")).toContainText(/Privacy|address/i);
     await page.locator("#btnTeach").click();
-    await expect(page.locator("#netStepRail")).toBeHidden();
+    await expect(page.locator("#btnTeach")).toContainText(/Extra help: Off|Teach: Off/i);
     await expect(page.locator("#balAck")).toBeVisible();
     await page.locator("#btnTeach").click();
     const feeTip = page.locator("#netCardFees .help-tip").first();
@@ -139,7 +113,7 @@ test.describe("Help UX hybrid", () => {
     await expect(feeTip.locator(".help-tip-panel")).toContainText(/sat\/vB|postage|fee/i);
   });
 
-  test("S48 teach persists via localStorage across pages", async ({ page }) => {
+  test("S48 Extra help persists via localStorage across pages", async ({ page }) => {
     // Do NOT force on via init after toggle — only seed once, then navigate without reset
     await page.goto("/");
     await page.evaluate(() => localStorage.setItem("bip39lab.teach", "on"));
@@ -152,7 +126,7 @@ test.describe("Help UX hybrid", () => {
     // same page context → localStorage persists
     await page.goto("/network.html");
     await expect(page.locator("html")).toHaveAttribute("data-teach", "off");
-    await expect(page.locator("#btnTeach")).toContainText(/Teach: Off/i);
+    await expect(page.locator("#btnTeach")).toContainText(/Extra help: Off|Teach: Off/i);
     await page.locator("#btnTeach").click();
     await expect(page.locator("html")).toHaveAttribute("data-teach", "on");
   });

@@ -611,6 +611,16 @@ body.learn-return-open {
   gap: 0.4rem;
   flex: 1 1 auto;
   min-height: 0;
+  overflow-y: auto;
+  /* Keep nav below Classroom prefs — never let prefs cover Glossary/Tools */
+  position: relative;
+  z-index: 1;
+}
+.sidebar-prefs {
+  flex: 0 0 auto;
+  order: 0;
+  position: relative;
+  z-index: 0;
 }
 
 .nav-item {

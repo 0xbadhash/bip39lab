@@ -298,11 +298,11 @@
     },
     {
       id: "TEACH",
-      title: "Teach mode",
+      title: "Extra help",
       group: "Security",
-      short: "Show or hide teaching chrome",
+      short: "Show or hide longer teaching copy",
       body:
-        "Teach On shows step rails, long help folds, and most ⓘ tips. Teach Off keeps a compact UI but still shows safety ⓘ (recovery phrase, air-gap, CSP, PSBT, educational warnings). Preference is stored in this browser only — not secrets.",
+        "Extra help On shows longer explanations under cards, help folds, and most ⓘ tips. Off keeps a compact UI but still shows safety ⓘ (recovery phrase, air-gap, CSP, PSBT, educational warnings). There is no mid-page “path” wizard — left nav and First-hour/Quiz Go buttons are the jumps. Preference is stored in this browser only — not secrets.",
     },
     {
       id: "MULTISIG",
