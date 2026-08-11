@@ -488,6 +488,9 @@ Tools open; path matches Lab controls (`m/…`).
 ### S17 — Entropy pad
 Dice + coin events; Clear → empty pad.
 
+### S17b — Entropy pad → practice seed (low-entropy warning)
+Few rolls → **Build practice seed from pad** → PRACTICE ONLY warn; bit table shows pad estimate vs **128** (12-word); gap **TOO LOW** or never-for-funds; 12 practice words shown. Optional copy into Lab is TEST DATA only.
+
 ### S18 — Compare passphrases
 Tools only (no Lab visit required); B=`test` → A/B addresses; Different or Same.
 
