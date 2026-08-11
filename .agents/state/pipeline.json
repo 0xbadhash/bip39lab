@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "init",
-  "score": 100.0,
+  "phase": "approved",
+  "score": 100,
   "spec_id": ".agents/specs/2026-08-11-e0-orientation-first-hour.md",
   "task": "E0-E6 education levels",
   "waiver": "chore"
