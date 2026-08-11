@@ -242,18 +242,99 @@ code {
 }
 .learn-level-select {
   min-width: 7.5rem;
-  max-width: 10rem;
+  max-width: 100%;
+  width: 100%;
+}
+/* Sticky classroom strip in left pane — does not scroll away with main content */
+.sidebar-prefs {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.65rem 0.7rem;
+  margin: 0 0.15rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.sidebar-prefs-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sidebar-prefs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.sidebar-prefs-k {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--text);
+  min-width: 2.5rem;
+}
+.sidebar-prefs-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.sidebar-prefs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-top: 0.15rem;
+}
+.sidebar .help-tip-panel {
+  left: 0;
+  right: auto;
+  max-width: min(16rem, 70vw);
+  z-index: 30;
+}
+.level-change-toast {
+  margin: 0;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text);
+  background: var(--accent-soft);
+  border: 1px solid rgba(61, 139, 253, 0.45);
+  border-radius: var(--radius-sm);
+  max-width: 28rem;
 }
 .level-gated {
-  opacity: 0.55;
+  opacity: 0.72;
   position: relative;
+  outline: 1px dashed rgba(232, 168, 56, 0.45);
+  outline-offset: 2px;
 }
 .level-gated::after {
-  content: "Raise Level to unlock (or use as-is — soft gate)";
+  content: attr(data-level-gate-msg);
   display: block;
   font-size: 0.78rem;
   color: var(--warn);
   margin-top: 0.35rem;
+}
+.level-gated:not([data-level-gate-msg])::after {
+  content: "Raise Level in the left pane to unlock (soft gate — still usable).";
+}
+.level-flash {
+  animation: level-flash 1.2s ease;
+}
+@keyframes level-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(61, 139, 253, 0.55);
+  }
+  40% {
+    box-shadow: 0 0 0 4px rgba(61, 139, 253, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
 }
 .hour-list,
 .quiz-item {
@@ -471,10 +552,12 @@ body.learn-return-open {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   padding: 1.25rem 1rem;
   background: linear-gradient(180deg, #101722 0%, #0d1219 100%);
   border-right: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .brand {

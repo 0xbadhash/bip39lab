@@ -9,7 +9,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://mempool.space; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
   <title>Network · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/app.css?v=0.14.4" />
 </head>
 <body>
   <div class="app">
@@ -47,6 +47,20 @@
           <span class="nav-label"><strong>Glossary</strong><small>BIPs · security</small></span>
         </a>
       </nav>
+      <div class="sidebar-prefs" id="sidebarPrefs">
+        <div class="sidebar-prefs-title">Classroom</div>
+        <div class="sidebar-prefs-row">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Teach: On</button>
+          <span class="help-tip help-tip-safety" data-term="TEACH">
+            <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+            <span class="help-tip-panel" hidden></span>
+          </span>
+        </div>
+        <p class="sidebar-prefs-hint" id="teachModeHint">On = step rails &amp; long help. Off = compact (safety ⓘ stay).</p>
+        <div class="sidebar-prefs-chips">
+          <span class="chip">mempool.space</span>
+        </div>
+      </div>
       <div class="sidebar-foot">
         <p class="sidebar-note">
           <span class="site-version-chip" data-site-version title="Release tag">…</span>
@@ -62,16 +76,6 @@
         <div>
           <h1>Network (opt-in)</h1>
           <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
-        </div>
-        <div class="topbar-actions">
-          <span class="topbar-status">
-            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
-            <span class="help-tip help-tip-safety" data-term="TEACH">
-              <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
-              <span class="help-tip-panel" hidden></span>
-            </span>
-          </span>
-          <span class="chip">mempool.space</span>
         </div>
       </header>
 
@@ -267,7 +271,7 @@
   </div>
   <script src="js/site-version.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.0"></script>
-  <script src="js/help-ui.js?v=0.14.0"></script>
+  <script src="js/help-ui.js?v=0.14.4"></script>
   <script src="js/network.bundle.js?v=0.14.0"></script>
   <script src="js/network-app.js?v=0.14.1"></script>
 </body>

@@ -25,14 +25,14 @@
     return "starter";
   }
 
-  function setLevel(level) {
+  function setLevel(level, opts) {
     if (LEVELS.indexOf(level) < 0) level = "starter";
     try {
       localStorage.setItem(LEVEL_KEY, level);
     } catch (e) {
       /* ignore */
     }
-    applyLevel(level);
+    applyLevel(level, opts || { announce: true });
   }
 
   function loadJson(key, fallback) {
@@ -54,15 +54,73 @@
     }
   }
 
-  function applyLevel(level) {
+  var LEVEL_BLURBS = {
+    starter:
+      "Starter: orientation + First hour checklist. Quiz / tour stay dimmed until you raise Level.",
+    beginner:
+      "Beginner: Guided quiz self-checks open. Next: Intermediate = three-splits tour + more tools depth.",
+    intermediate:
+      "Intermediate: Tour (Multisig ≠ Shamir ≠ SLIP-39) + deeper Tools (e.g. entropy pad). Next: Advanced ops.",
+    advanced:
+      "Advanced: BIP-85 educational shell + Knots / seed-scan ops notes. Full classroom open.",
+  };
+
+  var LEVEL_UNLOCKS = {
+    starter: "Orientation + First hour",
+    beginner: "Guided quiz",
+    intermediate: "Three-splits tour · deeper Tools",
+    advanced: "BIP-85 shell · Ops / Knots notes",
+  };
+
+  function updateLevelHint(level) {
+    var hint = $("learnLevelHint");
+    if (hint) hint.textContent = LEVEL_BLURBS[level] || LEVEL_BLURBS.starter;
+  }
+
+  function showLevelToast(level, prev) {
+    var toast = $("learnLevelToast");
+    if (!toast) return;
+    var msg =
+      "Level → " +
+      level.charAt(0).toUpperCase() +
+      level.slice(1) +
+      ": " +
+      (LEVEL_UNLOCKS[level] || "") +
+      ". Soft gates only — not a wallet lock. See left pane for details.";
+    if (prev && prev !== level) {
+      var pi = LEVELS.indexOf(prev);
+      var ni = LEVELS.indexOf(level);
+      if (ni > pi) msg = "Unlocked for " + level + ": " + (LEVEL_UNLOCKS[level] || "") + ". Scroll Lab for newly open cards.";
+      else if (ni < pi) msg = "Level lowered to " + level + ". Higher cards dim again (soft gate).";
+    }
+    toast.textContent = msg;
+    toast.hidden = false;
+    clearTimeout(showLevelToast._t);
+    showLevelToast._t = setTimeout(function () {
+      toast.hidden = true;
+    }, 6000);
+  }
+
+  function applyLevel(level, opts) {
+    opts = opts || {};
+    var prev = document.documentElement.getAttribute("data-level") || getLevel();
     level = level || getLevel();
     document.documentElement.setAttribute("data-level", level);
     var sel = $("learnLevel");
     if (sel && sel.value !== level) sel.value = level;
+    updateLevelHint(level);
+    var firstUnlocked = null;
     document.querySelectorAll("[data-level-min]").forEach(function (el) {
       var min = el.getAttribute("data-level-min") || "starter";
       var ok = LEVELS.indexOf(level) >= LEVELS.indexOf(min);
       var force = el.getAttribute("data-level-force") === "show";
+      var wasGated = el.classList.contains("level-gated");
+      if (!el.getAttribute("data-level-gate-msg")) {
+        el.setAttribute(
+          "data-level-gate-msg",
+          "Needs Level ≥ " + min + " (raise in left pane Classroom). Soft gate — still readable."
+        );
+      }
       if (force) {
         el.hidden = false;
         el.classList.remove("level-gated");
@@ -71,6 +129,12 @@
       if (ok) {
         el.hidden = false;
         el.classList.remove("level-gated");
+        if (wasGated && opts.announce) {
+          el.classList.remove("level-flash");
+          void el.offsetWidth;
+          el.classList.add("level-flash");
+          if (!firstUnlocked) firstUnlocked = el;
+        }
       } else {
         // Soft gate: keep in DOM for skip, mark gated
         el.classList.add("level-gated");
@@ -83,6 +147,14 @@
       var min = b.getAttribute("data-level-gate-banner") || "intermediate";
       b.hidden = LEVELS.indexOf(level) >= LEVELS.indexOf(min);
     });
+    if (opts.announce && prev !== level) {
+      showLevelToast(level, prev);
+      if (firstUnlocked) {
+        setTimeout(function () {
+          firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 120);
+      }
+    }
   }
 
   var HOUR_RETURN_KEY = "bip39lab.hourReturn";
@@ -548,7 +620,7 @@
     var sel = $("learnLevel");
     if (sel) {
       sel.addEventListener("change", function () {
-        setLevel(sel.value);
+        setLevel(sel.value, { announce: true });
       });
     }
     document.querySelectorAll("[data-level-set]").forEach(function (btn) {
@@ -652,7 +724,7 @@
 
     wireLearnReturnDock();
     wireFirstHour();
-    applyLevel(getLevel());
+    applyLevel(getLevel(), { announce: false });
   }
 
   if (document.readyState === "loading") {

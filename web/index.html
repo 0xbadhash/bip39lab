@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/app.css?v=0.14.4" />
 </head>
 <body>
   <div class="app">
@@ -67,44 +67,32 @@
         </a>
       </nav>
 
-      <div class="sidebar-foot">
-        <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Release tag">…</span>
-          <br />
-          Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
-          <br /><br />
-          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
-          <br />
-          <button type="button" class="btn secondary btn-sm" id="btnTheme" style="margin-top:0.75rem">Theme: dark</button>
+      <!-- Sticky classroom prefs: stay visible while main content scrolls -->
+      <div class="sidebar-prefs" id="sidebarPrefs">
+        <div class="sidebar-prefs-title">Classroom</div>
+        <label class="sidebar-prefs-row learn-level-label" for="learnLevel" title="Soft curriculum gates — not a security lock">
+          <span class="sidebar-prefs-k">Level</span>
+          <select id="learnLevel" class="select-compact learn-level-select" aria-label="Learning level" aria-describedby="learnLevelHint">
+            <option value="starter">Starter</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </label>
+        <p class="sidebar-prefs-hint" id="learnLevelHint" role="status" aria-live="polite">
+          Starter: orientation + first-hour checklist.
         </p>
-      </div>
-    </aside>
-
-    <div class="main-wrap">
-      <header class="topbar">
-        <div>
-          <h1 id="panel-title">Offline BIP-39 lab</h1>
-          <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
+        <div class="sidebar-prefs-row">
+          <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach" aria-pressed="true">Teach: On</button>
+          <span class="help-tip help-tip-safety" data-term="TEACH">
+            <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
+            <span class="help-tip-panel" hidden></span>
+          </span>
         </div>
-        <div class="topbar-actions">
-          <span class="topbar-status">
-            <label class="learn-level-label" for="learnLevel" title="Learning level — soft gates, not a security lock">
-              Level
-              <select id="learnLevel" class="select-compact learn-level-select" aria-label="Learning level">
-                <option value="starter">Starter</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
-            </label>
-          </span>
-          <span class="topbar-status">
-            <button type="button" class="btn secondary btn-sm" data-teach-toggle id="btnTeach">Teach: On</button>
-            <span class="help-tip help-tip-safety" data-term="TEACH">
-              <button type="button" class="help-tip-btn" aria-label="About Teach mode">i</button>
-              <span class="help-tip-panel" hidden></span>
-            </span>
-          </span>
+        <p class="sidebar-prefs-hint" id="teachModeHint">
+          On = step rails, long help, tips. Off = compact UI (safety ⓘ stay).
+        </p>
+        <div class="sidebar-prefs-chips">
           <span class="topbar-status">
             <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
             <span class="help-tip help-tip-safety" data-term="CSP">
@@ -125,6 +113,30 @@
               </span>
             </span>
           </span>
+        </div>
+      </div>
+
+      <div class="sidebar-foot">
+        <p class="sidebar-note">
+          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <br />
+          Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
+          <br /><br />
+          Host: <a href="https://bip39.catalyxt.xyz/">bip39.catalyxt.xyz</a>
+          <br />
+          <button type="button" class="btn secondary btn-sm" id="btnTheme" style="margin-top:0.75rem">Theme: dark</button>
+        </p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <div>
+          <h1 id="panel-title">Offline BIP-39 lab</h1>
+          <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
+        </div>
+        <div class="topbar-actions" id="topbarLevelToastWrap">
+          <p class="level-change-toast" id="learnLevelToast" hidden role="status" aria-live="polite"></p>
         </div>
       </header>
 
@@ -1195,8 +1207,8 @@
   <script src="js/site-version.js?v=0.14.0"></script>
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.0"></script>
-  <script src="js/help-ui.js?v=0.14.0"></script>
-  <script src="js/learn-levels.js?v=0.14.3"></script>
+  <script src="js/help-ui.js?v=0.14.4"></script>
+  <script src="js/learn-levels.js?v=0.14.4"></script>
   <script src="js/app.js?v=0.14.0"></script>
 </body>
 </html>

@@ -37,6 +37,13 @@
           ? "Teaching copy visible — click to hide tips and long help"
           : "Compact UI — click to show teaching tips";
     });
+    var th = document.getElementById("teachModeHint");
+    if (th) {
+      th.textContent =
+        m === "on"
+          ? "On: step rails, long help folds, most ⓘ tips. Toggle Off for a compact UI."
+          : "Off: compact UI. Safety ⓘ (phrase / air-gap / CSP) stay. Toggle On to learn.";
+    }
     if (m === "off") closeAllTips();
   }
 
