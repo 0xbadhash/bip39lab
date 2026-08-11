@@ -91,6 +91,46 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#cardOps")).toBeVisible();
     await expect(page.locator("#cardOps")).toContainText(/Knots|seed.scan|RPC/i);
   });
+
+  test("S68 intermediate I1–I4 self-check", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("intermediate");
+    await expect(page.locator("#cardIntQuiz")).toBeVisible();
+    await expect(page.locator("#intQuizStatusBoard")).toBeVisible();
+    await expect(page.locator("#quizHint-i1")).toContainText(/Not yet|keys/i);
+    await page.locator("#quizPass-i1").click();
+    await expect(page.locator("#quizBadge-i1")).toContainText(/Passed/i);
+    await expect(page.locator("#quizBoard-i1")).toContainText(/Passed/i);
+    await expect(page.locator("#intQuizSummary")).toContainText(/1\s*\/\s*4/);
+    // I4 Go try → Tools PSBT + Intermediate return dock
+    await page.locator('[data-quiz-go="i4"]').click();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    await expect(page.locator("#learnReturnBarBtn")).toContainText(/Intermediate/i);
+    await expect(page.locator("#cardPsbt")).toBeVisible();
+    await page.locator("#learnReturnBarBtn").click();
+    await expect(page.locator("#cardIntQuiz")).toBeInViewport();
+    await page.locator("#quizPass-i4").click();
+    await expect(page.locator("#quizBadge-i4")).toContainText(/Passed/i);
+  });
+
+  test("S69 advanced A1–A4 self-check", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("advanced");
+    await expect(page.locator("#cardAdvQuiz")).toBeVisible();
+    await expect(page.locator("#advQuizStatusBoard")).toBeVisible();
+    await expect(page.locator("#quizHint-a4")).toContainText(/Not yet|isn/i);
+    await page.locator('[data-quiz-go="a4"]').click();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    await expect(page.locator("#learnReturnBarBtn")).toContainText(/Advanced/i);
+    await expect(page.locator("#cardOrientation")).toBeVisible();
+    await page.locator("#learnReturnBarBtn").click();
+    await expect(page.locator("#cardAdvQuiz")).toBeInViewport();
+    await page.locator("#quizPass-a1").click();
+    await expect(page.locator("#quizBadge-a1")).toContainText(/Passed/i);
+    await expect(page.locator("#advQuizSummary")).toContainText(/1\s*\/\s*4/);
+    await page.locator("#quizPass-a2").click();
+    await page.locator("#quizPass-a3").click();
+    await page.locator("#quizPass-a4").click();
+    await expect(page.locator("#advQuizSummary")).toContainText(/4\s*\/\s*4/);
+  });
 });
 
 test.describe("E3 mobile shell", () => {

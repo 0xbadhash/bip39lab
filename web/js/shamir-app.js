@@ -292,14 +292,18 @@
 
   function showQuizReturn() {
     var fromQ = typeof location !== "undefined" && /from=quiz/.test(location.search || "");
+    var fromInt =
+      typeof location !== "undefined" && /from=intquiz/.test(location.search || "");
     var fromS = false;
+    var retKey = "";
     try {
-      fromS = sessionStorage.getItem("bip39lab.quizReturn") === "1";
+      retKey = sessionStorage.getItem("bip39lab.quizReturn") || "";
+      fromS = retKey === "1" || retKey === "quiz";
     } catch (e) {
       /* ignore */
     }
-    // Always show return dock when coming from quiz OR mid Q2 experiment
-    var show = fromQ || fromS;
+    // Always show return dock when coming from quiz OR mid Q2 experiment OR Intermediate I2
+    var show = fromQ || fromS || fromInt || retKey === "intquiz";
     try {
       // Also show if user has Q2 evidence in progress (fail or ok half-done)
       var ev = loadEvidence();
@@ -324,10 +328,37 @@
       } catch (e3) {
         /* ignore */
       }
+      // Point Back link at Intermediate or Guided quiz
+      var backA = dock.querySelector("a.btn");
+      var hint = $("learnReturnDockShamirHint");
+      var markQ2 = $("btnMarkQ2FromShamir");
+      if (fromInt || retKey === "intquiz") {
+        if (backA) {
+          backA.href = "index.html?from=intquiz";
+          backA.textContent = "← Back to Intermediate quiz";
+        }
+        if (hint)
+          hint.textContent =
+            "I2: Shamir = hex shares (not BIP-39 words). Then Mark I2 on Lab.";
+        if (markQ2) markQ2.hidden = true;
+      } else {
+        if (backA) {
+          backA.href = "index.html?from=quiz";
+          backA.textContent = "← Back to Guided quiz";
+        }
+        if (hint) hint.textContent = "Q2: fail with 1 share, then succeed with M.";
+      }
     }
-    if (fromQ || fromS) {
+    if (fromInt || retKey === "intquiz") {
       try {
-        sessionStorage.setItem("bip39lab.quizReturn", "1");
+        sessionStorage.setItem("bip39lab.quizReturn", "intquiz");
+        sessionStorage.setItem("bip39lab.quizActive", "i2");
+      } catch (e4i) {
+        /* ignore */
+      }
+    } else if (fromQ || fromS) {
+      try {
+        sessionStorage.setItem("bip39lab.quizReturn", "quiz");
         sessionStorage.setItem("bip39lab.quizActive", "q2");
       } catch (e4) {
         /* ignore */

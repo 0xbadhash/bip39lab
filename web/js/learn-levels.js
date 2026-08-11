@@ -60,16 +60,16 @@
     beginner:
       "Beginner: Guided quiz is open (Q1–Q4). Do that next, then raise Level to Intermediate for the tour.",
     intermediate:
-      "Intermediate: Tour (Multisig ≠ Shamir ≠ SLIP-39) + deeper Tools (e.g. entropy pad). Next: Advanced ops.",
+      "Intermediate: three-splits tour + I1–I4 self-check (keys vs shares vs words + PSBT inspect). Next: Advanced.",
     advanced:
-      "Advanced: BIP-85 educational shell + Knots / seed-scan ops notes. Full classroom open.",
+      "Advanced: BIP-85 + Ops + A1–A4 self-check (watch-only, Knots limits, is-not).",
   };
 
   var LEVEL_UNLOCKS = {
     starter: "Orientation + First hour",
     beginner: "Guided quiz (Q1–Q4)",
-    intermediate: "Three-splits tour · deeper Tools",
-    advanced: "BIP-85 shell · Ops / Knots notes",
+    intermediate: "Tour · I1–I4 three splits + inspect-only",
+    advanced: "BIP-85 · Ops · A1–A4 ops mind",
   };
 
   function updateLevelHint(level) {
@@ -95,9 +95,9 @@
           msg =
             "Beginner unlocked: Guided quiz is next. Scroll to the green “what’s next” box or open the quiz below.";
         } else if (level === "intermediate") {
-          msg = "Intermediate unlocked: start the three-splits tour on Lab.";
+          msg = "Intermediate unlocked: tour + I1–I4 self-check (keys vs shares vs words + PSBT).";
         } else if (level === "advanced") {
-          msg = "Advanced unlocked: BIP-85 + Ops cards are open.";
+          msg = "Advanced unlocked: BIP-85, Ops, and A1–A4 self-check are open.";
         } else {
           msg = "Unlocked for " + level + ": " + (LEVEL_UNLOCKS[level] || "") + ".";
         }
@@ -204,7 +204,9 @@
   var HOUR_RETURN_KEY = "bip39lab.hourReturn";
   var QUIZ_RETURN_KEY = "bip39lab.quizReturn";
   var QUIZ_ACTIVE_KEY = "bip39lab.quizActive";
-  /** @type {"hour"|"quiz"|null} */
+  var INT_QUIZ_KEY = "bip39lab.intQuiz";
+  var ADV_QUIZ_KEY = "bip39lab.advQuiz";
+  /** @type {"hour"|"quiz"|"intquiz"|"advquiz"|null} */
   var learnReturnMode = null;
 
   function setBodyReturnOpen(on) {
@@ -217,7 +219,7 @@
 
   /**
    * One floating dock only — never stack hour + quiz sticky bars over content.
-   * mode: "hour" | "quiz" | null (hide)
+   * mode: "hour" | "quiz" | "intquiz" | "advquiz" | null (hide)
    */
   function hideAllQuizMarkBtns() {
     ["btnMarkQ1FromTools", "btnMarkQ3FromEnt", "btnMarkQ4FromEnt"].forEach(function (id) {
@@ -244,6 +246,20 @@
     if (m4 && active && active !== "q3" && active !== "q4") m4.hidden = true;
   }
 
+  function returnBtnLabel(mode) {
+    if (mode === "quiz") return "← Back to Guided quiz";
+    if (mode === "intquiz") return "← Back to Intermediate quiz";
+    if (mode === "advquiz") return "← Back to Advanced quiz";
+    return "← Back to First hour";
+  }
+
+  function returnDefaultHint(mode) {
+    if (mode === "quiz") return "Experiment, then mark passed only when clear.";
+    if (mode === "intquiz") return "Keys ≠ shares ≠ share-words. Mark when clear.";
+    if (mode === "advquiz") return "Ops mind offline. Mark when clear.";
+    return "Finish, then Mark done on the checklist.";
+  }
+
   function showLearnReturn(mode, hint) {
     var bar = $("learnReturnBar");
     var btn = $("learnReturnBarBtn");
@@ -261,16 +277,8 @@
     bar.hidden = false;
     bar.setAttribute("data-return-mode", mode);
     setBodyReturnOpen(true);
-    if (btn) {
-      btn.textContent = mode === "quiz" ? "← Back to Guided quiz" : "← Back to First hour";
-    }
-    if (hintEl) {
-      hintEl.textContent =
-        hint ||
-        (mode === "quiz"
-          ? "Experiment, then mark passed only when clear."
-          : "Finish, then Mark done on the checklist.");
-    }
+    if (btn) btn.textContent = returnBtnLabel(mode);
+    if (hintEl) hintEl.textContent = hint || returnDefaultHint(mode);
     if (mode === "quiz") updateQuizMarkButtonsOnDock();
     else hideAllQuizMarkBtns();
   }
@@ -451,7 +459,7 @@
       nextInt.addEventListener("click", function () {
         setLevel("intermediate", { announce: true });
         setTimeout(function () {
-          var t = $("cardTour");
+          var t = $("cardIntQuiz") || $("cardTour");
           if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 120);
       });
@@ -514,7 +522,7 @@
 
   function setQuizReturn(activeQ) {
     try {
-      sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+      sessionStorage.setItem(QUIZ_RETURN_KEY, "quiz");
       sessionStorage.removeItem(HOUR_RETURN_KEY);
       if (activeQ) sessionStorage.setItem(QUIZ_ACTIVE_KEY, activeQ);
     } catch (e) {
@@ -567,6 +575,8 @@
 
   function onLearnReturnClick() {
     if (learnReturnMode === "quiz") returnToQuiz();
+    else if (learnReturnMode === "intquiz") returnToIntQuiz();
+    else if (learnReturnMode === "advquiz") returnToAdvQuiz();
     else returnToFirstHour();
   }
 
@@ -721,19 +731,21 @@
   function resetClassroomProgress() {
     if (
       !window.confirm(
-        "Reset first-hour checklist, quiz answers, demo evidence, and tour step in this browser?"
+        "Reset first-hour checklist, quiz answers (incl. Intermediate/Advanced), demo evidence, and tour step in this browser?"
       )
     ) {
       return;
     }
     resetFirstHour();
     resetQuiz();
+    resetIntQuiz();
+    resetAdvQuiz();
     saveJson(TOUR_KEY, { i: 0 });
     var box = $("tourBox");
     if (box) box.hidden = true;
     var toast = $("learnLevelToast");
     if (toast) {
-      toast.textContent = "Progress reset (checklist + quiz + tour). Level unchanged.";
+      toast.textContent = "Progress reset (checklist + quizzes + tour). Level unchanged.";
       toast.hidden = false;
       clearTimeout(showLevelToast._t);
       showLevelToast._t = setTimeout(function () {
@@ -771,6 +783,275 @@
     markQuiz(q);
   }
 
+  function quizStorageFor(id) {
+    if (/^i[1-4]$/.test(id)) return INT_QUIZ_KEY;
+    if (/^a[1-4]$/.test(id)) return ADV_QUIZ_KEY;
+    return QUIZ_KEY;
+  }
+
+  function returnModeFor(id) {
+    if (/^i[1-4]$/.test(id)) return "intquiz";
+    if (/^a[1-4]$/.test(id)) return "advquiz";
+    return "quiz";
+  }
+
+  function returnCardIdFor(id) {
+    if (/^i[1-4]$/.test(id)) return "cardIntQuiz";
+    if (/^a[1-4]$/.test(id)) return "cardAdvQuiz";
+    return "cardQuiz";
+  }
+
+  function minLevelForQuiz(id) {
+    if (/^i[1-4]$/.test(id)) return "intermediate";
+    if (/^a[1-4]$/.test(id)) return "advanced";
+    return "beginner";
+  }
+
+  function labelForQuizId(id) {
+    if (!id) return "";
+    return id.charAt(0).toUpperCase() + id.slice(1);
+  }
+
+  function refreshPathQuiz(ids, storageKey, summaryId, nextId) {
+    var st = loadJson(storageKey, {});
+    ids.forEach(function (q) {
+      var passed = !!st[q];
+      var badge = $("quizBadge-" + q);
+      if (badge) {
+        badge.textContent = passed ? "Passed" : "Not yet";
+        badge.className = "chip " + (passed ? "chip-ok" : "chip-warn");
+      }
+      var board = $("quizBoard-" + q);
+      if (board) {
+        board.textContent = passed ? "Passed" : "Not yet";
+        board.className = "chip " + (passed ? "chip-ok" : "chip-warn");
+      }
+      var item = document.querySelector('[data-quiz="' + q + '"]');
+      if (item) {
+        item.classList.toggle("hour-step-done", passed);
+        item.classList.toggle("quiz-item-passed", passed);
+      }
+      var hintPend = $("quizHint-" + q);
+      var hintPass = $("quizHintPass-" + q);
+      if (hintPend) hintPend.hidden = passed;
+      if (hintPass) hintPass.hidden = !passed;
+      var passBtn = $("quizPass-" + q);
+      if (passBtn) {
+        passBtn.textContent = passed
+          ? labelForQuizId(q) + " passed ✓"
+          : "Mark " + labelForQuizId(q) + " passed";
+        passBtn.disabled = passed;
+        passBtn.setAttribute("aria-disabled", passed ? "true" : "false");
+      }
+    });
+    var n = 0;
+    ids.forEach(function (q) {
+      if (st[q]) n++;
+    });
+    var sum = $(summaryId);
+    if (sum) {
+      sum.textContent = n + " / 4 passed";
+      sum.className = "chip " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
+    }
+    if (nextId) {
+      var next = $(nextId);
+      if (next) next.hidden = n !== 4;
+    }
+  }
+
+  function refreshIntQuiz() {
+    refreshPathQuiz(["i1", "i2", "i3", "i4"], INT_QUIZ_KEY, "intQuizSummary", "intQuizNext");
+  }
+
+  function refreshAdvQuiz() {
+    refreshPathQuiz(["a1", "a2", "a3", "a4"], ADV_QUIZ_KEY, "advQuizSummary", null);
+  }
+
+  function setPathQuizReturn(activeQ) {
+    var mode = returnModeFor(activeQ);
+    try {
+      sessionStorage.setItem(QUIZ_RETURN_KEY, mode);
+      sessionStorage.removeItem(HOUR_RETURN_KEY);
+      if (activeQ) sessionStorage.setItem(QUIZ_ACTIVE_KEY, activeQ);
+    } catch (e) {
+      /* ignore */
+    }
+    showLearnReturn(mode, pathQuizHint(activeQ));
+  }
+
+  function pathQuizHint(activeQ) {
+    var st = loadJson(quizStorageFor(activeQ), {});
+    if (activeQ && st[activeQ]) {
+      return labelForQuizId(activeQ) + " already marked passed.";
+    }
+    var hints = {
+      i1: "I1: Multisig = keys (not shares). Read Multisig, then Mark I1.",
+      i2: "I2: Shamir = hex shares (not BIP-39 words).",
+      i3: "I3: SLIP-39 lab = share words — lab only, not funded.",
+      i4: "I4: PSBT inspect-only — never signs or broadcasts.",
+      a1: "A1: BIP-85 idea — master → app children (practice only).",
+      a2: "A2: Watch-only export has no xprv / private keys.",
+      a3: "A3: Knots/local node for private ops — not public seed farm.",
+      a4: "A4: Orientation — what this lab is and is not.",
+    };
+    return hints[activeQ] || returnDefaultHint(returnModeFor(activeQ));
+  }
+
+  function returnToPathQuiz(mode, cardId, minLevel) {
+    try {
+      sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    showLearnReturn(null);
+    if (LEVELS.indexOf(getLevel()) < LEVELS.indexOf(minLevel)) {
+      setLevel(minLevel, { announce: false });
+    }
+    goTab("lab");
+    setTimeout(function () {
+      var card = $(cardId);
+      if (card) {
+        card.setAttribute("data-level-force", "show");
+        card.classList.remove("level-gated");
+        card.hidden = false;
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        try {
+          if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+          card.focus({ preventScroll: true });
+        } catch (e2) {
+          /* ignore */
+        }
+      }
+      refreshIntQuiz();
+      refreshAdvQuiz();
+    }, 80);
+  }
+
+  function returnToIntQuiz() {
+    returnToPathQuiz("intquiz", "cardIntQuiz", "intermediate");
+  }
+
+  function returnToAdvQuiz() {
+    returnToPathQuiz("advquiz", "cardAdvQuiz", "advanced");
+  }
+
+  function markPathQuiz(q) {
+    if (!q) return;
+    var key = quizStorageFor(q);
+    var st = loadJson(key, {});
+    st[q] = true;
+    saveJson(key, st);
+    try {
+      sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    hideAllQuizMarkBtns();
+    showLearnReturn(null);
+    if (/^i[1-4]$/.test(q)) {
+      refreshIntQuiz();
+      returnToIntQuiz();
+    } else if (/^a[1-4]$/.test(q)) {
+      refreshAdvQuiz();
+      returnToAdvQuiz();
+    } else {
+      refreshQuiz();
+      returnToQuiz();
+    }
+  }
+
+  function scrollToTarget(sel) {
+    setTimeout(function () {
+      var el = typeof sel === "string" ? document.querySelector(sel) : sel;
+      if (!el) return;
+      el.setAttribute("data-level-force", "show");
+      el.classList.remove("level-gated");
+      el.hidden = false;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      try {
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+        el.focus({ preventScroll: true });
+      } catch (e) {
+        /* ignore */
+      }
+    }, 100);
+  }
+
+  function goPathQuizDemo(q) {
+    var min = minLevelForQuiz(q);
+    if (LEVELS.indexOf(getLevel()) < LEVELS.indexOf(min)) {
+      setLevel(min, { announce: false });
+    }
+    setPathQuizReturn(q);
+    if (q === "i1") {
+      window.location.href = "multisig.html?from=intquiz";
+      return;
+    }
+    if (q === "i2") {
+      window.location.href = "shamir.html?from=intquiz";
+      return;
+    }
+    if (q === "i3") {
+      window.location.href = "slip39.html?from=intquiz";
+      return;
+    }
+    if (q === "i4") {
+      goTab("tools");
+      scrollToTarget("#cardPsbt");
+      return;
+    }
+    if (q === "a1") {
+      goTab("lab");
+      scrollToTarget("#cardBip85");
+      return;
+    }
+    if (q === "a2") {
+      goTab("lab");
+      scrollToTarget("#watchOnlyPanel");
+      return;
+    }
+    if (q === "a3") {
+      goTab("lab");
+      scrollToTarget("#cardOps");
+      return;
+    }
+    if (q === "a4") {
+      goTab("lab");
+      scrollToTarget("#cardOrientation");
+      return;
+    }
+  }
+
+  function resetIntQuiz() {
+    saveJson(INT_QUIZ_KEY, {});
+    try {
+      if ((sessionStorage.getItem(QUIZ_RETURN_KEY) || "") === "intquiz") {
+        sessionStorage.removeItem(QUIZ_RETURN_KEY);
+        sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+        showLearnReturn(null);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    refreshIntQuiz();
+  }
+
+  function resetAdvQuiz() {
+    saveJson(ADV_QUIZ_KEY, {});
+    try {
+      if ((sessionStorage.getItem(QUIZ_RETURN_KEY) || "") === "advquiz") {
+        sessionStorage.removeItem(QUIZ_RETURN_KEY);
+        sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+        showLearnReturn(null);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    refreshAdvQuiz();
+  }
+
   function goQuizDemo(q) {
     setQuizReturn(q);
     // Ensure quiz card level is beginner so user can return
@@ -801,7 +1082,7 @@
     }
     if (q === "q2") {
       try {
-        sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+        sessionStorage.setItem(QUIZ_RETURN_KEY, "quiz");
         sessionStorage.setItem(QUIZ_ACTIVE_KEY, "q2");
       } catch (e) {
         /* ignore */
@@ -842,7 +1123,9 @@
     document.querySelectorAll("[data-quiz-go]").forEach(function (btn) {
       btn.addEventListener("click", function (ev) {
         ev.preventDefault();
-        goQuizDemo(btn.getAttribute("data-quiz-go"));
+        var id = btn.getAttribute("data-quiz-go");
+        if (/^i[1-4]$/.test(id) || /^a[1-4]$/.test(id)) goPathQuizDemo(id);
+        else goQuizDemo(id);
       });
     });
     // Keep legacy ids wired too (same buttons)
@@ -854,8 +1137,77 @@
           markQuiz(q);
         });
     });
+    ["i1", "i2", "i3", "i4"].forEach(function (q) {
+      var b = $("quizPass-" + q);
+      if (b)
+        b.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          markPathQuiz(q);
+        });
+    });
+    ["a1", "a2", "a3", "a4"].forEach(function (q) {
+      var b = $("quizPass-" + q);
+      if (b)
+        b.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          markPathQuiz(q);
+        });
+    });
+    var rI = $("btnResetIntQuiz");
+    if (rI)
+      rI.addEventListener("click", function () {
+        if (window.confirm("Clear Intermediate self-check marks in this browser?")) resetIntQuiz();
+      });
+    var rA = $("btnResetAdvQuiz");
+    if (rA)
+      rA.addEventListener("click", function () {
+        if (window.confirm("Clear Advanced self-check marks in this browser?")) resetAdvQuiz();
+      });
+    var goAdv = $("btnIntGoAdvanced");
+    if (goAdv)
+      goAdv.addEventListener("click", function () {
+        setLevel("advanced", { announce: true });
+        setTimeout(function () {
+          var c = $("cardAdvQuiz");
+          if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 120);
+      });
     // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
-    if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
+    if (typeof location !== "undefined" && /from=intquiz/.test(location.search || "")) {
+      try {
+        sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      } catch (eI) {
+        /* ignore */
+      }
+      showLearnReturn(null);
+      setTimeout(function () {
+        returnToIntQuiz();
+      }, 60);
+      try {
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.hash);
+        }
+      } catch (eIh) {
+        /* ignore */
+      }
+    } else if (typeof location !== "undefined" && /from=advquiz/.test(location.search || "")) {
+      try {
+        sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      } catch (eA) {
+        /* ignore */
+      }
+      showLearnReturn(null);
+      setTimeout(function () {
+        returnToAdvQuiz();
+      }, 60);
+      try {
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.hash);
+        }
+      } catch (eAh) {
+        /* ignore */
+      }
+    } else if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
       // Shamir (or other page) may pass ?marked=q2 so we never lose the pass on return
       try {
         var m = /[?&]marked=(q[1-4])/.exec(location.search || "");
@@ -897,14 +1249,22 @@
       }
     } else {
       try {
-        if (sessionStorage.getItem(QUIZ_RETURN_KEY) === "1") {
-          showLearnReturn("quiz", quizHintFor(sessionStorage.getItem(QUIZ_ACTIVE_KEY)));
+        var ret = sessionStorage.getItem(QUIZ_RETURN_KEY);
+        var act = sessionStorage.getItem(QUIZ_ACTIVE_KEY);
+        if (ret === "1" || ret === "quiz") {
+          showLearnReturn("quiz", quizHintFor(act));
+        } else if (ret === "intquiz") {
+          showLearnReturn("intquiz", pathQuizHint(act));
+        } else if (ret === "advquiz") {
+          showLearnReturn("advquiz", pathQuizHint(act));
         }
       } catch (e) {
         /* ignore */
       }
     }
     refreshQuiz();
+    refreshIntQuiz();
+    refreshAdvQuiz();
   }
 
   function wire() {

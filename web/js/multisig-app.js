@@ -316,5 +316,32 @@
       "Ready. Choose N + BIP39 word count (12–24), optional passphrase → Generate N cosigners (BIP84), then Build.",
       ""
     );
+
+    // Intermediate I1 return dock
+    try {
+      if (/from=intquiz/.test(location.search || "")) {
+        var dock = $("learnReturnDockMs");
+        if (dock) {
+          if (dock.parentNode !== document.body) {
+            try {
+              document.body.appendChild(dock);
+            } catch (eMove) {
+              /* ignore */
+            }
+          }
+          dock.hidden = false;
+          document.body.classList.add("learn-return-open");
+        }
+        var dismiss = $("learnReturnDockMsDismiss");
+        if (dismiss && dock) {
+          dismiss.addEventListener("click", function () {
+            dock.hidden = true;
+            document.body.classList.remove("learn-return-open");
+          });
+        }
+      }
+    } catch (eDock) {
+      /* ignore */
+    }
   });
 })();

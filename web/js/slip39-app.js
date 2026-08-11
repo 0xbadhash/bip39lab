@@ -183,6 +183,31 @@
     if (s) s.addEventListener("click", onSplit);
     if (b) b.addEventListener("click", onCombine);
     if (w) w.addEventListener("click", onWrongPassphraseDemo);
+    try {
+      if (/from=intquiz/.test(location.search || "")) {
+        var dock = $("learnReturnDockS39");
+        if (dock) {
+          if (dock.parentNode !== document.body) {
+            try {
+              document.body.appendChild(dock);
+            } catch (eMove) {
+              /* ignore */
+            }
+          }
+          dock.hidden = false;
+          document.body.classList.add("learn-return-open");
+        }
+        var dismiss = $("learnReturnDockS39Dismiss");
+        if (dismiss && dock) {
+          dismiss.addEventListener("click", function () {
+            dock.hidden = true;
+            document.body.classList.remove("learn-return-open");
+          });
+        }
+      }
+    } catch (eDock) {
+      /* ignore */
+    }
   }
 
   if (document.readyState === "loading") {

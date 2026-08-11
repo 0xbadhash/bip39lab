@@ -304,10 +304,10 @@
                 </li>
                 <li>
                   <strong>Next (Intermediate):</strong> Level → Intermediate unlocks the
-                  <em>three-splits tour</em> (Multisig ≠ Shamir ≠ SLIP-39) and deeper Tools (entropy pad, PSBT).
+                  <em>three-splits tour</em> and <em>I1–I4</em> self-check (keys vs shares vs words + PSBT inspect-only).
                 </li>
                 <li>
-                  <strong>Later (Advanced):</strong> BIP-85 idea shell + Knots / ops notes.
+                  <strong>Later (Advanced):</strong> BIP-85, Ops, and <em>A1–A4</em> (watch-only, Knots limits, is-not).
                 </li>
               </ol>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.65rem">
@@ -467,6 +467,131 @@
             </div>
           </div>
 
+          <div class="card card-wide" id="cardIntQuiz" data-level-min="intermediate">
+            <div class="control-help level-gate-msg" data-level-gate-banner="intermediate" hidden></div>
+            <h2>
+              Intermediate self-check
+              <span class="chip">Three splits + Tools depth</span>
+              <span id="intQuizSummary" class="chip">0 / 4</span>
+            </h2>
+            <p class="control-help">
+              Keys ≠ shares ≠ share-words, plus PSBT inspect-only.
+              Self-graded — <strong>Go try</strong>, then <strong>Mark passed</strong> when the idea is clear.
+            </p>
+            <ul class="quiz-status-board" id="intQuizStatusBoard" aria-label="Intermediate quiz status">
+              <li><span class="quiz-status-label">I1 keys</span> <span id="quizBoard-i1" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">I2 shares</span> <span id="quizBoard-i2" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">I3 words</span> <span id="quizBoard-i3" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">I4 inspect</span> <span id="quizBoard-i4" class="chip chip-warn">Not yet</span></li>
+            </ul>
+            <div class="quiz-item hour-step" data-quiz="i1">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    I1 — Multisig = keys, not shares
+                    <span id="quizBadge-i1" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Several people each hold a <strong>key</strong>. Spend needs M-of-N signatures.
+                    That is not “shares of one secret blob.”
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-i1">
+                    <strong>Not yet.</strong> Open Multisig, read that cosigners hold keys. Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-i1" hidden>
+                    <strong>Passed.</strong> Multisig = separate keys + threshold signatures.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="i1">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-i1">Mark I1 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="i2">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    I2 — Shamir edu = hex shares, not BIP-39 words
+                    <span id="quizBadge-i2" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Educational Shamir splits a practice secret into <strong>hex shares</strong>.
+                    Not BIP-39 recovery words, not SLIP-39.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-i2">
+                    <strong>Not yet.</strong> Open Shamir, note hex share format. Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-i2" hidden>
+                    <strong>Passed.</strong> Shamir lab shares ≠ BIP-39 words.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="i2">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-i2">Mark I2 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="i3">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    I3 — SLIP-39 lab = share words (not Suite, not funded)
+                    <span id="quizBadge-i3" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    SLIP-39 lab uses <strong>share mnemonics</strong> (Trezor-shaped). Lab only — not vendor Suite, not funded wallets.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-i3">
+                    <strong>Not yet.</strong> Open SLIP-39 lab, read the lab-only warning. Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-i3" hidden>
+                    <strong>Passed.</strong> SLIP-39 share words ≠ Multisig keys ≠ Shamir hex.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="i3">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-i3">Mark I3 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="i4">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    I4 — PSBT inspect-only (no sign / no broadcast)
+                    <span id="quizBadge-i4" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Tools PSBT card parses structure offline. It never signs, never finalizes, never broadcasts.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-i4">
+                    <strong>Not yet.</strong> Open Tools → PSBT inspector; confirm inspect-only copy. Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-i4" hidden>
+                    <strong>Passed.</strong> PSBT here is inspect-only — no signing path.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="i4">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-i4">Mark I4 passed</button>
+                </div>
+              </div>
+            </div>
+            <div id="intQuizNext" class="first-hour-next" hidden role="region" aria-label="After Intermediate">
+              <h3 class="first-hour-next-title">Intermediate self-checks done — what’s next?</h3>
+              <p class="control-help" style="margin:0.35rem 0 0.65rem">
+                Raise Level to <strong>Advanced</strong> for BIP-85 idea, watch-only discipline, Knots limits, and “what this lab isn’t.”
+              </p>
+              <button type="button" class="btn" id="btnIntGoAdvanced">Raise Level to Advanced</button>
+            </div>
+            <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
+              <button type="button" class="btn secondary btn-sm" id="btnResetIntQuiz" title="Clear Intermediate self-check marks">
+                Reset Intermediate answers
+              </button>
+            </div>
+          </div>
+
           <div class="card card-wide" id="cardBip85" data-level-min="advanced">
             <h2>BIP-85 — child seeds (advanced, educational)</h2>
             <p class="control-help">
@@ -490,6 +615,124 @@
               <li>Educational scan CLI: <code>scripts/seed_scan_educational.py --preflight-only</code></li>
               <li>Public Network page remains mempool fees/balances with leak ack only</li>
             </ul>
+          </div>
+
+          <div class="card card-wide" id="cardAdvQuiz" data-level-min="advanced">
+            <div class="control-help level-gate-msg" data-level-gate-banner="advanced" hidden></div>
+            <h2>
+              Advanced self-check
+              <span class="chip">Ops mind offline</span>
+              <span id="advQuizSummary" class="chip">0 / 4</span>
+            </h2>
+            <p class="control-help">
+              BIP-85 idea, watch-only handoff, Knots limits, and what this lab is <em>not</em>.
+              Self-graded — experiment, then mark passed.
+            </p>
+            <ul class="quiz-status-board" id="advQuizStatusBoard" aria-label="Advanced quiz status">
+              <li><span class="quiz-status-label">A1 BIP-85</span> <span id="quizBoard-a1" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">A2 watch-only</span> <span id="quizBoard-a2" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">A3 Knots</span> <span id="quizBoard-a3" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">A4 is-not</span> <span id="quizBoard-a4" class="chip chip-warn">Not yet</span></li>
+            </ul>
+            <div class="quiz-item hour-step" data-quiz="a1">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    A1 — BIP-85 idea (master → app children)
+                    <span id="quizBadge-a1" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    One master mnemonic can conceptually yield many application child mnemonics by index.
+                    Lab demo is educational — not full BIP-85 crypto yet.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-a1">
+                    <strong>Not yet.</strong> Open BIP-85 card, run Explain (practice phrase). Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-a1" hidden>
+                    <strong>Passed.</strong> BIP-85 is an idea for child app seeds — practice only here.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="a1">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-a1">Mark A1 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="a2">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    A2 — Watch-only export (no xprv on page)
+                    <span id="quizBadge-a2" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Lab watch-only export is public material (zpub/xpub style). No private keys / xprv for wallet spend.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-a2">
+                    <strong>Not yet.</strong> Generate a practice phrase, open watch-only panel, confirm no xprv. Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-a2" hidden>
+                    <strong>Passed.</strong> Watch-only = public keys only for monitoring.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="a2">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-a2">Mark A2 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="a3">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    A3 — Knots limits (local node, not public farm)
+                    <span id="quizBadge-a3" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Private balance / educational seed-scan work belongs on a <strong>local Knots/Core</strong> node.
+                    This website is not a bulk seed lottery or public RPC.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-a3">
+                    <strong>Not yet.</strong> Read the Ops card (Knots + seed-scan CLI). Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-a3" hidden>
+                    <strong>Passed.</strong> Serious private ops stay on your node, not public APIs.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="a3">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-a3">Mark A3 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="a4">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    A4 — What this lab is / isn’t
+                    <span id="quizBadge-a4" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Orientation table: practice lab, offline crypto, not a funded wallet, not a seed farm.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-a4">
+                    <strong>Not yet.</strong> Re-read “What this is / isn’t” on Lab. Then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-a4" hidden>
+                    <strong>Passed.</strong> You can state what bip39lab is not.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" data-quiz-go="a4">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-a4">Mark A4 passed</button>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
+              <button type="button" class="btn secondary btn-sm" id="btnResetAdvQuiz" title="Clear Advanced self-check marks">
+                Reset Advanced answers
+              </button>
+            </div>
           </div>
 
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->

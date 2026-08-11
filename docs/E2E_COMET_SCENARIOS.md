@@ -766,6 +766,14 @@ Advanced: BIP-85 card; explain demo PRACTICE.
 ### S66 — Ops card
 Advanced: Knots / seed-scan ops card.
 
+### S68 — Intermediate I1–I4 self-check
+Level Intermediate: `#cardIntQuiz` status board; Mark I1 → Passed;
+I4 Go try opens PSBT + amber “Back to Intermediate quiz” dock; Mark I4.
+
+### S69 — Advanced A1–A4 self-check
+Level Advanced: `#cardAdvQuiz`; A4 Go try → orientation + Advanced return dock;
+Mark A1–A4 → summary 4 / 4.
+
 ### S67 — Mobile layout
 Viewport ~390px: orientation + generate visible; sidebar stacks.
 
