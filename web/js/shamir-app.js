@@ -336,7 +336,9 @@
     refreshQ2Ui();
   }
 
-  function markQ2AndReturn() {
+  function markQ2AndReturn(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    if (ev && ev.stopPropagation) ev.stopPropagation();
     try {
       var st = {};
       try {
@@ -344,13 +346,33 @@
       } catch (e) {
         st = {};
       }
+      if (!st || typeof st !== "object") st = {};
       st.q2 = true;
       localStorage.setItem(QUIZ_KEY, JSON.stringify(st));
+      // First-hour step 6 when all four quiz items done
+      if (st.q1 && st.q2 && st.q3 && st.q4) {
+        var hour = {};
+        try {
+          hour = JSON.parse(localStorage.getItem("bip39lab.firstHour") || "{}") || {};
+        } catch (eH) {
+          hour = {};
+        }
+        hour.h6 = true;
+        localStorage.setItem("bip39lab.firstHour", JSON.stringify(hour));
+      }
       sessionStorage.setItem("bip39lab.quizReturn", "1");
+      sessionStorage.setItem("bip39lab.quizActive", "q2");
+      sessionStorage.setItem("bip39lab.quizJustMarked", "q2");
     } catch (e2) {
-      /* ignore */
+      console.error("markQ2AndReturn storage failed", e2);
     }
-    window.location.href = "index.html?from=quiz";
+    // Cache-bust so Lab always reloads and applies q2=passed
+    var dest = "index.html?from=quiz&marked=q2&_=" + Date.now();
+    try {
+      window.location.assign(dest);
+    } catch (eNav) {
+      window.location.href = dest;
+    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -359,8 +381,11 @@
     if ($("btnShClear")) $("btnShClear").addEventListener("click", onClear);
     if ($("btnShRecombine")) $("btnShRecombine").addEventListener("click", onRecombine);
     if ($("btnShFillM")) $("btnShFillM").addEventListener("click", onFillM);
-    var mq = $("btnMarkQ2FromShamir");
-    if (mq) mq.addEventListener("click", markQ2AndReturn);
+    // Delegation: works after dock is moved to <body>
+    document.body.addEventListener("click", function (ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest("#btnMarkQ2FromShamir") : null;
+      if (t) markQ2AndReturn(ev);
+    });
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
     showQuizReturn();
   });

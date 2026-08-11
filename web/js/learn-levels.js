@@ -856,6 +856,29 @@
     });
     // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
     if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
+      // Shamir (or other page) may pass ?marked=q2 so we never lose the pass on return
+      try {
+        var m = /[?&]marked=(q[1-4])/.exec(location.search || "");
+        if (m && m[1]) {
+          var stM = loadJson(QUIZ_KEY, {});
+          stM[m[1]] = true;
+          saveJson(QUIZ_KEY, stM);
+          if (stM.q1 && stM.q2 && stM.q3 && stM.q4) {
+            var hourM = loadJson(HOUR_KEY, {});
+            hourM.h6 = true;
+            saveJson(HOUR_KEY, hourM);
+          }
+        }
+        var just = sessionStorage.getItem("bip39lab.quizJustMarked");
+        if (just && /^q[1-4]$/.test(just)) {
+          var stJ = loadJson(QUIZ_KEY, {});
+          stJ[just] = true;
+          saveJson(QUIZ_KEY, stJ);
+          sessionStorage.removeItem("bip39lab.quizJustMarked");
+        }
+      } catch (eMark) {
+        /* ignore */
+      }
       try {
         sessionStorage.removeItem(QUIZ_RETURN_KEY);
       } catch (e2) {
