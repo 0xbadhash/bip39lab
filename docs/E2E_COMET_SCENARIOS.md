@@ -34,7 +34,7 @@ scenarios: S0–S71 · Playwright 88 tests · auto-stamped from e2e/ + VERSION
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
-`Product: 0.16.0 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 88`
+`Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 88`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
