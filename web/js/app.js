@@ -1244,33 +1244,67 @@
     if (!input) return;
     if (kind === "story") {
       input.value = PSBT_SAMPLE_STORY;
-      setPsbtStory(PSBT_STORY_MS);
+      setPsbtStory(
+        "Story loaded: multisig / hardware-wallet hand-off. Inspect ran automatically below — " +
+          "you do not need to click “Inspect again” unless you edit the box."
+      );
+      // Keep long story in out via inspect + append
     } else {
       input.value = PSBT_SAMPLE_MINIMAL;
-      setPsbtStory(PSBT_STORY_MINIMAL);
+      setPsbtStory(
+        "Minimal sample loaded: empty maps after magic (package opened, nothing filled). Inspect ran automatically."
+      );
     }
-    inspectPsbtUi();
+    inspectPsbtUi({ storyKind: kind });
+    var out = $("psbtOut");
+    if (out) {
+      try {
+        out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (e) {
+        /* ignore */
+      }
+    }
   }
 
-  function inspectPsbtUi() {
+  function inspectPsbtUi(opts) {
+    opts = opts || {};
     const out = $("psbtOut");
     if (!out) return;
-    if (!BIP39Lab.inspectPsbt) {
-      out.textContent = "PSBT API not in this build.";
+    const B = typeof BIP39Lab !== "undefined" ? BIP39Lab : null;
+    if (!B || !B.inspectPsbt) {
+      out.textContent =
+        "PSBT inspect unavailable. Hard-refresh the page (Ctrl+Shift+R) so the latest lab scripts load.";
       return;
     }
-    const r = BIP39Lab.inspectPsbt($("psbtIn").value);
+    const raw = ($("psbtIn") && $("psbtIn").value) || "";
+    if (!String(raw).trim()) {
+      out.textContent =
+        "Nothing to inspect. Click “1 · Load & inspect: minimal” or paste a PSBT, then Inspect again.";
+      return;
+    }
+    const r = B.inspectPsbt(raw);
+    var storyExtra = "";
+    if (opts.storyKind === "story") {
+      storyExtra =
+        "\n\n— sample story (multisig / HWW) —\n" + PSBT_STORY_MS;
+    } else if (opts.storyKind === "minimal" || opts.storyKind === undefined) {
+      // keep short; full story in psbtStory line
+    }
     var teach =
-      "\n\n— teach —\n" +
-      "Partial signatures exist so signing can cross devices/people (multisig, HWW, air-gap) without " +
-      "moving the seed. Lifecycle: create → partial sign(s) → combine → finalize → broadcast. " +
-      "This inspector only checks structure (magic + maps); it does not sign or broadcast.";
+      "\n\n— what this means —\n" +
+      "• status ok + magic psbt\\xff = blob looks like a PSBT package\n" +
+      "• mapCount / globalKeys = educational count of internal key/value sections\n" +
+      "• This is NOT a signed payment and does NOT go on the network\n" +
+      "• Real flow: create PSBT → others add partial signatures → combine → finalize → broadcast\n" +
+      "• This lab only does the “look at structure” step";
     out.textContent =
-      r.status +
-      ": " +
+      (r.status === "ok" ? "OK — educational parse\n" : "Error — ") +
       r.detail +
-      (r.globalKeys != null ? "\nglobalKeys≈" + r.globalKeys + " maps=" + r.mapCount : "") +
-      (r.status === "ok" ? teach : "");
+      (r.globalKeys != null
+        ? "\n\nglobal key entries ≈ " + r.globalKeys + "\nkey/value maps after magic ≈ " + r.mapCount
+        : "") +
+      (r.status === "ok" ? teach : "") +
+      (opts.storyKind === "story" ? storyExtra : "");
   }
 
   function explainDescUi() {
@@ -1524,14 +1558,22 @@
     if ($("btnDescExample")) {
       $("btnDescExample").addEventListener("click", () => {
         const ta = $("descExplainIn");
-        const out = $("descExplainOut");
         // Educational public-shape example only (checksum may fail explain — still teaches format).
         if (ta) {
-          ta.value = "wpkh(zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs/0/*)";
+          ta.value =
+            "wpkh(zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs/0/*)";
         }
-        if (out) {
+        // Load then explain in one step (logical order)
+        explainDescUi();
+        const out = $("descExplainOut");
+        if (out && out.textContent) {
           out.textContent =
-            "Filled an educational zpub-shaped example (public watch-only style). Click Explain — refuse any xprv/WIF/seed paste.";
+            "[Loaded educational public example, then ran Explain.]\n\n" + out.textContent;
+          try {
+            out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          } catch (e) {
+            /* ignore */
+          }
         }
       });
     }

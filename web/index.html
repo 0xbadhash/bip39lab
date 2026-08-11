@@ -750,23 +750,29 @@
                 </p>
               </div>
             </details>
-            <p class="control-help teach-only">
-              Load a sample, then <strong>Inspect</strong>. Or paste base64/hex from a wallet export (structure only).
+            <p class="control-help">
+              <strong>How to use:</strong>
+              (1) Click a <em>sample</em> button — it fills the box <strong>and runs Inspect</strong> immediately, or
+              (2) paste your own base64/hex, then click <strong>Inspect again</strong>.
+              Nothing is signed or sent to a network.
             </p>
-            <label class="field" for="psbtIn">PSBT
-              <textarea id="psbtIn" rows="4" spellcheck="false" autocomplete="off" placeholder="cHNidP8… or click a sample below"></textarea>
+            <label class="field" for="psbtIn">PSBT text (filled by samples or paste)
+              <textarea id="psbtIn" rows="3" spellcheck="false" autocomplete="off" placeholder="Click a sample below, or paste cHNidP8…"></textarea>
             </label>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem">
-              <button type="button" class="btn secondary" id="btnPsbtSampleMinimal" title="Minimal valid magic + empty maps">
-                Sample: minimal structure
+              <button type="button" class="btn secondary" id="btnPsbtSampleMinimal" title="Fills a minimal PSBT and inspects it">
+                1 · Load &amp; inspect: minimal
               </button>
-              <button type="button" class="btn secondary" id="btnPsbtSampleStory" title="Same framing; teach story for multisig/HWW">
-                Sample: multisig / HWW story
+              <button type="button" class="btn secondary" id="btnPsbtSampleStory" title="Fills a sample + multisig/HWW story and inspects">
+                2 · Load &amp; inspect: multisig / HWW story
               </button>
-              <button type="button" class="btn" id="btnPsbt">Inspect</button>
+              <button type="button" class="btn" id="btnPsbt" title="Re-run inspect on whatever is in the box">
+                3 · Inspect again
+              </button>
             </div>
-            <pre class="out" id="psbtOut">—</pre>
-            <p class="control-help teach-only" id="psbtStory" hidden style="margin-top:0.5rem"></p>
+            <p class="control-help teach-only" id="psbtStory" hidden style="margin-top:0.65rem"></p>
+            <p class="control-help" style="margin:0.5rem 0 0.25rem"><strong>Inspector result</strong> (structure only)</p>
+            <pre class="out" id="psbtOut">Click sample 1 or 2 (fills + inspects), or paste then click 3 · Inspect again.</pre>
           </div>
 
           <div class="card card-wide" id="cardDescExplain">
@@ -782,14 +788,23 @@
               or plain <code>wpkh(zpub…/0/*)</code>. Prefer pasting from a wallet’s watch-only export, or use
               <strong>Refresh descriptors</strong> above then paste one line here.
             </p>
+            <p class="control-help">
+              <strong>How to use:</strong> (1) <strong>Load example</strong> fills a public-shaped string,
+              (2) <strong>Explain</strong> describes what it looks like (or paste your own public descriptor first).
+            </p>
             <label class="field" for="descExplainIn">Descriptor text
               <textarea id="descExplainIn" rows="3" spellcheck="false" autocomplete="off" placeholder="wpkh(zpub…/0/*)#checksum"></textarea>
             </label>
-            <div class="row">
-              <button type="button" class="btn secondary" id="btnDescExplain">Explain</button>
-              <button type="button" class="btn secondary" id="btnDescExample" title="Fill a public educational example">Load example</button>
+            <div class="row" style="flex-wrap:wrap;gap:0.5rem">
+              <button type="button" class="btn secondary" id="btnDescExample" title="Fill a public educational example into the box">
+                1 · Load example
+              </button>
+              <button type="button" class="btn" id="btnDescExplain" title="Explain whatever is in the box">
+                2 · Explain
+              </button>
             </div>
-            <pre class="out" id="descExplainOut">—</pre>
+            <p class="control-help" style="margin:0.5rem 0 0.25rem"><strong>Explain result</strong></p>
+            <pre class="out" id="descExplainOut">Load example first, then Explain — or paste a public descriptor and Explain.</pre>
           </div>
 
           <details class="help-fold teach-only" id="tools-shortcuts">

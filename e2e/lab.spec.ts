@@ -348,9 +348,10 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#cardPsbt")).toContainText(/partial|multisig|never signs/i);
     await page.locator("#btnPsbtSampleStory").click();
     await expect(page.locator("#psbtIn")).not.toHaveValue("");
-    await expect(page.locator("#psbtOut")).toContainText(/ok|Educational|PSBT|magic|teach/i);
+    // Sample buttons load + inspect automatically (no need for Inspect again)
+    await expect(page.locator("#psbtOut")).toContainText(/OK|Educational|parse|magic|structure/i);
     await expect(page.locator("#psbtStory")).toBeVisible();
-    await expect(page.locator("#psbtStory")).toContainText(/multisig|hardware|partial/i);
+    await expect(page.locator("#psbtStory")).toContainText(/Inspect ran automatically|multisig|hardware/i);
   });
 
   test("S20b PSBT sample minimal + teach fold", async ({ page }) => {
@@ -359,8 +360,8 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#psbtTeachWhy")).toHaveAttribute("open", "");
     await expect(page.locator("#psbtTeachWhy")).toContainText(/Multisig|Hardware|Lifecycle/i);
     await page.locator("#btnPsbtSampleMinimal").click();
-    await expect(page.locator("#psbtOut")).toContainText(/ok|Educational|teach/i);
-    await expect(page.locator("#psbtStory")).toContainText(/empty global map|magic/i);
+    await expect(page.locator("#psbtOut")).toContainText(/OK|Educational|parse|structure/i);
+    await expect(page.locator("#psbtStory")).toContainText(/Minimal sample|automatically|magic/i);
   });
 
   test("S21 PSBT refuse secrets", async ({ page }) => {
@@ -372,8 +373,13 @@ test.describe("Lab Tools panel", () => {
 
   test("S22 descriptor explain public + refuse private", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
+    // Button order: Load example before Explain
+    const row = page.locator("#cardDescExplain .row").filter({ has: page.locator("#btnDescExample") });
+    await expect(row.locator("button").first()).toHaveAttribute("id", "btnDescExample");
     await page.locator("#btnDescExample").click();
     await expect(page.locator("#descExplainIn")).toHaveValue(/wpkh\(zpub/);
+    // Load example also runs Explain
+    await expect(page.locator("#descExplainOut")).toContainText(/Loaded educational|wpkh|ok|Looks like/i);
     await page.locator("#descExplainIn").fill("wpkh(zpub6demo/0/*)");
     await page.locator("#btnDescExplain").click();
     await expect(page.locator("#descExplainOut")).toContainText(/wpkh|ok/i);
