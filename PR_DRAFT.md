@@ -1,69 +1,62 @@
-# PR Draft: Intermediate I1–I4 + Advanced A1–A4 learning paths
+# PR Draft: v0.16.1 Multisig teach + quiz dock Mark parity + Comet stamp
 
 **Spec:** `.agents/specs/2026-08-11-intermediate-advanced-paths.md`  
 **Spec waiver:** chore  
 
 ## What Problem This Solves
-Beginner has Guided quiz (Q1–Q4); Intermediate/Advanced unlocked Tour, BIP-85, Ops, PSBT but had no self-check “what’s next” path.
+After v0.16.0 Intermediate/Advanced paths: Comet header lagged S-ids; Multisig teach copy was jargon-heavy; I1–I3 only had Back without Mark-on-dock; QA found quizReturn key drift and fee edge cases.
 
 ## Why This Change Was Made
-Ship Intermediate “Three splits + Tools depth” (I1–I4) and Advanced “Ops mind offline” (A1–A4) as self-graded shells mirroring Guided quiz UX.
+Patch release bundling post-ship QA fixes + Multisig classroom clarity + site-wide Mark passed & return on Intermediate docks + auto-stamp Comet blurb.
 
 ## User Impact
-- Intermediate: `#cardIntQuiz` — I1 keys, I2 hex shares, I3 SLIP-39 words, I4 PSBT inspect-only  
-- Advanced: `#cardAdvQuiz` — A1 BIP-85 idea, A2 watch-only, A3 Knots limits, A4 is-not  
-- Amber return dock modes for Intermediate/Advanced; external return docks on Multisig/Shamir/SLIP-39 for intquiz  
-- localStorage `bip39lab.intQuiz` / `bip39lab.advQuiz`; Reset + classroom reset  
-- After I1–I4 all pass → Raise Level to Advanced  
-- Playwright S68/S69 + Comet scenarios  
+- Multisig checklist: vault-verify + cosigner-replace ⓘ; zpub vs compressed pubkey teach  
+- Dock: **Mark I1/I2/I3** on Multisig/Shamir/SLIP-39; **Mark I4/A*** on Lab dock  
+- Comet header auto-stamped S0–S71 from VERSION + Playwright  
+- quizReturn accepts `1|quiz|intquiz|advquiz`; safer fee math; entropy dock less noisy  
 
 ## Evidence pack
-- pytest `tests/test_int_adv_paths.py` (red then green)  
-- `npx playwright test e2e/learn.spec.ts` (S68/S69)  
-- `check_web_e2e` + `product_smoke`  
+- hard_gates / product_smoke / check_web_e2e / pytest  
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT  
 
 ## Evidence
 | Check | Result |
 |-------|--------|
-| pytest test_int_adv_paths | 4 passed |
-| e2e learn.spec S68/S69 | passed |
-| check_web_e2e | ok (86 S-ids) |
-| product_smoke | unit + e2e pass |
+| secrets v0.16.0…HEAD | clean |
+| hard_gates | (at pr_review) |
+| pytest + e2e | S70/S71 + suite |
 
 ## Traceability
 | AC | Test |
 |----|------|
-| AC-1 Intermediate card I1–I4 | test_int_adv_paths · e2e S68 |
-| AC-2 Advanced card A1–A4 | test_int_adv_paths · e2e S69 |
-| AC-3 Passed chips / summary / reset | e2e S68/S69 · learn-levels.js |
-| AC-4 Go try dock / external from=intquiz | e2e S68 I4 dock · multisig/slip39/shamir docks |
-| AC-5 Raise Advanced after I pass | `#intQuizNext` · btnIntGoAdvanced |
-| AC-6 Playwright S68/S69 | e2e/learn.spec.ts |
-| AC-7 Comet S68/S69 | docs/E2E_COMET_SCENARIOS.md |
-| AC-8 Unit HTML/JS anchors | tests/test_int_adv_paths.py |
+| Multisig teach BIP67/vault/replace/zpub | e2e S46, S12b · test_multisig |
+| Mark I1 dock | e2e S70 |
+| Mark I4 Lab dock | e2e S71 |
+| Comet stamp S0–Smax | stamp_comet_header · test_stamp_comet_header |
+| quizReturn keys | test_quiz_return_keys |
+| Fee guards | test_network_api |
 
 ## Red-proof / TDD
 | Phase | Command |
 |-------|---------|
-| red_cmd | `.venv/bin/python -m pytest tests/test_int_adv_paths.py -q` (4 failed before HTML/JS) |
-| green_cmd | `.venv/bin/python -m pytest tests/test_int_adv_paths.py -q` (4 passed) + learn e2e |
+| red_cmd | pytest tests/test_stamp_comet_header.py tests/test_quiz_return_keys.py (added first, then green) |
+| green_cmd | `.venv/bin/python -m pytest -q` + `npx playwright test e2e/learn.spec.ts -g "S70\|S71"` |
 
 ## Untested paths
 | Path | Reason |
 |------|--------|
-| Full Multisig I1 e2e navigate+mark | covered by unit + dock HTML; S68 marks in-page |
-| Full BIP-85 crypto | out of scope (educational shell only) |
+| Live Multisig after deploy | needs push/deploy |
 
 ## Threat notes
-- **secrets** — progress localStorage only; no mnemonics stored by quiz  
-- **xss** — static teach copy; no untrusted HTML  
-- **integrity** — self-check educational; soft level gates  
+- **secrets** — progress localStorage only  
+- **xss** — glossary escapeHtml on tips  
+- **integrity** — educational self-check  
 
 ## Things that look bad but are actually fine
-1. Self-graded Intermediate/Advanced quizzes (no auto crypto pass).  
-2. BIP-85 demo is idea-only, not full HMAC derivation.  
-3. Multisig/Shamir/SLIP-39 I1–I3 rely on return link + Mark on Lab (same pattern as Network first-hour).  
-4. Soft level gates dim but remain readable.  
+1. Self-graded Intermediate marks (no auto crypto pass).  
+2. Cosigner replace = new vault + move, not edit-in-place (Bitcoin).  
+3. zpub shown but not used in M-of-N script (intentional teach).  
+4. Soft level gates.  
 
 ## Cross-review
-Deferred to `/code_review` / `/cross_review` as NEXT_SKILL requires.
+See `.agents/artifacts/CROSS_REVIEW.md`.

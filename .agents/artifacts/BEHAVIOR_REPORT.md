@@ -1,19 +1,17 @@
 # BEHAVIOR-REPORT
 
 **Marker:** BEHAVIOR-REPORT  
-**Contract:** `.agents/artifacts/BEHAVIOR_CONTRACT.md`  
-**Surface:** local Playwright learn levels + product smoke  
-**Base…head:** `e82fabe`…`dc17369`
+**Surface:** Playwright learn + multisig help-ux  
+**Base…head:** `v0.16.0`…`HEAD`
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| B1 | **pass** | Intermediate card `#cardIntQuiz` visible at level intermediate (S68) |
-| B2 | **pass** | Mark I1 → green Passed + summary 1/4 (S68) |
-| B3 | **pass** | I4 Go try → Tools PSBT + Intermediate return dock; Back returns (S68) |
-| B4 | **pass** | Advanced `#cardAdvQuiz` + A4 Go try → orientation + Advanced dock (S69) |
-| B5 | **pass** | Mark A1–A4 → summary 4/4 (S69) |
-| B6 | **pass** | Multisig/SLIP-39/Shamir intquiz return docks present in HTML/JS |
-| B7 | **pass** | product_smoke unit+e2e exit 0; check_web_e2e ok |
+| B1 | **pass** | S70 Mark I1 Multisig → I1 Passed |
+| B2 | **pass** | S71 Mark I4 Lab dock → I4 Passed |
+| B3 | **pass** | S46 vault/replace/BIP67 tips |
+| B4 | **pass** | S12b demo zpub tip enhance |
+| B5 | **pass** | Comet stamp S0–S71 / 88 S-ids |
+| B6 | **pass** | quizReturn mode strings + fee null guards |
 
 **fail:** none · **blocked:** none  
 
