@@ -308,9 +308,16 @@
       /* ignore */
     }
     var bar = $("quizBackBarShamir");
+    if (bar) bar.hidden = true; // legacy mid-page bar removed
     var dock = $("learnReturnDockShamir");
-    if (bar) bar.hidden = !show;
     if (dock) {
+      if (dock.parentNode !== document.body) {
+        try {
+          document.body.appendChild(dock);
+        } catch (eMove) {
+          /* ignore */
+        }
+      }
       dock.hidden = !show;
       try {
         document.body.classList.toggle("learn-return-open", !!show);

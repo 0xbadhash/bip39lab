@@ -93,16 +93,6 @@
             </header>
 
       <main class="content">
-        <div id="hourBackBarNet" class="hour-back-bar" hidden role="navigation" aria-label="Return to First hour">
-          <a class="btn secondary btn-sm" id="hourBackBarNetLink" href="index.html?from=firsthour">
-            ← Back to First hour checklist
-          </a>
-          <span class="control-help" style="margin:0">Optional Network step — fees only; understand leak ack, then return and mark done.</span>
-        </div>
-        <div id="learnReturnDockNet" class="learn-return-dock" hidden role="navigation" aria-label="Return to First hour">
-          <a class="btn secondary btn-sm" href="index.html?from=firsthour">← Back to First hour</a>
-          <span class="learn-return-hint">Fees only; understand leak ack, then mark step 7 done on the checklist.</span>
-        </div>
 <div class="card" id="netCardIntro">
           <div class="card-head"><h2>What this page is</h2></div>
           <p class="card-lede">
@@ -264,10 +254,15 @@
       </main>
     </div>
   </div>
+  <!-- Viewport-bottom only (no mid-page duplicate bar) -->
+  <div id="learnReturnDockNet" class="learn-return-dock" hidden role="navigation" aria-label="Return to First hour">
+    <a class="btn secondary btn-sm" href="index.html?from=firsthour">← Back to First hour checklist</a>
+    <span class="learn-return-hint">Optional Network step — fees only; understand leak ack, then return and mark done.</span>
+  </div>
   <script src="js/site-version.js?v=0.15.0"></script>
   <script src="js/glossary.js?v=0.15.0"></script>
   <script src="js/help-ui.js?v=0.15.0"></script>
   <script src="js/network.bundle.js?v=0.15.0"></script>
-  <script src="js/network-app.js?v=0.15.0"></script>
+  <script src="js/network-app.js?v=0.15.5"></script>
 </body>
 </html>

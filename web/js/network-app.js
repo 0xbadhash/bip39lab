@@ -275,10 +275,18 @@
       /* ignore */
     }
     var show = !!(fromQ || fromS);
-    var bar = $("hourBackBarNet");
     var dock = $("learnReturnDockNet");
-    if (bar) bar.hidden = !show;
+    // Hide any legacy mid-page bar if still present
+    var bar = $("hourBackBarNet");
+    if (bar) bar.hidden = true;
     if (dock) {
+      if (dock.parentNode !== document.body) {
+        try {
+          document.body.appendChild(dock);
+        } catch (eMove) {
+          /* ignore */
+        }
+      }
       dock.hidden = !show;
       try {
         document.body.classList.toggle("learn-return-open", show);

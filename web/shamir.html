@@ -91,26 +91,6 @@
             </header>
 
       <main class="content">
-        <!-- Inline reminder (also fixed dock below) -->
-        <div id="quizBackBarShamir" class="hour-back-bar" hidden role="navigation" aria-label="Return to Guided quiz">
-          <a class="btn secondary btn-sm" href="index.html?from=quiz">← Back to Guided quiz</a>
-          <span class="control-help" style="margin:0" id="quizBackBarShamirHint">
-            Q2 is a <strong>self-check</strong>: one share must fail; M shares must succeed. Then mark passed (or use the dock button).
-          </span>
-        </div>
-        <!-- Fixed bottom dock — stays visible while scrolling recombine -->
-        <div id="learnReturnDockShamir" class="learn-return-dock" hidden role="navigation" aria-label="Quiz Q2 return">
-          <a class="btn secondary btn-sm" href="index.html?from=quiz">← Back to Guided quiz</a>
-          <span class="learn-return-hint" id="learnReturnDockShamirHint">Q2: fail with 1 share, then succeed with M.</span>
-          <button type="button" class="btn btn-sm" id="btnMarkQ2FromShamir" hidden>
-            Mark Q2 passed &amp; return
-          </button>
-        </div>
-        <div id="q2EvidenceBanner" class="quiz-evidence-banner" hidden role="status">
-          <strong>Q2 experiment complete.</strong>
-          You saw under-threshold fail and threshold success. This quiz is self-graded —
-          tap <em>Mark Q2 passed &amp; return</em> below (or on the quiz card after you go back).
-        </div>
         <div class="warn" role="alert" id="shDanger">
           <strong>Educational Shamir (not SLIP-39).</strong>
           Demo only — do <em>not</em> split a real funded recovery phrase here.
@@ -298,10 +278,18 @@
       </main>
     </div>
   </div>
+  <!-- Viewport-bottom only (no mid-page duplicate bar) -->
+  <div id="learnReturnDockShamir" class="learn-return-dock" hidden role="navigation" aria-label="Quiz Q2 return">
+    <a class="btn secondary btn-sm" href="index.html?from=quiz">← Back to Guided quiz</a>
+    <span class="learn-return-hint" id="learnReturnDockShamirHint">Q2: fail with 1 share, then succeed with M.</span>
+    <button type="button" class="btn btn-sm" id="btnMarkQ2FromShamir" hidden>
+      Mark Q2 passed &amp; return
+    </button>
+  </div>
   <script src="js/site-version.js?v=0.15.0"></script>
   <script src="js/glossary.js?v=0.15.0"></script>
   <script src="js/help-ui.js?v=0.15.0"></script>
   <script src="js/shamir-core.js?v=0.15.0"></script>
-  <script src="js/shamir-app.js?v=0.15.0"></script>
+  <script src="js/shamir-app.js?v=0.15.5"></script>
 </body>
 </html>
