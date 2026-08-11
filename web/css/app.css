@@ -701,16 +701,67 @@ html[data-teach="off"] .help-fold.teach-only {
   color: var(--focus);
 }
 
+/* Jump targets: room under sticky chrome + visible focus when rail jumps */
+.card[id],
+.panel[id],
+table[id],
+[data-step-target],
+#card-mnemonic,
+#card-addresses,
+#addrTable,
+#watchOnlyPanel,
+#msCardIntro,
+#msCardKeys,
+#msCardBuild,
+#msResult,
+#netCardIntro,
+#netCardFees,
+#netCardBal,
+#shCardTeach,
+#shCardDemo,
+#shCardSplit,
+#shCardRecombine,
+#s39CardCompare,
+#s39CardDemo,
+#s39CardGroups {
+  scroll-margin-top: 1.25rem;
+}
+
+.card[id]:focus,
+.card[id]:focus-visible,
+table[id]:focus,
+table[id]:focus-visible,
+#addrTable:focus,
+#addrTable:focus-visible,
+#watchOnlyPanel:focus,
+#watchOnlyPanel:focus-visible,
+[data-step-focused="true"]:focus,
+[data-step-focused="true"]:focus-visible {
+  outline: 2px solid var(--focus, #3d8bfd);
+  outline-offset: 3px;
+}
+
 .step-flash {
-  animation: stepFlash 1.1s ease;
+  animation: stepFlash 1.4s ease;
+  border-radius: var(--radius, 10px);
 }
 
 @keyframes stepFlash {
   0% {
-    box-shadow: 0 0 0 0 rgba(61, 139, 253, 0.55);
+    box-shadow: 0 0 0 0 rgba(61, 139, 253, 0);
+    background-color: transparent;
+  }
+  15% {
+    box-shadow: 0 0 0 3px rgba(61, 139, 253, 0.65), 0 0 0 8px rgba(61, 139, 253, 0.2);
+    background-color: rgba(61, 139, 253, 0.08);
+  }
+  55% {
+    box-shadow: 0 0 0 2px rgba(61, 139, 253, 0.4);
+    background-color: rgba(61, 139, 253, 0.04);
   }
   100% {
     box-shadow: 0 0 0 0 transparent;
+    background-color: transparent;
   }
 }
 

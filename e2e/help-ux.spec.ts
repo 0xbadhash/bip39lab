@@ -55,14 +55,32 @@ test.describe("Help UX hybrid", () => {
     await expect(tip).not.toHaveClass(/is-open/);
   });
 
-  test("S44 step rail scrolls to watch-only", async ({ page }) => {
+  test("S44 step rail jumps focus + flash on target", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await page.locator('#labStepRail [data-step-target="#watchOnlyPanel"]').click();
-    await expect(page.locator("#watchOnlyPanel")).toBeVisible();
-    await expect(page.locator('#labStepRail [data-step-target="#watchOnlyPanel"]')).toHaveClass(
-      /is-active/
-    );
+    // Phrase → Path → Addresses → Watch-only each move focus to section
+    const jumps: { btn: string; target: string }[] = [
+      { btn: '#labStepRail [data-step-target="#card-mnemonic"]', target: "#card-mnemonic" },
+      { btn: '#labStepRail [data-step-target="#card-addresses"]', target: "#card-addresses" },
+      { btn: '#labStepRail [data-step-target="#addrTable"]', target: "#addrTable" },
+      { btn: '#labStepRail [data-step-target="#watchOnlyPanel"]', target: "#watchOnlyPanel" },
+    ];
+    for (const j of jumps) {
+      await page.locator(j.btn).click();
+      await expect(page.locator(j.btn)).toHaveClass(/is-active/);
+      const target = page.locator(j.target);
+      await expect(target).toBeVisible();
+      await expect(target).toHaveAttribute("data-step-focused", "true");
+      // Document focus lands on the section (tabindex=-1 + focus())
+      await expect
+        .poll(async () =>
+          page.evaluate((sel) => {
+            const el = document.querySelector(sel);
+            return el === document.activeElement;
+          }, j.target)
+        )
+        .toBe(true);
+    }
   });
 
   test("S45 Multisig step rail + teach + tip BIP67", async ({ page }) => {

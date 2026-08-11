@@ -206,7 +206,8 @@ Offline BIP-39 lab: generate or paste an English recovery phrase, optional passp
 
 ```text
 1. Land on Lab · read air-gap warn · note Offline crypto + Browser online/offline chips
-2. (Teach On) Follow step rail: Phrase → Addresses → Table → Watch-only
+2. (Teach On) Follow step rail: **Phrase** → **Path** → **Addresses** → **Watch-only**
+   — each click **scrolls to** the section, **moves keyboard focus** into it, and shows a brief **highlight flash** (not a locked wizard; rail button stays `is-active`)
 3. Choose word count → Generate  OR  paste abandon vector
 4. See entropy line + address table fill (default Taproot bc1p…)
 5. Optionally: passphrase, account/change/count, address-type tabs
@@ -221,7 +222,7 @@ Generate · Validate & derive · Clear · Hide private · address-type tabs · w
 
 | Criterion | Expected | PASS/FAIL | Notes |
 |-----------|----------|-----------|-------|
-| Coherent | Phrase → table → export is left-to-right / rail-guided | | |
+| Coherent | Phrase → Path → Addresses → Watch-only rail-guided; jump **focuses** target | | |
 | Makes sense | “Generate” produces phrase + table without extra clicks | | |
 | Intuitive | Default Taproot; goldens match when abandon pasted | | |
 | Safety | Air-gap warn + mnemonic ⓘ always findable | | |
@@ -615,8 +616,15 @@ Off hides teach-only; safety chrome remains.
 ### S43 — ⓘ tip
 Mnemonic **i** opens; Esc closes.
 
-### S44 — Step rail jump
-Watch-only step scrolls to panel.
+### S44 — Step rail jump + focus
+Lab Teach On · click each rail step (**Phrase** / **Path** / **Addresses** / **Watch-only**):
+1. Matching section is scrolled into view (`scroll-margin` under sticky chrome).
+2. Section receives **document focus** (`tabindex=-1` + `focus()`).
+3. Brief **step-flash** ring/background (visible highlight).
+4. Rail button has `is-active` / `aria-current="step"`.
+5. Target has `data-step-focused="true"` until the next jump.
+
+Same behavior on Multisig / Network / Shamir / SLIP-39 rails (shared `help-ui.js`).
 
 ### S45 — Multisig rail + BIP67 tip
 Rail + BIP67 **i**.

@@ -96,32 +96,76 @@
     applyTeach(getTeach());
   }
 
+  function focusStepTarget(el) {
+    if (!el) return;
+    // Make section focusable without permanent tab stop, then move focus for a11y + :focus-visible ring
+    if (!el.hasAttribute("tabindex")) {
+      el.setAttribute("tabindex", "-1");
+    }
+    try {
+      el.focus({ preventScroll: true });
+    } catch (e) {
+      try {
+        el.focus();
+      } catch (e2) {
+        /* ignore */
+      }
+    }
+  }
+
+  function flashStepTarget(el) {
+    if (!el) return;
+    el.classList.remove("step-flash");
+    // reflow so re-click restarts animation
+    void el.offsetWidth;
+    el.classList.add("step-flash");
+    el.setAttribute("data-step-focused", "true");
+    window.setTimeout(function () {
+      el.classList.remove("step-flash");
+      // keep data-step-focused until next jump so tests can assert focus target
+    }, 1600);
+  }
+
   function initStepRails() {
     document.querySelectorAll("[data-step-rail]").forEach(function (rail) {
       const steps = rail.querySelectorAll("[data-step-target]");
       steps.forEach(function (btn) {
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function (ev) {
+          if (ev && ev.preventDefault) ev.preventDefault();
           const sel = btn.getAttribute("data-step-target");
           if (!sel) return;
           const el = document.querySelector(sel);
           if (!el) return;
+
+          // Lab tab switch first if needed (so target is visible)
+          if (sel.indexOf("#panel-") === 0 && typeof window.__bip39ShowTab === "function") {
+            const name = sel.replace("#panel-", "");
+            window.__bip39ShowTab(name);
+          }
+
           steps.forEach(function (s) {
             s.classList.remove("is-active");
             s.setAttribute("aria-current", "false");
           });
           btn.classList.add("is-active");
           btn.setAttribute("aria-current", "step");
+
+          // Clear prior jump markers on this page
+          document.querySelectorAll("[data-step-focused]").forEach(function (prev) {
+            if (prev !== el) prev.removeAttribute("data-step-focused");
+          });
+
           el.scrollIntoView({ behavior: "smooth", block: "start" });
-          // brief highlight
-          el.classList.add("step-flash");
+          flashStepTarget(el);
+          // Focus after scroll starts so keyboard users land in the section
+          window.requestAnimationFrame(function () {
+            focusStepTarget(el);
+          });
+          // Second pass after smooth scroll settles (layout / sticky header)
           window.setTimeout(function () {
-            el.classList.remove("step-flash");
-          }, 1200);
-          // Lab tab switch if needed
-          if (sel.indexOf("#panel-") === 0 && typeof window.__bip39ShowTab === "function") {
-            const name = sel.replace("#panel-", "");
-            window.__bip39ShowTab(name);
-          }
+            focusStepTarget(el);
+            flashStepTarget(el);
+          }, 400);
         });
       });
     });
