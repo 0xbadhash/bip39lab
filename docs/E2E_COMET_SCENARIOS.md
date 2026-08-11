@@ -34,6 +34,11 @@ scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
 
+> **STALE COPY CHECK:** If this file shows Product `0.13.9`, toggle name **Teach On/Off**, or score **`/68`**, you have an outdated copy. Re-fetch **now** from:
+> - Live: https://bip39.catalyxt.xyz/docs/E2E_COMET_SCENARIOS.md
+> - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
+> Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
+
 `Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 89`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
