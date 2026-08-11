@@ -199,10 +199,23 @@
           "<div class=\"watch-item-key ms-demo-mnemonic\"></div>" +
           "<p class=\"control-help\"><strong>Entropy</strong></p>" +
           "<div class=\"watch-item-key ms-demo-ent\"></div>" +
-          "<p class=\"control-help\"><strong>BIP84 zpub</strong> (account <code>m/84'/0'/0'</code> — SLIP-132; prefix <code>zpub</code>. <strong>Not an xpub</strong> — do not paste into tools that expect BIP44 xpub.)</p>" +
+          "<p class=\"control-help label-row\"><strong>BIP-84 zpub</strong> — account watch-only export " +
+          "<span class=\"help-tip\" data-term=\"ZPUB\">" +
+          "<button type=\"button\" class=\"help-tip-btn\" aria-label=\"About zpub\">i</button>" +
+          "<span class=\"help-tip-panel\" hidden></span></span>" +
+          "<br /><span class=\"control-help\" style=\"font-weight:400\">Path <code>m/84'/0'/0'</code> · prefix <code>zpub…</code> (SLIP-132). " +
+          "<strong>Not</strong> a BIP-44 xpub string — wrong prefix breaks imports. " +
+          "Why show it? So you recognize what Sparrow/hardware export. " +
+          "It is <em>not</em> what Build pastes into the vault script.</span></p>" +
           "<div class=\"watch-item-key ms-demo-zpub\"></div>" +
           "<div class=\"row ms-demo-zpub-row\"></div>" +
-          "<p class=\"control-help\"><strong>Compressed pubkey</strong> at BIP84 path <code>m/84'/0'/0'/0/0</code> (filled into Build for this lab’s M-of-N script)</p>" +
+          "<p class=\"control-help label-row\"><strong>Compressed pubkey</strong> — what Build actually uses " +
+          "<span class=\"help-tip\" data-term=\"PUBKEY\">" +
+          "<button type=\"button\" class=\"help-tip-btn\" aria-label=\"About compressed pubkey\">i</button>" +
+          "<span class=\"help-tip-panel\" hidden></span></span>" +
+          "<br /><span class=\"control-help\" style=\"font-weight:400\">Path <code>m/84'/0'/0'/0/0</code> (first receive under that account). " +
+          "This hex (02…/03…) is filled into the public-keys box for the M-of-N vault. " +
+          "N of these keys → one shared multisig address after Build.</span></p>" +
           "<div class=\"watch-item-key ms-demo-pub\"></div>";
         item.querySelector(".watch-item-title").textContent = c.label;
         item.querySelector(".ms-demo-meta").textContent =
@@ -227,6 +240,14 @@
         zrow.appendChild(bCopy);
 
         list.appendChild(item);
+      }
+      // Fill ⓘ tips on newly injected demo cards
+      try {
+        if (window.Bip39Glossary && typeof window.Bip39Glossary.enhance === "function") {
+          window.Bip39Glossary.enhance();
+        }
+      } catch (eEnh) {
+        /* ignore */
       }
       const warn = $("msDemoWarn");
       warn.hidden = false;

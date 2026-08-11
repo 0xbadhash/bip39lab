@@ -75,10 +75,16 @@ def test_multisig_teach_ux_contracts():
     assert "id=\"msBip67Warn\"" in html
     assert "data-step-rail" not in html.lower()
     assert 'id="msCardIntro"' in html
-    assert "This is not an xpub" in html
+    assert "This is not an xpub" in html or "Not an “xpub”" in html or "Not</strong> a BIP-44 xpub" in html or "not an xpub" in html.lower()
     assert "unsafe by nature" in html
     assert "Before funding" in html
+    assert "multisig vault" in html.lower() or "MSVAULTVERIFY" in html
+    assert "data-term=\"MSVAULTVERIFY\"" in html
+    assert "data-term=\"COSIGNERREPLACE\"" in html
+    assert "What if a cosigner is lost" in html
+    assert "Why both a zpub and a compressed pubkey" in html
     assert "connect-src 'none'" in html
     assert "updateAirgapChip" in js
     assert "syncBip67Warn" in js
     assert "msBip67Warn" in js
+    assert "Bip39Glossary.enhance" in js or "Bip39Glossary" in js

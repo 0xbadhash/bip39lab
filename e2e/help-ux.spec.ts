@@ -104,6 +104,18 @@ test.describe("Help UX hybrid", () => {
     await bip67Tip.locator(".help-tip-btn").click();
     await expect(bip67Tip.locator(".help-tip-panel")).toBeVisible();
     await expect(bip67Tip.locator(".help-tip-panel")).toContainText(/same address|lexicographic|BIP67/i);
+    await page.keyboard.press("Escape"); // close tip so next ⓘ is not covered
+    // Vault verify: same address = multisig vault, not solo
+    const vaultTip = det.locator('.help-tip[data-term="MSVAULTVERIFY"]');
+    await expect(vaultTip).toBeVisible();
+    await vaultTip.locator(".help-tip-btn").click();
+    await expect(vaultTip.locator(".help-tip-panel")).toContainText(/vault|not each|single-sig|solo/i);
+    await page.keyboard.press("Escape");
+    // Cosigner replace tip
+    const replTip = det.locator('.help-tip[data-term="COSIGNERREPLACE"]');
+    await expect(replTip).toBeVisible();
+    await replTip.locator(".help-tip-btn").click();
+    await expect(replTip.locator(".help-tip-panel")).toContainText(/new vault|cannot|replace|spend out/i);
   });
 
   test("S47 Network Extra help · leak always visible · fee tip", async ({ page }) => {

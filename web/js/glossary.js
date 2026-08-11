@@ -175,11 +175,15 @@
     },
     {
       id: "ZPUB",
-      title: "zpub",
+      title: "zpub (BIP-84 account)",
       group: "Keys",
-      short: "SLIP-132 native SegWit xpub",
+      short: "Watch-only account export — not the vault address",
       body:
-        "Version-byte variant signaling BIP-84 P2WPKH watch-only. Common mobile/desktop import format. Not a private key.",
+        "A zpub is the SLIP-132 encoding of the account-level public key at path m/84'/0'/0' (BIP-84 native SegWit). " +
+        "It lets a wallet watch every receive/change address under that account — like a bank statement login, not spend rights. " +
+        "It is public-only, but it is NOT the same string as a classic BIP-44 “xpub” prefix: many tools reject a zpub when they expect xpub (and the reverse). " +
+        "In Multisig demo cards you see a zpub so you can learn what hardware/Sparrow export looks like. " +
+        "This lab’s M-of-N Build does NOT paste the zpub into the script — it only uses one compressed pubkey derived under that account (see compressed pubkey tip).",
     },
     {
       id: "SLIP132",
@@ -187,7 +191,8 @@
       group: "Keys",
       short: "Versioned xpub prefixes",
       body:
-        "SatoshiLabs standard for ypub/zpub (and others) so wallets know which script type an extended public key is meant for.",
+        "SatoshiLabs standard for ypub/zpub (and others) so wallets know which script type an extended public key is meant for. " +
+        "Wrong prefix is a common import error: zpub ≈ BIP-84, ypub ≈ BIP-49, xpub ≈ classic BIP-44.",
     },
     {
       id: "WIF",
@@ -201,9 +206,13 @@
       id: "PUBKEY",
       title: "Compressed public key",
       group: "Keys",
-      short: "33-byte hex 02…/03…",
+      short: "What the M-of-N script actually uses",
       body:
-        "Elliptic-curve public key in compressed form (66 hex chars, starts with 02 or 03). Safe to share for building multisig vaults.",
+        "Elliptic-curve public key in compressed form (66 hex chars, starts with 02 or 03). Safe to share. " +
+        "In this Multisig lab, Build takes N of these hex strings and builds one P2SH / P2WSH vault script. " +
+        "Demo cosigners put the key at BIP-84 path m/84'/0'/0'/0/0 (account 0, receive chain, index 0) into the Build box. " +
+        "Why not the whole zpub? Multisig scripts need discrete keys (or more advanced descriptors/miniscript in real wallets) — " +
+        "the zpub is the parent watch-only export; the compressed pubkey is the leaf used in this simple educational M-of-N.",
     },
     {
       id: "MNEMONIC",
@@ -327,6 +336,31 @@
       short: "One key holder",
       body:
         "A participant who holds one of the N keys. In real life each cosigner keeps their own seed offline; only public keys are shared to build the vault address.",
+    },
+    {
+      id: "MSVAULTVERIFY",
+      title: "Verify the vault address (before funding)",
+      group: "Multisig",
+      short: "Same address = the multisig vault, not each solo wallet",
+      body:
+        "“Same address” means the single multisig receive address your group built (P2SH “3…” and/or P2WSH bc1q… from this lab’s Build) — the vault everyone will send to. " +
+        "It is NOT each cosigner’s personal single-sig address from their own phone wallet. " +
+        "Before anyone sends real coins: every cosigner should re-import the same public keys (or the same output descriptor) in their own software/hardware, with the same M, N, and BIP-67 policy, and confirm the vault address string matches character-for-character. " +
+        "If one person mis-sorted keys, used a different M, or swapped a pubkey, they will get a different address and funds sent to the wrong vault may be lost.",
+    },
+    {
+      id: "COSIGNERREPLACE",
+      title: "Replacing a lost cosigner",
+      group: "Multisig",
+      short: "New vault — move coins; you cannot “edit” one key in place",
+      body:
+        "Bitcoin multisig is not a shared Google Doc with edit rights. The vault address is a pure function of the exact set of public keys + M + script type. " +
+        "If cosigner C loses their seed (or you want them out), you cannot keep the same address and swap only C’s key. " +
+        "Typical recovery plan: (1) the remaining M-of-N still able to sign spend out of the old vault to a safe temporary wallet or new vault; " +
+        "(2) build a new multisig with a replacement public key C′ (and same M/N or a new policy); " +
+        "(3) everyone re-verifies the new vault address before funding it; (4) move remaining coins to the new vault. " +
+        "If you no longer have M keys (e.g. 2-of-3 but two seeds are gone), the coins on that vault are not recoverable with this design. " +
+        "Write down who holds which key, where backups live, and who can authorize a rebuild — that is the “backup plan,” not a magic “replace key” button on this page.",
     },
     {
       id: "SHAMIR",
@@ -588,6 +622,11 @@
         MOFN: "MOFN",
         "M-OF-N": "MOFN",
         MULTISIG: "MULTISIG",
+        MSVAULTVERIFY: "MSVAULTVERIFY",
+        "VAULT ADDRESS": "MSVAULTVERIFY",
+        "SAME ADDRESS": "MSVAULTVERIFY",
+        COSIGNERREPLACE: "COSIGNERREPLACE",
+        "REPLACE COSIGNER": "COSIGNERREPLACE",
         SEGWIT: "SEGWIT",
         TAPROOT: "TAPROOT",
         BECH32: "BECH32",
@@ -705,5 +744,10 @@
     init();
   }
 
-  window.Bip39Glossary = { TERMS: TERMS, render: renderGlossaryPanel, byId: byId };
+  window.Bip39Glossary = {
+    TERMS: TERMS,
+    render: renderGlossaryPanel,
+    byId: byId,
+    enhance: enhanceDataTerms,
+  };
 })();

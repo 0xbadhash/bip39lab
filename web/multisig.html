@@ -161,11 +161,44 @@
                   <span class="help-tip-panel" hidden></span>
                 </span>
               </li>
-              <li>☐ <strong>Before funding:</strong> every cosigner independently verifies the same address on their own device</li>
-              <li>☐ Backup plan: who holds which key; how to replace a lost cosigner</li>
+              <li>
+                ☐ <strong>Before funding:</strong> every cosigner independently verifies the
+                <em>multisig vault</em> address on their own device
+                <span class="help-tip" data-term="MSVAULTVERIFY">
+                  <button type="button" class="help-tip-btn" aria-label="What address do we verify?">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+                <span class="control-help" style="display:block;margin:0.25rem 0 0;font-weight:400">
+                  That means the <strong>shared vault</strong> from Build (P2SH / P2WSH) — not each person’s solo phone address.
+                </span>
+              </li>
+              <li>
+                ☐ Backup plan: who holds which key; how to replace a lost cosigner
+                <span class="help-tip" data-term="COSIGNERREPLACE">
+                  <button type="button" class="help-tip-btn" aria-label="How do we replace a cosigner?">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </li>
               <li>☐ No private keys or seeds pasted into this page</li>
               <li>☐ This tool does not sign or spend — real wallet software is required later</li>
             </ul>
+          </details>
+          <details class="help-fold teach-only" style="margin-top:0.75rem" id="msFoldReplace">
+            <summary>What if a cosigner is lost? (short answer)</summary>
+            <div class="control-help" style="margin-top:0.5rem">
+              <p style="margin:0 0 0.5rem">
+                You <strong>cannot</strong> keep the same vault address and “swap one key.” The address is locked to the exact set of public keys + M.
+              </p>
+              <ol style="margin:0 0 0.5rem;padding-left:1.2rem">
+                <li>Remaining signers (still M-of-N) spend coins out of the <em>old</em> vault.</li>
+                <li>Build a <em>new</em> multisig with a replacement public key (new cosigner or your new seed).</li>
+                <li>Everyone re-verifies the <strong>new</strong> vault address, then move funds there.</li>
+              </ol>
+              <p style="margin:0">
+                If you no longer have M keys, coins on the old vault are not recoverable with this design.
+                Use the ⓘ on the checklist for the full story.
+              </p>
+            </div>
           </details>
         </div>
 
@@ -187,19 +220,40 @@
         <div class="card card-wide" id="msCardDemo">
           <h2>Generate demo cosigners (optional)</h2>
           <p class="control-help">
-            Creates N throwaway BIP39 seeds and fills compressed pubkeys for Build.
-            Scheme: <strong>BIP84 native segwit</strong> only (path <code>m/84'/0'/0'/0/0</code>).
+            Creates N throwaway BIP-39 seeds. Each cosigner card shows two different public things:
+            an account <strong>zpub</strong> (watch-only export) and one <strong>compressed pubkey</strong>
+            that this page puts into Build for the M-of-N vault.
           </p>
-          <details class="help-fold teach-only">
-            <summary>What is a BIP84 zpub? (after you generate)</summary>
-            <p class="control-help">
-              Each demo card shows a <strong>BIP84 zpub</strong> — the SLIP-132 encoding of the
-              account public key at <code>m/84'/0'/0'</code>.
-              <strong>This is not an xpub.</strong> Do not paste a zpub into a tool that expects a BIP44 xpub
-              (or the reverse); wrong prefix is a common wallet-import error.
-              The M-of-N script here uses only the <strong>compressed pubkey</strong> at receive index 0,
-              not the full account zpub.
-            </p>
+          <details class="help-fold teach-only" id="msFoldZpub">
+            <summary>Why both a zpub and a compressed pubkey? (read this)</summary>
+            <div class="control-help" style="margin-top:0.5rem">
+              <p style="margin:0 0 0.65rem">
+                <strong>1. BIP-84 zpub</strong>
+                <span class="help-tip" data-term="ZPUB">
+                  <button type="button" class="help-tip-btn" aria-label="About zpub">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+                — account watch-only at <code>m/84'/0'/0'</code> (SLIP-132 prefix <code>zpub…</code>).
+                Real wallets export this so you can <em>monitor</em> all addresses under that account.
+                <strong>Not an “xpub” string:</strong> do not paste a zpub into a tool that only accepts BIP-44 xpub
+                (or the reverse). Wrong prefix is a classic import error.
+              </p>
+              <p style="margin:0 0 0.65rem">
+                <strong>2. Compressed pubkey</strong>
+                <span class="help-tip" data-term="PUBKEY">
+                  <button type="button" class="help-tip-btn" aria-label="About compressed pubkey">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+                at path <code>m/84'/0'/0'/0/0</code> (first receive address under that account).
+                <strong>This lab’s Build uses only these hex keys</strong> to form one multisig vault script.
+                The zpub is shown so you learn what hardware/Sparrow export looks like — it is
+                <em>not</em> pasted into the M-of-N script on this page.
+              </p>
+              <p style="margin:0">
+                <strong>So what?</strong> Zpub = “watch this whole account.” Compressed pubkey = “this one key participates in the vault.”
+                Confusing them is how people fund the wrong wallet or fail imports.
+              </p>
+            </div>
           </details>
 
           <div class="control-block">

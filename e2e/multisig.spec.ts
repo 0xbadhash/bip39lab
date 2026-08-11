@@ -49,7 +49,13 @@ test.describe("Multisig explainer E2E", () => {
     await page.locator("#msGenDemo").click();
     await expect(page.locator("#msDemoList")).toBeVisible();
     await expect(page.locator("#msDemoList .watch-item")).toHaveCount(3);
-    await expect(page.locator("#msDemoList")).toContainText(/BIP84 zpub|zpub/i);
+    await expect(page.locator("#msDemoList")).toContainText(/BIP84 zpub|zpub|watch-only/i);
+    await expect(page.locator("#msDemoList")).toContainText(/Compressed pubkey|what Build actually uses/i);
+    // zpub ⓘ on first demo card fills after enhance
+    const zTip = page.locator("#msDemoList .help-tip[data-term=\"ZPUB\"]").first();
+    await expect(zTip).toBeVisible();
+    await zTip.locator(".help-tip-btn").click();
+    await expect(zTip.locator(".help-tip-panel")).toContainText(/watch-only|zpub|xpub|account/i);
     const pubs = await page.locator("#msParts").inputValue();
     expect(pubs.trim().split(/\n/).length).toBe(3);
     expect(pubs).toMatch(/^0[23]/m);
