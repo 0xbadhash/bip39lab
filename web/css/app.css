@@ -378,63 +378,120 @@ code {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
-/* Legacy class: non-sticky inline bars on Network/Shamir (document flow, no overlay) */
+/* Return bars: amber/gold so they don’t blend into blue UI / dark panels */
 .hour-back-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.55rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   margin: 0 0 0.75rem;
-  background: var(--accent-soft);
-  border: 1px solid rgba(61, 139, 253, 0.4);
-  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #3d2e0a 0%, #5a4210 55%, #2a220c 100%);
+  border: 2px solid #e8b84a;
+  border-radius: 12px;
   position: static;
   z-index: auto;
+  color: #fff6de;
+  box-shadow: 0 4px 18px rgba(232, 184, 74, 0.25);
 }
-/* One shared floating dock on Lab — bottom, not sticky top (no text cover / no stack) */
+.hour-back-bar .control-help {
+  color: #f5e6b8 !important;
+}
+.hour-back-bar .btn,
+.hour-back-bar a.btn {
+  background: #e8b84a;
+  border-color: #f0d078;
+  color: #1a1406;
+  font-weight: 700;
+}
+.hour-back-bar .btn:hover,
+.hour-back-bar a.btn:hover {
+  background: #f5d06a;
+  border-color: #ffe08a;
+  color: #1a1406;
+}
+/* Floating bottom dock — high-contrast amber, not panel-blue */
 .learn-return-dock {
   position: fixed;
   left: max(0.75rem, env(safe-area-inset-left));
   right: max(0.75rem, env(safe-area-inset-right));
   bottom: max(0.75rem, env(safe-area-inset-bottom));
-  z-index: 40;
+  z-index: 50;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 0.75rem;
   max-width: 36rem;
   margin-inline: auto;
-  padding: 0.55rem 0.65rem 0.55rem 0.75rem;
-  background: var(--panel);
-  border: 1px solid rgba(61, 139, 253, 0.55);
+  padding: 0.65rem 0.75rem 0.65rem 0.85rem;
+  background: linear-gradient(135deg, #4a3508 0%, #6b4e12 45%, #3a2a0a 100%);
+  border: 2px solid #f0c14d;
   border-radius: 999px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(255, 220, 120, 0.35),
+    0 10px 32px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(240, 193, 77, 0.28);
+  color: #fff8e7;
+}
+html[data-theme="light"] .learn-return-dock,
+html.theme-light .learn-return-dock,
+body.theme-light .learn-return-dock {
+  background: linear-gradient(135deg, #fff3c4 0%, #ffe08a 50%, #f5d06a 100%);
+  border-color: #b45309;
+  color: #1a1406;
+  box-shadow:
+    0 0 0 1px rgba(180, 83, 9, 0.25),
+    0 10px 28px rgba(0, 0, 0, 0.18);
 }
 .learn-return-dock[hidden] {
   display: none !important;
 }
+.learn-return-dock .btn,
+.learn-return-dock a.btn {
+  background: #f0c14d;
+  border: 1px solid #ffe08a;
+  color: #1a1406;
+  font-weight: 750;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+.learn-return-dock .btn:hover,
+.learn-return-dock a.btn:hover {
+  background: #ffd666;
+  border-color: #fff0a8;
+  color: #1a1406;
+}
+.learn-return-dock .btn.secondary {
+  background: #f0c14d;
+  border-color: #ffe08a;
+  color: #1a1406;
+}
 .learn-return-hint {
   flex: 1 1 10rem;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   line-height: 1.35;
-  color: var(--muted);
+  color: #fff1c2;
   margin: 0;
   min-width: 0;
+  font-weight: 550;
+}
+html[data-theme="light"] .learn-return-hint,
+html.theme-light .learn-return-hint,
+body.theme-light .learn-return-hint {
+  color: #422006;
 }
 .learn-return-dismiss {
   border: 0;
-  background: transparent;
-  color: var(--muted);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff8e7;
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0.15rem 0.35rem;
+  padding: 0.2rem 0.45rem;
   border-radius: 999px;
 }
 .learn-return-dismiss:hover {
-  color: var(--text);
-  background: var(--panel-2);
+  color: #1a1406;
+  background: #f0c14d;
 }
 .quiz-evidence-banner {
   margin: 0 0 0.75rem;
