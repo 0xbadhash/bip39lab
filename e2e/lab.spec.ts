@@ -289,7 +289,8 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#entPadBitsGap")).toContainText(/TOO LOW|NEVER for real funds/i);
     const words = await page.locator("#entPadSeedWords").inputValue();
     expect(words.trim().split(/\s+/).length).toBe(12);
-    await expect(page.locator("#entPadSeedNote")).toContainText(/SHA-256|practice/i);
+    await expect(page.locator("#entPadSeedNote")).toContainText(/SHA-256|roll log|practice/i);
+    await expect(page.locator("#entPadSeedWords")).not.toHaveValue("");
   });
 
   test("S18 compare passphrases", async ({ page }) => {

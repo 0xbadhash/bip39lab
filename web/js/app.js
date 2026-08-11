@@ -905,23 +905,29 @@
     throw new Error("Web Crypto SHA-256 unavailable");
   }
 
+  function resetEntPadResultUi() {
+    const box = $("entPadSeedBox");
+    if (box) box.hidden = true;
+    if ($("entPadSeedWords")) $("entPadSeedWords").value = "";
+    if ($("entPadBitsEst")) $("entPadBitsEst").textContent = "—";
+    if ($("entPadBitsNeed")) $("entPadBitsNeed").textContent = "—";
+    if ($("entPadBitsGap")) $("entPadBitsGap").textContent = "—";
+    if ($("entPadSeedNote")) $("entPadSeedNote").textContent = "";
+  }
+
   async function buildPracticeSeedFromPad() {
     const box = $("entPadSeedBox");
     const warn = $("entPadSeedWarn");
     const note = $("entPadSeedNote");
     const ta = $("entPadSeedWords");
+    const B = typeof BIP39Lab !== "undefined" ? BIP39Lab : null;
+
     if (!entEvents.length) {
-      if (box) box.hidden = false;
-      if (warn) warn.innerHTML = "<strong>PRACTICE ONLY — do not fund.</strong> Pad is empty — roll dice / flip coins first.";
-      if (note) note.textContent = "No events yet.";
-      if (ta) ta.value = "";
+      setStatus("Step 1 first: roll the d6 or flip the coin a few times, then build.", "err");
+      resetEntPadResultUi();
       return;
     }
-    if (!BIP39Lab.mnemonicFromEntropyBytes) {
-      if (box) box.hidden = false;
-      if (note) note.textContent = "This build lacks mnemonicFromEntropyBytes — rebuild the offline bundle.";
-      return;
-    }
+
     const words = parseInt(($("entPadWords") && $("entPadWords").value) || "12", 10) || 12;
     const needBits = words >= 24 ? 256 : 128;
     const needBytes = needBits / 8;
@@ -930,47 +936,85 @@
     const gap = needBits - est;
     const low = est + 0.001 < needBits;
 
-    // Hash the event log → 32 bytes; take ENT length for BIP-39 (educational stretch/compress)
-    const digest = await sha256Bytes(entEvents.join("|"));
-    const ent = digest.slice(0, needBytes);
-    let mnemonic;
-    try {
-      mnemonic = BIP39Lab.mnemonicFromEntropyBytes(ent);
-    } catch (e) {
+    // Prefer bundle helper; fall back to generateMnemonic only for recovery messaging (not pad-derived)
+    const hasFromEnt = B && typeof B.mnemonicFromEntropyBytes === "function";
+    if (!hasFromEnt) {
       if (box) box.hidden = false;
-      if (note) note.textContent = "Could not build words: " + (e && e.message ? e.message : e);
+      if (warn) {
+        warn.innerHTML =
+          "<strong>Could not build pad words.</strong> Your browser is likely using an <em>old cached</em> lab script. " +
+          "Hard-refresh this page (Ctrl+Shift+R / Cmd+Shift+R), then try again.";
+      }
+      if ($("entPadBitsEst")) $("entPadBitsEst").textContent = "~" + estRound + " bits from " + entEvents.length + " events";
+      if ($("entPadBitsNeed")) $("entPadBitsNeed").textContent = needBits + " bits wanted for " + words + " words";
+      if ($("entPadBitsGap")) $("entPadBitsGap").textContent = "— (refresh page to load latest tools)";
+      if (note) {
+        note.textContent =
+          "After a hard refresh, Step 2 turns your roll log into practice words and fills this table.";
+      }
+      if (ta) ta.value = "";
       return;
     }
 
-    if ($("entPadBitsEst")) $("entPadBitsEst").textContent = "~" + estRound + " (pad estimate)";
-    if ($("entPadBitsNeed")) $("entPadBitsNeed").textContent = String(needBits) + " (BIP-39 ENT for " + words + " words)";
+    let mnemonic;
+    try {
+      // Hash the event log → 32 bytes; take ENT length for BIP-39 (educational)
+      const digest = await sha256Bytes(entEvents.join("|"));
+      const ent = digest.slice(0, needBytes);
+      mnemonic = B.mnemonicFromEntropyBytes(ent);
+    } catch (e) {
+      if (box) box.hidden = false;
+      if (warn) warn.innerHTML = "<strong>Could not build words.</strong>";
+      if (note) note.textContent = String(e && e.message ? e.message : e);
+      if (ta) ta.value = "";
+      return;
+    }
+
+    if ($("entPadBitsEst")) {
+      $("entPadBitsEst").textContent =
+        "~" + estRound + " bits (from " + entEvents.length + " dice/coin events this session)";
+    }
+    if ($("entPadBitsNeed")) {
+      $("entPadBitsNeed").textContent =
+        needBits + " bits (BIP-39 ENT for a " + words + "-word phrase)";
+    }
     if ($("entPadBitsGap")) {
       $("entPadBitsGap").textContent = low
-        ? "TOO LOW by ~" + Math.ceil(gap) + " bits — pad entropy estimate is below BIP-39 ENT. Words below are still PRACTICE ONLY."
-        : "Estimate ≥ ENT size on paper — still NEVER for real funds (browser rolls use Math.random; not physical dice / OS CSPRNG).";
+        ? "TOO LOW — pad estimate is short by about " +
+          Math.ceil(gap) +
+          " bits. The words below are only a classroom demo of a weak pad."
+        : "Pad estimate looks high enough on paper — still NEVER fund these words (this browser pad is not a real dice ceremony / CSPRNG).";
     }
     if (warn) {
       warn.innerHTML = low
-        ? "<strong>PRACTICE ONLY — do not fund.</strong> Pad estimate is <em>below</em> the " +
+        ? "<strong>PRACTICE ONLY — do not fund.</strong> Your rolls only account for ~" +
+          estRound +
+          " bits, but a real " +
+          words +
+          "-word wallet wants " +
           needBits +
-          "-bit BIP-39 requirement. These words demonstrate low-entropy risk; they are not a real wallet backup."
-        : "<strong>PRACTICE ONLY — do not fund.</strong> Even when the pad bit estimate looks high, this tool is educational. " +
-          "Real funds need OS CSPRNG (Lab Generate) or a careful physical-dice process outside this browser demo.";
+          " bits of good randomness. That gap is the lesson."
+        : "<strong>PRACTICE ONLY — do not fund.</strong> Even with a large pad estimate, use Lab → Generate (OS CSPRNG) for a proper random demo — not this pad.";
     }
     if (note) {
       note.textContent =
-        "Built by SHA-256(pad events) → " +
+        "How we built the words: SHA-256(your roll log) → " +
         needBytes +
-        " entropy bytes → BIP-39 " +
+        " bytes → BIP-39 " +
         words +
-        "-word checksummed phrase. " +
-        "Same pad always yields the same practice words (deterministic demo). " +
-        "Do not treat this as a funded recovery phrase.";
+        " words with checksum. " +
+        "Same rolls always make the same practice phrase. This does not prove your pad had " +
+        needBits +
+        " bits of real entropy.";
     }
     if (ta) ta.value = mnemonic;
     if (box) {
       box.hidden = false;
-      box.classList.toggle("chip-bad", low);
+      try {
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (e) {
+        /* ignore */
+      }
     }
   }
 
@@ -978,13 +1022,14 @@
     const ta = $("entPadSeedWords");
     const m = (ta && ta.value.trim()) || "";
     if (!m) {
-      setStatus("Build a practice seed from the pad first.", "err");
+      setStatus("Build practice words in Step 2 first.", "err");
       return;
     }
     if (!confirm(
-      "Copy PRACTICE pad words into Lab?\n\n" +
-        "They are TEST DATA only — never use for real funds.\n" +
-        "This overwrites the Lab mnemonic field in this session."
+      "Put these PRACTICE words on the Lab tab?\n\n" +
+        "• They stay TEST DATA only — never fund them\n" +
+        "• Overwrites whatever is currently in Lab’s mnemonic box\n\n" +
+        "Use this only to keep experimenting offline (derive table, etc.)."
     )) {
       return;
     }
@@ -992,8 +1037,12 @@
     if (typeof refreshMnemonicEntropy === "function") {
       refreshMnemonicEntropy().catch(function () {});
     }
-    setStatus("Lab now holds PRACTICE pad words (TEST DATA). Do not fund this phrase.", "err");
-    setPlainStatus("Entropy pad → Lab: practice words only. Use Lab Generate (CSPRNG) for real demos of proper generation.", "");
+    showTab("lab");
+    setStatus("Lab holds PRACTICE pad words (TEST DATA). Do not fund this phrase.", "err");
+    setPlainStatus(
+      "Entropy pad → Lab: practice only. For a proper random phrase use Lab Generate.",
+      ""
+    );
   }
 
   /** Ensure #mnemonic is a valid BIP-39 phrase; generate one on Tools if empty/invalid. */
@@ -1381,8 +1430,7 @@
       $("btnEntClear").addEventListener("click", () => {
         entEvents = [];
         refreshEntPad();
-        if ($("entPadSeedBox")) $("entPadSeedBox").hidden = true;
-        if ($("entPadSeedWords")) $("entPadSeedWords").value = "";
+        resetEntPadResultUi();
       });
     }
     if ($("btnEntToSeed")) {

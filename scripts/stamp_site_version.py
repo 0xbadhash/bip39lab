@@ -50,6 +50,18 @@ def main() -> int:
         encoding="utf-8",
     )
     print(f"stamped {OUT.relative_to(ROOT)} → {tag}")
+    # Cache-bust local script tags on static pages (src="js/...?v=X.Y.Z")
+    html_files = list((ROOT / "web").glob("*.html"))
+    for html in html_files:
+        text = html.read_text(encoding="utf-8")
+        new = re.sub(
+            r'src="(js/[^"?]+)(?:\?v=[^"]*)?"',
+            rf'src="\1?v={ver}"',
+            text,
+        )
+        if new != text:
+            html.write_text(new, encoding="utf-8")
+            print(f"  cache-bust scripts in {html.relative_to(ROOT)}")
     return 0
 
 

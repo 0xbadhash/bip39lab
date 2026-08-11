@@ -499,68 +499,82 @@
               </span>
             </h2>
             <p class="control-help">
-              <strong>Practice only.</strong> Build a running log of dice/coin events, estimate bits, then
-              optionally turn the pad into <strong>throwaway BIP-39 words</strong> to see how low entropy looks.
-              <strong>Never use pad-derived words for funded wallets</strong> — estimates can be far too low,
-              and this browser pad is not a audited physical-dice workflow.
+              <strong>Goal:</strong> see why “a few dice rolls” is usually <em>not enough</em> randomness for a real wallet.
+              This is a classroom demo — <strong>never fund</strong> words from this pad.
             </p>
-            <p class="control-help teach-only">
-              Bit estimate (log₂): each d6 roll ≈ 2.58 bits (fair six faces), each coin flip = 1 bit.
-              BIP-39 needs <strong>128 bits</strong> of real entropy for 12 words, <strong>256</strong> for 24.
-              Running total is educational only — not a CSPRNG quality meter.
-            </p>
-            <div class="row" style="flex-wrap:wrap;gap:0.5rem">
-              <button type="button" class="btn secondary" id="btnDice">Roll d6</button>
-              <button type="button" class="btn secondary" id="btnCoin">Flip coin</button>
-              <button type="button" class="btn danger" id="btnEntClear">Clear pad</button>
+
+            <div class="cmp-step" data-ent-step="1">
+              <h3 class="cmp-step-title">Step 1 — Collect practice rolls</h3>
+              <p class="control-help teach-only" style="margin-top:0">
+                Each d6 ≈ 2.58 bits · each coin flip = 1 bit (estimate). Real 12-word BIP-39 needs
+                <strong>128 bits</strong> of good entropy; 24-word needs <strong>256</strong>.
+              </p>
+              <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.35rem">
+                <button type="button" class="btn secondary" id="btnDice">Roll d6</button>
+                <button type="button" class="btn secondary" id="btnCoin">Flip coin</button>
+                <button type="button" class="btn danger" id="btnEntClear">Clear pad</button>
+              </div>
+              <pre class="out" id="entPadOut">—</pre>
+              <p class="control-help" id="entPadMeta">0 events · ~0 bits estimated</p>
             </div>
-            <pre class="out" id="entPadOut">—</pre>
-            <p class="control-help" id="entPadMeta">0 events · ~0 bits (estimate; d6≈2.58, coin=1)</p>
-            <div class="row ent-pad-actions">
-              <label class="ent-pad-words" for="entPadWords">
-                <span class="ent-pad-words-label">Practice words</span>
-                <select id="entPadWords" class="select-compact" title="BIP-39 length for practice seed only">
-                  <option value="12" selected>12 words (~128 bits)</option>
-                  <option value="24">24 words (~256 bits)</option>
-                </select>
-              </label>
-              <button type="button" class="btn" id="btnEntToSeed" title="SHA-256(pad) → BIP-39 practice words; never for real funds">
-                Build practice seed from pad
-              </button>
+
+            <div class="cmp-step" data-ent-step="2" style="margin-top:1rem">
+              <h3 class="cmp-step-title">Step 2 — Choose practice length, then build words</h3>
+              <p class="control-help" style="margin-top:0">
+                We hash the roll log (SHA-256) and turn it into BIP-39 words so you can <em>see a phrase</em>.
+                That is <strong>not</strong> the same as having 128 bits of real entropy from the pad.
+              </p>
+              <div class="row ent-pad-actions">
+                <label class="ent-pad-words" for="entPadWords">
+                  <span class="ent-pad-words-label">Length</span>
+                  <select id="entPadWords" class="select-compact" title="How many practice words to show">
+                    <option value="12" selected>12 words (BIP-39 wants ~128 bits)</option>
+                    <option value="24">24 words (BIP-39 wants ~256 bits)</option>
+                  </select>
+                </label>
+                <button type="button" class="btn" id="btnEntToSeed" title="Turn pad log into practice words — never for real funds">
+                  Build practice seed from pad
+                </button>
+              </div>
             </div>
-            <div id="entPadSeedBox" class="warn" hidden style="margin-top:0.75rem" role="status">
-              <p id="entPadSeedWarn" style="margin:0 0 0.5rem"><strong>PRACTICE ONLY — do not fund.</strong></p>
+
+            <div id="entPadSeedBox" class="warn" hidden style="margin-top:1rem" role="status">
+              <h3 class="cmp-step-title" style="margin-top:0">Step 3 — Result (practice only)</h3>
+              <p id="entPadSeedWarn" style="margin:0 0 0.5rem"><strong>PRACTICE ONLY — do not fund these words.</strong></p>
               <table class="compare-table" id="entPadBitsTable" aria-label="Entropy bit comparison">
                 <thead>
                   <tr>
-                    <th scope="col">Measure</th>
-                    <th scope="col">Bits</th>
+                    <th scope="col">What we compare</th>
+                    <th scope="col">Value</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">Pad estimate (this session)</th>
+                    <th scope="row">A. Your pad estimate</th>
                     <td id="entPadBitsEst">—</td>
                   </tr>
                   <tr>
-                    <th scope="row">BIP-39 ENT required (chosen length)</th>
+                    <th scope="row">B. What BIP-39 wants for this length</th>
                     <td id="entPadBitsNeed">—</td>
                   </tr>
                   <tr>
-                    <th scope="row">Gap / status</th>
+                    <th scope="row">C. Verdict</th>
                     <td id="entPadBitsGap">—</td>
                   </tr>
                 </tbody>
               </table>
               <p class="control-help" id="entPadSeedNote" style="margin:0.5rem 0">—</p>
-              <label class="field" for="entPadSeedWords">Practice mnemonic (not for real funds)
-                <textarea id="entPadSeedWords" rows="3" readonly spellcheck="false" autocomplete="off"></textarea>
+              <label class="field" for="entPadSeedWords">Practice words (throwaway — not a wallet backup)
+                <textarea id="entPadSeedWords" rows="3" readonly spellcheck="false" autocomplete="off" placeholder="Click “Build practice seed from pad” after Step 1"></textarea>
               </label>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem">
-                <button type="button" class="btn secondary" id="btnEntToLab" title="Copies practice words into Lab as TEST DATA">
-                  Copy practice words into Lab (test data)
+                <button type="button" class="btn secondary" id="btnEntToLab" title="Optional: paste practice words into Lab for more demos">
+                  Optional: put practice words on Lab tab
                 </button>
               </div>
+              <p class="control-help teach-only" style="margin:0.5rem 0 0">
+                For a <em>proper</em> random demo phrase, use Lab → <strong>Generate</strong> (OS CSPRNG) instead of this pad.
+              </p>
             </div>
           </div>
 
@@ -833,10 +847,10 @@
     </div>
   </div>
 
-  <script src="js/site-version.js"></script>
-  <script src="js/bip39lab.bundle.js"></script>
-  <script src="js/glossary.js"></script>
-  <script src="js/help-ui.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/site-version.js?v=0.13.11"></script>
+  <script src="js/bip39lab.bundle.js?v=0.13.11"></script>
+  <script src="js/glossary.js?v=0.13.11"></script>
+  <script src="js/help-ui.js?v=0.13.11"></script>
+  <script src="js/app.js?v=0.13.11"></script>
 </body>
 </html>
