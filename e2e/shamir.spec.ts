@@ -37,7 +37,7 @@ test.describe("Shamir educational page", () => {
 
   test("S56 recombine verifies practice secret offline", async ({ page }) => {
     await page.goto("/shamir.html");
-    await expect(page.locator('#shStepRail [data-step-target="#shCardRecombine"]')).toBeVisible();
+    await expect(page.locator("#shCardRecombine")).toBeVisible();
     await page.locator("#btnShGen").click();
     const secret = await page.locator("#shSecret").inputValue();
     expect(secret.length).toBeGreaterThan(0);

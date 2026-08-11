@@ -1,11 +1,11 @@
 /**
  * Auto-stamped from VERSION by scripts/stamp_site_version.py — do not edit by hand.
- * Release tag shown in the left sidebar on every page.
+ * Release tag shown in sidebar/footer on every page.
  */
 (function (g) {
   "use strict";
-  g.BIP39LAB_SITE_VERSION = "0.14.0";
-  g.BIP39LAB_SITE_TAG = "v0.14.0";
+  g.BIP39LAB_SITE_VERSION = "0.15.0";
+  g.BIP39LAB_SITE_TAG = "v0.15.0";
   function apply() {
     var label = g.BIP39LAB_SITE_TAG || ("v" + (g.BIP39LAB_SITE_VERSION || ""));
     if (!label || label === "v") return;
