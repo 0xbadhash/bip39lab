@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "approved",
-  "score": 100,
+  "phase": "init",
+  "score": 100.0,
   "spec_id": ".agents/specs/2026-08-10-knots-2000-seed-scan.md",
   "task": "hygiene Comet SLIP-39 + stamp drift",
   "waiver": "chore"
