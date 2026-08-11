@@ -43,6 +43,16 @@
     return bits + " bits (" + wordCount + "-word BIP-39)";
   }
 
+  function charsetPoolSize(passphrase) {
+    let pool = 0;
+    if (/[a-z]/.test(passphrase)) pool += 26;
+    if (/[A-Z]/.test(passphrase)) pool += 26;
+    if (/[0-9]/.test(passphrase)) pool += 10;
+    if (/[^a-zA-Z0-9]/.test(passphrase)) pool += 33;
+    return Math.max(pool, 2);
+  }
+
+  /** Pedagogical estimate — keep in sync with src/bip39lab/entropy_ui.py */
   function estimatePassphraseBits(passphrase) {
     if (!passphrase) return null;
     const n = passphrase.length;
@@ -57,28 +67,57 @@
       const p = counts[k] / n;
       h -= p * (Math.log(p) / Math.LN2);
     }
-    return Math.min(h * n, 256);
+    const shannonBits = h * n;
+    const charsetBits = (Math.log(charsetPoolSize(passphrase)) / Math.LN2) * n;
+    return Math.min(shannonBits, charsetBits, 256);
+  }
+
+  function passphraseStrengthTier(bits) {
+    if (bits == null) return "empty";
+    if (bits < 40) return "weak";
+    if (bits < 80) return "fair";
+    return "strong";
   }
 
   function formatPassphraseStrength(passphrase) {
     const est = estimatePassphraseBits(passphrase);
-    if (est == null) return "—";
-    return "~" + Math.round(est) + " bits (estimate)";
+    if (est == null) {
+      return "Empty — no extra secret (not the 512-bit PBKDF2 seed size)";
+    }
+    const tier = passphraseStrengthTier(est);
+    const label = tier === "strong" ? "stronger" : tier;
+    return (
+      "~" +
+      Math.round(est) +
+      " bits · " +
+      label +
+      " (estimate only — not a security guarantee)"
+    );
   }
 
   function setEntropyMnemonic(text, invalid) {
     const el = $("entropyMnemonic");
+    if (!el) return;
     el.textContent = text;
     el.classList.toggle("is-invalid", !!invalid);
   }
 
-  function setEntropyPassphrase(text) {
-    $("entropyPassphrase").textContent = text;
+  function setEntropyPassphrase(text, tier) {
+    const el = $("entropyPassphrase");
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove("pp-tier-empty", "pp-tier-weak", "pp-tier-fair", "pp-tier-strong");
+    const t = tier || "empty";
+    el.classList.add("pp-tier-" + t);
+    el.setAttribute("data-pp-tier", t);
   }
 
   function clearEntropyFields() {
     setEntropyMnemonic("—", false);
-    setEntropyPassphrase("—");
+    setEntropyPassphrase(
+      "Empty — no extra secret (not the 512-bit PBKDF2 seed size)",
+      "empty"
+    );
   }
 
   function getDeriveOptions() {
@@ -689,7 +728,17 @@
   }
 
   function refreshPassphraseEntropy() {
-    setEntropyPassphrase(formatPassphraseStrength($("passphrase").value));
+    const pp = ($("passphrase") && $("passphrase").value) || "";
+    const est = estimatePassphraseBits(pp);
+    setEntropyPassphrase(formatPassphraseStrength(pp), passphraseStrengthTier(est));
+    const bar = $("ppStrengthBar");
+    if (bar) {
+      const pct =
+        est == null ? 0 : Math.min(100, Math.round((est / 128) * 100));
+      bar.style.width = pct + "%";
+      bar.setAttribute("aria-valuenow", String(Math.round(est || 0)));
+      bar.className = "pp-strength-bar-fill pp-tier-" + passphraseStrengthTier(est);
+    }
   }
 
   async function deriveNow(opts) {
@@ -1673,6 +1722,7 @@
       refreshPassphraseEntropy();
       scheduleDerive();
     });
+    refreshPassphraseEntropy();
 
     ["deriveAccount", "deriveChange", "deriveCount", "deriveNetwork"].forEach((id) => {
       if (!$(id)) return;

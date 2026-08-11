@@ -457,7 +457,10 @@ Clear → paste abandon → BIP86/84/49/44 match **all four goldens**.
 ### S2b — Word count follows paste
 Set word-count dropdown to **24**, paste 12-word abandon → dropdown becomes **12** and entropy shows 128-bit.
 
-### S3 — Passphrase
+### S3 — Passphrase + strength estimate
+Optional passphrase changes addresses. **Passphrase strength (estimate)** (`#entropyPassphrase`) updates live:
+empty → “Empty — no extra secret (not the 512-bit PBKDF2 seed size)”; typed text → “~N bits · weak|fair|stronger (estimate only…)”.
+Bar `#ppStrengthBar` moves. Not the seed’s fixed 512-bit PBKDF2 output size.
 BIP84 golden → passphrase `test` → address ≠ golden; clear passphrase → golden returns.
 
 ### S4 — Account / change / indices
@@ -826,7 +829,7 @@ S1 Generate 12: PASS|FAIL —
 S1b Generate 24: PASS|FAIL —
 S2 Abandon 4 types: PASS|FAIL —
 S2b Word count follows paste: PASS|FAIL —
-S3 Passphrase: PASS|FAIL —
+S3 Passphrase + strength estimate: PASS|FAIL —
 S4 Account/change/indices: PASS|FAIL —
 S5 Mainnet/testnet: PASS|FAIL —
 S6 Copy: PASS|FAIL —

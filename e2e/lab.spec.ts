@@ -103,15 +103,29 @@ test.describe("Lab mnemonic & derive", () => {
     await page.locator('.seg-tab[data-addr-type="bip84"]').click();
     await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
 
+    // Empty strength line teaches “not 512-bit PBKDF2”
+    await expect(page.locator("#entropyPassphrase")).toContainText(/Empty|no extra secret|512/i);
+    await expect(page.locator("#ppStrengthBlock")).toBeVisible();
+
     await page.locator("#passphrase").fill("test");
     await page.waitForTimeout(500);
-    await expect(page.locator("#entropyPassphrase")).toContainText(/bits \(estimate\)/);
+    await expect(page.locator("#entropyPassphrase")).toContainText(/bits/i);
+    await expect(page.locator("#entropyPassphrase")).toContainText(/estimate/i);
+    await expect(page.locator("#entropyPassphrase")).toHaveAttribute(
+      "data-pp-tier",
+      /weak|fair|strong/
+    );
     const body = await page.locator("#addrTableBody").innerText();
     expect(body).not.toContain(GOLDEN.bip84);
+
+    await page.locator("#passphrase").fill("Tr0ub4dor&3-extra-long-mix!!");
+    await page.waitForTimeout(400);
+    await expect(page.locator("#entropyPassphrase")).toContainText(/bits/i);
 
     await page.locator("#passphrase").fill("");
     await page.waitForTimeout(500);
     await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
+    await expect(page.locator("#entropyPassphrase")).toContainText(/Empty|no extra secret/i);
   });
 
   test("S4 account change indices path summary", async ({ page }) => {

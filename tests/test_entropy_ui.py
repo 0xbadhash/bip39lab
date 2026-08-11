@@ -30,7 +30,9 @@ def test_format_mnemonic_entropy():
 
 def test_passphrase_empty():
     assert estimate_passphrase_bits("") is None
-    assert format_passphrase_strength("") == "—"
+    empty = format_passphrase_strength("")
+    assert "Empty" in empty or "no extra secret" in empty
+    assert "512" in empty  # teaches not to confuse with PBKDF2 size
 
 
 def test_passphrase_estimate_increases_with_complexity():
@@ -38,5 +40,16 @@ def test_passphrase_estimate_increases_with_complexity():
     strong = estimate_passphrase_bits("Tr0ub4dor&3-extra-long-mix")
     assert weak is not None and strong is not None
     assert strong > weak
-    assert "estimate" in format_passphrase_strength("abc123XYZ!")
+    s = format_passphrase_strength("abc123XYZ!")
+    assert "estimate" in s
+    assert "bits" in s
     assert format_passphrase_strength("abc123XYZ!") != format_mnemonic_entropy(12)
+
+
+def test_passphrase_tier_labels():
+    from bip39lab.entropy_ui import passphrase_strength_tier
+
+    assert passphrase_strength_tier(None) == "empty"
+    assert passphrase_strength_tier(10) == "weak"
+    assert passphrase_strength_tier(50) == "fair"
+    assert passphrase_strength_tier(100) == "strong"

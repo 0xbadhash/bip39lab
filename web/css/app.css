@@ -1913,6 +1913,46 @@ button.btn.secondary:disabled:hover {
   color: #ff8a80;
 }
 
+.pp-strength-block .pp-strength-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(127, 127, 127, 0.25);
+  margin: 0.35rem 0 0.4rem;
+  overflow: hidden;
+}
+.pp-strength-bar-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  transition: width 0.15s ease, background 0.15s ease;
+}
+.field-ro-value.pp-tier-empty,
+.pp-strength-bar-fill.pp-tier-empty {
+  color: var(--muted);
+  background: transparent;
+}
+.pp-strength-bar-fill.pp-tier-empty {
+  background: transparent;
+}
+.field-ro-value.pp-tier-weak {
+  color: #ffb74d;
+}
+.pp-strength-bar-fill.pp-tier-weak {
+  background: #ffb74d;
+}
+.field-ro-value.pp-tier-fair {
+  color: #ffd54f;
+}
+.pp-strength-bar-fill.pp-tier-fair {
+  background: #ffd54f;
+}
+.field-ro-value.pp-tier-strong {
+  color: #81c784;
+}
+.pp-strength-bar-fill.pp-tier-strong {
+  background: #81c784;
+}
+
 .hint-tiny {
   margin: 0.35rem 0 0.75rem;
   font-size: 0.78rem;

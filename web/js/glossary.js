@@ -231,6 +231,17 @@
         "Extra secret mixed into seed derivation. Same words + different passphrase = completely different addresses. Not the same as a wallet PIN.",
     },
     {
+      id: "PPSTRENGTH",
+      title: "Passphrase strength (estimate)",
+      group: "Keys",
+      short: "Local bits estimate — not PBKDF2 “512 bits”",
+      body:
+        "Lab shows a rough strength for the optional passphrase as you type: empty, weak, fair, or stronger. " +
+        "It combines character diversity (Shannon) with charset size × length, capped for display. " +
+        "It is teaching-only — not a guarantee. The BIP-39 seed is always 64 bytes from PBKDF2; that fixed output size is not “your passphrase has 512 bits of entropy.” " +
+        "Mnemonic ENT (e.g. 128 bits for 12 words) is separate from this estimate.",
+    },
+    {
       id: "SEED",
       title: "Seed",
       group: "Keys",
@@ -634,6 +645,8 @@
         "SLIP-132": "SLIP132",
         MNEMONIC: "MNEMONIC",
         PASSPHRASE: "PASSPHRASE",
+        PPSTRENGTH: "PPSTRENGTH",
+        "PASSPHRASE STRENGTH": "PPSTRENGTH",
         PATH: "PATH",
         ACCOUNT: "ACCOUNT",
         CHANGE: "CHANGE",
