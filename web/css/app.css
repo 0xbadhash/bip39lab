@@ -595,7 +595,8 @@ body.learn-return-open {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .nav-item {
@@ -1709,12 +1710,6 @@ button.btn.secondary:disabled:hover {
   line-height: 1.4;
 }
 
-.footer-host {
-  margin-top: 1.5rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
 .site-version-chip {
   display: inline-block;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -1726,16 +1721,6 @@ button.btn.secondary:disabled:hover {
   padding: 0.15rem 0.55rem;
   margin-bottom: 0.35rem;
   background: var(--bg-elevated);
-}
-
-.site-version-inline {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-weight: 650;
-  color: var(--focus);
-}
-
-.footer-host a {
-  color: var(--accent);
 }
 
 @media (max-width: 860px) {

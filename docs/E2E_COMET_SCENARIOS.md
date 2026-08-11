@@ -609,7 +609,7 @@ Network: `mempool.space` and/or `'self'`, not offline-only.
 `aria-current=page` on Shamir.
 
 ### S40 — Host branding
-bip39.catalyxt.xyz / English host branding present.
+Version + host branding in left sidebar only (no bottom footer version strip).
 
 ---
 

@@ -57,12 +57,16 @@ test.describe("Site chrome cross-page", () => {
     );
   });
 
-  test("S40 footer host links present", async ({ page }) => {
+  test("S40 host branding in sidebar (no page footer version strip)", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator(".footer-host")).toContainText(/bip39\.catalyxt\.xyz|English/i);
+    await expect(page.locator(".footer-host")).toHaveCount(0);
+    await expect(page.locator(".sidebar .site-version-chip")).toBeVisible();
+    await expect(page.locator(".sidebar-note")).toContainText(/bip39\.catalyxt\.xyz/i);
     await page.goto("/multisig.html");
-    await expect(page.locator("body")).toContainText(/bip39\.catalyxt\.xyz|Multisig/i);
+    await expect(page.locator(".footer-host")).toHaveCount(0);
+    await expect(page.locator(".sidebar .site-version-chip")).toBeVisible();
     await page.goto("/network.html");
-    await expect(page.locator("body")).toContainText(/bip39\.catalyxt\.xyz|Lab/i);
+    await expect(page.locator(".footer-host")).toHaveCount(0);
+    await expect(page.locator(".sidebar .site-version-chip")).toBeVisible();
   });
 });
