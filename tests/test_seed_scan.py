@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 from bip39lab.seed_scan import (
-    SeedScanError,
     ScanSummary,
+    SeedScanError,
     append_hash,
     load_hash_set,
     mnemonic_sha256_hex,
