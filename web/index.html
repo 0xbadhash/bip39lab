@@ -516,12 +516,12 @@
             </div>
             <pre class="out" id="entPadOut">—</pre>
             <p class="control-help" id="entPadMeta">0 events · ~0 bits (estimate; d6≈2.58, coin=1)</p>
-            <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem;align-items:flex-end">
-              <label class="field" for="entPadWords" style="margin:0;min-width:8rem">
-                Practice word count
-                <select id="entPadWords">
-                  <option value="12" selected>12 words (needs ~128 bits)</option>
-                  <option value="24">24 words (needs ~256 bits)</option>
+            <div class="row ent-pad-actions">
+              <label class="ent-pad-words" for="entPadWords">
+                <span class="ent-pad-words-label">Practice words</span>
+                <select id="entPadWords" class="select-compact" title="BIP-39 length for practice seed only">
+                  <option value="12" selected>12 words (~128 bits)</option>
+                  <option value="24">24 words (~256 bits)</option>
                 </select>
               </label>
               <button type="button" class="btn" id="btnEntToSeed" title="SHA-256(pad) → BIP-39 practice words; never for real funds">
