@@ -40,6 +40,25 @@ scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
 **Live base:** https://bip39.catalyxt.xyz/
 
+## Comet report remediation (2026-08-11)
+
+Agents re-reading **live** bip39.catalyxt.xyz may still see older copy until deploy.
+**In this repo** (stamp Product line above; post-v0.16.1 commits):
+
+| Report issue | Status in repo |
+|--------------|----------------|
+| Score `/68` / template ends S56 | **Fixed** — report template S0–S71 + dynamic denominator (header Playwright count) |
+| Teach vs Extra help | **Fixed** — doc uses **Extra help**; UI is Extra help |
+| Tools “no rail” vs toolsStepRail | **Fixed** — no mid-page rails; S44/S44b match Playwright |
+| Playwright “74 tests” | **Fixed** — header auto-stamps current S-id count (e.g. 89) |
+| S57c 7th-nav regression | **Added** — Playwright S57c |
+| S16 no mnemonic words | **Hardened** — address-shape tokens only |
+| S61 localStorage | **Hardened** — reload asserts ticks + level |
+| S38/S39/S39b / S67 | **NEEDS-DOM** in template; covered by Playwright site-chrome + S67 |
+
+Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help + S0–S71.
+
+
 | Surface | URL | Playwright |
 |---------|-----|------------|
 | Lab | `/` | `e2e/lab.spec.ts` |
