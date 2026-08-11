@@ -46,6 +46,7 @@ Patch release bundling post-ship QA fixes + Multisig classroom clarity + site-wi
 | Path | Reason |
 |------|--------|
 | Live Multisig after deploy | needs push/deploy |
+| web/js/glossary.js | covered by e2e S46/S12b tip panels + terms present in HTML data-term; static TERMS load only |
 
 ## Threat notes
 - **secrets** — progress localStorage only  

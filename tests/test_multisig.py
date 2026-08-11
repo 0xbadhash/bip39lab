@@ -65,10 +65,21 @@ def test_multisig_static_page():
     assert "multisig.html" in lab
 
 
+def test_glossary_has_multisig_teach_terms():
+    """glossary.js terms power Multisig checklist/demo ⓘ panels."""
+    gloss = (ROOT / "web/js/glossary.js").read_text(encoding="utf-8")
+    assert 'id: "MSVAULTVERIFY"' in gloss or "MSVAULTVERIFY" in gloss
+    assert "COSIGNERREPLACE" in gloss
+    assert "ZPUB" in gloss and "PUBKEY" in gloss
+    assert "Bip39Glossary" in gloss
+
+
 def test_multisig_teach_ux_contracts():
     """Teach UX polish: calculator banner, chips, BIP67 warn, zpub ≠ xpub."""
     html = (ROOT / "web/multisig.html").read_text(encoding="utf-8")
     js = (ROOT / "web/js/multisig-app.js").read_text(encoding="utf-8")
+    gloss = (ROOT / "web/js/glossary.js").read_text(encoding="utf-8")
+    assert "MSVAULTVERIFY" in gloss
     assert "Address calculator only" in html
     assert "id=\"chipAirgap\"" in html
     assert "id=\"chipOffline\"" in html
