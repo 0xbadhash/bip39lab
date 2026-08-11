@@ -226,6 +226,18 @@
     setStatus("Cleared practice secret and shares from this page.", "");
   }
 
+  function showQuizReturn() {
+    var fromQ = typeof location !== "undefined" && /from=quiz/.test(location.search || "");
+    var fromS = false;
+    try {
+      fromS = sessionStorage.getItem("bip39lab.quizReturn") === "1";
+    } catch (e) {
+      /* ignore */
+    }
+    var bar = $("quizBackBarShamir");
+    if (bar && (fromQ || fromS)) bar.hidden = false;
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     if ($("btnShGen")) $("btnShGen").addEventListener("click", onGenerate);
     if ($("btnShSplit")) $("btnShSplit").addEventListener("click", onSplit);
@@ -233,5 +245,6 @@
     if ($("btnShRecombine")) $("btnShRecombine").addEventListener("click", onRecombine);
     if ($("btnShFillM")) $("btnShFillM").addEventListener("click", onFillM);
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
+    showQuizReturn();
   });
 })();

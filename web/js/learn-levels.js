@@ -252,18 +252,119 @@
     refreshFirstHour();
   }
 
+  var QUIZ_RETURN_KEY = "bip39lab.quizReturn";
+  var QUIZ_ACTIVE_KEY = "bip39lab.quizActive";
+
+  function setQuizReturn(activeQ) {
+    try {
+      sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+      if (activeQ) sessionStorage.setItem(QUIZ_ACTIVE_KEY, activeQ);
+    } catch (e) {
+      /* ignore */
+    }
+    showQuizBackBar(true, activeQ);
+  }
+
+  function clearQuizReturn() {
+    try {
+      sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    showQuizBackBar(false);
+  }
+
+  function showQuizBackBar(on, activeQ) {
+    var bar = $("quizBackBar");
+    if (!bar) return;
+    bar.hidden = !on;
+    var hint = $("quizBackBarHint");
+    if (hint && on) {
+      var st = loadJson(QUIZ_KEY, {});
+      var q = activeQ || "";
+      try {
+        q = q || sessionStorage.getItem(QUIZ_ACTIVE_KEY) || "";
+      } catch (e) {
+        /* ignore */
+      }
+      if (q && st[q]) {
+        hint.textContent = (q.toUpperCase() + " already marked passed. Return anytime to review status.");
+      } else if (q === "q1") {
+        hint.textContent =
+          "Q1: empty vs test must change the first address. Keep trying until obvious, then Back → Mark passed.";
+      } else if (q === "q2") {
+        hint.textContent =
+          "Q2: one share alone must fail recombine. Experiment, then Back → Mark passed when clear.";
+      } else if (q === "q3") {
+        hint.textContent =
+          "Q3: few rolls = TOO LOW vs 128 bits. Experiment, then Back → Mark passed when clear.";
+      } else {
+        hint.textContent =
+          "Try the demo until the idea clicks, then return and mark passed. Leave Not yet if still unsure.";
+      }
+    }
+  }
+
+  function returnToQuiz() {
+    clearQuizReturn();
+    // Hide hour bar if both were up
+    showHourBackBar(false);
+    goTab("lab");
+    setTimeout(function () {
+      var card = $("cardQuiz");
+      if (card) {
+        // Soft-unlock if still gated
+        card.setAttribute("data-level-force", "show");
+        card.classList.remove("level-gated");
+        card.hidden = false;
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        try {
+          if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+          card.focus({ preventScroll: true });
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }, 80);
+  }
+
   function refreshQuiz() {
     var st = loadJson(QUIZ_KEY, {});
     ["q1", "q2", "q3"].forEach(function (q) {
+      var passed = !!st[q];
       var badge = $("quizBadge-" + q);
       if (badge) {
-        badge.textContent = st[q] ? "Passed" : "Not yet";
-        badge.className = "chip " + (st[q] ? "chip-ok" : "chip-warn");
+        badge.textContent = passed ? "Passed" : "Not yet";
+        badge.className = "chip " + (passed ? "chip-ok" : "chip-warn");
+      }
+      var board = $("quizBoard-" + q);
+      if (board) {
+        board.textContent = passed ? "Passed" : "Not yet";
+        board.className = "chip " + (passed ? "chip-ok" : "chip-warn");
+      }
+      var item = document.querySelector('[data-quiz="' + q + '"]');
+      if (item) {
+        item.classList.toggle("hour-step-done", passed);
+        item.classList.toggle("quiz-item-passed", passed);
+      }
+      var hintPend = $("quizHint-" + q);
+      var hintPass = $("quizHintPass-" + q);
+      if (hintPend) hintPend.hidden = passed;
+      if (hintPass) hintPass.hidden = !passed;
+      var passBtn = $("quizPass-" + q);
+      if (passBtn) {
+        passBtn.textContent = passed ? "Q" + q.slice(1) + " passed ✓" : "Mark Q" + q.slice(1) + " passed";
+        passBtn.disabled = passed;
+        passBtn.setAttribute("aria-disabled", passed ? "true" : "false");
       }
     });
     var n = (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0);
     var sum = $("quizSummary");
-    if (sum) sum.textContent = n + " / 3 quiz items marked passed (self-check).";
+    if (sum) {
+      sum.textContent = n + " / 3 passed";
+      sum.className = "chip " + (n === 3 ? "chip-ok" : n > 0 ? "chip-warn" : "");
+    }
   }
 
   function markQuiz(q) {
@@ -271,10 +372,117 @@
     st[q] = true;
     saveJson(QUIZ_KEY, st);
     refreshQuiz();
+    returnToQuiz();
+  }
+
+  function goQuizDemo(q) {
+    setQuizReturn(q);
+    // Ensure quiz card level is beginner so user can return
+    if (LEVELS.indexOf(getLevel()) < LEVELS.indexOf("beginner")) {
+      setLevel("beginner");
+    }
+    if (q === "q1") {
+      goTab("tools");
+      setTimeout(function () {
+        var t = $("cardCmpPp");
+        if (t) {
+          t.scrollIntoView({ behavior: "smooth", block: "start" });
+          try {
+            if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
+            t.focus({ preventScroll: true });
+          } catch (e) {
+            /* ignore */
+          }
+        }
+      }, 100);
+      return;
+    }
+    if (q === "q2") {
+      try {
+        sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+        sessionStorage.setItem(QUIZ_ACTIVE_KEY, "q2");
+      } catch (e) {
+        /* ignore */
+      }
+      window.location.href = "shamir.html?from=quiz#shCardRecombine";
+      return;
+    }
+    if (q === "q3") {
+      goTab("tools");
+      setTimeout(function () {
+        var t = $("cardEntPad");
+        if (t) {
+          t.setAttribute("data-level-force", "show");
+          t.classList.remove("level-gated");
+          t.hidden = false;
+          t.scrollIntoView({ behavior: "smooth", block: "start" });
+          try {
+            if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
+            t.focus({ preventScroll: true });
+          } catch (e) {
+            /* ignore */
+          }
+        }
+      }, 100);
+    }
   }
 
   function goTab(name) {
     if (typeof window.__bip39ShowTab === "function") window.__bip39ShowTab(name);
+  }
+
+  function wireQuiz() {
+    document.querySelectorAll("[data-quiz-go]").forEach(function (btn) {
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        goQuizDemo(btn.getAttribute("data-quiz-go"));
+      });
+    });
+    // Keep legacy ids wired too (same buttons)
+    ["q1", "q2", "q3"].forEach(function (q) {
+      var b = $("quizPass-" + q);
+      if (b)
+        b.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          markQuiz(q);
+        });
+    });
+    document.querySelectorAll("[data-quiz-back]").forEach(function (btn) {
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        returnToQuiz();
+      });
+    });
+    var barBtn = $("quizBackBarBtn");
+    if (barBtn) barBtn.addEventListener("click", returnToQuiz);
+    var scrollTop = $("quizScrollTop");
+    if (scrollTop) scrollTop.addEventListener("click", returnToQuiz);
+    try {
+      if (sessionStorage.getItem(QUIZ_RETURN_KEY) === "1") {
+        showQuizBackBar(true, sessionStorage.getItem(QUIZ_ACTIVE_KEY));
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
+      try {
+        sessionStorage.setItem(QUIZ_RETURN_KEY, "1");
+      } catch (e2) {
+        /* ignore */
+      }
+      showQuizBackBar(true);
+      setTimeout(function () {
+        returnToQuiz();
+      }, 60);
+      try {
+        if (window.history && history.replaceState) {
+          history.replaceState(null, "", location.pathname + location.hash);
+        }
+      } catch (e3) {
+        /* ignore */
+      }
+    }
+    refreshQuiz();
   }
 
   function wire() {
@@ -303,37 +511,7 @@
       });
     });
 
-    // Quiz open demos
-    var q1 = $("quizOpenPp");
-    if (q1)
-      q1.addEventListener("click", function () {
-        goTab("tools");
-        setTimeout(function () {
-          var t = $("cardCmpPp");
-          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 80);
-      });
-    var q2 = $("quizOpenShamir");
-    if (q2)
-      q2.addEventListener("click", function () {
-        window.location.href = "shamir.html#shCardRecombine";
-      });
-    var q3 = $("quizOpenEnt");
-    if (q3)
-      q3.addEventListener("click", function () {
-        goTab("tools");
-        setTimeout(function () {
-          var t = $("cardEntPad");
-          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 80);
-      });
-    ["q1", "q2", "q3"].forEach(function (q) {
-      var b = $("quizPass-" + q);
-      if (b)
-        b.addEventListener("click", function () {
-          markQuiz(q);
-        });
-    });
+    wireQuiz();
 
     // Tour
     var tourSteps = [
@@ -414,7 +592,6 @@
       });
 
     wireFirstHour();
-    refreshQuiz();
     applyLevel(getLevel());
   }
 

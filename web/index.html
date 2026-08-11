@@ -135,6 +135,14 @@
           </button>
           <span class="control-help" style="margin:0">Finish the step, then mark it done on the checklist.</span>
         </div>
+        <div id="quizBackBar" class="hour-back-bar quiz-back-bar" hidden role="navigation" aria-label="Return to Guided quiz">
+          <button type="button" class="btn secondary btn-sm" id="quizBackBarBtn">
+            ← Back to Guided quiz
+          </button>
+          <span class="control-help" style="margin:0" id="quizBackBarHint">
+            Try the demo, then return and mark passed only when you understand the result.
+          </span>
+        </div>
         <div class="warn" role="note">
           <strong>Air-gap recommended.</strong>
           All cryptography runs in this page. Nothing is written to disk or sent to a server from here.
@@ -293,31 +301,96 @@
 
           <div class="card card-wide" id="cardQuiz" data-level-min="beginner">
             <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
-            <h2>Guided quiz (self-check) <span id="quizSummary" class="control-help">0 / 3</span></h2>
-            <p class="control-help">Open each demo, try it, then mark passed. No server grading.</p>
-            <div class="quiz-item">
-              <h3>Q1 — Wrong passphrase → different vault <span id="quizBadge-q1" class="chip chip-warn">Not yet</span></h3>
-              <p class="control-help">Empty passphrase vs <code>test</code> on the same mnemonic must change the first address.</p>
-              <div class="row">
-                <button type="button" class="btn secondary" id="quizOpenPp">Open passphrase compare</button>
-                <button type="button" class="btn secondary" id="quizPass-q1">Mark Q1 passed</button>
+            <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 3</span></h2>
+            <p class="control-help">
+              Self-graded only — no server. Per item: <strong>Go try</strong> opens the demo (sticky
+              <strong>← Back to quiz</strong> bar), experiment until the idea clicks, then
+              <strong>Mark passed</strong> when you understand. Leave as <em>Not yet</em> and keep trying if unsure.
+            </p>
+            <ul class="quiz-status-board" id="quizStatusBoard" aria-label="Quiz pass status">
+              <li><span class="quiz-status-label">Q1 passphrase</span> <span id="quizBoard-q1" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">Q2 Shamir</span> <span id="quizBoard-q2" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">Q3 entropy</span> <span id="quizBoard-q3" class="chip chip-warn">Not yet</span></li>
+            </ul>
+            <div class="quiz-item hour-step" data-quiz="q1">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    Q1 — Wrong passphrase → different vault
+                    <span id="quizBadge-q1" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    Empty passphrase vs <code>test</code> on the same mnemonic must change the first address.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-q1">
+                    <strong>Not yet.</strong> Open compare, leave A empty and set B to <code>test</code>,
+                    run derive — addresses must differ. Keep experimenting until that is obvious; only then mark passed.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q1" hidden>
+                    <strong>Passed (self-check).</strong> You confirmed wrong passphrase = different vault.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenPp" data-quiz-go="q1">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q1">Mark Q1 passed</button>
+                  <button type="button" class="btn secondary btn-sm quiz-back-item" data-quiz-back>Back to quiz</button>
+                </div>
               </div>
             </div>
-            <div class="quiz-item">
-              <h3>Q2 — Under-threshold Shamir fails <span id="quizBadge-q2" class="chip chip-warn">Not yet</span></h3>
-              <p class="control-help">With 2-of-3 educational shares, one share alone must not recombine successfully.</p>
-              <div class="row">
-                <button type="button" class="btn secondary" id="quizOpenShamir">Open Shamir recombine</button>
-                <button type="button" class="btn secondary" id="quizPass-q2">Mark Q2 passed</button>
+            <div class="quiz-item hour-step" data-quiz="q2">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    Q2 — Under-threshold Shamir fails
+                    <span id="quizBadge-q2" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    With 2-of-3 educational shares, one share alone must not recombine successfully.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-q2">
+                    <strong>Not yet.</strong> On Shamir: split a practice secret 2-of-3, then recombine with
+                    <em>only one</em> share — it should fail. Add a second share and succeed. Return here when clear.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q2" hidden>
+                    <strong>Passed (self-check).</strong> Under-threshold recombine fails; threshold works.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenShamir" data-quiz-go="q2">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q2">Mark Q2 passed</button>
+                  <button type="button" class="btn secondary btn-sm quiz-back-item" data-quiz-back>Back to quiz</button>
+                </div>
               </div>
             </div>
-            <div class="quiz-item">
-              <h3>Q3 — Low entropy pad is TOO LOW <span id="quizBadge-q3" class="chip chip-warn">Not yet</span></h3>
-              <p class="control-help">A few simulated dice rolls must show TOO LOW vs 128 bits; words are practice only.</p>
-              <div class="row">
-                <button type="button" class="btn secondary" id="quizOpenEnt">Open entropy pad</button>
-                <button type="button" class="btn secondary" id="quizPass-q3">Mark Q3 passed</button>
+            <div class="quiz-item hour-step" data-quiz="q3">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    Q3 — Low entropy pad is TOO LOW
+                    <span id="quizBadge-q3" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    A few simulated dice rolls must show TOO LOW vs 128 bits; words are practice only.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-q3">
+                    <strong>Not yet.</strong> Open the entropy pad, roll only a few times — verdict should be
+                    TOO LOW vs 128-bit target. Add more rolls and watch the estimate climb. Practice words only; never fund.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q3" hidden>
+                    <strong>Passed (self-check).</strong> Low entropy is labeled unsafe; target is ~128 bits for 12 words.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt" data-quiz-go="q3">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q3">Mark Q3 passed</button>
+                  <button type="button" class="btn secondary btn-sm quiz-back-item" data-quiz-back>Back to quiz</button>
+                </div>
               </div>
+            </div>
+            <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
+              <button type="button" class="btn secondary btn-sm" id="quizScrollTop" title="Jump back to this quiz card">
+                Back to this quiz
+              </button>
             </div>
           </div>
 
@@ -1131,7 +1204,7 @@
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.0"></script>
   <script src="js/help-ui.js?v=0.14.0"></script>
-  <script src="js/learn-levels.js?v=0.14.1"></script>
+  <script src="js/learn-levels.js?v=0.14.2"></script>
   <script src="js/app.js?v=0.14.0"></script>
 </body>
 </html>

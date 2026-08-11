@@ -29,6 +29,8 @@ On Lab, **First hour checklist** mirrors this list. Each step has:
 4. Open **Tools → Path playground** — read purpose / coin / account / change / index.  
 5. **Tools → Passphrase compare**: leave A empty, B = `test` → addresses differ.  
 6. Complete the three **quiz** self-checks (wrong pp, under-threshold Shamir, low entropy pad).  
+   Same UX as this checklist: **Go try** → sticky **← Back to quiz** → keep experimenting until clear → **Mark passed**. Status board shows Not yet / Passed.  
+
 7. Optional: **Network** fees; understand leak ack before any address query.  
 8. Set **Level → Beginner** when ready (**Set Beginner** / **I’m ready for Beginner**).
 

@@ -49,10 +49,22 @@ test.describe("Learning levels E0–E6", () => {
   test("S63 quiz shell", async ({ page }) => {
     await page.locator("#learnLevel").selectOption("beginner");
     await expect(page.locator("#cardQuiz")).toBeVisible();
+    await expect(page.locator("#quizStatusBoard")).toBeVisible();
+    await expect(page.locator("#quizHint-q1")).toBeVisible();
+    await expect(page.locator("#quizHint-q1")).toContainText(/Not yet|experiment/i);
+    // Go try → sticky back bar → return to quiz
+    await page.locator("#quizOpenPp").click();
+    await expect(page.locator("#quizBackBar")).toBeVisible();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#cardCmpPp")).toBeVisible();
+    await page.locator("#quizBackBarBtn").click();
+    await expect(page.locator("#cardQuiz")).toBeInViewport();
     await page.locator("#quizPass-q1").click();
     await expect(page.locator("#quizBadge-q1")).toContainText(/Passed/i);
-    await page.locator("#quizOpenPp").click();
-    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#quizBoard-q1")).toContainText(/Passed/i);
+    await expect(page.locator("#quizHint-q1")).toBeHidden();
+    await expect(page.locator("#quizHintPass-q1")).toBeVisible();
+    await expect(page.locator("#quizSummary")).toContainText(/1\s*\/\s*3/);
   });
 
   test("S64 three splits tour", async ({ page }) => {
