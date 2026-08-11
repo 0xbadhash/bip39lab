@@ -550,6 +550,35 @@
       sum.textContent = n + " / 4 passed";
       sum.className = "chip " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
     }
+    // First-hour step 6 tracks the quiz self-checks
+    syncHourQuizStep(n === 4);
+  }
+
+  function syncHourQuizStep(allPassed) {
+    var st = loadJson(HOUR_KEY, {});
+    var was = !!st.h6;
+    if (allPassed && !was) {
+      st.h6 = true;
+      saveJson(HOUR_KEY, st);
+      refreshFirstHour();
+      return;
+    }
+    if (!allPassed && was) {
+      // Keep h6 only while all four quiz items remain passed
+      st.h6 = false;
+      saveJson(HOUR_KEY, st);
+      refreshFirstHour();
+      return;
+    }
+    // Ensure checkbox UI matches even if already stored
+    if (allPassed) {
+      var li = document.querySelector('[data-hour-step="h6"]');
+      var cb = li && (li.querySelector(".hour-step-cb") || li.querySelector('input[type="checkbox"]'));
+      if (cb && !cb.checked) {
+        cb.checked = true;
+        if (li) li.classList.add("hour-step-done");
+      }
+    }
   }
 
   function resetFirstHour() {

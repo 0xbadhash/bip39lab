@@ -943,6 +943,17 @@
       var st = loadQuizState();
       st[q] = true;
       localStorage.setItem("bip39lab.quiz", JSON.stringify(st));
+      // First-hour checklist step 6 = all four quiz items passed
+      if (st.q1 && st.q2 && st.q3 && st.q4) {
+        var hour = {};
+        try {
+          hour = JSON.parse(localStorage.getItem("bip39lab.firstHour") || "{}") || {};
+        } catch (eHour) {
+          hour = {};
+        }
+        hour.h6 = true;
+        localStorage.setItem("bip39lab.firstHour", JSON.stringify(hour));
+      }
       sessionStorage.setItem("bip39lab.quizReturn", "1");
       sessionStorage.setItem("bip39lab.quizActive", q);
     } catch (e) {
