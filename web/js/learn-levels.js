@@ -501,7 +501,7 @@
       return q.toUpperCase() + " already marked passed.";
     }
     if (q === "q1") {
-      return "Q1: empty vs test must change first address. Keep trying, then Back → Mark passed.";
+      return "Q1: empty vs test must change first address. When clear, use Mark Q1 passed & return (bottom bar).";
     }
     if (q === "q2") {
       return "Q2: one share alone must fail recombine. Keep trying, then Back → Mark passed.";
@@ -543,6 +543,9 @@
     clearQuizReturn();
     clearHourReturn();
     showLearnReturn(null);
+    if (LEVELS.indexOf(getLevel()) < LEVELS.indexOf("beginner")) {
+      setLevel("beginner", { announce: false });
+    }
     goTab("lab");
     setTimeout(function () {
       var card = $("cardQuiz");
@@ -558,6 +561,7 @@
           /* ignore */
         }
       }
+      refreshQuiz();
     }, 80);
   }
 
@@ -584,6 +588,21 @@
         // Hide only; keep progress — user can use in-card Back buttons
         showLearnReturn(null);
       });
+    // Event delegation: survives re-parenting / late DOM moves
+    document.body.addEventListener("click", function (ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest("button") : null;
+      if (!t || !t.id) return;
+      if (t.id === "btnMarkQ1FromTools") {
+        ev.preventDefault();
+        markQuiz("q1");
+      } else if (t.id === "btnMarkQ3FromEnt") {
+        ev.preventDefault();
+        markQuiz("q3");
+      } else if (t.id === "btnMarkQ4FromEnt") {
+        ev.preventDefault();
+        markQuiz("q4");
+      }
+    });
   }
 
   var EVIDENCE_KEY = "bip39lab.quizEvidence";
@@ -616,6 +635,7 @@
       var hintPass = $("quizHintPass-" + q);
       var hintReady = $("quizHintReady-" + q);
       var ready = false;
+      if (q === "q1" && !passed && !!ev.q1Diff) ready = true;
       if (q === "q2" && !passed && !!(ev.q2Fail && ev.q2Ok)) ready = true;
       if (q === "q3" && !passed && !!ev.q3Low) ready = true;
       if (q === "q4" && !passed && !!ev.q4Enough) ready = true;
@@ -723,11 +743,32 @@
   }
 
   function markQuiz(q) {
+    if (!q) return;
     var st = loadJson(QUIZ_KEY, {});
     st[q] = true;
     saveJson(QUIZ_KEY, st);
+    // Sync first-hour step 6 when all four done
+    if (st.q1 && st.q2 && st.q3 && st.q4) {
+      var hour = loadJson(HOUR_KEY, {});
+      hour.h6 = true;
+      saveJson(HOUR_KEY, hour);
+    }
+    try {
+      sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    hideAllQuizMarkBtns();
+    showLearnReturn(null);
     refreshQuiz();
+    refreshFirstHour();
     returnToQuiz();
+  }
+
+  /** Public: mark quiz item passed and jump back to quiz card (used by entropy dock). */
+  function passQuiz(q) {
+    markQuiz(q);
   }
 
   function goQuizDemo(q) {
@@ -979,5 +1020,12 @@
     wire();
   }
 
-  window.LearnLevels = { getLevel: getLevel, setLevel: setLevel, applyLevel: applyLevel };
+  window.LearnLevels = {
+    getLevel: getLevel,
+    setLevel: setLevel,
+    applyLevel: applyLevel,
+    passQuiz: passQuiz,
+    markQuiz: markQuiz,
+    returnToQuiz: returnToQuiz,
+  };
 })();

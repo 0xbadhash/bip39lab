@@ -939,11 +939,20 @@
   }
 
   function markQuizFromEntPad(q) {
+    // Prefer in-page LearnLevels API (same page Tools → Lab quiz, no broken reload)
+    if (window.LearnLevels && typeof window.LearnLevels.passQuiz === "function") {
+      try {
+        window.LearnLevels.passQuiz(q);
+        return;
+      } catch (eApi) {
+        console.error("passQuiz failed", eApi);
+      }
+    }
+    // Fallback: persist + hard navigate (other entry pages)
     try {
       var st = loadQuizState();
       st[q] = true;
       localStorage.setItem("bip39lab.quiz", JSON.stringify(st));
-      // First-hour checklist step 6 = all four quiz items passed
       if (st.q1 && st.q2 && st.q3 && st.q4) {
         var hour = {};
         try {
@@ -959,7 +968,12 @@
     } catch (e) {
       /* ignore */
     }
-    window.location.href = "index.html?from=quiz";
+    var dest = "index.html?from=quiz&t=" + Date.now();
+    try {
+      window.location.assign(dest);
+    } catch (eNav) {
+      window.location.href = dest;
+    }
   }
 
   function refreshEntPadQuizUi() {
