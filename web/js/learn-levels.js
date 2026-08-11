@@ -219,21 +219,42 @@
    * One floating dock only — never stack hour + quiz sticky bars over content.
    * mode: "hour" | "quiz" | null (hide)
    */
+  function hideAllQuizMarkBtns() {
+    ["btnMarkQ1FromTools", "btnMarkQ3FromEnt", "btnMarkQ4FromEnt"].forEach(function (id) {
+      var el = $(id);
+      if (el) el.hidden = true;
+    });
+  }
+
+  function updateQuizMarkButtonsOnDock() {
+    var st = loadJson(QUIZ_KEY, {});
+    var active = "";
+    try {
+      active = sessionStorage.getItem(QUIZ_ACTIVE_KEY) || "";
+    } catch (e) {
+      active = "";
+    }
+    var m1 = $("btnMarkQ1FromTools");
+    var m3 = $("btnMarkQ3FromEnt");
+    var m4 = $("btnMarkQ4FromEnt");
+    // Q1: always offer mark while Q1 is the active demo and not yet passed
+    if (m1) m1.hidden = !(active === "q1" && !st.q1);
+    // Q3/Q4: controlled by entropy pad (app.js) — only hide here if wrong active quiz
+    if (m3 && active && active !== "q3" && active !== "q4") m3.hidden = true;
+    if (m4 && active && active !== "q3" && active !== "q4") m4.hidden = true;
+  }
+
   function showLearnReturn(mode, hint) {
     var bar = $("learnReturnBar");
     var btn = $("learnReturnBarBtn");
     var hintEl = $("learnReturnBarHint");
-    var m3 = $("btnMarkQ3FromEnt");
-    var m4 = $("btnMarkQ4FromEnt");
     if (!bar) return;
     if (!mode) {
       learnReturnMode = null;
       bar.hidden = true;
       bar.removeAttribute("data-return-mode");
       setBodyReturnOpen(false);
-      // Hide pad mark buttons when dock is fully dismissed
-      if (m3) m3.hidden = true;
-      if (m4) m4.hidden = true;
+      hideAllQuizMarkBtns();
       return;
     }
     learnReturnMode = mode;
@@ -250,11 +271,12 @@
           ? "Experiment, then mark passed only when clear."
           : "Finish, then Mark done on the checklist.");
     }
-    // Mark Q3/Q4 only appear when entropy pad logic shows them (app.js)
-    if (mode !== "quiz") {
-      if (m3) m3.hidden = true;
-      if (m4) m4.hidden = true;
-    }
+    if (mode === "quiz") updateQuizMarkButtonsOnDock();
+    else hideAllQuizMarkBtns();
+  }
+
+  function markQuizFromDock(q) {
+    markQuiz(q);
   }
 
   // Used by entropy pad (app.js) so dock stays single bottom chrome
@@ -388,9 +410,7 @@
         go.addEventListener("click", function (ev) {
           ev.preventDefault();
           if (go.id === "hourGoBeginner") {
-            setLevel("beginner");
-            markHourStep(id, true);
-            returnToFirstHour();
+            graduateToBeginner();
             return;
           }
           goHourStep(li);
@@ -399,6 +419,11 @@
       if (doneBtn) {
         doneBtn.addEventListener("click", function (ev) {
           ev.preventDefault();
+          // Step 8 has no Mark done — only Set Beginner
+          if (id === "h8") {
+            graduateToBeginner();
+            return;
+          }
           markHourStep(id, true);
           returnToFirstHour();
         });
@@ -406,6 +431,30 @@
     });
     var back = $("hourScrollTop");
     if (back) back.addEventListener("click", returnToFirstHour);
+    var nextQuiz = $("btnNextGoQuiz");
+    if (nextQuiz)
+      nextQuiz.addEventListener("click", function () {
+        if (LEVELS.indexOf(getLevel()) < LEVELS.indexOf("beginner")) setLevel("beginner", { announce: false });
+        goTab("lab");
+        setTimeout(function () {
+          var q = $("cardQuiz");
+          if (q) {
+            q.setAttribute("data-level-force", "show");
+            q.classList.remove("level-gated");
+            q.hidden = false;
+            q.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 80);
+      });
+    var nextInt = $("btnNextGoIntermediate");
+    if (nextInt)
+      nextInt.addEventListener("click", function () {
+        setLevel("intermediate", { announce: true });
+        setTimeout(function () {
+          var t = $("cardTour");
+          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 120);
+      });
     // Returning from network.html?from=firsthour — open checklist (dock not needed on return)
     if (typeof location !== "undefined" && /from=firsthour/.test(location.search || "")) {
       try {
@@ -689,6 +738,12 @@
     }
     if (q === "q1") {
       goTab("tools");
+      // Bottom dock: Back + Mark Q1 (same pattern as entropy Q3/Q4)
+      showLearnReturn(
+        "quiz",
+        "Q1: empty vs test must change first address. When clear, Mark Q1 passed & return (or Back only)."
+      );
+      updateQuizMarkButtonsOnDock();
       setTimeout(function () {
         var t = $("cardCmpPp");
         if (t) {
@@ -798,9 +853,11 @@
     document.querySelectorAll("[data-level-set]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var lvl = btn.getAttribute("data-level-set");
-        setLevel(lvl);
-        // Footer “I’m ready for Beginner” completes first-hour step 8
-        if (lvl === "beginner") markHourStep("h8", true);
+        if (lvl === "beginner") {
+          graduateToBeginner();
+          return;
+        }
+        setLevel(lvl, { announce: true });
       });
     });
     document.querySelectorAll("[data-level-skip]").forEach(function (btn) {
@@ -899,7 +956,10 @@
     var rH = $("btnResetFirstHour");
     if (rH)
       rH.addEventListener("click", function () {
-        if (window.confirm("Clear all first-hour checklist ticks in this browser?")) resetFirstHour();
+        if (window.confirm("Clear all first-hour checklist ticks in this browser?")) {
+          resetFirstHour();
+          updateFirstHourNext();
+        }
       });
     var rQ = $("btnResetQuiz");
     if (rQ)
@@ -910,6 +970,7 @@
     var rC = $("btnResetClassroom");
     if (rC) rC.addEventListener("click", resetClassroomProgress);
     applyLevel(getLevel(), { announce: false });
+    updateFirstHourNext();
   }
 
   if (document.readyState === "loading") {

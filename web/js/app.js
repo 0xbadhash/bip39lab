@@ -1376,6 +1376,45 @@
     }
     if (resultBox) resultBox.hidden = false;
 
+    // Quiz Q1: different addresses = demo ready → show Mark on bottom dock
+    if (!same) {
+      try {
+        var evRaw = localStorage.getItem("bip39lab.quizEvidence");
+        var ev = evRaw ? JSON.parse(evRaw) : {};
+        if (!ev || typeof ev !== "object") ev = {};
+        ev.q1Diff = true;
+        localStorage.setItem("bip39lab.quizEvidence", JSON.stringify(ev));
+      } catch (eEv) {
+        /* ignore */
+      }
+      var dock = $("learnReturnBar");
+      var m1 = $("btnMarkQ1FromTools");
+      var dockHint = $("learnReturnBarHint");
+      var quizSt = loadQuizState();
+      var active = "";
+      try {
+        active = sessionStorage.getItem("bip39lab.quizActive") || "";
+      } catch (eA) {
+        active = "";
+      }
+      if (dock && (active === "q1" || sessionStorage.getItem("bip39lab.quizReturn") === "1")) {
+        if (dock.parentNode !== document.body) {
+          try {
+            document.body.appendChild(dock);
+          } catch (eM) {
+            /* ignore */
+          }
+        }
+        dock.hidden = false;
+        document.body.classList.add("learn-return-open");
+        if (dockHint && !quizSt.q1) {
+          dockHint.textContent =
+            "Q1 ready: addresses differ (empty vs passphrase). Mark Q1 passed & return when that is clear.";
+        }
+        if (m1) m1.hidden = !!quizSt.q1;
+      }
+    }
+
     // Keep pre for a11y / tests that still scrape text
     if (out) {
       out.hidden = true;
