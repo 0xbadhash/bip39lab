@@ -274,8 +274,25 @@
     } catch (e) {
       /* ignore */
     }
+    var show = !!(fromQ || fromS);
     var bar = $("hourBackBarNet");
-    if (bar && (fromQ || fromS)) bar.hidden = false;
+    var dock = $("learnReturnDockNet");
+    if (bar) bar.hidden = !show;
+    if (dock) {
+      dock.hidden = !show;
+      try {
+        document.body.classList.toggle("learn-return-open", show);
+      } catch (e2) {
+        /* ignore */
+      }
+    }
+    if (show) {
+      try {
+        sessionStorage.setItem("bip39lab.hourReturn", "1");
+      } catch (e3) {
+        /* ignore */
+      }
+    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {

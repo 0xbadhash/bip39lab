@@ -149,12 +149,66 @@
     });
   }
 
+  var EVIDENCE_KEY = "bip39lab.quizEvidence";
+  var QUIZ_KEY = "bip39lab.quiz";
+
+  function loadEvidence() {
+    try {
+      var raw = localStorage.getItem(EVIDENCE_KEY);
+      if (!raw) return {};
+      var o = JSON.parse(raw);
+      return o && typeof o === "object" ? o : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveEvidence(patch) {
+    var o = loadEvidence();
+    Object.keys(patch).forEach(function (k) {
+      o[k] = patch[k];
+    });
+    try {
+      localStorage.setItem(EVIDENCE_KEY, JSON.stringify(o));
+    } catch (e) {
+      /* ignore */
+    }
+    refreshQ2Ui();
+    return o;
+  }
+
+  function refreshQ2Ui() {
+    var ev = loadEvidence();
+    var ready = !!(ev.q2Fail && ev.q2Ok);
+    var banner = $("q2EvidenceBanner");
+    var markBtn = $("btnMarkQ2FromShamir");
+    var dockHint = $("learnReturnDockShamirHint");
+    var topHint = $("quizBackBarShamirHint");
+    if (banner) banner.hidden = !ready;
+    if (markBtn) markBtn.hidden = !ready;
+    var hint = ready
+      ? "Both demos done (fail + success). Mark Q2 passed & return — self-check, not auto-graded."
+      : ev.q2Fail && !ev.q2Ok
+        ? "Good: under-threshold failed. Now recombine with M shares until it succeeds."
+        : !ev.q2Fail && ev.q2Ok
+          ? "You succeeded with enough shares. Also try with only ONE share — it must fail."
+          : "Q2: recombine with ONE share (must fail), then with M shares (must succeed).";
+    if (dockHint) dockHint.textContent = hint;
+    if (topHint) topHint.textContent = hint;
+  }
+
   function onRecombine() {
     if (!globalThis.ShamirLab) {
       setStatus("ShamirLab not loaded.", "err");
       return;
     }
     var out = $("shRecombineOut");
+    var lineCount = String(($("shRecombineIn") && $("shRecombineIn").value) || "")
+      .split(/\r?\n/)
+      .map(function (l) {
+        return l.trim();
+      })
+      .filter(Boolean).length;
     try {
       var shares = parseShareLines($("shRecombineIn") && $("shRecombineIn").value);
       var recovered = ShamirLab.combineShares(shares);
@@ -197,9 +251,19 @@
             : "Recombine OK — reconstructed " + recovered.length + " bytes.",
         match || !original ? "ok" : "err"
       );
+      // Q2 evidence: enough shares recombined (threshold success)
+      if (shares.length >= 2) {
+        saveEvidence({ q2Ok: true });
+      }
     } catch (e) {
       if (out) out.textContent = String(e && e.message ? e.message : e);
       setStatus(String(e && e.message ? e.message : e), "err");
+      // Under-threshold: one share (or combine error) → fail evidence
+      if (lineCount <= 1) {
+        saveEvidence({ q2Fail: true });
+      } else {
+        saveEvidence({ q2Fail: true });
+      }
     }
   }
 
@@ -234,8 +298,52 @@
     } catch (e) {
       /* ignore */
     }
+    // Always show return dock when coming from quiz OR mid Q2 experiment
+    var show = fromQ || fromS;
+    try {
+      // Also show if user has Q2 evidence in progress (fail or ok half-done)
+      var ev = loadEvidence();
+      if (ev.q2Fail || ev.q2Ok) show = true;
+    } catch (e2) {
+      /* ignore */
+    }
     var bar = $("quizBackBarShamir");
-    if (bar && (fromQ || fromS)) bar.hidden = false;
+    var dock = $("learnReturnDockShamir");
+    if (bar) bar.hidden = !show;
+    if (dock) {
+      dock.hidden = !show;
+      try {
+        document.body.classList.toggle("learn-return-open", !!show);
+      } catch (e3) {
+        /* ignore */
+      }
+    }
+    if (fromQ || fromS) {
+      try {
+        sessionStorage.setItem("bip39lab.quizReturn", "1");
+        sessionStorage.setItem("bip39lab.quizActive", "q2");
+      } catch (e4) {
+        /* ignore */
+      }
+    }
+    refreshQ2Ui();
+  }
+
+  function markQ2AndReturn() {
+    try {
+      var st = {};
+      try {
+        st = JSON.parse(localStorage.getItem(QUIZ_KEY) || "{}") || {};
+      } catch (e) {
+        st = {};
+      }
+      st.q2 = true;
+      localStorage.setItem(QUIZ_KEY, JSON.stringify(st));
+      sessionStorage.setItem("bip39lab.quizReturn", "1");
+    } catch (e2) {
+      /* ignore */
+    }
+    window.location.href = "index.html?from=quiz";
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -244,6 +352,8 @@
     if ($("btnShClear")) $("btnShClear").addEventListener("click", onClear);
     if ($("btnShRecombine")) $("btnShRecombine").addEventListener("click", onRecombine);
     if ($("btnShFillM")) $("btnShFillM").addEventListener("click", onFillM);
+    var mq = $("btnMarkQ2FromShamir");
+    if (mq) mq.addEventListener("click", markQ2AndReturn);
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
     showQuizReturn();
   });

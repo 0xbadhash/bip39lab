@@ -436,6 +436,20 @@ code {
   color: var(--text);
   background: var(--panel-2);
 }
+.quiz-evidence-banner {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(34, 160, 107, 0.45);
+  background: rgba(34, 160, 107, 0.12);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+.quiz-hint-ready {
+  background: rgba(61, 139, 253, 0.12);
+  border: 1px solid rgba(61, 139, 253, 0.4);
+  color: var(--text);
+}
 @media (min-width: 721px) {
   .learn-return-dock {
     /* Sit in main column, not under 280px sidebar */

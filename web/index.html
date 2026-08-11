@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.14.4" />
+  <link rel="stylesheet" href="css/app.css?v=0.14.5" />
 </head>
 <body>
   <div class="app">
@@ -92,6 +92,12 @@
         <p class="sidebar-prefs-hint" id="teachModeHint">
           On = step rails, long help, tips. Off = compact UI (safety ⓘ stay).
         </p>
+        <div class="sidebar-prefs-row">
+          <button type="button" class="btn secondary btn-sm" id="btnResetClassroom" title="Clear first-hour checklist + quiz + tour progress in this browser">
+            Reset progress
+          </button>
+        </div>
+        <p class="sidebar-prefs-hint">Clears checklist ticks, quiz passes, and tour step (this browser only).</p>
         <div class="sidebar-prefs-chips">
           <span class="topbar-status">
             <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
@@ -300,6 +306,9 @@
               <button type="button" class="btn secondary btn-sm" id="hourScrollTop" title="Jump back to this checklist">
                 Back to this checklist
               </button>
+              <button type="button" class="btn secondary btn-sm" id="btnResetFirstHour" title="Clear first-hour checkboxes in this browser">
+                Reset checklist
+              </button>
             </div>
           </div>
 
@@ -307,9 +316,9 @@
             <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
             <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 3</span></h2>
             <p class="control-help">
-              Self-graded only — no server. Per item: <strong>Go try</strong> opens the demo (sticky
-              <strong>← Back to quiz</strong> bar), experiment until the idea clicks, then
-              <strong>Mark passed</strong> when you understand. Leave as <em>Not yet</em> and keep trying if unsure.
+              Self-graded only — nothing auto-passes. <strong>Go try</strong> opens the demo;
+              bottom dock has <strong>← Back to quiz</strong> (also on Shamir/Network).
+              When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> and keep trying if unsure.
             </p>
             <ul class="quiz-status-board" id="quizStatusBoard" aria-label="Quiz pass status">
               <li><span class="quiz-status-label">Q1 passphrase</span> <span id="quizBoard-q1" class="chip chip-warn">Not yet</span></li>
@@ -352,11 +361,17 @@
                     With 2-of-3 educational shares, one share alone must not recombine successfully.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q2">
-                    <strong>Not yet.</strong> On Shamir: split a practice secret 2-of-3, then recombine with
-                    <em>only one</em> share — it should fail. Add a second share and succeed. Return here when clear.
+                    <strong>Not yet (self-check).</strong> On Shamir: split 2-of-3, recombine with
+                    <em>only one</em> share (must fail), then with M shares (must succeed).
+                    That does <em>not</em> auto-pass — after both, use <strong>Mark Q2 passed</strong> here
+                    or <strong>Mark Q2 passed &amp; return</strong> on the Shamir dock.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q2" hidden>
                     <strong>Passed (self-check).</strong> Under-threshold recombine fails; threshold works.
+                  </p>
+                  <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q2" hidden>
+                    <strong>Demo evidence ready.</strong> You already saw fail + success on Shamir.
+                    Click <strong>Mark Q2 passed</strong> to record the self-check.
                   </p>
                 </div>
                 <div class="hour-step-actions">
@@ -394,6 +409,9 @@
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
               <button type="button" class="btn secondary btn-sm" id="quizScrollTop" title="Jump back to this quiz card">
                 Back to this quiz
+              </button>
+              <button type="button" class="btn secondary btn-sm" id="btnResetQuiz" title="Clear all quiz pass marks in this browser">
+                Reset quiz answers
               </button>
             </div>
           </div>
@@ -1202,7 +1220,7 @@
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.0"></script>
   <script src="js/help-ui.js?v=0.14.4"></script>
-  <script src="js/learn-levels.js?v=0.14.4"></script>
+  <script src="js/learn-levels.js?v=0.14.5"></script>
   <script src="js/app.js?v=0.14.0"></script>
 </body>
 </html>

@@ -461,8 +461,15 @@
       });
   }
 
+  var EVIDENCE_KEY = "bip39lab.quizEvidence";
+
+  function loadEvidence() {
+    return loadJson(EVIDENCE_KEY, {});
+  }
+
   function refreshQuiz() {
     var st = loadJson(QUIZ_KEY, {});
+    var ev = loadEvidence();
     ["q1", "q2", "q3"].forEach(function (q) {
       var passed = !!st[q];
       var badge = $("quizBadge-" + q);
@@ -482,11 +489,18 @@
       }
       var hintPend = $("quizHint-" + q);
       var hintPass = $("quizHintPass-" + q);
-      if (hintPend) hintPend.hidden = passed;
+      var hintReady = $("quizHintReady-" + q);
+      var ready = q === "q2" && !passed && !!(ev.q2Fail && ev.q2Ok);
+      if (hintPend) hintPend.hidden = passed || ready;
       if (hintPass) hintPass.hidden = !passed;
+      if (hintReady) hintReady.hidden = !ready;
       var passBtn = $("quizPass-" + q);
       if (passBtn) {
-        passBtn.textContent = passed ? "Q" + q.slice(1) + " passed ✓" : "Mark Q" + q.slice(1) + " passed";
+        passBtn.textContent = passed
+          ? "Q" + q.slice(1) + " passed ✓"
+          : ready
+            ? "Mark Q" + q.slice(1) + " passed (demo ready)"
+            : "Mark Q" + q.slice(1) + " passed";
         passBtn.disabled = passed;
         passBtn.setAttribute("aria-disabled", passed ? "true" : "false");
       }
@@ -496,6 +510,54 @@
     if (sum) {
       sum.textContent = n + " / 3 passed";
       sum.className = "chip " + (n === 3 ? "chip-ok" : n > 0 ? "chip-warn" : "");
+    }
+  }
+
+  function resetFirstHour() {
+    saveJson(HOUR_KEY, {});
+    try {
+      sessionStorage.removeItem(HOUR_RETURN_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    showLearnReturn(null);
+    refreshFirstHour();
+  }
+
+  function resetQuiz() {
+    saveJson(QUIZ_KEY, {});
+    saveJson(EVIDENCE_KEY, {});
+    try {
+      sessionStorage.removeItem(QUIZ_RETURN_KEY);
+      sessionStorage.removeItem(QUIZ_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+    showLearnReturn(null);
+    refreshQuiz();
+  }
+
+  function resetClassroomProgress() {
+    if (
+      !window.confirm(
+        "Reset first-hour checklist, quiz answers, demo evidence, and tour step in this browser?"
+      )
+    ) {
+      return;
+    }
+    resetFirstHour();
+    resetQuiz();
+    saveJson(TOUR_KEY, { i: 0 });
+    var box = $("tourBox");
+    if (box) box.hidden = true;
+    var toast = $("learnLevelToast");
+    if (toast) {
+      toast.textContent = "Progress reset (checklist + quiz + tour). Level unchanged.";
+      toast.hidden = false;
+      clearTimeout(showLevelToast._t);
+      showLevelToast._t = setTimeout(function () {
+        toast.hidden = true;
+      }, 5000);
     }
   }
 
@@ -724,6 +786,19 @@
 
     wireLearnReturnDock();
     wireFirstHour();
+    var rH = $("btnResetFirstHour");
+    if (rH)
+      rH.addEventListener("click", function () {
+        if (window.confirm("Clear all first-hour checklist ticks in this browser?")) resetFirstHour();
+      });
+    var rQ = $("btnResetQuiz");
+    if (rQ)
+      rQ.addEventListener("click", function () {
+        if (window.confirm("Clear all quiz pass marks and Shamir demo evidence in this browser?"))
+          resetQuiz();
+      });
+    var rC = $("btnResetClassroom");
+    if (rC) rC.addEventListener("click", resetClassroomProgress);
     applyLevel(getLevel(), { announce: false });
   }
 
