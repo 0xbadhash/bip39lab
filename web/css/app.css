@@ -451,20 +451,21 @@ code {
   border-color: #ffe08a;
   color: #1a1406;
 }
-/* Floating bottom dock — high-contrast amber; wide so Q2 mark/return text isn’t cramped */
+/* Floating bottom dock — always viewport-fixed (parent must not create a containing block) */
 .learn-return-dock {
-  position: fixed;
-  left: max(0.75rem, env(safe-area-inset-left));
-  right: max(0.75rem, env(safe-area-inset-right));
-  bottom: max(0.75rem, env(safe-area-inset-bottom));
-  z-index: 50;
+  position: fixed !important;
+  top: auto !important;
+  left: max(0.75rem, env(safe-area-inset-left)) !important;
+  right: max(0.75rem, env(safe-area-inset-right)) !important;
+  bottom: max(0.85rem, env(safe-area-inset-bottom)) !important;
+  z-index: 9999 !important;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.55rem 0.85rem;
   max-width: min(56rem, calc(100vw - 1.5rem));
-  width: 100%;
-  margin-inline: auto;
+  width: auto;
+  margin: 0 auto !important;
   padding: 0.75rem 1rem 0.75rem 1.1rem;
   background: linear-gradient(135deg, #4a3508 0%, #6b4e12 45%, #3a2a0a 100%);
   border: 2px solid #f0c14d;
@@ -558,25 +559,25 @@ body.theme-light .learn-return-hint {
 }
 @media (min-width: 721px) {
   .learn-return-dock {
-    /* Sit in main column — almost full content width, not a narrow pill */
-    left: calc(280px + 1.25rem);
-    right: 1.25rem;
-    width: auto;
+    /* Main column only — still pinned to viewport bottom */
+    left: calc(280px + 1.25rem) !important;
+    right: 1.25rem !important;
+    bottom: 0.85rem !important;
+    top: auto !important;
     max-width: none;
-    margin-inline: 0;
+    margin: 0 !important;
   }
 }
 @media (min-width: 1200px) {
   .learn-return-dock {
-    /* Cap on very wide screens so the bar stays readable */
     max-width: 58rem;
-    right: auto;
+    right: auto !important;
     width: min(58rem, calc(100vw - 280px - 2.5rem));
   }
 }
 body.learn-return-open {
-  /* Room for multi-line dock */
-  padding-bottom: 6.5rem;
+  /* Room for multi-line dock above content end */
+  padding-bottom: 7rem;
 }
 .quiz-item h3,
 .quiz-item-title {

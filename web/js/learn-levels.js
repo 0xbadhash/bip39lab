@@ -474,6 +474,15 @@
   }
 
   function wireLearnReturnDock() {
+    // Pin dock to <body> so position:fixed is always viewport-bottom (never mid-page)
+    var bar = $("learnReturnBar");
+    if (bar && bar.parentNode !== document.body) {
+      try {
+        document.body.appendChild(bar);
+      } catch (e) {
+        /* ignore */
+      }
+    }
     var btn = $("learnReturnBarBtn");
     if (btn) btn.addEventListener("click", onLearnReturnClick);
     var dismiss = $("learnReturnBarDismiss");

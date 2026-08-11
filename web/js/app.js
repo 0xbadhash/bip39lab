@@ -1000,7 +1000,7 @@
       }
     }
 
-    // Drive the fixed bottom learn-return dock (not mid-page chrome)
+    // Drive the fixed bottom learn-return dock only (never mid-page)
     const dock = $("learnReturnBar");
     const dockBtn = $("learnReturnBarBtn");
     const dockHint = $("learnReturnBarHint");
@@ -1017,7 +1017,16 @@
     }
     const showDock = quizReturn || q3Ready || q4Ready || n > 0;
     if (dock) {
+      // Ensure dock is on <body> for true viewport fixed bottom
+      if (dock.parentNode !== document.body) {
+        try {
+          document.body.appendChild(dock);
+        } catch (eMove) {
+          /* ignore */
+        }
+      }
       dock.hidden = !showDock;
+      dock.classList.add("learn-return-dock");
       try {
         document.body.classList.toggle("learn-return-open", !!showDock);
       } catch (e2) {

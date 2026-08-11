@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.15.4" />
+  <link rel="stylesheet" href="css/app.css?v=0.15.5" />
 </head>
 <body>
   <div class="app">
@@ -128,18 +128,6 @@
       </header>
 
       <main class="content">
-        <!-- Single floating return dock (not sticky top — avoids stacking/overlay on content) -->
-        <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
-          <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Guided quiz</button>
-          <span class="learn-return-hint" id="learnReturnBarHint"></span>
-          <button type="button" class="btn btn-sm" id="btnMarkQ3FromEnt" hidden>
-            Mark Q3 passed &amp; return
-          </button>
-          <button type="button" class="btn btn-sm" id="btnMarkQ4FromEnt" hidden>
-            Mark Q4 passed &amp; return
-          </button>
-          <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
-        </div>
         <div class="warn" role="note">
           <strong>Air-gap recommended.</strong>
           All cryptography runs in this page. Nothing is written to disk or sent to a server from here.
@@ -1216,11 +1204,24 @@
     </div>
   </div>
 
+  <!-- Viewport-fixed bottom dock (must be outside .app/.content so position:fixed sticks to screen bottom) -->
+  <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
+    <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Guided quiz</button>
+    <span class="learn-return-hint" id="learnReturnBarHint"></span>
+    <button type="button" class="btn btn-sm" id="btnMarkQ3FromEnt" hidden>
+      Mark Q3 passed &amp; return to quiz
+    </button>
+    <button type="button" class="btn btn-sm" id="btnMarkQ4FromEnt" hidden>
+      Mark Q4 passed &amp; return to quiz
+    </button>
+    <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
+  </div>
+
   <script src="js/site-version.js?v=0.15.0"></script>
   <script src="js/bip39lab.bundle.js?v=0.15.0"></script>
   <script src="js/glossary.js?v=0.15.0"></script>
   <script src="js/help-ui.js?v=0.15.0"></script>
-  <script src="js/learn-levels.js?v=0.15.4"></script>
-  <script src="js/app.js?v=0.15.4"></script>
+  <script src="js/learn-levels.js?v=0.15.5"></script>
+  <script src="js/app.js?v=0.15.5"></script>
 </body>
 </html>
