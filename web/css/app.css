@@ -1616,6 +1616,46 @@ button:focus-visible {
   font-weight: 700;
 }
 
+.ent-pad-live-verdict {
+  margin: 0.5rem 0 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+}
+.ent-pad-live-verdict.is-low {
+  border-color: rgba(226, 72, 61, 0.55);
+  background: rgba(226, 72, 61, 0.12);
+  color: var(--text);
+}
+.ent-pad-live-verdict.is-ok {
+  border-color: rgba(34, 160, 107, 0.5);
+  background: rgba(34, 160, 107, 0.12);
+}
+.ent-quiz-action-bar {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 2px solid #e8b84a;
+  background: linear-gradient(135deg, #3d2e0a 0%, #5a4210 55%, #2a220c 100%);
+  color: #fff6de;
+  box-shadow: 0 4px 16px rgba(232, 184, 74, 0.22);
+}
+.ent-quiz-action-bar .btn {
+  background: #e8b84a;
+  border-color: #f0d078;
+  color: #1a1406;
+  font-weight: 700;
+}
+.ent-quiz-action-bar .btn.secondary,
+.ent-quiz-action-bar a.btn.secondary {
+  background: transparent;
+  border: 1px solid #f0d078;
+  color: #fff6de;
+}
+
 #entPadSeedBox .ent-pad-verdict-low {
   display: inline;
 }

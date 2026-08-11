@@ -470,7 +470,7 @@
   function refreshQuiz() {
     var st = loadJson(QUIZ_KEY, {});
     var ev = loadEvidence();
-    ["q1", "q2", "q3"].forEach(function (q) {
+    ["q1", "q2", "q3", "q4"].forEach(function (q) {
       var passed = !!st[q];
       var badge = $("quizBadge-" + q);
       if (badge) {
@@ -490,7 +490,10 @@
       var hintPend = $("quizHint-" + q);
       var hintPass = $("quizHintPass-" + q);
       var hintReady = $("quizHintReady-" + q);
-      var ready = q === "q2" && !passed && !!(ev.q2Fail && ev.q2Ok);
+      var ready = false;
+      if (q === "q2" && !passed && !!(ev.q2Fail && ev.q2Ok)) ready = true;
+      if (q === "q3" && !passed && !!ev.q3Low) ready = true;
+      if (q === "q4" && !passed && !!ev.q4Enough) ready = true;
       if (hintPend) hintPend.hidden = passed || ready;
       if (hintPass) hintPass.hidden = !passed;
       if (hintReady) hintReady.hidden = !ready;
@@ -503,13 +506,17 @@
             : "Mark Q" + q.slice(1) + " passed";
         passBtn.disabled = passed;
         passBtn.setAttribute("aria-disabled", passed ? "true" : "false");
+        if (ready && !passed) {
+          passBtn.classList.remove("secondary");
+          passBtn.classList.add("btn");
+        }
       }
     });
-    var n = (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0);
+    var n = (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0) + (st.q4 ? 1 : 0);
     var sum = $("quizSummary");
     if (sum) {
-      sum.textContent = n + " / 3 passed";
-      sum.className = "chip " + (n === 3 ? "chip-ok" : n > 0 ? "chip-warn" : "");
+      sum.textContent = n + " / 4 passed";
+      sum.className = "chip " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
     }
   }
 
@@ -601,7 +608,7 @@
       window.location.href = "shamir.html?from=quiz#shCardRecombine";
       return;
     }
-    if (q === "q3") {
+    if (q === "q3" || q === "q4") {
       goTab("tools");
       setTimeout(function () {
         var t = $("cardEntPad");
@@ -616,6 +623,11 @@
           } catch (e) {
             /* ignore */
           }
+        }
+        // Prefer live verdict + quiz action bar
+        var live = $("entPadLiveVerdict");
+        if (live && q === "q4") {
+          live.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
       }, 100);
     }
@@ -633,7 +645,7 @@
       });
     });
     // Keep legacy ids wired too (same buttons)
-    ["q1", "q2", "q3"].forEach(function (q) {
+    ["q1", "q2", "q3", "q4"].forEach(function (q) {
       var b = $("quizPass-" + q);
       if (b)
         b.addEventListener("click", function (ev) {

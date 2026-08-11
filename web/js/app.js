@@ -906,25 +906,158 @@
     return bits;
   }
 
+  function countEntKind(prefix) {
+    let n = 0;
+    entEvents.forEach(function (e) {
+      if (e.indexOf(prefix) === 0) n++;
+    });
+    return n;
+  }
+
+  function saveQuizEvidence(patch) {
+    try {
+      var raw = localStorage.getItem("bip39lab.quizEvidence");
+      var o = raw ? JSON.parse(raw) : {};
+      if (!o || typeof o !== "object") o = {};
+      Object.keys(patch).forEach(function (k) {
+        o[k] = patch[k];
+      });
+      localStorage.setItem("bip39lab.quizEvidence", JSON.stringify(o));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function loadQuizState() {
+    try {
+      var raw = localStorage.getItem("bip39lab.quiz");
+      var o = raw ? JSON.parse(raw) : {};
+      return o && typeof o === "object" ? o : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function markQuizFromEntPad(q) {
+    try {
+      var st = loadQuizState();
+      st[q] = true;
+      localStorage.setItem("bip39lab.quiz", JSON.stringify(st));
+      sessionStorage.setItem("bip39lab.quizReturn", "1");
+      sessionStorage.setItem("bip39lab.quizActive", q);
+    } catch (e) {
+      /* ignore */
+    }
+    window.location.href = "index.html?from=quiz";
+  }
+
+  function refreshEntPadQuizUi() {
+    const bits = estimateEntPadBits();
+    const n = entEvents.length;
+    const d6n = countEntKind("d6:");
+    const need = 128;
+    const low = n > 0 && bits + 0.001 < need;
+    const enough = bits + 0.001 >= need;
+    // Q3: saw too-low with a short pad (1–12 events keeps “few rolls” lesson)
+    const q3Ready = low && n >= 1 && n <= 20;
+    // Q4: estimate reaches 128 bits (~50 d6)
+    const q4Ready = enough;
+    if (q3Ready) saveQuizEvidence({ q3Low: true });
+    if (q4Ready) saveQuizEvidence({ q4Enough: true });
+
+    const live = $("entPadLiveVerdict");
+    if (live) {
+      live.classList.remove("is-low", "is-ok");
+      if (!n) {
+        live.textContent =
+          "No rolls yet. Q3: roll ~3× d6 (expect TOO LOW vs 128 bits). Q4: keep rolling to ~50 d6 (~128 bits). Less is not better.";
+      } else if (low) {
+        live.classList.add("is-low");
+        const needRolls = Math.max(0, Math.ceil((need - bits) / 2.58));
+        live.innerHTML =
+          '<strong class="ent-pad-verdict-low">TOO LOW</strong> — ~' +
+          Math.round(bits) +
+          " bits from " +
+          n +
+          " event(s) (" +
+          d6n +
+          " d6). BIP-39 12-word wants <strong>128 bits</strong> — about <strong>50 d6 rolls</strong> (or 128 coin flips). " +
+          "Still short by ~" +
+          Math.ceil(need - bits) +
+          " bits (~" +
+          needRolls +
+          " more d6). <em>Fewer rolls is worse, not safer.</em>";
+      } else {
+        live.classList.add("is-ok");
+        live.innerHTML =
+          "Estimate ~" +
+          Math.round(bits) +
+          " bits ≥ 128 — enough <em>on paper</em> for a 12-word ENT size. " +
+          "Still <strong>PRACTICE ONLY</strong> (simulated rolls, not OS CSPRNG). Never fund pad words.";
+      }
+    }
+
+    const bar = $("entQuizActionBar");
+    const hint = $("entQuizActionHint");
+    const b3 = $("btnMarkQ3FromEnt");
+    const b4 = $("btnMarkQ4FromEnt");
+    const quiz = loadQuizState();
+    const showBar = q3Ready || q4Ready || n > 0;
+    if (bar) bar.hidden = !showBar;
+    if (b3) {
+      b3.hidden = !(q3Ready && !quiz.q3);
+      if (quiz.q3) b3.hidden = true;
+    }
+    if (b4) {
+      b4.hidden = !(q4Ready && !quiz.q4);
+      if (quiz.q4) b4.hidden = true;
+    }
+    if (hint) {
+      if (q3Ready && !quiz.q3 && q4Ready && !quiz.q4) {
+        hint.textContent =
+          "Q3: you saw TOO LOW on a short pad. Q4: estimate now ≥ 128 bits. Mark each when you understand.";
+      } else if (q3Ready && !quiz.q3) {
+        hint.textContent =
+          "Q3 ready: short pad is TOO LOW vs 128 bits. Mark Q3 when that is clear, then keep rolling for Q4 (~50 d6).";
+      } else if (q4Ready && !quiz.q4) {
+        hint.textContent =
+          "Q4 ready: estimate ≥ 128 bits (~50 d6). Less was never better — that was the lesson.";
+      } else if (low) {
+        hint.textContent =
+          "Keep rolling toward ~50 d6 for Q4. Optional: Build practice seed below to see TOO LOW in Step 3 too.";
+      } else {
+        hint.textContent = "Pad progress for the Guided quiz (self-check).";
+      }
+    }
+  }
+
   function refreshEntPad() {
     const out = $("entPadOut");
     const meta = $("entPadMeta");
     if (!out) return;
     if (!entEvents.length) {
       out.textContent = "—";
-      if (meta) meta.textContent = "0 events · ~0 bits (estimate; d6≈2.58, coin=1)";
+      if (meta) {
+        meta.textContent =
+          "0 events · ~0 bits (estimate; d6≈2.58, coin=1). Target 128 bits ≈ 50 d6 rolls.";
+      }
+      refreshEntPadQuizUi();
       return;
     }
     out.textContent = entEvents.join(" ");
     const bits = estimateEntPadBits();
+    const d6n = countEntKind("d6:");
     if (meta) {
       meta.textContent =
         entEvents.length +
         " events · ~" +
         Math.round(bits) +
-        " bits (estimate: d6≈2.58 + coin=1 each; not CSPRNG). " +
-        "12-word BIP-39 needs 128 bits of real entropy; 24-word needs 256.";
+        " bits (d6≈2.58, coin=1; not CSPRNG). " +
+        "12-word needs 128 bits ≈ 50 d6 (you have " +
+        d6n +
+        " d6). 24-word needs 256.";
     }
+    refreshEntPadQuizUi();
   }
 
   async function sha256Bytes(text) {
@@ -1491,6 +1624,21 @@
         if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
         refreshEntPad();
       });
+    }
+    if ($("btnDice10")) {
+      $("btnDice10").addEventListener("click", () => {
+        for (let i = 0; i < 10; i++) {
+          entEvents.push("d6:" + (1 + Math.floor(Math.random() * 6)));
+          if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
+        }
+        refreshEntPad();
+      });
+    }
+    if ($("btnMarkQ3FromEnt")) {
+      $("btnMarkQ3FromEnt").addEventListener("click", () => markQuizFromEntPad("q3"));
+    }
+    if ($("btnMarkQ4FromEnt")) {
+      $("btnMarkQ4FromEnt").addEventListener("click", () => markQuizFromEntPad("q4"));
     }
     if ($("btnCoin")) {
       $("btnCoin").addEventListener("click", () => {

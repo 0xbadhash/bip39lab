@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.14.8" />
+  <link rel="stylesheet" href="css/app.css?v=0.15.0" />
 </head>
 <body>
   <div class="app">
@@ -253,7 +253,7 @@
                 <div class="hour-step-main">
                   <label class="hour-step-label">
                     <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>6.</strong> Quiz: mark the three self-checks when you understand them</span>
+                    <span><strong>6.</strong> Quiz: mark the four self-checks when you understand them</span>
                   </label>
                   <div class="hour-step-actions">
                     <button type="button" class="btn secondary btn-sm hour-go" data-hour-level="beginner">Go</button>
@@ -299,16 +299,17 @@
 
           <div class="card card-wide" id="cardQuiz" data-level-min="beginner">
             <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
-            <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 3</span></h2>
+            <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 4</span></h2>
             <p class="control-help">
               Self-graded only — nothing auto-passes. <strong>Go try</strong> opens the demo;
-              bottom dock has <strong>← Back to quiz</strong> (also on Shamir/Network).
-              When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> and keep trying if unsure.
+              the amber dock has <strong>← Back to Guided quiz</strong> while you are away.
+              When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> if unsure.
             </p>
             <ul class="quiz-status-board" id="quizStatusBoard" aria-label="Quiz pass status">
               <li><span class="quiz-status-label">Q1 passphrase</span> <span id="quizBoard-q1" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q2 Shamir</span> <span id="quizBoard-q2" class="chip chip-warn">Not yet</span></li>
-              <li><span class="quiz-status-label">Q3 entropy</span> <span id="quizBoard-q3" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">Q3 too low</span> <span id="quizBoard-q3" class="chip chip-warn">Not yet</span></li>
+              <li><span class="quiz-status-label">Q4 enough bits</span> <span id="quizBoard-q4" class="chip chip-warn">Not yet</span></li>
             </ul>
             <div class="quiz-item hour-step" data-quiz="q1">
               <div class="hour-step-main">
@@ -331,7 +332,6 @@
                 <div class="hour-step-actions">
                   <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenPp" data-quiz-go="q1">Go try</button>
                   <button type="button" class="btn secondary btn-sm" id="quizPass-q1">Mark Q1 passed</button>
-                  <button type="button" class="btn secondary btn-sm quiz-back-item" data-quiz-back>Back to quiz</button>
                 </div>
               </div>
             </div>
@@ -362,7 +362,6 @@
                 <div class="hour-step-actions">
                   <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenShamir" data-quiz-go="q2">Go try</button>
                   <button type="button" class="btn secondary btn-sm" id="quizPass-q2">Mark Q2 passed</button>
-                  <button type="button" class="btn secondary btn-sm quiz-back-item" data-quiz-back>Back to quiz</button>
                 </div>
               </div>
             </div>
@@ -370,31 +369,61 @@
               <div class="hour-step-main">
                 <div class="hour-step-label">
                   <h3 class="quiz-item-title">
-                    Q3 — Low entropy pad is TOO LOW
+                    Q3 — A few rolls = TOO LOW
                     <span id="quizBadge-q3" class="chip chip-warn">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    A few simulated dice rolls must show TOO LOW vs 128 bits; words are practice only.
+                    Roll dice only a few times (~3). The pad must show <strong>TOO LOW</strong> vs 128 bits.
+                    Practice only — never fund. Then mark passed on the pad or here.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q3">
-                    <strong>Not yet.</strong> Open the entropy pad, roll only a few times — verdict should be
-                    TOO LOW vs 128-bit target. Add more rolls and watch the estimate climb. Practice words only; never fund.
+                    <strong>Not yet.</strong> <strong>Go try</strong> → roll d6 about 3 times → read the live verdict
+                    (TOO LOW). Optional: Build practice seed to see the same in Step 3. Then
+                    <strong>Mark Q3 passed</strong> (also appears on the entropy pad when ready).
+                  </p>
+                  <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q3" hidden>
+                    <strong>Demo ready.</strong> You saw TOO LOW with a short pad. Mark Q3 passed.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q3" hidden>
-                    <strong>Passed (self-check).</strong> Low entropy is labeled unsafe; target is ~128 bits for 12 words.
+                    <strong>Passed.</strong> Few rolls are not enough for a real 12-word wallet.
                   </p>
                 </div>
                 <div class="hour-step-actions">
                   <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt" data-quiz-go="q3">Go try</button>
                   <button type="button" class="btn secondary btn-sm" id="quizPass-q3">Mark Q3 passed</button>
-                  <button type="button" class="btn secondary btn-sm quiz-back-item" data-quiz-back>Back to quiz</button>
+                </div>
+              </div>
+            </div>
+            <div class="quiz-item hour-step" data-quiz="q4">
+              <div class="hour-step-main">
+                <div class="hour-step-label">
+                  <h3 class="quiz-item-title">
+                    Q4 — Need ~128 bits (≈50 d6 rolls), not fewer
+                    <span id="quizBadge-q4" class="chip chip-warn">Not yet</span>
+                  </h3>
+                  <p class="control-help">
+                    <strong>Less is not better.</strong> BIP-39 12-word needs <strong>128 bits</strong> of real entropy.
+                    With dice (~2.58 bits each) that is about <strong>50 d6 rolls</strong> (or 128 coin flips) —
+                    keep rolling until the pad estimate is no longer TOO LOW. Never fund pad words.
+                  </p>
+                  <p class="quiz-hint quiz-hint-pending" id="quizHint-q4">
+                    <strong>Not yet.</strong> On the entropy pad, keep rolling (aim for ~50 d6). Watch the estimate
+                    climb toward 128 bits. When the pad says estimate ≥ 128 bits, mark Q4 passed there or here.
+                  </p>
+                  <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q4" hidden>
+                    <strong>Demo ready.</strong> Pad estimate reached the 128-bit target (still practice-only). Mark Q4.
+                  </p>
+                  <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q4" hidden>
+                    <strong>Passed.</strong> You saw that “enough” needs many rolls — fewer rolls is worse, not safer.
+                  </p>
+                </div>
+                <div class="hour-step-actions">
+                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt4" data-quiz-go="q4">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q4">Mark Q4 passed</button>
                 </div>
               </div>
             </div>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
-              <button type="button" class="btn secondary btn-sm" id="quizScrollTop" title="Jump back to this quiz card">
-                Back to this quiz
-              </button>
               <button type="button" class="btn secondary btn-sm" id="btnResetQuiz" title="Clear all quiz pass marks in this browser">
                 Reset quiz answers
               </button>
@@ -835,10 +864,22 @@
               <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.35rem">
                 <button type="button" class="btn secondary" id="btnDice" title="Simulated d6 (Math.random) — practice only">Roll d6 (simulated)</button>
                 <button type="button" class="btn secondary" id="btnCoin" title="Simulated coin (Math.random) — practice only">Flip coin (simulated)</button>
+                <button type="button" class="btn secondary" id="btnDice10" title="Ten simulated d6 at once — practice only">+10 d6 (fast)</button>
                 <button type="button" class="btn danger" id="btnEntClear">Clear pad</button>
               </div>
               <pre class="out" id="entPadOut">—</pre>
               <p class="control-help" id="entPadMeta">0 events · ~0 bits estimated</p>
+              <p id="entPadLiveVerdict" class="ent-pad-live-verdict" role="status" aria-live="polite">
+                No rolls yet. For Q3: roll ~3 times (expect TOO LOW). For Q4: keep going to ~50 d6 (~128 bits).
+              </p>
+              <div id="entQuizActionBar" class="ent-quiz-action-bar" hidden>
+                <p class="control-help" id="entQuizActionHint" style="margin:0;color:inherit"></p>
+                <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.4rem">
+                  <button type="button" class="btn" id="btnMarkQ3FromEnt" hidden>Mark Q3 passed &amp; return to quiz</button>
+                  <button type="button" class="btn" id="btnMarkQ4FromEnt" hidden>Mark Q4 passed &amp; return to quiz</button>
+                  <a class="btn secondary" href="index.html?from=quiz" id="entBackToQuizLink">← Back to Guided quiz</a>
+                </div>
+              </div>
             </div>
 
             <div class="cmp-step" data-ent-step="2" style="margin-top:1rem">
@@ -1184,7 +1225,7 @@
   <script src="js/bip39lab.bundle.js?v=0.14.0"></script>
   <script src="js/glossary.js?v=0.14.6"></script>
   <script src="js/help-ui.js?v=0.14.7"></script>
-  <script src="js/learn-levels.js?v=0.14.6"></script>
-  <script src="js/app.js?v=0.14.0"></script>
+  <script src="js/learn-levels.js?v=0.15.0"></script>
+  <script src="js/app.js?v=0.15.0"></script>
 </body>
 </html>
