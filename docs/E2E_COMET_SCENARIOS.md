@@ -88,28 +88,35 @@ Words to look up ──────► Glossary (always available; Teach optiona
 | Path / PSBT / descriptors | Tools | Signing or broadcasting |
 | Acronyms & threat model | Glossary | A “hidden” sixth product |
 
-**Teach On/Off (all shells):** On = step rails + long help + most ⓘ. Off = compact UI; **safety ⓘ** (seed, CSP, air-gap, PSBT, leak ack, Teach) remain. Preference is one `localStorage` flag across pages.
+**Extra help On/Off (all shells):** UI label is **“Extra help: On/Off”** (`#btnTeach`, `data-teach-toggle`) — not “Teach:”.  
+On = longer teach-only copy + most ⓘ. Off = compact UI; **safety ⓘ** (seed, CSP, air-gap, PSBT, leak ack, Extra help tip) remain.  
+**No mid-page step rails** (removed) — navigation is left **6-nav** + First-hour / Quiz **Go try** + amber return dock.  
+Preference is one `localStorage` flag across pages.
 
 ---
 
 ## PROMPT FOR COMET / PERPLEXITY
 
 ```text
-You are a browser QA agent for bip39lab. Execute the FULL suite S0–S56 in
-docs/E2E_COMET_SCENARIOS.md (this file). Also complete the HUMAN COHERENCE
-checklist for EVERY page (section “Human process flows”).
+You are a browser QA agent for bip39lab. Execute the FULL suite S0–S71 (all
+S-ids in Playwright titles + body of this file). Also complete the HUMAN
+COHERENCE checklist for EVERY page (section “Human process flows”).
 
 SOURCE OF TRUTH: docs/E2E_COMET_SCENARIOS.md · repo 0xbadhash/bip39lab
+Product version: read live sidebar (e.g. v0.16.1) AND the stamped Product line
+at the top of this file — prefer live if they disagree after a deploy lag.
 
 APPS (hard-refresh each once before testing):
   1. https://bip39.catalyxt.xyz/                 (Lab · Tools · Glossary panels)
   2. https://bip39.catalyxt.xyz/multisig.html
   3. https://bip39.catalyxt.xyz/shamir.html
-  4. https://bip39.catalyxt.xyz/network.html
+  4. https://bip39.catalyxt.xyz/slip39.html      (deep-link; not a 7th nav item)
+  5. https://bip39.catalyxt.xyz/network.html
 
 SIDEBAR: exactly **6** nav items, same order on every page:
   Lab · Multisig · Shamir · Network · Tools · Glossary
 FAIL if Balance or About reappear as primary nav.
+UI toggle label is **Extra help: On/Off** (not “Teach:”).
 
 RULES:
   - Lab test mnemonic ONLY:
@@ -137,14 +144,14 @@ intuitive flow without contradiction or dead ends.
 
 SURFACES (hard-refresh once each):
   Lab (/) · Multisig · Shamir · Network · Tools (#tools) · Glossary (#glossary)
-  plus chrome: sidebar, header/branding, Teach On/Off, safety ⓘ tips
+  plus chrome: sidebar, header/branding, Extra help On/Off, safety ⓘ tips
 
 CHECK A — UI consistency across shells
   - Same 6-nav order/labels; current-page highlight correct
   - Shared chrome (brand, Teach toggle, footer/legal tone) feels one product
   - Step rails / panels / buttons use consistent patterns (primary vs danger,
     empty states, error vs unknown balance language)
-  - Teach Off still keeps safety-critical tips; Teach On expands rails/help
+  - Extra help Off still keeps safety-critical tips; On expands longer teach-only copy (no step rails)
 
 CHECK B — Description & guideline alignment
   - Hero/subtitle/help copy matches what the page actually does
@@ -206,8 +213,8 @@ Offline BIP-39 lab: generate or paste an English recovery phrase, optional passp
 
 ```text
 1. Land on Lab · read air-gap warn · note Offline crypto + Browser online/offline chips
-2. (Teach On) Follow step rail: **Phrase** → **Path** → **Addresses** → **Watch-only**
-   — each click **scrolls to** the section, **moves keyboard focus** into it, and shows a brief **highlight flash** (not a locked wizard; rail button stays `is-active`)
+2. (Extra help On) Use **First hour checklist** Go steps (or scroll): Phrase → addresses → Tools
+   — **no mid-page step rail**; amber dock “← Back to First hour” while away from checklist
 3. Choose word count → Generate  OR  paste abandon vector
 4. See entropy line + address table fill (default Taproot bc1p…)
 5. Optionally: passphrase, account/change/count, address-type tabs
@@ -216,17 +223,17 @@ Offline BIP-39 lab: generate or paste an English recovery phrase, optional passp
 ```
 
 ### Primary controls
-Generate · Validate & derive · Clear · Hide private · address-type tabs · watch-only refresh · Teach · Theme
+Generate · Validate & derive · Clear · Hide private · address-type tabs · watch-only refresh · **Extra help** · Theme
 
 ### Human coherence checklist
 
 | Criterion | Expected | PASS/FAIL | Notes |
 |-----------|----------|-----------|-------|
-| Coherent | Phrase → Path → Addresses → Watch-only rail-guided; jump **focuses** target | | |
+| Coherent | Phrase → addresses → watch-only without a mid-page wizard rail | | |
 | Makes sense | “Generate” produces phrase + table without extra clicks | | |
 | Intuitive | Default Taproot; goldens match when abandon pasted | | |
 | Safety | Air-gap warn + mnemonic ⓘ always findable | | |
-| Teach Off | Rail/long copy hide; chips + safety ⓘ remain | | |
+| Extra help Off | Long teach-only copy hides; chips + safety ⓘ remain | | |
 
 ### Playwright / scenarios
 S0, S0b, S0c, S1, S1b, S2–S9, S11, S15, S16 · `e2e/lab.spec.ts`
@@ -258,10 +265,10 @@ Path out · Dice/Coin/Clear · Generate test phrase · Compare · Refresh descri
 | Criterion | Expected | PASS/FAIL | Notes |
 |-----------|----------|-----------|-------|
 | Coherent | Cards are independent tools, not a forced pipeline | | |
-| Makes sense | No step rail (toolbox, not a recipe) — OK if labeled by titles | | |
+| Makes sense | **No mid-page step rail** (toolbox, not a recipe) — card titles are enough | | |
 | Intuitive | Compare works without returning to Lab | | |
 | Safety | PSBT ⓘ / copy says never signs or broadcasts | | |
-| Teach Off | Long Tools intro hides; tool cards still usable | | |
+| Extra help Off | Long Tools intro hides; tool cards still usable | | |
 
 ### Playwright / scenarios
 S14, S17–S23, S18b, S18c · `e2e/lab.spec.ts`
@@ -305,11 +312,12 @@ Educational M-of-N **from public keys only**. Demo cosigner generator (throwaway
 
 ```text
 1. Land · Offline chip · read “What is multisig?” (vs single-key wallet)
-2. (Teach On) Rail: Intro → Keys → Build → Result
+2. (Extra help On) Scroll cards Intro → Keys → Demo → Build → Result (no mid-page rail)
 3. Optional: Generate demo cosigners (N, word count) → public keys + zpubs
 4. Or paste compressed pubkeys (one per line)
 5. Set M · BIP67 sort · Build
-6. Read P2SH (3…) + P2WSH (bc1q…) · copy · Clear to reset
+6. Read P2SH (3…) + P2WSH (bc1q…) · copy · if Intermediate I1: Mark I1 on amber dock
+7. Clear to reset
 ```
 
 ### Human coherence checklist
@@ -320,7 +328,7 @@ Educational M-of-N **from public keys only**. Demo cosigner generator (throwaway
 | Makes sense | Distinct from Shamir (keys ≠ shares) | | |
 | Intuitive | Demo generator lowers barrier | | |
 | Safety | Private key paste refused; offline CSP | | |
-| Teach Off | Long folds hide; Build still works | | |
+| Extra help Off | Long folds hide; Build still works | | |
 
 ### Playwright / scenarios
 S12, S12b, S26–S31 · `e2e/multisig.spec.ts`
@@ -336,13 +344,13 @@ Educational **Shamir secret sharing** over bytes (GF(256)). Demo split + **Verif
 
 ```text
 1. Land · red educational banner (not SLIP-39 / not real funds)
-2. (Teach On) Rail: Understand → Practice secret → Split
+2. Note banner link **#shLinkSlip39** “SLIP-39 lab” (deep-link, not 7th nav)
 3. Read compare table: Shamir vs Multisig vs BIP-39
 4. Generate practice secret (hex) — do not use Lab mnemonic
 5. Set M and N (default 2-of-3) → Split demo
 6. See N cards `share:index:hex` · Copy one
 7. **Verify recombine** (or Fill M shares from cards) → matches practice secret
-8. Clear when done
+8. If Intermediate I2: Mark I2 on amber dock · Clear when done
 ```
 
 ### Human coherence checklist
@@ -353,7 +361,7 @@ Educational **Shamir secret sharing** over bytes (GF(256)). Demo split + **Verif
 | Makes sense | Banner + “not SLIP-39” before any split | | |
 | Intuitive | Generate + Split + Verify recombine close the teach loop | | |
 | Safety | Empty secret errors; no fake success; not SLIP-39 | | |
-| Teach Off | Rail hides; banner + Generate/Split/Recombine remain | | |
+| Extra help Off | Long folds hide; banner + Generate/Split/Recombine remain | | |
 
 ### Playwright / scenarios
 S53–S56 · `e2e/shamir.spec.ts`
@@ -369,7 +377,7 @@ S53–S56 · `e2e/shamir.spec.ts`
 
 ```text
 1. Land · note mempool chip (this page may use network)
-2. (Teach On) Rail: Understand → Fees → Balances
+2. (Extra help On) Scroll Understand → Fees → Balances (no mid-page rail)
 3. Read “what this is / is not”
 4. Fetch fee + traffic snapshot → bands + tip height
 5. Balances: tick leak-ack → paste addresses OR Load from Lab session
@@ -385,25 +393,26 @@ S53–S56 · `e2e/shamir.spec.ts`
 | Makes sense | Buttons disabled until ack | | |
 | Intuitive | Mnemonic in address box rejected | | |
 | Safety | Leak checkbox + ⓘ; never requires seed | | |
-| Teach Off | Rail hides; ack + Fetch still work | | |
+| Extra help Off | Long folds hide; ack + Fetch still work | | |
 
 ### Playwright / scenarios
 S13b–d, S32–S35 · `e2e/network.spec.ts`
 
 ---
 
-## Cross-cutting: Help / Teach / Chrome
+## Cross-cutting: Help / Extra help / Chrome
 
 ### Description
-Shared shell: 6-nav, Teach toggle + ⓘ, step rails (where present), CSP isolation Lab/Multisig/Shamir vs Network.
+Shared shell: 6-nav, **Extra help** toggle + ⓘ, **no mid-page step rails**, CSP isolation Lab/Multisig/Shamir/SLIP-39 vs Network.
 
 ### Process flow
 
 ```text
-1. Verify 6-nav labels identical on Lab, Multisig, Shamir, Network
-2. Teach On → rails; Teach Off → rails hide; safety ⓘ remain
-3. Open mnemonic or PSBT ⓘ · Esc closes
-4. Confirm Lab/Multisig/Shamir CSP offline; Network allows mempool/'self'
+1. Verify 6-nav labels identical on Lab, Multisig, Shamir, Network, SLIP-39
+2. Extra help On → longer teach-only copy; Off → compact; safety ⓘ remain
+3. Assert zero elements matching [data-step-rail], #labStepRail, #toolsStepRail, #msStepRail
+4. Open mnemonic or PSBT ⓘ · Esc closes
+5. Confirm Lab/Multisig/Shamir/SLIP-39 CSP offline; Network allows mempool/'self'
 ```
 
 ### Human coherence checklist
@@ -411,7 +420,7 @@ Shared shell: 6-nav, Teach toggle + ⓘ, step rails (where present), CSP isolati
 | Criterion | Expected | PASS/FAIL | Notes |
 |-----------|----------|-----------|-------|
 | Coherent | Same left nav story everywhere | | |
-| Makes sense | Teach meaning explained by Teach ⓘ | | |
+| Makes sense | Extra help ⓘ explains longer copy (not a wizard) | | |
 | Intuitive | Offline pages never “phone home” for secrets | | |
 
 ### Playwright / scenarios
@@ -613,40 +622,33 @@ Version + host branding in left sidebar only (no bottom footer version strip).
 
 ---
 
-## Help UX (Teach + ⓘ)
+## Help UX (Extra help + ⓘ) — no mid-page step rails
 
-### S41 — Teach On + Lab rail
-Teach: On; Lab step rail visible.
+### S41 — Extra help On (Lab)
+**Extra help: On**; teach-only copy visible; **no** `#labStepRail` / `[data-step-rail]`.
 
-### S42 — Teach Off
-Off hides teach-only; safety chrome remains.
+### S42 — Extra help Off
+Off hides teach-only; safety chrome + leak/PSBT/seed ⓘ remain.
 
 ### S43 — ⓘ tip
 Mnemonic **i** opens; Esc closes.
 
-### S44 — Step rail jump + focus
-Lab Teach On · click each rail step (**Phrase** / **Path** / **Addresses** / **Watch-only**):
-1. Matching section is scrolled into view (`scroll-margin` under sticky chrome).
-2. Section receives **document focus** (`tabindex=-1` + `focus()`).
-3. Brief **step-flash** ring/background (visible highlight).
-4. Rail button has `is-active` / `aria-current="step"`.
-5. Target has `data-step-focused="true"` until the next jump.
+### S44 — First-hour Go (replaces step rail)
+First hour checklist: **Go** on a step scrolls to target (e.g. mnemonic) and shows amber **← Back to First hour** dock; Back returns to checklist. No mid-page step-rail wizard.
 
-Same behavior on Multisig / Network / Shamir / SLIP-39 rails (shared `help-ui.js`).
+### S44b — Tools panel: no mid-page rails
+Tools tab: **zero** mid-page rails (`#toolsStepRail` must not exist). Cards (Path · Entropy · Passphrase · Descriptors · PSBT · Explain) are independent toolbox sections. PSBT card visible when scrolled.
 
-### S44b — Tools rail is Tools-only
-Tools tab: Lab rail **hidden**; **toolsStepRail** visible (Path · Entropy · Passphrase · Descriptors · PSBT · Explain). Jump to PSBT focuses `#cardPsbt`. No Lab “Watch-only / zpub” labels on Tools rail.
-
-### S45 — Multisig rail + BIP67 tip
-Rail + BIP67 **i**.
+### S45 — Multisig Extra help + BIP67 tip
+Extra help On; Build card BIP67 **i** (and checklist BIP67 **i**).
 
 ### S46 — Checklist folded
-Cosigner checklist is collapsed `<details>`.
+Cosigner checklist is collapsed `<details>`; open → vault-verify + replace-cosigner **i**.
 
-### S47 — Network rail + leak
-Steps visible; leak ack always; fee **i**.
+### S47 — Network Extra help + leak
+Leak ack always visible; fee **i**; no mid-page network step rail.
 
-### S48 — Teach persists
+### S48 — Extra help persists
 Off on Lab → still Off on Network; can turn On.
 
 ### S48b — Still 6-nav after help UX
@@ -694,9 +696,9 @@ Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered
 ### Process flow (learner)
 
 ```text
-1. Land via Shamir “SLIP-39 lab” link (or /slip39.html) · red lab-only banner
-2. Read compare table: BIP-39 vs educational Shamir vs SLIP-39
-3. (Teach On) Rail: Compare → Demo → Groups
+1. Land via Shamir danger-banner link **#shLinkSlip39** “SLIP-39 lab” (or /slip39.html)
+2. Read red lab-only banner + compare table: BIP-39 vs educational Shamir vs SLIP-39
+3. (Extra help On) Read compare → demo → groups folds (no mid-page step rail)
 4. Generate practice master hex → Split 2-of-3 (or 3-of-5) → see share word cards
 5. Combine first M shares → Match (happy path)
 6. Groups card: read multi-group diagram (1-of-1 + 2-of-3) — diagram only
@@ -712,7 +714,7 @@ Generate practice secret → Split 2-of-3 → **Verify recombine** → recovered
 | Makes sense | Distinct from Shamir hex + BIP-39 phrase | | |
 | Intuitive | Generate/Split/Combine close the loop | | |
 | Safety | Lab-only banner; wrong-pp mismatch; no funded-wallet claim | | |
-| Teach Off | Rail hides; banner + demo + groups diagram remain | | |
+| Extra help Off | Long folds hide; banner + demo + groups diagram remain | | |
 
 ### Scenarios
 
@@ -723,7 +725,8 @@ SLIP-39 lab heading; **6**-nav (**no 7th** SLIP-39 top item — deep-link only);
 Comet-style review: S57–S60b Playwright green; live 6-nav on `/slip39.html`; Shamir→SLIP-39 deep-link present; teach copy states “not a 7th nav step.” No new P0 UX defects. Nits fixed: parent Shamir highlight + explicit 6-nav teach line.
 
 #### S57b — Shamir → SLIP-39 deep-link
-From Shamir banner link `#shLinkSlip39` → `/slip39.html` danger visible.
+On Shamir, danger banner includes link **`#shLinkSlip39`** text “SLIP-39 lab” (not a 7th nav item).
+Click → `/slip39.html` with lab-only danger banner visible. (DOM attribute `id="shLinkSlip39"` — scrapers that only grab titles may miss it; Playwright asserts visibility.)
 
 #### S58 — Happy 2-of-3 split + combine match
 Generate practice hex → Split 2-of-3 → Combine M shares → status Match.
@@ -798,6 +801,8 @@ URLs:
   Network:  https://bip39.catalyxt.xyz/network.html
 Date (UTC):
 Agent: Comet / Perplexity / other:
+Live product version (sidebar): v__.__.__
+Stamped Product line (this file header): (copy from top)
 
 ## Human coherence (required)
 Lab:      coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
@@ -807,11 +812,14 @@ Multisig: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Shamir:   coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 SLIP-39:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Network:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
-Chrome/Teach: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
+Chrome/Extra help: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Cross-product story (secrets offline / addresses online / shares≠keys / Shamir≠SLIP-39): PASS|FAIL —
 
-## Scenarios
-S0 Smoke (6-nav + Shamir): PASS|FAIL —
+## Scenarios (PASS | FAIL | NEEDS-DOM | SKIP)
+Use **NEEDS-DOM** only when scrape cannot see attributes/viewport (aria-current, mobile width). Prefer Playwright for those.
+
+### Lab core
+S0 Smoke (6-nav + chips): PASS|FAIL —
 S0b Theme: PASS|FAIL —
 S0c Keyboard ?: PASS|FAIL —
 S1 Generate 12: PASS|FAIL —
@@ -827,69 +835,106 @@ S8 Watch-only: PASS|FAIL —
 S9 Hide/clear: PASS|FAIL —
 S10 Full nav (incl Shamir): PASS|FAIL —
 S11 Invalid: PASS|FAIL —
-S12 Multisig golden+refuse: PASS|FAIL —
-S12b Demo N=3: PASS|FAIL —
-S13b Fees+bands: PASS|FAIL —
-S13c Balances: PASS|FAIL —
-S13d Lab bridge: PASS|FAIL —
-S14 Tools path: PASS|FAIL —
 S15 Seed QR: PASS|FAIL —
 S16 Send→Network: PASS|FAIL —
+
+### Tools
+S14 Path playground: PASS|FAIL —
 S17 Entropy pad: PASS|FAIL —
+S17b Pad practice seed + TOO LOW: PASS|FAIL —
 S18 Compare PP: PASS|FAIL —
 S18b Tools gen+compare: PASS|FAIL —
-S18c Clear secrets → TEST DATA compare: PASS|FAIL —
+S18c Clear secrets → TEST DATA: PASS|FAIL —
 S19 Descriptors: PASS|FAIL —
-S20 PSBT ok: PASS|FAIL —
-S21 PSBT refuse: PASS|FAIL —
+S20 PSBT inspect: PASS|FAIL —
+S20b PSBT teach fold + sample: PASS|FAIL —
+S21 PSBT refuse secrets: PASS|FAIL —
 S22 Desc explain: PASS|FAIL —
 S23 Shortcuts card: PASS|FAIL —
+
+### Redirects / Multisig / Network
 S24 #balance→Network CLI: PASS|FAIL —
 S25 Glossary threat/security: PASS|FAIL —
+S12 Multisig golden+refuse: PASS|FAIL —
+S12b Demo N=3: PASS|FAIL —
 S26 Multisig shell: PASS|FAIL —
 S27 Demo 24w: PASS|FAIL —
 S28 BIP67 off: PASS|FAIL —
 S29 Multisig clear: PASS|FAIL —
 S30 Copy P2SH: PASS|FAIL —
 S31 Multisig nav: PASS|FAIL —
+S13b Fees+bands: PASS|FAIL —
+S13c Balances (never silent 0): PASS|FAIL —
+S13d Lab bridge: PASS|FAIL —
 S32 Network shell: PASS|FAIL —
 S33 No ack: PASS|FAIL —
 S34 Empty fetch: PASS|FAIL —
 S35 Network→Tools: PASS|FAIL —
+
+### Chrome (aria-current = NEEDS-DOM if scrape-only)
 S36 Nav labels (6 incl Shamir): PASS|FAIL —
 S37 CSP isolation: PASS|FAIL —
-S38 Multisig current: PASS|FAIL —
-S39 Network current: PASS|FAIL —
-S39b Shamir current: PASS|FAIL —
-S40 Host branding: PASS|FAIL —
-S41 Teach On + step rail: PASS|FAIL —
-S42 Teach Off: PASS|FAIL —
-S43 Help tip: PASS|FAIL —
-S44 Step rail jump: PASS|FAIL —
-S45 Multisig rail + BIP67 tip: PASS|FAIL —
-S46 Checklist folded: PASS|FAIL —
-S47 Network rail + leak: PASS|FAIL —
-S48 Teach persists: PASS|FAIL —
+S38 Multisig aria-current: PASS|FAIL|NEEDS-DOM —
+S39 Network aria-current: PASS|FAIL|NEEDS-DOM —
+S39b Shamir aria-current: PASS|FAIL|NEEDS-DOM —
+S40 Host branding (sidebar version only): PASS|FAIL —
+
+### Help / Extra help (no step rails)
+S41 Extra help On + no Lab rail: PASS|FAIL —
+S42 Extra help Off: PASS|FAIL —
+S43 Help tip Esc: PASS|FAIL —
+S44 First-hour Go + return dock: PASS|FAIL —
+S44b Tools: no mid-page rails: PASS|FAIL —
+S45 Multisig Extra help + BIP67 tip: PASS|FAIL —
+S46 Checklist folded + vault/replace tips: PASS|FAIL —
+S47 Network Extra help + leak: PASS|FAIL —
+S48 Extra help persists: PASS|FAIL —
 S48b Still 6-nav: PASS|FAIL —
+
+### Glossary
 S49 Glossary panel: PASS|FAIL —
 S50 Glossary search: PASS|FAIL —
 S51 Mnemonic glossary tip: PASS|FAIL —
 S52 BIP terms: PASS|FAIL —
+
+### Shamir / SLIP-39
 S53 Shamir shell: PASS|FAIL —
 S54 Shamir split 2-of-3: PASS|FAIL —
 S55 Shamir empty error: PASS|FAIL —
 S56 Shamir recombine: PASS|FAIL —
+S57 SLIP-39 shell: PASS|FAIL —
+S57b Shamir #shLinkSlip39 → SLIP-39: PASS|FAIL|NEEDS-DOM —
+S58 SLIP-39 2-of-3 match: PASS|FAIL —
+S59 Under-threshold: PASS|FAIL —
+S60 Wrong-pp demo: PASS|FAIL —
+S60b Manual wrong-pp mismatch: PASS|FAIL —
 
-Score: __ / 68 PASS   (count Playwright S-ids: S0,S0b,S0c + S1–S56 incl. S1b,S2b,S12b,S13b–d,S18b,S18c,S39b,S48b)
+### Learning levels
+S61 First hour checklist: PASS|FAIL —
+S62 Level chip: PASS|FAIL —
+S63 Guided quiz Q1–Q4: PASS|FAIL —
+S64 Three-splits tour: PASS|FAIL —
+S65 BIP-85 shell: PASS|FAIL —
+S66 Ops card: PASS|FAIL —
+S67 Mobile ~390px: PASS|FAIL|NEEDS-DOM —
+S68 Intermediate I1–I4: PASS|FAIL —
+S69 Advanced A1–A4: PASS|FAIL —
+S70 Mark I1 Multisig dock: PASS|FAIL —
+S71 Mark I4 Lab dock: PASS|FAIL —
+
+Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
+  Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).
 Blockers:
 UX / coherence notes (what confused a human learner):
+Extra help vs Teach: UI must say Extra help — FAIL if only “Teach:” remains without Extra help.
+Step rails: FAIL if any mid-page [data-step-rail] / *StepRail appears.
 ```
 
 ---
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (S0–S56 + human process flows) and the UI/copy/flow consistency prompt against Lab, Multisig, Shamir, Network. Return the Report template including Human coherence for every page plus ui_consistent / copy_aligned / flow_intuitive.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (**S0–S71** + human process flows) against Lab, Multisig, Shamir, SLIP-39, Network. UI label is **Extra help** (not Teach); **no mid-page step rails**. Return the Report template including Human coherence, score with stamped S-id denominator, and ui_consistent / copy_aligned / flow_intuitive.
 
 ---
 
@@ -897,7 +942,7 @@ UX / coherence notes (what confused a human learner):
 
 ```bash
 npm install && npx playwright install chromium
-npm run test:e2e              # local :4173  (67 tests)
+npm run test:e2e              # local :4173  (see stamped Playwright S-ids count in header)
 npm run test:e2e:live         # production
 ```
 
@@ -907,7 +952,9 @@ npm run test:e2e:live         # production
 | `e2e/lab.spec.ts` | S0–S25 Lab + Tools + nav tour |
 | `e2e/multisig.spec.ts` | S12–S31 Multisig |
 | `e2e/shamir.spec.ts` | S53–S56 Shamir |
+| `e2e/slip39.spec.ts` | S57–S60b SLIP-39 |
 | `e2e/network.spec.ts` | S13b–d, S32–S35 Network |
-| `e2e/site-chrome.spec.ts` | S36–S40 chrome |
-| `e2e/help-ux.spec.ts` | S41–S48b Teach / tips |
+| `e2e/site-chrome.spec.ts` | S36–S40 chrome (aria-current) |
+| `e2e/help-ux.spec.ts` | S41–S48b Extra help / tips (no rails) |
 | `e2e/glossary.spec.ts` | S49–S52 Glossary |
+| `e2e/learn.spec.ts` | S61–S71 learning levels + I1/I4 docks |
