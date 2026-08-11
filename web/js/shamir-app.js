@@ -391,7 +391,7 @@
         hour.h6 = true;
         localStorage.setItem("bip39lab.firstHour", JSON.stringify(hour));
       }
-      sessionStorage.setItem("bip39lab.quizReturn", "1");
+      sessionStorage.setItem("bip39lab.quizReturn", "quiz");
       sessionStorage.setItem("bip39lab.quizActive", "q2");
       sessionStorage.setItem("bip39lab.quizJustMarked", "q2");
     } catch (e2) {

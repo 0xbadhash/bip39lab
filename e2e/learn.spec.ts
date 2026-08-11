@@ -112,6 +112,17 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#quizBadge-i4")).toContainText(/Passed/i);
   });
 
+  test("S70 intermediate I1 external dock", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("intermediate");
+    await page.locator('[data-quiz-go="i1"]').click();
+    await expect(page).toHaveURL(/multisig\.html/);
+    await expect(page.locator("#learnReturnDockMs")).toBeVisible();
+    await expect(page.locator("#learnReturnDockMs a")).toContainText(/Intermediate/i);
+    await page.locator("#learnReturnDockMs a").click();
+    await expect(page).toHaveURL(/index\.html|\/$/);
+    await expect(page.locator("#cardIntQuiz")).toBeInViewport();
+  });
+
   test("S69 advanced A1–A4 self-check", async ({ page }) => {
     await page.locator("#learnLevel").selectOption("advanced");
     await expect(page.locator("#cardAdvQuiz")).toBeVisible();

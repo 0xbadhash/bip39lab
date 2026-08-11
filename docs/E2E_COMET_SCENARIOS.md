@@ -770,6 +770,9 @@ Advanced: Knots / seed-scan ops card.
 Level Intermediate: `#cardIntQuiz` status board; Mark I1 → Passed;
 I4 Go try opens PSBT + amber “Back to Intermediate quiz” dock; Mark I4.
 
+### S70 — Intermediate I1 Multisig return dock
+I1 Go try → multisig.html shows Intermediate return dock; Back → Lab Intermediate quiz.
+
 ### S69 — Advanced A1–A4 self-check
 Level Advanced: `#cardAdvQuiz`; A4 Go try → orientation + Advanced return dock;
 Mark A1–A4 → summary 4 / 4.

@@ -93,13 +93,15 @@
         bandsEl.innerHTML = items
           .map(function (pair) {
             const sats = api.exampleFeeSats(pair[1], vb);
+            const satsLabel = sats == null ? "—" : String(sats);
+            // Numeric fee bands only (parseFeesJson already Number()-validated)
             return (
               '<div class="fee-band"><strong>' +
               pair[1] +
               "</strong><span>" +
               pair[0] +
               " sat/vB</span><span>~" +
-              sats +
+              satsLabel +
               " sats @ " +
               vb +
               " vB</span></div>"
@@ -110,18 +112,23 @@
 
       const ex = api.exampleFeeSats(b.halfHourFee, vb);
       const exFast = api.exampleFeeSats(b.fastestFee, vb);
-      $("feeExample").textContent =
-        "Example costs for ~" +
-        vb +
-        " vB: halfHour ≈ " +
-        ex +
-        " sats; fastest ≈ " +
-        exFast +
-        " sats (" +
-        api.satsToBtc(ex) +
-        " / " +
-        api.satsToBtc(exFast) +
-        " BTC). Estimates only — real txs vary.";
+      if (ex == null || exFast == null) {
+        $("feeExample").textContent =
+          "Example costs unavailable (invalid fee numbers). Estimates only — real txs vary.";
+      } else {
+        $("feeExample").textContent =
+          "Example costs for ~" +
+          vb +
+          " vB: halfHour ≈ " +
+          ex +
+          " sats; fastest ≈ " +
+          exFast +
+          " sats (" +
+          api.satsToBtc(ex) +
+          " / " +
+          api.satsToBtc(exFast) +
+          " BTC). Estimates only — real txs vary.";
+      }
 
       const trafficLines = [];
       if (tip.status === "ok") trafficLines.push("Tip block height: " + tip.height);

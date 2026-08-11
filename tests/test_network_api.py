@@ -48,6 +48,9 @@ console.log(JSON.stringify({
   list: list,
   listJunk: listJunk,
   ex: api.exampleFeeSats(5, 140),
+  exBad: api.exampleFeeSats(NaN, 140),
+  exNeg: api.exampleFeeSats(-1, 140),
+  btcBad: api.satsToBtc(null),
 }));
 """
     r = subprocess.run(
@@ -67,6 +70,9 @@ console.log(JSON.stringify({
     ]
     assert data["listJunk"] == []
     assert data["ex"] == 700
+    assert data["exBad"] is None
+    assert data["exNeg"] is None
+    assert data["btcBad"] == "—"
 
 
 def test_network_static_and_lab_csp():

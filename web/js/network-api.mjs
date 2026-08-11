@@ -93,11 +93,17 @@ export function parseFeesJson(data) {
 }
 
 export function exampleFeeSats(satPerVb, vbytes) {
-  return Math.round(Number(satPerVb) * Number(vbytes));
+  const a = Number(satPerVb);
+  const b = Number(vbytes);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || a < 0 || b < 0) return null;
+  return Math.round(a * b);
 }
 
 export function satsToBtc(sats) {
-  return (Number(sats) / 1e8).toFixed(8);
+  if (sats == null || sats === "") return "—";
+  const n = Number(sats);
+  if (!Number.isFinite(n)) return "—";
+  return (n / 1e8).toFixed(8);
 }
 
 /**

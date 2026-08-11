@@ -209,6 +209,11 @@
   /** @type {"hour"|"quiz"|"intquiz"|"advquiz"|null} */
   var learnReturnMode = null;
 
+  /** Truthy quiz-return markers: legacy "1" + mode strings used after I/A paths. */
+  function isQuizReturnValue(v) {
+    return v === "1" || v === "quiz" || v === "intquiz" || v === "advquiz";
+  }
+
   function setBodyReturnOpen(on) {
     try {
       document.body.classList.toggle("learn-return-open", !!on);
@@ -487,7 +492,11 @@
     } else {
       try {
         // Resume dock only if still mid-step (not when sitting on checklist)
-        if (sessionStorage.getItem(HOUR_RETURN_KEY) === "1" && sessionStorage.getItem(QUIZ_RETURN_KEY) !== "1") {
+        // Any quiz-return marker (legacy "1" or quiz|intquiz|advquiz) suppresses hour dock
+        if (
+          sessionStorage.getItem(HOUR_RETURN_KEY) === "1" &&
+          !isQuizReturnValue(sessionStorage.getItem(QUIZ_RETURN_KEY))
+        ) {
           showLearnReturn("hour");
         }
       } catch (e3) {

@@ -963,7 +963,7 @@
         hour.h6 = true;
         localStorage.setItem("bip39lab.firstHour", JSON.stringify(hour));
       }
-      sessionStorage.setItem("bip39lab.quizReturn", "1");
+      sessionStorage.setItem("bip39lab.quizReturn", "quiz");
       sessionStorage.setItem("bip39lab.quizActive", q);
     } catch (e) {
       /* ignore */
@@ -1034,13 +1034,25 @@
     const quiz = loadQuizState();
     let quizReturn = false;
     try {
+      var retQ = sessionStorage.getItem("bip39lab.quizReturn") || "";
+      // Accept legacy "1" and current mode strings from LearnLevels
       quizReturn =
-        sessionStorage.getItem("bip39lab.quizReturn") === "1" ||
+        retQ === "1" ||
+        retQ === "quiz" ||
         /from=quiz/.test(location.search || "");
     } catch (e) {
       quizReturn = false;
     }
-    const showDock = quizReturn || q3Ready || q4Ready || n > 0;
+    // Show dock for guided quiz return or when Q3/Q4 mark is ready — not for every pad roll
+    // (avoids forcing "Back to Guided quiz" on Intermediate/Advanced Tools use)
+    let activeQ = "";
+    try {
+      activeQ = sessionStorage.getItem("bip39lab.quizActive") || "";
+    } catch (eAct) {
+      activeQ = "";
+    }
+    const entQuizActive = activeQ === "q3" || activeQ === "q4";
+    const showDock = quizReturn || q3Ready || q4Ready || entQuizActive;
     if (dock) {
       // Ensure dock is on <body> for true viewport fixed bottom
       if (dock.parentNode !== document.body) {
@@ -1411,7 +1423,13 @@
       } catch (eA) {
         active = "";
       }
-      if (dock && (active === "q1" || sessionStorage.getItem("bip39lab.quizReturn") === "1")) {
+      var retQ1 = "";
+      try {
+        retQ1 = sessionStorage.getItem("bip39lab.quizReturn") || "";
+      } catch (eR) {
+        retQ1 = "";
+      }
+      if (dock && (active === "q1" || retQ1 === "1" || retQ1 === "quiz")) {
         if (dock.parentNode !== document.body) {
           try {
             document.body.appendChild(dock);
