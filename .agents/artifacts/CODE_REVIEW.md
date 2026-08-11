@@ -1,29 +1,49 @@
 # CODE-REVIEW
 
-**Scope:** Intermediate I1–I4 + Advanced A1–A4 learning paths  
-**Base…head:** uncommitted working tree on master (post v0.15.1)  
-**Reviewer:** execute_dev closeout  
+**Marker:** CODE-REVIEW  
+**Command:** `/code_review` after Intermediate I1–I4 + Advanced A1–A4  
+**Base:** `e82fabe` · **Head:** `dc17369`  
+**Date:** 2026-08-11  
 
-## Summary
-Adds Intermediate and Advanced self-check shells parallel to Beginner Guided quiz. Reuses dock/return/localStorage patterns. External pages get intquiz return docks. Playwright S68/S69 + Comet documented. Unit tests TDD red→green.
+## Scope (review_scope)
+
+- Non-prose code ship: `web/index.html`, `web/js/learn-levels.js`, multisig/shamir/slip39 dock hooks, e2e/unit/docs  
+- `skip_heavy_review=false`  
+
+## Secrets
+
+```text
+python3 scripts/check_secrets_diff.py --base e82fabe --head HEAD → clean
+```
 
 ## Findings
 
-### P0
-None.
+### P0 (blockers)
+**None.**
 
-### P1
-None blocking.
+### Accepted
+- N/A (no P0/P1 blockers)
 
-### Nits / follow-ups
-- Optional: dock “Mark I1 passed & return” on Multisig (today: Back + Mark on Lab only) — same as first-hour Network style.  
-- CSP on Multisig/SLIP-39 remains `script-src 'self'` (dock logic in app JS, not inline).  
+### Rejected
+- N/A
 
-## Secrets scan
-No new secret material; quiz keys are progress booleans only.
+### Follow-ups (not blocking)
+1. Optional Mark I1/I2/I3 on external docks (today: Back + Mark on Lab) — same as Network first-hour style.  
+2. BIP-85 still idea-only (intentional / out of scope).  
 
-## Scope governor
-In-scope: learn path HTML/JS, e2e/Comet, external return docks for intquiz. No wallet/signing changes.
+## Smoke / tests run
+
+| Check | Result |
+|-------|--------|
+| pytest `tests/test_int_adv_paths.py` | 4 passed (TDD red→green) |
+| e2e `learn.spec.ts` S68/S69 | passed |
+| product_smoke unit+e2e | passed |
+| check_web_e2e | ok |
 
 ## Verdict
-**Accept** — p0=0. Ready for next skill after ready_for_review.
+
+**p0=0** · Accept for `/pr_review --validate`.
+
+```text
+✅ CODE-REVIEW DONE  p0=0  follow_ups=2
+```

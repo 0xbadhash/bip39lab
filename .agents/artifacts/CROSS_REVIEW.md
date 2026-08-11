@@ -1,32 +1,31 @@
 # CROSS-REVIEW
 
-**Base:** `v0.15.0` … **Head:** `HEAD`  
+**Base:** `e82fabe` … **Head:** `dc17369`  
 **Secrets:** clean  
 
 ## Blocker count: 0
 
 ### Security Guru — none
-- localStorage quiz/hour prefs only  
-- Shamir/Network CSP offline for secrets unchanged  
+- Progress keys `bip39lab.intQuiz` / `bip39lab.advQuiz` are booleans only  
+- No mnemonic retention; external intquiz docks are return links only  
+- Multisig/SLIP-39 CSP unchanged (`script-src 'self'`; dock logic in app JS)
 
 ### Maintainability Expert — none (blockers)
-**Obsolete (scoped):**  
-| Item | Tier | Conf | Evidence |
-|------|------|------|----------|
-| Mid-page hour/quiz back bars | A | 0.95 | Removed Network/Shamir; body dock only |
-| Extra brand `</div>` shell break | A | 0.99 | Fixed shamir/multisig/network/slip39 |
+- Int/Adv quizzes reuse Guided quiz patterns (refreshPathQuiz, dock modes)  
+- Slight growth in learn-levels.js expected for path parity  
 
 ### Domain Specialist — none
-- Quiz self-check + dock mark is intentional classroom design  
-- Q2 fail+success evidence still educational  
+- I1–I4 teach keys ≠ shares ≠ share-words + PSBT inspect-only  
+- A1–A4 teach ops mind offline (BIP-85 idea, watch-only, Knots, is-not)  
+- Self-graded design intentional  
 
 ## §9 Intentional oddities
-1. Self-graded quiz.  
-2. Math.random entropy pad.  
+1. Self-graded Intermediate/Advanced quizzes.  
+2. BIP-85 educational shell not full derivation.  
 3. Soft level gates.  
-4. Dual localStorage + `?marked=` for cross-page Q2 return.  
+4. External pages: Back dock + Mark on Lab (not auto-pass).  
 
 ```text
-✅ CROSS-REVIEW DONE  blockers=0  obsolete_tier_a=2
+✅ CROSS-REVIEW DONE  blockers=0
 NEXT_SKILL=/behavior_validator
 ```
