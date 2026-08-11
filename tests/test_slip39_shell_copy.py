@@ -49,8 +49,13 @@ def test_shamir_links_to_slip39_lab():
 
 def test_slip39_keeps_six_nav():
     html = (ROOT / "web/slip39.html").read_text(encoding="utf-8")
-    assert html.count('class="nav-item"') == 6
+    # class may be "nav-item" or "nav-item active" (Shamir parent cue on deep-link page)
+    import re
+
+    nav_items = re.findall(r'class="nav-item(?:\s+active)?"', html)
+    assert len(nav_items) == 6
     assert 'data-nav="slip39"' not in html  # deep-link only, no 7th top-level nav
+    assert 'data-nav="shamir"' in html and "active" in html
 
 
 def test_slip39_bundle_present():

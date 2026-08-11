@@ -64,7 +64,7 @@ def preflight_rpc(
     """Require RPC auth + chain info. Fail closed while IBD unless allow_ibd."""
     try:
         info = rpc_call("getblockchaininfo", [])
-    except Exception as e:  # noqa: BLE001 — surface transport as SeedScanError
+    except Exception as e:
         raise SeedScanError(f"RPC preflight failed: {e}") from e
     if not isinstance(info, dict):
         raise SeedScanError("getblockchaininfo returned non-object")
@@ -79,11 +79,11 @@ def preflight_rpc(
             "scantxoutset is incomplete/slow; re-run when synced "
             "(or pass allow_ibd=True for experimental ops only)."
         )
-    # Clear stuck scans if any (best-effort)
+    # Clear stuck scans if any (best-effort; ignore abort failures)
     try:
         rpc_call("scantxoutset", ["abort"])
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception as exc:  # noqa: BLE001
+        _ = exc  # abort is optional preflight hygiene
     return info
 
 

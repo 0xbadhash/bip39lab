@@ -29,17 +29,19 @@ Housekeeping after feature-complete SLIP-39 A–D; no new product surface.
 
 ## Traceability
 
-| AC | Evidence |
-|----|----------|
-| Stamp drift fixed | ROADMAP Current focus v0.13.10 |
-| Comet pass documented | E2E_COMET human pass note |
-| No 7th nav | S57 e2e + teach copy |
-| Stash noise cleared | `git stash list` empty of harness WIP |
+| AC | Test / smoke |
+|----|----------------|
+| AC-1 ROADMAP stamp matches release line v0.13.10 | docs review `ROADMAP.md` Current focus; README already stamped |
+| AC-2 Comet human pass noted for SLIP-39 | `docs/E2E_COMET_SCENARIOS.md` 2026-08-11 note; Playwright S57–S60b |
+| AC-3 Sidebar stays 6 items; no slip39 nav | `e2e/slip39.spec.ts` S57 `toHaveCount(6)` + no `data-nav="slip39"` |
+| AC-4 Deep-link parent cue on Shamir | S57 Shamir `active` class; live `web/slip39.html` |
+| AC-5 check_web_e2e still green | `python3 scripts/check_web_e2e.py --root .` smoke |
 
 ## Threat notes
 
 - **secrets** — no secrets in docs/UI copy.  
-- **xss** — text-only HTML copy change.  
+- **xss** — text-only HTML copy change; no user HTML injection.  
+- **supply-chain** — no dependency changes.  
 - No CSP change; offline SLIP-39 retained.
 
 ## Red-proof
@@ -52,9 +54,10 @@ green_cmd: true
 
 ## Evidence pack
 
-- **hard_gates** / CODE-REVIEW  
-- **smoke** / check_web_e2e  
-- **pytest** N/A (no py change)  
+- **hard_gates** — CODE-REVIEW marker, chore waiver, secrets clean, threat tags  
+- **smoke** — `python3 scripts/check_web_e2e.py --root .`  
+- **pytest** — suite via product_smoke / compliance (no py delta this range)  
+- **validate** — secrets scan on `20e34bb...HEAD`
 
 ## Things that look bad but are actually fine
 
