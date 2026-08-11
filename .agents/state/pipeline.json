@@ -1,7 +1,7 @@
 {
   "card_id": null,
-  "phase": "ready_for_review",
-  "score": 96.0,
+  "phase": "shipped",
+  "score": 100.0,
   "spec_id": ".agents/specs/2026-08-11-intermediate-advanced-paths.md",
   "task": "Intermediate I1-I4 + Advanced A1-A4",
   "waiver": "chore"
