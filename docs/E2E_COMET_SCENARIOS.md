@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S71 · Playwright 90 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
 
-`Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 89`
+`Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-12 · Scenarios: S0–S71 · Playwright S-ids: 90`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,7 +76,7 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **89** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **90** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
 **Comet/Perplexity score sheet:** **S0–S71** (scenario IDs below; Playwright titles map 1:1 where listed).
 
@@ -647,6 +647,9 @@ Network: `mempool.space` and/or `'self'`, not offline-only.
 ### S40 — Host branding
 Version + host branding in left sidebar only (no bottom footer version strip).
 
+### S40b — Classroom panel on every shell
+On Lab, Multisig, Shamir, Network, SLIP-39: sidebar **Classroom** (`#sidebarPrefs`) with Level select `#learnLevel` and Reset `#btnResetClassroom` visible.
+
 ---
 
 ## Help UX (Extra help + ⓘ) — no mid-page step rails
@@ -910,6 +913,7 @@ S38 Multisig aria-current: PASS|FAIL|NEEDS-DOM —
 S39 Network aria-current: PASS|FAIL|NEEDS-DOM —
 S39b Shamir aria-current: PASS|FAIL|NEEDS-DOM —
 S40 Host branding (sidebar version only): PASS|FAIL —
+S40b Classroom panel every shell: PASS|FAIL —
 
 ### Help / Extra help (no step rails)
 S41 Extra help On + no Lab rail: PASS|FAIL —

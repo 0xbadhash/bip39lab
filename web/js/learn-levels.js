@@ -209,6 +209,20 @@
   /** @type {"hour"|"quiz"|"intquiz"|"advquiz"|null} */
   var learnReturnMode = null;
 
+  /**
+   * Lab index only (`/` or index.html). On Multisig/Shamir/Network/SLIP-39,
+   * ?from=intquiz|quiz|firsthour means “demo visit” — those pages own the dock.
+   * Lab-index handlers must not strip the query before page apps run (S70).
+   */
+  function isLabIndexPage() {
+    try {
+      var base = (location.pathname || "").split("/").pop() || "";
+      return base === "" || base === "index.html";
+    } catch (eP) {
+      return true;
+    }
+  }
+
   /** Truthy quiz-return markers: legacy "1" + mode strings used after I/A paths. */
   function isQuizReturnValue(v) {
     return v === "1" || v === "quiz" || v === "intquiz" || v === "advquiz";
@@ -511,8 +525,13 @@
           if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 120);
       });
-    // Returning from network.html?from=firsthour — open checklist (dock not needed on return)
-    if (typeof location !== "undefined" && /from=firsthour/.test(location.search || "")) {
+    // Returning to Lab from network.html?from=firsthour — open checklist
+    // (only on Lab index; Network page uses its own dock)
+    if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=firsthour/.test(location.search || "")
+    ) {
       try {
         sessionStorage.removeItem(HOUR_RETURN_KEY);
       } catch (e) {
@@ -1233,8 +1252,12 @@
           if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 120);
       });
-    // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
-    if (typeof location !== "undefined" && /from=intquiz/.test(location.search || "")) {
+      // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
+    if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=intquiz/.test(location.search || "")
+    ) {
       try {
         var mI = /[?&]marked=(i[1-4])/.exec(location.search || "");
         if (mI && mI[1]) {
@@ -1268,7 +1291,11 @@
       } catch (eIh) {
         /* ignore */
       }
-    } else if (typeof location !== "undefined" && /from=advquiz/.test(location.search || "")) {
+    } else if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=advquiz/.test(location.search || "")
+    ) {
       try {
         var mA = /[?&]marked=(a[1-4])/.exec(location.search || "");
         if (mA && mA[1]) {
@@ -1302,7 +1329,11 @@
       } catch (eAh) {
         /* ignore */
       }
-    } else if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
+    } else if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=quiz/.test(location.search || "")
+    ) {
       // Shamir (or other page) may pass ?marked=q2 so we never lose the pass on return
       try {
         var m = /[?&]marked=(q[1-4])/.exec(location.search || "");

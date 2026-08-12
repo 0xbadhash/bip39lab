@@ -36,3 +36,11 @@ def test_shamir_mark_q2_sets_quiz_mode_string():
     js = _read("web/js/shamir-app.js")
     assert 'setItem("bip39lab.quizReturn", "quiz")' in js
     assert 'retKey === "1" || retKey === "quiz"' in js
+
+
+def test_lab_index_guards_from_query_handlers():
+    """from=intquiz on Multisig must not be stripped by Lab return handlers (S70)."""
+    js = _read("web/js/learn-levels.js")
+    assert "function isLabIndexPage" in js
+    assert "isLabIndexPage()" in js
+    assert "from=intquiz" in js

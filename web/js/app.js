@@ -86,9 +86,11 @@
     }
     const tier = passphraseStrengthTier(est);
     const label = tier === "strong" ? "stronger" : tier;
+    // Avoid "~0 bits" for single-char / no diversity (still weak)
+    const shown = est < 0.5 ? "<1" : String(Math.round(est));
     return (
       "~" +
-      Math.round(est) +
+      shown +
       " bits · " +
       label +
       " (estimate only — not a security guarantee)"
@@ -118,6 +120,12 @@
       "Empty — no extra secret (not the 512-bit PBKDF2 seed size)",
       "empty"
     );
+    const bar = $("ppStrengthBar");
+    if (bar) {
+      bar.style.width = "0%";
+      bar.setAttribute("aria-valuenow", "0");
+      bar.className = "pp-strength-bar-fill pp-tier-empty";
+    }
   }
 
   function getDeriveOptions() {
