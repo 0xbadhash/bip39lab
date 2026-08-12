@@ -4,10 +4,10 @@ from __future__ import annotations
 import pytest
 
 pytest.importorskip("hypothesis")
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
-from bip39lab import bip39
-from bip39lab import wordlist
+from bip39lab import bip39, wordlist
 
 
 @given(st.text(max_size=300))
