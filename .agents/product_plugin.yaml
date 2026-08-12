@@ -141,3 +141,9 @@ property_tests:
   modules:
     - bip39lab/bip39
     - bip39lab/wordlist
+
+smoke_ci:
+  - name: unit
+    cmd: ["python", "-m", "pytest", "-q", "--tb=line"]
+    cwd: .
+
