@@ -134,3 +134,10 @@ ship_policy:
   allow_spec_waiver_only_for: [hotfix, chore, docs-only, prose-only]
 
 product_skills: []
+
+# J14 — BIP-39 mnemonic parse/validate (crypto messy input)
+property_tests:
+  enabled: true
+  modules:
+    - bip39lab/bip39
+    - bip39lab/wordlist
