@@ -143,7 +143,10 @@ property_tests:
     - bip39lab/wordlist
 
 smoke_ci:
-  - name: unit
-    cmd: ["python", "-m", "pytest", "-q", "--tb=line"]
+  - name: hardcodes
+    cmd: ["python", "scripts/check_hardcodes.py"]
+    cwd: .
+  - name: unit-property
+    cmd: ["python", "-m", "pytest", "tests/test_property_bip39.py", "tests/test_bip39_vectors.py", "-q", "--tb=line"]
     cwd: .
 
