@@ -48,6 +48,12 @@ Patch ship bundling QA-201 S70 fix, S67 table scroll, chip parity, Comet SoT (Ex
 |------|--------|
 | .github/workflows/* | CI-only; smoke_ci path |
 | config/ | untracked local; not in ship |
+| scripts/ops_dashboard.py | harness portfolio tooling; not product runtime surface for this ship |
+| scripts/product_plugin.py | harness load path; exercised via product_smoke / hard_gates |
+| scripts/product_smoke.py | meta runner; exercised as release smoke |
+| scripts/hard_gates.py | harness gate; exercised by pr_validator |
+| scripts/check_property_tests.py | harness; optional property_tests |
+| scripts/zap_baseline.sh | security CI helper; not unit-tested in-product |
 
 ## Threat notes
 - **secrets** — progress/localStorage only  
