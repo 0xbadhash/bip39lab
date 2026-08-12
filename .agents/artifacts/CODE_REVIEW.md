@@ -1,32 +1,30 @@
 # CODE-REVIEW
 
 **Marker:** CODE-REVIEW  
-**Command:** `/code_review`  
-**Base:** `v0.16.0` · **Head:** `HEAD` (post-0.16.0 patch stack)  
-**Date:** 2026-08-11  
+**Base:** `v0.16.1` · **Head:** `HEAD`  
+**Date:** 2026-08-12  
 
 ## Scope
-Non-prose: Multisig/Shamir/SLIP-39 docks, learn-levels path marks, glossary teach, network fee guards, stamp_comet_header, e2e S70/S71.
+Non-prose: learn-levels isLabIndexPage (S70), CSS mobile table, shell chips, passphrase strength, Comet docs, CI workflows.
 
 ## Secrets
 ```text
-check_secrets_diff.py --base v0.16.0 --head HEAD → clean
+check_secrets_diff --base v0.16.1 --head HEAD → clean (expected)
 ```
 
 ## Findings
 ### P0
 None.
 
-### Follow-ups (not blocking)
-1. Optional: shared `markPathQuizAndReturn` helper module for Multisig/Shamir/SLIP-39 (duplicated small handlers).  
-2. Advanced external pages none — A* stay Lab-only.  
+### Follow-ups
+1. Custom Seed QR modal instead of native confirm() (P3 from Comet).  
+2. Property tests for passphrase estimate edge cases (optional).  
 
-## Smoke / tests
-- e2e S70/S71 green (prior session)  
-- product_smoke + check_web_e2e at release  
+## Smoke
+pytest + learn e2e S67/S70 green in prior session; re-run at release.
 
 ## Verdict
-**p0=0** · Accept for `/pr_review --validate`.
+**p0=0**
 
 ```text
 ✅ CODE-REVIEW DONE  p0=0  follow_ups=2

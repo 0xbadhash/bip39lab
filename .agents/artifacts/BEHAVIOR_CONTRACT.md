@@ -1,11 +1,25 @@
-# Behavior contract — v0.15.1 classroom dock + quiz mark polish
+# Behavior contract — v0.16.2 polish ship
 
-| ID | Clause |
-|----|--------|
-| B1 | Shamir page loads with sidebar + Generate/Split controls usable |
-| B2 | Mark Q2 on bottom dock returns to Lab quiz with Q2 Passed |
-| B3 | Mark Q3/Q4 on Lab bottom dock returns to quiz with Passed |
-| B4 | Mark Q1 on dock after passphrase compare works like other Qs |
-| B5 | Network has no top Back bar; bottom dock only when from first hour |
-| B6 | Set Beginner marks step 8 and shows what’s-next (quiz path) |
-| B7 | All four quiz Passed auto-marks first-hour step 6 |
+- **Product:** bip39lab offline BIP-39 lab  
+- **Target:** https://bip39.catalyxt.xyz/ and local Playwright  
+- **Setup:** static `web/` · no credentials  
+
+## User tasks
+
+1. As Intermediate learner, I can Go try I1 Multisig and see amber **Mark I1 passed & return**.  
+   - **Expect:** dock visible with `?from=intquiz`  
+   - **Anti-cheat:** dock not permanently hidden  
+
+2. As mobile user (~390px), I can Generate and read addresses without the whole page scrolling sideways.  
+   - **Expect:** `#tableScroll` contains overflow  
+   - **Anti-cheat:** document scrollWidth ≈ viewport  
+
+3. As a user on Shamir/SLIP-39/Network, I see status chips (offline or network opt-in + browser online).  
+
+4. As a Comet agent, I can open live `/docs/E2E_COMET_SCENARIOS.md` with Product ≥ 0.16.1 and Extra help language.  
+
+## Must not
+
+- Accept WIF/xprv on Multisig  
+- Silent combine under-threshold Shamir/SLIP-39  
+- Treat Network mnemonic paste as address  

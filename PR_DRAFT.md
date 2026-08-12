@@ -1,62 +1,63 @@
-# PR Draft: v0.16.1 Multisig teach + quiz dock Mark parity + Comet stamp
+# PR Draft: v0.16.2 post-Comet polish + S70 dock + S67 mobile
 
 **Spec:** `.agents/specs/2026-08-11-intermediate-advanced-paths.md`  
 **Spec waiver:** chore  
 
 ## What Problem This Solves
-After v0.16.0 Intermediate/Advanced paths: Comet header lagged S-ids; Multisig teach copy was jargon-heavy; I1–I3 only had Back without Mark-on-dock; QA found quizReturn key drift and fee edge cases.
+After v0.16.1 live Comet (89/90): Multisig I1 dock broke when Classroom loaded `learn-levels` on shell pages; mobile address table overflowed the page; status chips inconsistent; Comet doc/S-id drift; passphrase strength UX; CI daytime green path.
 
 ## Why This Change Was Made
-Patch release bundling post-ship QA fixes + Multisig classroom clarity + site-wide Mark passed & return on Intermediate docks + auto-stamp Comet blurb.
+Patch ship bundling QA-201 S70 fix, S67 table scroll, chip parity, Comet SoT (Extra help, S0–S71, live `/docs/`), passphrase strength, and CI smoke helpers without changing crypto safety model.
 
 ## User Impact
-- Multisig checklist: vault-verify + cosigner-replace ⓘ; zpub vs compressed pubkey teach  
-- Dock: **Mark I1/I2/I3** on Multisig/Shamir/SLIP-39; **Mark I4/A*** on Lab dock  
-- Comet header auto-stamped S0–S71 from VERSION + Playwright  
-- quizReturn accepts `1|quiz|intquiz|advquiz`; safer fee math; entropy dock less noisy  
+- I1 Multisig **Mark passed & return** dock works again  
+- ~390px: address table scrolls inside `#tableScroll` (no page sideways overflow)  
+- Offline / Network / airgap chips on Shamir, SLIP-39, Network  
+- Live Comet URL: `/docs/E2E_COMET_SCENARIOS.md` + stale-copy banner  
+- Passphrase strength tiers + bar; clearer empty copy  
 
 ## Evidence pack
 - hard_gates / product_smoke / check_web_e2e / pytest  
 - CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT  
+- Live Comet 89/90 (S67 PARTIAL → fixed)  
 
 ## Evidence
 | Check | Result |
 |-------|--------|
-| secrets v0.16.0…HEAD | clean |
-| hard_gates | (at pr_review) |
-| pytest + e2e | S70/S71 + suite |
+| secrets v0.16.1…HEAD | (pr_review) |
+| hard_gates | (pr_review) |
+| smoke unit+e2e | (release) |
 
 ## Traceability
 | AC | Test |
 |----|------|
-| Multisig teach BIP67/vault/replace/zpub | e2e S46, S12b · test_multisig |
-| Mark I1 dock | e2e S70 |
-| Mark I4 Lab dock | e2e S71 |
-| Comet stamp S0–Smax | stamp_comet_header · test_stamp_comet_header |
-| quizReturn keys | test_quiz_return_keys |
-| Fee guards | test_network_api |
+| S70 Multisig I1 dock | e2e learn S70 · isLabIndexPage |
+| S67 mobile table | e2e learn S67 metrics |
+| S40b Classroom shells | e2e site-chrome S40b |
+| Comet S-ids | check_web_e2e · stamp_comet_header |
+| Passphrase strength | S3 · test_entropy_ui |
 
 ## Red-proof / TDD
 | Phase | Command |
 |-------|---------|
-| red_cmd | pytest tests/test_stamp_comet_header.py tests/test_quiz_return_keys.py (added first, then green) |
-| green_cmd | `.venv/bin/python -m pytest -q` + `npx playwright test e2e/learn.spec.ts -g "S70\|S71"` |
+| red_cmd | S70 failed dock hidden; check_web_e2e missing S40b |
+| green_cmd | `npx playwright test e2e/learn.spec.ts -g S70` · `check_web_e2e` · `pytest -q` |
 
 ## Untested paths
 | Path | Reason |
 |------|--------|
-| Live Multisig after deploy | needs push/deploy |
-| web/js/glossary.js | covered by e2e S46/S12b tip panels + terms present in HTML data-term; static TERMS load only |
+| .github/workflows/* | CI-only; smoke_ci path |
+| config/ | untracked local; not in ship |
 
 ## Threat notes
-- **secrets** — progress localStorage only  
-- **xss** — glossary escapeHtml on tips  
-- **integrity** — educational self-check  
+- **secrets** — progress/localStorage only  
+- **xss** — static teach; glossary escapeHtml  
+- **csp** — offline shells connect-src none  
 
 ## Things that look bad but are actually fine
-1. Self-graded Intermediate marks (no auto crypto pass).  
-2. Cosigner replace = new vault + move, not edit-in-place (Bitcoin).  
-3. zpub shown but not used in M-of-N script (intentional teach).  
+1. Self-graded Intermediate Mark buttons.  
+2. Network “Network opt-in” chip (not Offline crypto).  
+3. Table may scroll horizontally inside container on mobile.  
 4. Soft level gates.  
 
 ## Cross-review

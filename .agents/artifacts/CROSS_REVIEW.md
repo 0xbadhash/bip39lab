@@ -1,25 +1,33 @@
 # CROSS-REVIEW
 
-**Base:** `v0.16.0` … **Head:** `HEAD`  
-**Secrets:** clean  
+**Marker:** CROSS-REVIEW  
+**Base:** `v0.16.1` … **Head:** `HEAD`  
 
 ## Blocker count: 0
 
 ### Security Guru — none
-- Mark buttons write only quiz progress booleans  
-- Multisig still public-keys-only CSP  
+- isLabIndexPage fix restores dock without weakening CSP  
+- Shell chips are cosmetic status only  
 
 ### Maintainability Expert — none (blockers)
-- stamp_comet_header closes header drift class of bugs  
+**Obsolete (scoped):**
+| Item | Tier | Conf | Evidence |
+|------|------|------|----------|
+| Mid-page step rails | A | 0.95 | Already removed; S44b asserts absence |
+| Stale Comet “Teach” / `/68` | A | 0.99 | Remediation table + stamp; fixed in doc |
+
+Whole-repo cruft → `/sweep`.
 
 ### Domain Specialist — none
-- Cosigner replace / vault-verify teach matches Bitcoin multisig reality  
+- S67 containment matches mobile Comet PARTIAL  
+- S70 root cause (query strip on non-Lab pages) correctly scoped  
 
-## §9
-1. Self-graded marks.  
-2. New vault required to replace cosigner.  
-3. zpub educational display only.  
+## §9 Intentional oddities
+1. Self-graded quizzes.  
+2. Network opt-in chip (not “Offline crypto”).  
+3. Sidebar stays dark under light theme for brand chrome.  
+4. Soft level gates.  
 
 ```text
-✅ CROSS-REVIEW DONE  blockers=0
+✅ CROSS-REVIEW DONE  blockers=0  obsolete_tier_a=2
 ```
