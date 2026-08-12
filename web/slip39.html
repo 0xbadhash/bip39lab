@@ -106,7 +106,15 @@
           <h1>SLIP-39 lab</h1>
           <p class="sub">Trezor-shaped share mnemonics · offline · educational</p>
         </div>
-            </header>
+        <div class="topbar-actions" id="topbarStatusChips">
+          <span class="topbar-status">
+            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+          </span>
+        </div>
+      </header>
 
       <main class="content">
         <div class="warn" role="alert" id="s39Danger">

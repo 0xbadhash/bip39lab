@@ -707,10 +707,41 @@ body.learn-return-open {
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem 1rem;
+  /* Always dark chrome — keep light-theme text tokens from washing out contrast */
+  --text: #eef2f7;
+  --muted: #8b9bb0;
+  --border: #2a3545;
+  --border-strong: #3a4a60;
+  --bg-elevated: #121821;
+  --panel: #161d27;
+  --focus: #7eb6ff;
+  --accent: #3d8bfd;
+  color: #eef2f7;
   background: linear-gradient(180deg, #101722 0%, #0d1219 100%);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid #2a3545;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+html[data-theme="light"] .sidebar,
+html.theme-light .sidebar {
+  /* Explicit light-theme override: sidebar stays dark shell */
+  color: #eef2f7;
+  border-right-color: #2a3545;
+}
+
+html[data-theme="light"] .sidebar .brand-title,
+html[data-theme="light"] .sidebar .nav-label strong,
+html[data-theme="light"] .sidebar .sidebar-prefs-title {
+  color: #eef2f7;
+}
+
+html[data-theme="light"] .sidebar .brand-sub,
+html[data-theme="light"] .sidebar .nav-label small,
+html[data-theme="light"] .sidebar .sidebar-note,
+html[data-theme="light"] .sidebar .sidebar-prefs-hint,
+html[data-theme="light"] .sidebar .muted {
+  color: #8b9bb0;
 }
 
 .brand {
@@ -1351,16 +1382,19 @@ table[id]:focus-visible,
 
 .table-scroll {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--panel-2);
   -webkit-overflow-scrolling: touch;
+  /* Contain wide tables so the page does not grow sideways (S67 mobile) */
+  overscroll-behavior-x: contain;
 }
 
-/* Default: modern columns only — fit without sideways scroll on wide screens */
+/* Modern cols: still scroll inside the box on narrow viewports (never page-level overflow) */
 .table-scroll.cols-modern {
-  overflow-x: visible;
+  overflow-x: auto;
 }
 
 .addr-table {
@@ -1369,6 +1403,25 @@ table[id]:focus-visible,
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.82rem;
   table-layout: auto;
+}
+
+/* On narrow screens, allow the table to be wider than the card but stay in .table-scroll */
+@media (max-width: 720px) {
+  .table-scroll.cols-modern .addr-table {
+    width: max-content;
+    min-width: 100%;
+  }
+  .main-wrap,
+  .content,
+  .card,
+  .card-wide {
+    max-width: 100%;
+    min-width: 0;
+  }
+  #card-addresses,
+  #tableScroll {
+    max-width: 100%;
+  }
 }
 
 .table-scroll.cols-legacy .addr-table {

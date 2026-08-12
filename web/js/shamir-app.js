@@ -453,5 +453,17 @@
     });
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
     showQuizReturn();
+    function updateAirgapChip() {
+      var el = $("chipAirgap");
+      if (!el) return;
+      var on = typeof navigator !== "undefined" && navigator.onLine;
+      el.textContent = on ? "Browser online" : "Browser offline";
+      el.title = on
+        ? "Browser reports online — prefer air-gap for funded practice"
+        : "Browser reports offline";
+    }
+    updateAirgapChip();
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
   });
 })();

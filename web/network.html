@@ -108,7 +108,17 @@
           <h1>Network (opt-in)</h1>
           <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
         </div>
-            </header>
+        <div class="topbar-actions" id="topbarStatusChips">
+          <span class="topbar-status">
+            <span class="chip" id="chipNetOpt" title="This page may contact mempool after you opt in">
+              Network opt-in
+            </span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+          </span>
+        </div>
+      </header>
 
       <main class="content">
 <div class="card" id="netCardIntro">

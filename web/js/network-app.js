@@ -310,12 +310,25 @@
     }
   }
 
+  function updateAirgapChip() {
+    const el = $("chipAirgap");
+    if (!el) return;
+    const on = typeof navigator !== "undefined" && navigator.onLine;
+    el.textContent = on ? "Browser online" : "Browser offline";
+    el.title = on
+      ? "Browser online — address lookups leave this machine"
+      : "Browser offline — fee/balance fetch will fail until online";
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     $("balAck").addEventListener("change", updateAck);
     updateAck();
     $("btnFetchSnap").addEventListener("click", () => fetchSnapshot().catch(console.error));
     $("btnLoadLab").addEventListener("click", loadFromLab);
     $("btnFetchBal").addEventListener("click", () => fetchBalances().catch(console.error));
+    updateAirgapChip();
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
     setStatus($("snapStatus"), "Idle — click Fetch when you want public fee/traffic data.", "");
     setStatus($("balStatus"), "Idle — ack leak, then load/paste addresses.", "");
     showFirstHourReturn();

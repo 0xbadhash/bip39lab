@@ -821,6 +821,7 @@ Mark A1–A4 → summary 4 / 4.
 
 ### S67 — Mobile layout
 Viewport ~390px: orientation + generate visible; sidebar stacks.
+After Generate: `#addrTable` may be wider than the viewport but **must stay inside** `#tableScroll` (`overflow-x: auto`); document `scrollWidth` must not grow far beyond the viewport (no full-page sideways overflow).
 
 # Report template
 

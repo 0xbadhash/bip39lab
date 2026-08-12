@@ -106,7 +106,15 @@
           <h1>Shamir secret sharing</h1>
           <p class="sub">Educational M-of-N share split · offline · not SLIP-39</p>
         </div>
-            </header>
+        <div class="topbar-actions" id="topbarStatusChips">
+          <span class="topbar-status">
+            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+          </span>
+        </div>
+      </header>
 
       <main class="content">
         <div class="warn" role="alert" id="shDanger">

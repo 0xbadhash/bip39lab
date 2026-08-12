@@ -190,5 +190,29 @@ test.describe("E3 mobile shell", () => {
     await expect(page.locator("#cardOrientation")).toBeVisible();
     await expect(page.locator(".sidebar")).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
+    // Generate so the address table has wide bc1 rows
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
+      timeout: 10_000,
+    });
+    // Table may be wider than viewport but must scroll inside #tableScroll — not grow the document
+    const metrics = await page.evaluate(() => {
+      const scroll = document.getElementById("tableScroll");
+      const docW = document.documentElement.scrollWidth;
+      const viewW = window.innerWidth;
+      return {
+        docW,
+        viewW,
+        tableScrollOverflow:
+          scroll && scroll.scrollWidth > scroll.clientWidth + 2 ? true : false,
+        tableClientW: scroll ? scroll.clientWidth : 0,
+      };
+    });
+    // Allow a few px of scrollbar chrome; body should not be ~2× viewport
+    expect(metrics.docW).toBeLessThanOrEqual(metrics.viewW + 24);
+    if (metrics.tableClientW > 0) {
+      // Either fits or scrolls inside the scroll container
+      expect(metrics.tableClientW).toBeLessThanOrEqual(metrics.viewW + 8);
+    }
   });
 });
