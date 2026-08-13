@@ -1,0 +1,1 @@
+../../docs/E2E_AGENT_PROMPT.md
