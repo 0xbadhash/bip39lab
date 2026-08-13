@@ -119,9 +119,20 @@
       $("msP2wsh").textContent = r.p2wsh;
       $("msScript").textContent = r.scriptHex;
       $("msKeys").textContent = r.pubkeysHex.map((h, i) => i + ": " + h).join("\n");
+      const mapBox = $("msVaultMap");
+      if (mapBox) {
+        mapBox.hidden = false;
+        if ($("msMapDesc")) $("msMapDesc").textContent = r.descriptor || "";
+        if ($("msMapNote")) $("msMapNote").textContent = r.vaultMapNote || "";
+        if ($("msMapIds")) {
+          $("msMapIds").textContent =
+            "Key ids (first 8 hex, educational): " + (r.keyIds || []).join(" · ");
+        }
+      }
       setStatus("Built offline · " + r.m + "-of-" + r.n + " · no network · no private keys.", "ok");
     } catch (e) {
       $("msResult").hidden = true;
+      if ($("msVaultMap")) $("msVaultMap").hidden = true;
       setStatus(e && e.message ? e.message : String(e), "err");
     }
   }
@@ -135,6 +146,8 @@
     $("msM").value = "2";
     $("msBip67").checked = true;
     $("msResult").hidden = true;
+    if ($("msVaultMap")) $("msVaultMap").hidden = true;
+    if ($("msMapDesc")) $("msMapDesc").textContent = "";
     const demo = $("msDemoList");
     if (demo) {
       demo.hidden = true;
@@ -333,6 +346,9 @@
     $("msCopyP2sh").addEventListener("click", () => copyText($("msP2sh").textContent, $("msCopyP2sh")));
     $("msCopyP2wsh").addEventListener("click", () => copyText($("msP2wsh").textContent, $("msCopyP2wsh")));
     $("msCopyScript").addEventListener("click", () => copyText($("msScript").textContent, $("msCopyScript")));
+    if ($("msCopyMap")) {
+      $("msCopyMap").addEventListener("click", () => copyText($("msMapDesc").textContent, $("msCopyMap")));
+    }
     setStatus(
       "Ready. Choose N + BIP39 word count (12–24), optional passphrase → Generate N cosigners (BIP84), then Build.",
       ""

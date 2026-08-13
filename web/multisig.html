@@ -7,7 +7,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Educational Bitcoin multisig lab — M-of-N from public keys only, offline." />
   <title>Multisig lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.3" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.4" />
 </head>
 <body>
   <div class="app">
@@ -426,6 +426,24 @@
               </div>
               <p class="control-help teach-only" style="margin-top:0.75rem"><strong>Keys in final order</strong></p>
               <pre class="out" id="msKeys" style="margin-top:0.35rem"></pre>
+              <div id="msVaultMap" class="ms-vault-map" hidden>
+                <h3 class="label-row">Vault map
+                  <span class="help-tip" data-term="VAULTMAP">
+                    <button type="button" class="help-tip-btn" aria-label="About the vault map">i</button>
+                    <span class="help-tip-panel" hidden></span>
+                  </span>
+                </h3>
+                <p class="control-help" id="msMapNote"></p>
+                <p class="control-help teach-only">
+                  This string is the <strong>map</strong> to the vault (public policy). It is not a seed.
+                  Store a copy with each key. If you lose the map <em>and</em> one key, you may not rebuild the address.
+                </p>
+                <pre class="out" id="msMapDesc" aria-label="Public vault map descriptor"></pre>
+                <p class="control-help" id="msMapIds"></p>
+                <div class="row">
+                  <button type="button" class="btn-copy" id="msCopyMap" data-copy-idle="Copy map">Copy map</button>
+                </div>
+              </div>
             </div>
             <p id="msCopyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
           </div>
@@ -453,11 +471,11 @@
     </button>
     <button type="button" class="learn-return-dismiss" id="learnReturnDockMsDismiss" title="Hide" aria-label="Hide return bar">×</button>
   </div>
-  <script src="js/site-version.js?v=0.16.3"></script>
-  <script src="js/glossary.js?v=0.16.3"></script>
-  <script src="js/help-ui.js?v=0.16.3"></script>
-  <script src="js/learn-levels.js?v=0.16.3"></script>
-  <script src="js/multisig.bundle.js?v=0.16.3"></script>
-  <script src="js/multisig-app.js?v=0.16.3"></script>
+  <script src="js/site-version.js?v=0.16.4"></script>
+  <script src="js/glossary.js?v=0.16.4"></script>
+  <script src="js/help-ui.js?v=0.16.4"></script>
+  <script src="js/learn-levels.js?v=0.16.4"></script>
+  <script src="js/multisig.bundle.js?v=0.16.4"></script>
+  <script src="js/multisig-app.js?v=0.16.4"></script>
 </body>
 </html>

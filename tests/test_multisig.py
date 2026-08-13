@@ -53,6 +53,40 @@ console.log(JSON.stringify({
     assert data["script"].startswith("5221")
 
 
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_vault_map_descriptor_public_only():
+    script = r"""
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[1];
+eval(fs.readFileSync(path.join(root, 'web/js/multisig.bundle.js'), 'utf8'));
+const api = globalThis.MultisigLab;
+const p1 = process.argv[2];
+const p2 = process.argv[3];
+const r = api.buildMultisigFromText(p1 + '\n' + p2, 2, { bip67: true });
+console.log(JSON.stringify({
+  desc: r.descriptor,
+  ids: r.keyIds,
+  note: r.vaultMapNote,
+  hasP1: r.descriptor.indexOf(p1) >= 0,
+  hasP2: r.descriptor.indexOf(p2) >= 0,
+  sorted: r.descriptor.indexOf('sortedmulti(2,') === 0 || r.descriptor.indexOf('wsh(sortedmulti(2,') === 0,
+}));
+"""
+    r = subprocess.run(
+        ["node", "-e", script, str(ROOT), P1, P2],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert r.returncode == 0, r.stderr + r.stdout
+    data = json.loads(r.stdout.strip().splitlines()[-1])
+    assert data["sorted"] is True
+    assert data["hasP1"] and data["hasP2"]
+    assert data["ids"] and len(data["ids"]) == 2
+    assert "not a seed" in (data["note"] or "").lower()
+
+
 def test_multisig_static_page():
     html = (ROOT / "web/multisig.html").read_text(encoding="utf-8")
     assert "Multisig" in html
@@ -60,6 +94,7 @@ def test_multisig_static_page():
     assert "public keys only" in html.lower() or "Public keys" in html
     assert (ROOT / "web/js/multisig.bundle.js").is_file()
     assert "multisig.bundle.js" in html
+    assert 'id="msVaultMap"' in html
     # Lab links to multisig
     lab = (ROOT / "web/index.html").read_text(encoding="utf-8")
     assert "multisig.html" in lab

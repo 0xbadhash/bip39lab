@@ -1,8 +1,8 @@
 {
   "card_id": null,
-  "phase": "init",
+  "phase": "ready_for_review",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-11-intermediate-advanced-paths.md",
-  "task": "v0.16.2 S70 S67 Comet chips",
+  "spec_id": ".agents/specs/2026-08-13-a-vault-map.md",
+  "task": "A vault map",
   "waiver": "chore"
 }

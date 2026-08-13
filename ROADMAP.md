@@ -362,6 +362,55 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Specs:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md` … `e6-private-knots-ops.md`
 - **Notes:** Orientation, level chip, quiz, mobile CSS, three-splits tour, BIP-85 idea, ops card
 
+### [OPEN] A — Vault map object
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-13-a-vault-map.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] `#msVaultMap` after Build
+  - [ ] S72 Playwright + Comet
+
+### [OPEN] B — Recovery drill
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-13-b-recovery-drill.md`
+- **Depends:** A
+- **Acceptance:**
+  - [ ] Rebuild from map matches P2WSH
+  - [ ] Without-map errors
+  - [ ] S73
+
+### [OPEN] C — Vendor-diversity Extra help
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-c-vendor-diversity.md`
+
+### [OPEN] D — Demo ≠ multi-vendor
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-d-demo-not-vendor.md`
+
+### [OPEN] E — M=1 policy warning
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-e-m1-policy.md`
+
+### [OPEN] F — PIN / file password / BIP39 PP
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-f-password-words.md`
+
+### [OPEN] G — Coordinator vs signer
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-g-coordinator.md`
+
+### [OPEN] H — PSBT 1-of-2 partial sample
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-h-psbt-partial.md`
+
 ## Current focus
 
 **Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`).  

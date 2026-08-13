@@ -42,6 +42,20 @@ test.describe("Multisig explainer E2E", () => {
     await expect(page.locator("#msStatus")).toContainText(/private/i);
   });
 
+  test("S72 vault map after BIP67 build", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await page.locator("#msParts").fill(P1 + "\n" + P2);
+    await page.locator("#msM").fill("2");
+    await page.locator("#msBip67").check();
+    await page.locator("#msBuild").click();
+    await expect(page.locator("#msVaultMap")).toBeVisible();
+    await expect(page.locator("#msMapDesc")).toContainText("wsh(sortedmulti(2,");
+    await expect(page.locator("#msMapDesc")).toContainText(P1);
+    await expect(page.locator("#msMapNote")).toContainText(/not a seed/i);
+    await page.locator("#msClear").click();
+    await expect(page.locator("#msVaultMap")).toBeHidden();
+  });
+
   test("S12b demo cosigners N=3 then build", async ({ page }) => {
     await page.goto("/multisig.html");
     await page.locator("#msDemoN").selectOption("3");

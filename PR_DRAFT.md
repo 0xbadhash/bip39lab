@@ -1,12 +1,44 @@
-# PR Draft: v0.16.3 S0b light-theme sidebar + E2E launcher
+# PR Draft: A — vault map object
 
-Live Comet on v0.16.2 scored 89/90. Only P1: Level / Extra help / Reset white-on-white in light theme because sidebar remapped `--text` but not `--panel-2`, and `color-scheme: light` leaked into native controls.
+**Spec:** `.agents/specs/2026-08-13-a-vault-map.md`
 
-## Changes
-- `web/css/app.css` — sidebar `--panel-2`, `color-scheme: dark`, explicit select/secondary colors
-- `e2e/lab.spec.ts` — S0b contrast check
-- `docs/E2E_AGENT_LAUNCH.md` — short fetch-only bot instruction
-- Stamp `0.16.3`
+## What Problem This Solves
 
-## Non-goals
-S67, Extra help rename, SLIP-39 nav, Network chip prominence.
+Learners saw addresses but no public **map** (descriptor) to back up with each key.
+
+## Why This Change Was Made
+
+Sovereign Sessions walkthrough treats the config/descriptor as first-class. This lab now emits `wsh(sortedmulti|multi(…))` after Build.
+
+## User Impact
+
+Multisig result shows Vault map + Extra help. Copy map is public-only.
+
+## Traceability
+
+| AC | Evidence |
+|----|----------|
+| Map after 2-of-2 | `test_vault_map_descriptor_public_only` + S72 |
+| Hidden on Clear | S72 |
+| Comet | S72 in E2E_COMET_SCENARIOS.md |
+
+## Red-proof
+
+- red_cmd: `.venv/bin/python -m pytest -q tests/test_multisig.py::test_vault_map_descriptor_public_only`
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_multisig.py::test_vault_map_descriptor_public_only`
+
+## Evidence pack
+
+- pytest targeted green
+- Playwright S72 pass
+- hard_gates at /pr_review
+
+## Things that look bad but are actually fine
+
+1. Descriptor uses raw compressed hex, not xpub origins — educational key ids are first 8 hex.
+2. Bundle patched in lockstep with `multisig-core.mjs` (esbuild wordlist export blocked).
+3. Map is public policy; it is supposed to look like an address recipe.
+
+## Evidence
+
+S72 green. No secrets.

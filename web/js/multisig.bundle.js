@@ -7104,12 +7104,19 @@ zoo`.split("\n"));
     const scriptHex = bytesToHex3(script);
     const p2sh = p2shAddress(script);
     const p2wsh = p2wshAddress(script);
+    const pubkeysHex = pubs.map(bytesToHex3);
+    const fn = bip67 ? "sortedmulti" : "multi";
+    const descriptor = "wsh(" + fn + "(" + mNum + "," + pubkeysHex.join(",") + "))";
+    const keyIds = pubkeysHex.map((h) => h.slice(0, 8));
     return {
       m: mNum,
       n,
       bip67,
       orderNote,
-      pubkeysHex: pubs.map(bytesToHex3),
+      pubkeysHex,
+      descriptor,
+      keyIds,
+      vaultMapNote: "Public vault map — not a seed. Back up this string with each key. Lose the map AND one key and you may not rebuild the vault.",
       scriptHex,
       p2sh,
       p2wsh,
