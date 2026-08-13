@@ -708,12 +708,14 @@ body.learn-return-open {
   gap: 1rem;
   padding: 1.25rem 1rem;
   /* Always dark chrome — keep light-theme text tokens from washing out contrast */
+  color-scheme: dark;
   --text: #eef2f7;
   --muted: #8b9bb0;
   --border: #2a3545;
   --border-strong: #3a4a60;
   --bg-elevated: #121821;
   --panel: #161d27;
+  --panel-2: #1c2533;
   --focus: #7eb6ff;
   --accent: #3d8bfd;
   color: #eef2f7;
@@ -725,9 +727,21 @@ body.learn-return-open {
 
 html[data-theme="light"] .sidebar,
 html.theme-light .sidebar {
-  /* Explicit light-theme override: sidebar stays dark shell */
+  /* Sidebar stays dark shell; native controls must not inherit color-scheme: light */
+  color-scheme: dark;
   color: #eef2f7;
   border-right-color: #2a3545;
+  --panel-2: #1c2533;
+  --text: #eef2f7;
+}
+
+html[data-theme="light"] .sidebar select,
+html[data-theme="light"] .sidebar button.btn.secondary,
+html.theme-light .sidebar select,
+html.theme-light .sidebar button.btn.secondary {
+  background: #1c2533;
+  color: #eef2f7;
+  border-color: #2a3545;
 }
 
 html[data-theme="light"] .sidebar .brand-title,

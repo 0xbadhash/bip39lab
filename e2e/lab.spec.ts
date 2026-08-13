@@ -34,6 +34,32 @@ test.describe("Lab shell & chrome", () => {
     await expect(btn).toContainText(/Theme:/i);
     const theme = await page.locator("html").getAttribute("data-theme");
     expect(theme === "light" || theme === "dark").toBeTruthy();
+    if (theme !== "light") {
+      await btn.click();
+    }
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    const contrastDelta = async (sel: string) => {
+      return page.locator(sel).evaluate((el) => {
+        const parse = (c: string) => {
+          const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+          return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [0, 0, 0];
+        };
+        const lum = (rgb: number[]) => {
+          const [r, g, b] = rgb.map((v) => {
+            const x = v / 255;
+            return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+          });
+          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        };
+        const s = getComputedStyle(el);
+        const fg = lum(parse(s.color));
+        const bg = lum(parse(s.backgroundColor));
+        return Math.abs(fg - bg);
+      });
+    };
+    expect(await contrastDelta("#learnLevel")).toBeGreaterThan(0.25);
+    expect(await contrastDelta("#btnTeach")).toBeGreaterThan(0.25);
+    expect(await contrastDelta("#btnResetClassroom")).toBeGreaterThan(0.25);
     await btn.click();
   });
 

@@ -1,7 +1,10 @@
 # BIP39 Lab — live E2E + human-flow audit (deterministic freshness)
 
-Copy the block below into Grok Bot / Comet / Perplexity as the **full instruction**.  
-Do **not** pin a minimum product version (e.g. v0.16.1) in this prompt — versions are **discovered** each run.
+**Bots should not store this file as sticky instructions.**  
+Paste only `docs/E2E_AGENT_LAUNCH.md` (fetch this document each run). That keeps
+the instruction surface small (prompt-injection hygiene) and always uses latest.
+
+Do **not** pin a minimum product version in any bot instruction — versions are **discovered** each run.
 
 **Fetch this file (SCP from the lab host):**
 

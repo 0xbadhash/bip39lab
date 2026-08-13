@@ -64,9 +64,14 @@ def main() -> int:
             rf'src="\1?v={ver}"',
             text,
         )
+        new = re.sub(
+            r'href="(css/[^"?]+)(?:\?v=[^"]*)?"',
+            rf'href="\1?v={ver}"',
+            new,
+        )
         if new != text:
             html.write_text(new, encoding="utf-8")
-            print(f"  cache-bust scripts in {html.relative_to(ROOT)}")
+            print(f"  cache-bust assets in {html.relative_to(ROOT)}")
     # Keep Comet header in lockstep with VERSION + Playwright S-ids
     if str(SCRIPTS) not in sys.path:
         sys.path.insert(0, str(SCRIPTS))
