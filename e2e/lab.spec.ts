@@ -413,6 +413,13 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#psbtStory")).toContainText(/Minimal sample|automatically|magic/i);
   });
 
+  test("S79 canned 1-of-2 partial PSBT", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await page.locator("#btnPsbtSamplePartial").click();
+    await expect(page.locator("#psbtOut")).toContainText(/partial signatures: 1/i);
+    await expect(page.locator("#psbtOut")).toContainText(/Does not sign|not a wallet|Educational/i);
+  });
+
   test("S21 PSBT refuse secrets", async ({ page }) => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await page.locator("#psbtIn").fill("xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi");

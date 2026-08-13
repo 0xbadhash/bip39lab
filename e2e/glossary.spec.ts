@@ -22,6 +22,16 @@ test.describe("Glossary educational terms", () => {
     await expect(page.locator("#glossaryList")).toContainText(/BIP-67|sorted/i);
   });
 
+  test("S77 PIN vs file password vs passphrase terms", async ({ page }) => {
+    await page.goto("/#glossary");
+    await page.locator("#glossarySearch").fill("coordinator file password");
+    await expect(page.locator("#glossaryList")).toContainText(/Coordinator file password|hides/i);
+    await page.locator("#glossarySearch").fill("device PIN");
+    await expect(page.locator("#glossaryList")).toContainText(/Device PIN/i);
+    await page.locator("#glossarySearch").fill("passphrase");
+    await expect(page.locator("#glossaryList")).toContainText(/passphrase|BIP-39/i);
+  });
+
   test("S51 data-term tip fills from glossary", async ({ page }) => {
     await page.goto("/");
     // mnemonic tip uses data-term MNEMONIC — open i

@@ -56,6 +56,52 @@ test.describe("Multisig explainer E2E", () => {
     await expect(page.locator("#msVaultMap")).toBeHidden();
   });
 
+  test("S73 rebuild from map vs without map", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await page.locator("#msParts").fill(P1 + "\n" + P2);
+    await page.locator("#msM").fill("2");
+    await page.locator("#msBuild").click();
+    await page.locator("#msRebuildMap").click();
+    await expect(page.locator("#msRecoverStatus")).toContainText(/matches this P2WSH/i);
+    await page.locator("#msTryNoMap").click();
+    await expect(page.locator("#msRecoverStatus")).toContainText(/without the vault map/i);
+    await expect(page.locator("#msP2wsh")).toContainText(/^bc1/);
+  });
+
+  test("S74 vendor-diversity Extra help line", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await page.locator("details").filter({ has: page.locator("#msVendorDiversity") }).locator("summary").click();
+    await expect(page.locator("#msVendorDiversity")).toBeVisible();
+    await expect(page.locator("#msVendorDiversity")).toContainText(/vendor/i);
+  });
+
+  test("S75 demo is not multi-vendor", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await page.locator("#msGenDemo").click();
+    await expect(page.locator("#msDemoVendorNote")).toBeVisible();
+    await expect(page.locator("#msDemoVendorNote")).toContainText(/Not multi-vendor/i);
+  });
+
+  test("S76 M=1 warning and policy preview", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await page.locator("#msParts").fill(P1 + "\n" + P2);
+    await page.locator("#msM").fill("1");
+    await page.locator("#msBuild").click();
+    await expect(page.locator("#msM1Warn")).toBeVisible();
+    await expect(page.locator("#msM1Warn")).toContainText(/singlesig/i);
+    await expect(page.locator("#msPolicy")).toContainText(/Lose the map/i);
+    await page.locator("#msM").fill("2");
+    await page.locator("#msBuild").click();
+    await expect(page.locator("#msM1Warn")).toBeHidden();
+  });
+
+  test("S78 coordinator cannot spend", async ({ page }) => {
+    await page.goto("/multisig.html");
+    await expect(page.locator("#msCoordNote")).toContainText(/coordinator/i);
+    await expect(page.locator("#msCoordNote")).toContainText(/cannot spend/i);
+    await expect(page.locator("#msCoordNote")).toContainText(/without the keys/i);
+  });
+
   test("S12b demo cosigners N=3 then build", async ({ page }) => {
     await page.goto("/multisig.html");
     await page.locator("#msDemoN").selectOption("3");

@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.4" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.5" />
 </head>
 <body>
   <div class="app">
@@ -1387,6 +1387,9 @@
               <button type="button" class="btn secondary" id="btnPsbtSampleStory" title="Fills a sample + multisig/HWW story and inspects">
                 2 · Load &amp; inspect: multisig / HWW story
               </button>
+              <button type="button" class="btn secondary" id="btnPsbtSamplePartial" title="Educational PSBT with one partial signature key">
+                1-of-2 partial
+              </button>
               <button type="button" class="btn" id="btnPsbt" title="Re-run inspect on whatever is in the box">
                 3 · Inspect again
               </button>
@@ -1524,11 +1527,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.4"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.4"></script>
-  <script src="js/glossary.js?v=0.16.4"></script>
-  <script src="js/help-ui.js?v=0.16.4"></script>
-  <script src="js/learn-levels.js?v=0.16.4"></script>
-  <script src="js/app.js?v=0.16.4"></script>
+  <script src="js/site-version.js?v=0.16.5"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.5"></script>
+  <script src="js/glossary.js?v=0.16.5"></script>
+  <script src="js/help-ui.js?v=0.16.5"></script>
+  <script src="js/learn-levels.js?v=0.16.5"></script>
+  <script src="js/app.js?v=0.16.5"></script>
 </body>
 </html>

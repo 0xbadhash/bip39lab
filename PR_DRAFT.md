@@ -1,44 +1,43 @@
-# PR Draft: A — vault map object
+# PR Draft: B–H classroom (depends on A / v0.16.4 map)
 
-**Spec:** `.agents/specs/2026-08-13-a-vault-map.md`
+**Spec:** `.agents/specs/2026-08-13-b-recovery-drill.md`
+Also: `2026-08-13-c-vendor-diversity.md` … `h-psbt-partial.md`
 
 ## What Problem This Solves
 
-Learners saw addresses but no public **map** (descriptor) to back up with each key.
+After the vault map exists, learners still needed: recover/fail drill, vendor-diversity Extra help, demo-not-vendor, M=1 warning, PIN/file/PP words, coordinator banner, 1-of-2 PSBT inspect.
 
 ## Why This Change Was Made
 
-Sovereign Sessions walkthrough treats the config/descriptor as first-class. This lab now emits `wsh(sortedmulti|multi(…))` after Build.
+Transcript walkthrough + prior value table A–H. A shipped v0.16.4. B depends on A. C–H are Extra help / inspect only.
 
 ## User Impact
 
-Multisig result shows Vault map + Extra help. Copy map is public-only.
+Multisig: rebuild/try-without-map, diversity line, demo note, M=1 warn, coordinator banner. Glossary PIN/COORDPW. Tools: 1-of-2 partial sample.
 
 ## Traceability
 
-| AC | Evidence |
-|----|----------|
-| Map after 2-of-2 | `test_vault_map_descriptor_public_only` + S72 |
-| Hidden on Clear | S72 |
-| Comet | S72 in E2E_COMET_SCENARIOS.md |
+| Spec | S-id | Test |
+|------|------|------|
+| B | S73 | e2e + test_rebuild_from_map |
+| C | S74 | e2e |
+| D | S75 | e2e |
+| E | S76 | e2e |
+| F | S77 | e2e glossary |
+| G | S78 | e2e |
+| H | S79 | e2e lab |
 
 ## Red-proof
 
-- red_cmd: `.venv/bin/python -m pytest -q tests/test_multisig.py::test_vault_map_descriptor_public_only`
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_multisig.py::test_vault_map_descriptor_public_only`
+- red_cmd: `.venv/bin/python -m pytest -q tests/test_multisig.py::test_rebuild_from_map_and_without_map`
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_multisig.py::test_rebuild_from_map_and_without_map`
 
 ## Evidence pack
 
-- pytest targeted green
-- Playwright S72 pass
-- hard_gates at /pr_review
+S73–S79 Playwright green. pytest green.
 
 ## Things that look bad but are actually fine
 
-1. Descriptor uses raw compressed hex, not xpub origins — educational key ids are first 8 hex.
-2. Bundle patched in lockstep with `multisig-core.mjs` (esbuild wordlist export blocked).
-3. Map is public policy; it is supposed to look like an address recipe.
-
-## Evidence
-
-S72 green. No secrets.
+1. B–H one ship after isolated A — same Multisig/Tools surface; 8 full e2e cycles would only re-run the same 90 tests.
+2. Canned PSBT is educational type-0x02, not a funded tx.
+3. M=1 still builds (teaching anti-pattern).

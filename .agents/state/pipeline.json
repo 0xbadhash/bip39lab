@@ -1,8 +1,8 @@
 {
   "card_id": null,
-  "phase": "init",
+  "phase": "approved",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-13-a-vault-map.md",
-  "task": "A vault map",
+  "spec_id": ".agents/specs/2026-08-13-b-recovery-drill.md",
+  "task": "B-H classroom",
   "waiver": "chore"
 }

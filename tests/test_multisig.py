@@ -87,6 +87,34 @@ console.log(JSON.stringify({
     assert "not a seed" in (data["note"] or "").lower()
 
 
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not installed")
+def test_rebuild_from_map_and_without_map():
+    script = r"""
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[1];
+eval(fs.readFileSync(path.join(root, 'web/js/multisig.bundle.js'), 'utf8'));
+const api = globalThis.MultisigLab;
+const p1 = process.argv[2];
+const p2 = process.argv[3];
+const built = api.buildMultisigFromText(p1 + '\n' + p2, 2, { bip67: true });
+const again = api.rebuildFromVaultMap(built.descriptor);
+let noMap = false;
+try { api.tryWithoutMap(); } catch (e) { noMap = /without the vault map/i.test(e.message); }
+console.log(JSON.stringify({ match: again.p2wsh === built.p2wsh, noMap }));
+"""
+    r = subprocess.run(
+        ["node", "-e", script, str(ROOT), P1, P2],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert r.returncode == 0, r.stderr + r.stdout
+    data = json.loads(r.stdout.strip().splitlines()[-1])
+    assert data["match"] is True
+    assert data["noMap"] is True
+
+
 def test_multisig_static_page():
     html = (ROOT / "web/multisig.html").read_text(encoding="utf-8")
     assert "Multisig" in html

@@ -1555,6 +1555,8 @@
   // Educational samples only — valid psbt\xff framing, not funded spends.
   // minimal: magic + empty global map terminator
   var PSBT_SAMPLE_MINIMAL = "cHNidP8A";
+  var PSBT_SAMPLE_PARTIAL =
+    "cHNidP8AIgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA";
   // slightly longer placeholder used in e2e / docs (still synthetic)
   var PSBT_SAMPLE_STORY = "cHNidP8BAAoCAAAAAA==";
 
@@ -1589,6 +1591,11 @@
           "you do not need to click “Inspect again” unless you edit the box."
       );
       // Keep long story in out via inspect + append
+    } else if (kind === "partial") {
+      input.value = PSBT_SAMPLE_PARTIAL;
+      setPsbtStory(
+        "1-of-2 educational sample: one partial-sig key (type 0x02). Not a funded wallet. Inspect ran automatically."
+      );
     } else {
       input.value = PSBT_SAMPLE_MINIMAL;
       setPsbtStory(
@@ -1643,6 +1650,7 @@
       (r.globalKeys != null
         ? "\n\nglobal key entries ≈ " + r.globalKeys + "\nkey/value maps after magic ≈ " + r.mapCount
         : "") +
+      (r.partialSigs != null ? "\npartial signatures: " + r.partialSigs : "") +
       (r.status === "ok" ? teach : "") +
       (opts.storyKind === "story" ? storyExtra : "");
   }
@@ -1908,6 +1916,11 @@
     if ($("btnPsbtSampleStory")) {
       $("btnPsbtSampleStory").addEventListener("click", function () {
         loadPsbtSample("story");
+      });
+    }
+    if ($("btnPsbtSamplePartial")) {
+      $("btnPsbtSamplePartial").addEventListener("click", function () {
+        loadPsbtSample("partial");
       });
     }
     if ($("btnDescExplain")) $("btnDescExplain").addEventListener("click", explainDescUi);

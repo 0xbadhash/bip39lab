@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S72 · Playwright 91 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S79 · Playwright 98 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S72 · Playwright 91 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
 
-`Product: 0.16.4 · Contract: 2 · Last aligned: 2026-08-13 · Scenarios: S0–S72 · Playwright S-ids: 91`
+`Product: 0.16.5 · Contract: 2 · Last aligned: 2026-08-13 · Scenarios: S0–S79 · Playwright S-ids: 98`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **91** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **98** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S72** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S79** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -817,6 +817,27 @@ I4 Go try → Tools PSBT + **Mark I4 passed & return** on amber dock → Passed.
 
 ### S72 — Vault map after Build
 Multisig: 2-of-2 BIP67 golden pubs → `#msVaultMap` visible; `#msMapDesc` is `wsh(sortedmulti(2,…))` containing both compressed pubs; note says not a seed. Clear hides the map.
+
+### S73 — Recovery drill map vs keys-only
+After Build: **Rebuild from map** status matches P2WSH. **Try without map** errors (needs M/N/sort); does not invent a new address.
+
+### S74 — Vendor-diversity Extra help
+Multisig checklist `#msVendorDiversity` mentions independent vendor/firmware class.
+
+### S75 — Demo is not multi-vendor
+Generate demo → `#msDemoVendorNote` says Not multi-vendor / one browser RNG.
+
+### S76 — M=1 warning
+Build with M=1 → `#msM1Warn` singlesig warning. M=2 hides it. `#msPolicy` includes lose-map line.
+
+### S77 — PIN / file password / passphrase
+Glossary search finds Device PIN, Coordinator file password, and BIP-39 passphrase as distinct hits.
+
+### S78 — Coordinator cannot spend
+`#msCoordNote` visible without Extra help: coordinator, cannot spend, receive/watch without keys.
+
+### S79 — PSBT 1-of-2 partial sample
+Tools → **1-of-2 partial** → inspect `partial signatures: 1`; still educational / no sign.
 
 ### S69 — Advanced A1–A4 self-check
 Level Advanced: `#cardAdvQuiz`; A4 Go try → orientation + Advanced return dock;

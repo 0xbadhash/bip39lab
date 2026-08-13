@@ -1,24 +1,18 @@
-# RELEASE_RUNBOOK — v0.16.4 A vault map
+# RELEASE_RUNBOOK — v0.16.5 B–H classroom
 
 **Marker:** RELEASE-RUNBOOK  
 **Date:** 2026-08-13  
-**Version:** 0.16.4  
-**Tag:** v0.16.4  
-**Spec:** `.agents/specs/2026-08-13-a-vault-map.md`  
-**Score:** 100  
+**Version:** 0.16.5  
+**Tag:** v0.16.5  
+**Depends:** v0.16.4 A vault map  
 
-## Smoke table
-
-| Step | Exit |
-|------|------|
-| pytest | 0 (101) |
-| e2e | 0 (91) |
-| check_web_e2e | 0 |
+## Smoke
+pytest + Playwright S73–S79 + full suite at ship.
 
 ## Rollback
-`git checkout v0.16.3`
+`git checkout v0.16.4`
 
 ## §9
-1. Educational key ids are first 8 hex, not BIP32 fingerprints.  
-2. Map is public on purpose.  
-3. Bundle kept in lockstep with core source.
+1. One ship for B–H after A isolated.  
+2. Educational PSBT is not spendable.  
+3. M=1 still allowed as anti-pattern demo.

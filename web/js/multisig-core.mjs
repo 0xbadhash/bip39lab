@@ -369,10 +369,36 @@ export function generateDemoCosigners(n, options) {
   };
 }
 
+/** Parse only this lab’s wsh((sorted)?multi(M,hex,…)) map. */
+export function parseWshMultiDescriptor(text) {
+  const t = String(text || "").trim();
+  const m = t.match(/^wsh\((sortedmulti|multi)\((\d+),([0-9a-fA-F,]+)\)\)$/);
+  if (!m) {
+    throw new Error("not a lab vault map (expected wsh(sortedmulti|multi(M,hex,…)))");
+  }
+  const pubs = m[3].split(",").filter(Boolean);
+  if (pubs.length < 2) throw new Error("vault map needs at least two public keys");
+  return { bip67: m[1] === "sortedmulti", m: Number(m[2]), pubs };
+}
+
+export function rebuildFromVaultMap(text) {
+  const p = parseWshMultiDescriptor(text);
+  return buildMultisigFromText(p.pubs.join("\n"), p.m, { bip67: p.bip67 });
+}
+
+export function tryWithoutMap() {
+  throw new Error(
+    "Without the vault map you cannot uniquely rebuild this vault. Keys alone omit M, N, and sort policy.",
+  );
+}
+
 export const MultisigLab = {
   buildMultisigFromText,
   generateDemoCosigners,
   looksPrivate,
+  parseWshMultiDescriptor,
+  rebuildFromVaultMap,
+  tryWithoutMap,
   WORD_STRENGTH,
   VERSION: "0.9.2-ms",
 };

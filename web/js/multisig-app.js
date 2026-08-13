@@ -112,6 +112,16 @@
           ($("msBip67").checked
             ? "BIP67 sort ON: keys ordered so every wallet builds the same address."
             : "BIP67 sort OFF: different key order can produce a different address — usually a mistake.");
+        pol.textContent +=
+          " Lose 1 key: still spend if M remain. Compromise 1 vendor: still spend if others are independent. Lose the map AND 1 key: you may not rebuild.";
+        const m1 = $("msM1Warn");
+        if (m1) {
+          m1.hidden = m !== 1;
+          m1.textContent =
+            m === 1
+              ? "M=1 is not stronger than singlesig — extra paperwork, same one-key spend."
+              : "";
+        }
       }
       $("msSummary").textContent = r.summary;
       $("msOrderNote").textContent = r.orderNote;
@@ -157,6 +167,11 @@
     if (warn) {
       warn.hidden = true;
       warn.textContent = "";
+    }
+    const vn = $("msDemoVendorNote");
+    if (vn) {
+      vn.hidden = true;
+      vn.textContent = "";
     }
     setStatus("Cleared.", "");
     setCopyFeedback(null, "idle");
@@ -265,6 +280,12 @@
       const warn = $("msDemoWarn");
       warn.hidden = false;
       warn.textContent = demo.warning;
+      const vn = $("msDemoVendorNote");
+      if (vn) {
+        vn.hidden = false;
+        vn.textContent =
+          "Not multi-vendor: these demo keys share one browser RNG. A real vault exports xpub/pubkey only from independent entropy (dice or separate hardware).";
+      }
       setStatus(
         "Generated " +
           n +
@@ -348,6 +369,34 @@
     $("msCopyScript").addEventListener("click", () => copyText($("msScript").textContent, $("msCopyScript")));
     if ($("msCopyMap")) {
       $("msCopyMap").addEventListener("click", () => copyText($("msMapDesc").textContent, $("msCopyMap")));
+    }
+    if ($("msRebuildMap")) {
+      $("msRebuildMap").addEventListener("click", () => {
+        const api = globalThis.MultisigLab;
+        const el = $("msRecoverStatus");
+        try {
+          const r = api.rebuildFromVaultMap($("msMapDesc").textContent);
+          if (el) {
+            el.textContent =
+              r.p2wsh === $("msP2wsh").textContent
+                ? "Rebuild from map matches this P2WSH."
+                : "Rebuild produced a different P2WSH.";
+          }
+        } catch (e) {
+          if (el) el.textContent = e && e.message ? e.message : String(e);
+        }
+      });
+    }
+    if ($("msTryNoMap")) {
+      $("msTryNoMap").addEventListener("click", () => {
+        const api = globalThis.MultisigLab;
+        const el = $("msRecoverStatus");
+        try {
+          api.tryWithoutMap();
+        } catch (e) {
+          if (el) el.textContent = e && e.message ? e.message : String(e);
+        }
+      });
     }
     setStatus(
       "Ready. Choose N + BIP39 word count (12–24), optional passphrase → Generate N cosigners (BIP84), then Build.",

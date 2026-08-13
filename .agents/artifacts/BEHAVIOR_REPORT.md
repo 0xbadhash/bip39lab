@@ -2,17 +2,20 @@
 
 **Marker:** BEHAVIOR-REPORT  
 **Contract:** `.agents/artifacts/BEHAVIOR_CONTRACT.md`  
-**Target:** A vault map  
+**Target:** B–H  
 
 ## Results
 
 | Clause | Status | Evidence |
 |--------|--------|----------|
-| Map shown | pass | S72 |
-| Public only | pass | unit descriptor + pubs |
-| Clear hides | pass | S72 |
+| B recover | pass | S73 |
+| C diversity | pass | S74 |
+| D demo | pass | S75 |
+| E M=1 | pass | S76 |
+| F glossary | pass | S77 |
+| G coordinator | pass | S78 |
+| H partial | pass | S79 |
 
 ## Summary
-
-- pass: 3 · fail: 0 · blocked: 0
+- pass: 7 · fail: 0
 - NEXT_SKILL=/pr_review --validate

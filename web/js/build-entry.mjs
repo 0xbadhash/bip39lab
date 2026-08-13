@@ -272,6 +272,7 @@ function inspectPsbt(input) {
     let maps = 0;
     let keysInMap = 0;
     let globalKeys = 0;
+    let partialSigs = 0;
     const mapKeyCounts = [];
     while (i < bytes.length) {
       if (bytes[i] === 0x00) {
@@ -289,6 +290,8 @@ function inspectPsbt(input) {
         keyLen = bytes[i] | (bytes[i + 1] << 8);
         i += 2;
       }
+      const keyType = keyLen > 0 && i < bytes.length ? bytes[i] : 0;
+      if (keyType === 0x02 && maps >= 1) partialSigs += 1;
       i += keyLen;
       if (i >= bytes.length) break;
       let valLen = bytes[i++];
@@ -307,11 +310,14 @@ function inspectPsbt(input) {
       magic: "psbt\\xff",
       globalKeys,
       mapCount: maps,
+      partialSigs,
       detail:
         "Educational parse only — not a wallet. " +
         maps +
         " key-value map(s) after magic; global keys ≈ " +
         globalKeys +
+        "; partial signatures: " +
+        partialSigs +
         ". Does not sign or broadcast.",
     };
   } catch (e) {
