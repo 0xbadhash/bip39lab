@@ -1,6 +1,6 @@
 {
   "card_id": null,
-  "phase": "approved",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-13-b-recovery-drill.md",
   "task": "B-H classroom",
