@@ -6,6 +6,7 @@ import re
 import sys
 from pathlib import Path
 
+
 def _default_root() -> Path:
     # Prefer CWD when it looks like a product root (has scripts/check_hardcodes or .git)
     cwd = Path.cwd()
@@ -43,8 +44,6 @@ SKIP_DIRS = {
     "playwright-results",
     "coverage",
     "htmlcov",
-    "runs",
-    "runs_spec",
     "dist",
     "build",
     "out",
@@ -90,20 +89,20 @@ SKIP_PATH_SUBSTR = (
 )
 
 # Absolute home paths (not ~/ relative)
-ABS_HOME = re.compile(r"/home/[a-zA-Z0-9_-]+", re.I)
-WIN_HOME = re.compile(r"C:\\\\Users\\\\", re.I)
+ABS_HOME = re.compile(r"/home/[a-zA-Z0-9_-]+", re.IGNORECASE)
+WIN_HOME = re.compile(r"C:\\\\Users\\\\", re.IGNORECASE)
 INLINE_SECRET = re.compile(
     r"(?<![_\w])(password|secret|api_key|token)\s*=\s*['\"][^'\"]{6,}['\"]",
-    re.I,
+    re.IGNORECASE,
 )
 # Placeholders in docs / examples are not real secrets
 INLINE_SECRET_PLACEHOLDER = re.compile(
     r"(your-?key|changeme|xxx+|placeholder|example|dummy|todo|insert)",
-    re.I,
+    re.IGNORECASE,
 )
 EXPOSED_KEY = re.compile(r"\b[A-Z0-9]{16}\b")
 # Any http(s) URL — then filtered by allowlist
-ANY_URL = re.compile(r"https?://[\w.-]+\.\w{2,}[^\s)\]'\"`]*", re.I)
+ANY_URL = re.compile(r"https?://[\w.-]+\.\w{2,}[^\s)\]'\"`]*", re.IGNORECASE)
 
 # Documentation / public project URLs are not secrets
 URL_HOST_ALLOW = re.compile(
@@ -128,6 +127,8 @@ URL_HOST_ALLOW = re.compile(
     r"api\.wise\.com|"
     r"[\w.-]+\.apihub\.citi\.com|"
     r"sandbox\.apihub\.citi\.com|"
+    # SVG / XML public namespaces (not secrets; common in exported JSON)
+    r"(www\.)?w3\.org|"
     # Product / public content platforms (not secrets)
     r"([\w-]+\.)?catalyxt\.(xyz|ltd|com)|"
     r"(www\.)?x\.com|"
@@ -138,11 +139,9 @@ URL_HOST_ALLOW = re.compile(
     r"lobste\.rs|"
     r"([\w-]+\.)?substack\.com|"
     r"substackcdn\.com|"
-    r"([\w.-]+\.)?amazonaws\.com|"
-    r"(www\.)?blockstream\.info|"
-    r"(www\.)?mempool\.space"
+    r"([\w.-]+\.)?amazonaws\.com"
     r")([/:?]|$)",
-    re.I,
+    re.IGNORECASE,
 )
 
 # Host-bound deploy units and tests may contain machine paths
@@ -160,6 +159,7 @@ ALLOW_PREFIXES = (
     "CONTRIBUTING.md",
     ".github/",  # CI paths often use runner home paths
     "product_plugin.example.yaml",  # template only
+    "data/weeks/",  # figure-it-out weekly curriculum JSON (SVG xmlns noise)
 )
 
 

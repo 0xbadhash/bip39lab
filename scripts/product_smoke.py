@@ -16,11 +16,11 @@ from product_venv import (  # type: ignore
 # Re-export for product tests that import helpers from product_smoke
 _rewrite_smoke_python = rewrite_smoke_python
 __all__ = [
-    "run_smoke",
+    "_rewrite_smoke_python",
     "main",
     "product_venv_python",
     "rewrite_smoke_python",
-    "_rewrite_smoke_python",
+    "run_smoke",
 ]
 
 

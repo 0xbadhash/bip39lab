@@ -27,7 +27,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -41,14 +41,16 @@ KANBAN_AUTO_MARKER = "auto:night_shift_readiness"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from night_shift_log import (  # noqa: E402
+from night_shift_log import (
     format_when_dual,
+)
+from night_shift_log import (
     write_night_shift_log as prepend_night_shift_log,
 )
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _run(
@@ -116,7 +118,7 @@ def _load_plugin(root: Path = ROOT) -> dict[str, Any]:
     # minimal parse without requiring PyYAML
     data: dict[str, Any] = {}
     text = path.read_text(encoding="utf-8")
-    m = re.search(r"^product_id:\s*(\S+)", text, re.M)
+    m = re.search(r"^product_id:\s*(\S+)", text, re.MULTILINE)
     if m:
         data["product_id"] = m.group(1).strip().strip("\"'")
     # vault block
@@ -281,11 +283,19 @@ def run_gates(
             )
         )
     if (SCRIPTS / "product_smoke.py").is_file():
+        ns = plugin.get("night_shift") or {}
+        # Full smoke can exceed 15m on zk (playwright + circuits). Override via
+        # night_shift.smoke_timeout; use smoke_ci=true to run CI-light bar overnight.
+        use_ci = str(ns.get("smoke_ci", "0")).lower() in ("1", "true", "yes")
+        smoke_timeout = int(ns.get("smoke_timeout", 1800 if use_ci else 900))
+        smoke_cmd = [py, str(SCRIPTS / "product_smoke.py"), "--root", str(ROOT)]
+        if use_ci:
+            smoke_cmd.append("--ci")
         results.append(
             _run(
                 "product_smoke",
-                [py, str(SCRIPTS / "product_smoke.py"), "--root", str(ROOT)],
-                timeout=900,
+                smoke_cmd,
+                timeout=smoke_timeout,
             )
         )
 
@@ -385,11 +395,13 @@ def run_gates(
             last = results[-1]
             if last["ok"]:
                 code = (last.get("stdout_tail") or "").strip()
-                expect = str(ns.get("live_expect_code") or "200")
-                if code != expect:
+                # Comma-separated allowlist, e.g. "200,301,302" (redirects OK)
+                expect_raw = str(ns.get("live_expect_code") or "200")
+                expect_set = {c.strip() for c in expect_raw.split(",") if c.strip()}
+                if code not in expect_set:
                     last["ok"] = False
                     last["exit"] = 1
-                    last["stderr_tail"] = f"HTTP {code} expected {expect}"
+                    last["stderr_tail"] = f"HTTP {code} expected one of {sorted(expect_set)}"
 
         # Single path under base when no live_urls but base set (generic smoke URL)
         path = (ns.get("live_path") or "").strip()
@@ -415,10 +427,12 @@ def run_gates(
             last = results[-1]
             if last["ok"]:
                 code = (last.get("stdout_tail") or "").strip()
-                if code != "200":
+                expect_raw = str(ns.get("live_expect_code") or "200")
+                expect_set = {c.strip() for c in expect_raw.split(",") if c.strip()}
+                if code not in expect_set:
                     last["ok"] = False
                     last["exit"] = 1
-                    last["stderr_tail"] = f"HTTP {code} expected 200"
+                    last["stderr_tail"] = f"HTTP {code} expected one of {sorted(expect_set)}"
 
     if not results:
         results.append(

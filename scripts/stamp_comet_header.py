@@ -31,7 +31,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from web_e2e_contract import (  # noqa: E402
+from web_e2e_contract import (
     DEFAULT_COMET,
     DEFAULT_E2E_DIR,
     extract_playwright_scenario_ids,
