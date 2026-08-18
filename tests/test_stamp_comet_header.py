@@ -53,6 +53,9 @@ def test_http_version_and_playwright_last_match_sot():
     ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     web_ver = (ROOT / "web" / "VERSION").read_text(encoding="utf-8").strip()
     last = (ROOT / "web" / "PLAYWRIGHT_LAST.md").read_text(encoding="utf-8")
+    docs_last = (ROOT / "web" / "docs" / "PLAYWRIGHT_LAST.md").read_text(encoding="utf-8")
     assert web_ver == ver
     assert f"product: {ver}" in last
     assert f"=== {ver}" in last or f"=== {ver}\n" in last
+    assert docs_last == last
+    assert f"product: {ver}" in docs_last

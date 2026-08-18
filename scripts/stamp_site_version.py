@@ -97,20 +97,23 @@ def main() -> int:
     web_ver = ROOT / "web" / "VERSION"
     web_ver.write_text(ver + "\n", encoding="utf-8")
     print(f"stamped {web_ver.relative_to(ROOT)} → {ver}")
-    last = ROOT / "web" / "PLAYWRIGHT_LAST.md"
-    last.write_text(
-        (
-            f"# PLAYWRIGHT_LAST\n\n"
-            f"product: {ver}\n"
-            f"tag: {tag}\n"
-            f"s_ids: {n_ids}\n"
-            f"scenarios: {s_range}\n"
-            f"aligned: auto-stamped from VERSION + e2e/\n\n"
-            f"live === comet === PLAYWRIGHT_LAST === /VERSION === {ver}\n"
-        ),
-        encoding="utf-8",
+    last_body = (
+        f"# PLAYWRIGHT_LAST\n\n"
+        f"product: {ver}\n"
+        f"tag: {tag}\n"
+        f"s_ids: {n_ids}\n"
+        f"scenarios: {s_range}\n"
+        f"aligned: auto-stamped from VERSION + e2e/\n\n"
+        f"live === comet === PLAYWRIGHT_LAST === /VERSION === {ver}\n"
     )
+    last = ROOT / "web" / "PLAYWRIGHT_LAST.md"
+    last.write_text(last_body, encoding="utf-8")
     print(f"stamped {last.relative_to(ROOT)} → {ver} (n={n_ids})")
+    # Required live URL: /docs/PLAYWRIGHT_LAST.md (nginx root = web/)
+    docs_last = ROOT / "web" / "docs" / "PLAYWRIGHT_LAST.md"
+    docs_last.parent.mkdir(parents=True, exist_ok=True)
+    docs_last.write_text(last_body, encoding="utf-8")
+    print(f"stamped {docs_last.relative_to(ROOT)} → {ver} (n={n_ids})")
     return 0
 
 
