@@ -9,7 +9,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://mempool.space; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
   <title>Network · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.5" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.6" />
 </head>
 <body>
   <div class="app">
@@ -198,12 +198,12 @@
           <!-- Safety always visible -->
           <label class="check label-row">
             <input type="checkbox" id="balAck" />
-            I understand these addresses will be sent to the public API (leak ack)
+            I understand these addresses and my IP go to this site’s mempool proxy, then mempool.space (leak ack)
             <span class="help-tip help-tip-safety">
               <button type="button" class="help-tip-btn" aria-label="About address privacy leak">i</button>
               <span class="help-tip-panel" hidden>
-                <strong>Address leak:</strong> the API host learns which addresses you care about
-                (like looking up a bank account number in public). Never paste a recovery phrase here.
+                <strong>Address leak:</strong> this site’s <code>/api/mempool/</code> proxy, then
+                mempool.space, learn the addresses and your IP. Never paste a recovery phrase here.
                 Prefer a local node (CLI + Knots) for private checks.
               </span>
             </span>
@@ -287,11 +287,11 @@
     <a class="btn secondary btn-sm" href="index.html?from=firsthour">← Back to First hour checklist</a>
     <span class="learn-return-hint">Optional Network step — fees only; understand leak ack, then return and mark done.</span>
   </div>
-  <script src="js/site-version.js?v=0.16.5"></script>
-  <script src="js/glossary.js?v=0.16.5"></script>
-  <script src="js/help-ui.js?v=0.16.5"></script>
-  <script src="js/learn-levels.js?v=0.16.5"></script>
-  <script src="js/network.bundle.js?v=0.16.5"></script>
-  <script src="js/network-app.js?v=0.16.5"></script>
+  <script src="js/site-version.js?v=0.16.6"></script>
+  <script src="js/glossary.js?v=0.16.6"></script>
+  <script src="js/help-ui.js?v=0.16.6"></script>
+  <script src="js/learn-levels.js?v=0.16.6"></script>
+  <script src="js/network.bundle.js?v=0.16.6"></script>
+  <script src="js/network-app.js?v=0.16.6"></script>
 </body>
 </html>

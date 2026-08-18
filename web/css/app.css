@@ -1711,6 +1711,19 @@ table[id]:focus-visible,
   color: #ffe9a8;
 }
 
+/* Light theme: keep amber classroom, force ≥4.5:1 on air-gap banner text */
+html[data-theme="light"] .warn,
+html.theme-light .warn {
+  background: #fff4cc;
+  border-color: #8a5a00;
+  color: #3d2a00;
+}
+
+html[data-theme="light"] .warn strong,
+html.theme-light .warn strong {
+  color: #2a1c00;
+}
+
 label.field {
   display: block;
   margin: 0.75rem 0 0.25rem;

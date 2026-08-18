@@ -362,6 +362,17 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Specs:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md` … `e6-private-knots-ops.md`
 - **Notes:** Orientation, level chip, quiz, mobile CSS, three-splits tour, BIP-85 idea, ops card
 
+### [OPEN] P0 lab-safety
+- **Status:** open
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-08-18-p0-lab-safety.md`
+- **Acceptance:**
+  - [ ] Honest Lab banner
+  - [ ] Seed QR / print walls + live mnemonic
+  - [ ] Testnet default; session only on handoff
+  - [ ] Leak-ack proxy + contrast
+
 ### [OPEN] A — Vault map object
 - **Status:** open
 - **Priority:** P1

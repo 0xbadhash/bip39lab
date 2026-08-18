@@ -1,18 +1,27 @@
-# RELEASE_RUNBOOK — v0.16.5 B–H classroom
+# RELEASE_RUNBOOK — v0.16.6 P0 lab-safety
 
 **Marker:** RELEASE-RUNBOOK  
-**Date:** 2026-08-13  
-**Version:** 0.16.5  
-**Tag:** v0.16.5  
-**Depends:** v0.16.4 A vault map  
+**Date:** 2026-08-18  
+**Version:** 0.16.6  
+**Tag:** v0.16.6  
+**Spec:** `.agents/specs/2026-08-18-p0-lab-safety.md`  
 
-## Smoke
-pytest + Playwright S73–S79 + full suite at ship.
+## Smoke table
+
+| Step | Exit |
+|------|------|
+| pytest | 0 (102) |
+| Playwright | 0 (100) |
+| check_web_e2e | 0 |
+
+## Comet
+`Product: 0.16.6 · Scenarios: S0–S80 · Playwright S-ids: 100`  
+live === comet === PLAYWRIGHT_LAST = **100**
 
 ## Rollback
-`git checkout v0.16.4`
+`git checkout v0.16.5`
 
 ## §9
-1. One ship for B–H after A isolated.  
-2. Educational PSBT is not spendable.  
-3. M=1 still allowed as anti-pattern demo.
+1. Mainnet goldens still exist; default path is Testnet.  
+2. Quiz/theme storage is disclosed, not removed.  
+3. P1 honesty items not in this ship.

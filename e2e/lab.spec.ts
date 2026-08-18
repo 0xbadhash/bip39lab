@@ -5,6 +5,7 @@ import {
   expectNavCount,
   labCspOffline,
   pasteMnemonic,
+  selectLabMainnet,
   waitForTableRows,
 } from "./helpers";
 
@@ -23,6 +24,8 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     await expect(page.locator("[data-site-version]").first()).toContainText(/^v\d+\.\d+\.\d+$/);
+    await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
+    await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
     await labCspOffline(page);
   });
 
@@ -60,6 +63,24 @@ test.describe("Lab shell & chrome", () => {
     expect(await contrastDelta("#learnLevel")).toBeGreaterThan(0.25);
     expect(await contrastDelta("#btnTeach")).toBeGreaterThan(0.25);
     expect(await contrastDelta("#btnResetClassroom")).toBeGreaterThan(0.25);
+    const ratio = await page.locator("#labSafetyBanner").evaluate((el) => {
+      const parse = (c: string) => {
+        const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [0, 0, 0];
+      };
+      const lin = (v: number) => {
+        const x = v / 255;
+        return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+      };
+      const lum = (rgb: number[]) => 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2]);
+      const s = getComputedStyle(el);
+      const L1 = lum(parse(s.color));
+      const L2 = lum(parse(s.backgroundColor));
+      const hi = Math.max(L1, L2);
+      const lo = Math.min(L1, L2);
+      return (hi + 0.05) / (lo + 0.05);
+    });
+    expect(ratio).toBeGreaterThanOrEqual(4.5);
     await btn.click();
   });
 
@@ -81,7 +102,23 @@ test.describe("Lab mnemonic & derive", () => {
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(12);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
-    await expect(page.locator("#addrTableBody")).toContainText(/bc1p/);
+    await expect(page.locator("#addrTableBody")).toContainText(/tb1p/);
+  });
+
+  test("S80 generate replace confirm", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#wordCount").selectOption("12");
+    await page.locator("#btnGenerate").click();
+    await waitForTableRows(page, 5);
+    const first = await page.locator("#mnemonic").inputValue();
+    page.once("dialog", (d) => d.dismiss());
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#mnemonic")).toHaveValue(first);
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnGenerate").click();
+    await waitForTableRows(page, 5);
+    const second = await page.locator("#mnemonic").inputValue();
+    expect(second.trim().split(/\s+/).length).toBe(12);
   });
 
   test("S1b generate 24-word entropy bits", async ({ page }) => {
@@ -105,6 +142,7 @@ test.describe("Lab mnemonic & derive", () => {
   test("S2 abandon golden BIP86 + BIP84 + BIP49 + BIP44", async ({ page }) => {
     await page.goto("/");
     await page.locator("#btnClear").click();
+    await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
@@ -124,6 +162,7 @@ test.describe("Lab mnemonic & derive", () => {
 
   test("S3 passphrase changes addresses + strength", async ({ page }) => {
     await page.goto("/");
+    await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
     await page.locator('.seg-tab[data-addr-type="bip84"]').click();
@@ -156,6 +195,7 @@ test.describe("Lab mnemonic & derive", () => {
 
   test("S4 account change indices path summary", async ({ page }) => {
     await page.goto("/");
+    await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
 
@@ -186,16 +226,16 @@ test.describe("Lab mnemonic & derive", () => {
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
     await page.locator('.seg-tab[data-addr-type="bip84"]').click();
+    await expect(page.locator("#deriveNetwork")).toHaveValue("test");
+    await expect(page.locator("#addrTableBody")).toContainText(new RegExp(GOLDEN.bip84testPrefix));
+    await expect(page.locator("#derivePathSummary")).toContainText(/testnet|signet|network/i);
+
+    await selectLabMainnet(page);
     await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
 
     await page.locator("#deriveNetwork").selectOption("test");
     await page.waitForTimeout(500);
     await expect(page.locator("#addrTableBody")).toContainText(new RegExp(GOLDEN.bip84testPrefix));
-    await expect(page.locator("#derivePathSummary")).toContainText(/testnet|signet|network/i);
-
-    await page.locator("#deriveNetwork").selectOption("main");
-    await page.waitForTimeout(500);
-    await expect(page.locator("#addrTableBody")).toContainText(GOLDEN.bip84);
   });
 
   test("S6 copy address feedback", async ({ page }) => {
@@ -214,13 +254,14 @@ test.describe("Lab mnemonic & derive", () => {
     await page.locator("#addrTableBody button").filter({ hasText: /^QR$/ }).first().click();
     await expect(page.locator("#qrModal")).toBeVisible();
     await expect(page.locator("#qrModalImg")).toBeVisible();
-    await expect(page.locator("#qrModalText")).toContainText(/bc1/);
+    await expect(page.locator("#qrModalText")).toContainText(/tb1|bc1/);
     await page.locator("#btnQrClose").click();
     await expect(page.locator("#qrModal")).toBeHidden();
   });
 
   test("S8 watch-only zpub then xpub pads", async ({ page }) => {
     await page.goto("/");
+    await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
     await page.locator("#btnWatchOnly").click();
@@ -266,7 +307,17 @@ test.describe("Lab mnemonic & derive", () => {
     await page.locator("#btnSeedQr").click();
     await expect(page.locator("#qrModal")).toBeVisible({ timeout: 10_000 });
     await expect(page.locator("#qrModalTitle")).toContainText(/Seed|sensitive|QR/i);
+    await expect(page.locator("#qrModalImg")).toBeVisible();
+    await expect(page.locator("#qrModalText")).toContainText(/abandon/i);
     await page.locator("#btnQrClose").click();
+  });
+
+  test("S15b invalid phrase cannot Seed QR", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#mnemonic").fill("not a real seed phrase here at all xx");
+    await page.locator("#btnSeedQr").click();
+    await expect(page.locator("#qrModal")).toBeHidden();
+    await expect(page.locator("#status")).toContainText(/Invalid|cannot QR/i);
   });
 
   test("S16 send addresses → Network session bridge", async ({ page }) => {
@@ -278,7 +329,7 @@ test.describe("Lab mnemonic & derive", () => {
     await page.locator("#balAck").check();
     await page.locator("#btnLoadLab").click();
     const addrs = await page.locator("#balAddrs").inputValue();
-    expect(addrs).toMatch(/bc1/i);
+    expect(addrs).toMatch(/tb1|bc1/i);
     expect(addrs.toLowerCase()).not.toContain("abandon");
     // Mechanical: only address-shaped tokens — no BIP-39 wordlist tokens in the box
     const tokens = addrs.split(/[\s,;]+/).filter(Boolean);

@@ -772,8 +772,7 @@
       }
       const result = await BIP39Lab.deriveAddresses(m, pp, path);
       fillAddressTable(result);
-      // Bridge for Network page: addresses only (never mnemonic)
-      saveSessionAddresses(result);
+      // Do not write sessionStorage here — only Send addresses → Network
       updatePathSummary(path, (result.rows && result.rows.length) || path.count);
       const plain =
         "Done offline. Listed " +
@@ -1667,20 +1666,43 @@
   }
 
   async function seedQr() {
-    const m = $("mnemonic").value.trim();
+    const field = $("mnemonic");
+    const m = field ? String(field.value || "").trim().replace(/\s+/g, " ") : "";
     if (!m) {
       setStatus("No mnemonic to QR.", "err");
       return;
     }
-    if (!confirm("Show a QR of the recovery phrase? Only continue on a private air-gapped machine.")) {
+    if (!BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
+      setStatus("Invalid words or checksum — cannot QR as a backup.", "err");
       return;
     }
-    await showQr(m, "Seed phrase (sensitive)");
+    if (
+      !confirm(
+        "This will show a QR of the full recovery phrase from the live mnemonic field. Continue only on a private air-gapped machine."
+      )
+    ) {
+      return;
+    }
+    const title = $("qrModalTitle");
+    if (title) title.textContent = "Seed phrase QR (sensitive)";
+    await showQr(m, "Seed phrase (sensitive) — live field");
   }
 
-  function printBackup() {
-    const m = $("mnemonic").value.trim();
-    const words = m ? m.split(/\s+/).filter(Boolean) : [];
+  async function printBackup() {
+    const field = $("mnemonic");
+    const m = field ? String(field.value || "").trim().replace(/\s+/g, " ") : "";
+    if (!m || !BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
+      setStatus("Invalid words or checksum — cannot print as a backup.", "err");
+      return;
+    }
+    if (
+      !confirm(
+        "This will print the full recovery phrase from the live mnemonic field. Continue only if this machine and printer are trusted."
+      )
+    ) {
+      return;
+    }
+    const words = m.split(/\s+/).filter(Boolean);
     const ol = $("printWordList");
     if (ol) {
       ol.innerHTML = "";
@@ -1711,6 +1733,13 @@
   }
 
   async function onGenerate() {
+    const cur = $("mnemonic") ? String($("mnemonic").value || "").trim() : "";
+    if (cur) {
+      if (!confirm("Generate will replace the current phrase in this tab. Continue?")) {
+        setStatus("Generate cancelled — current phrase kept.", "");
+        return;
+      }
+    }
     const n = parseInt($("wordCount").value, 10);
     const m = await BIP39Lab.generateMnemonic(n);
     $("mnemonic").value = m;
@@ -1800,7 +1829,9 @@
     });
 
     if ($("btnSeedQr")) $("btnSeedQr").addEventListener("click", () => seedQr().catch(console.error));
-    if ($("btnPrintBackup")) $("btnPrintBackup").addEventListener("click", printBackup);
+    if ($("btnPrintBackup")) {
+      $("btnPrintBackup").addEventListener("click", () => printBackup().catch(console.error));
+    }
     if ($("btnSendNetwork")) $("btnSendNetwork").addEventListener("click", sendToNetwork);
     if ($("btnDice")) {
       $("btnDice").addEventListener("click", () => {

@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.5" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.6" />
 </head>
 <body>
   <div class="app">
@@ -128,10 +128,11 @@
       </header>
 
       <main class="content">
-        <div class="warn" role="note">
+        <div class="warn" role="note" id="labSafetyBanner">
           <strong>Air-gap recommended.</strong>
-          All cryptography runs in this page. Nothing is written to disk or sent to a server from here.
-          Do not paste a real recovery phrase on a machine you do not trust.
+          Crypto stays in this tab. Progress/theme may be saved in the browser.
+          Derived addresses go to Network only after explicit opt-in.
+          Do not use a funded phrase here.
         </div>
 
         <!-- Panel: Lab -->
@@ -781,8 +782,8 @@
             <details class="help-fold teach-only" data-private>
               <summary>About Seed QR, print, Network handoff</summary>
               <p class="control-help">
-                Seed QR shows the recovery phrase as a scannable code — only on an air-gapped machine you trust.
-                Print backup never uploads data. Network handoff stores <em>addresses only</em> in sessionStorage.
+                Seed QR and Print only work after the live phrase validates. Each asks you to confirm that you are showing or printing the full recovery phrase.
+                Network handoff stores <em>addresses only</em> in sessionStorage, and only when you click Send addresses.
               </p>
             </details>
             <div class="field-ro" data-private>
@@ -873,8 +874,8 @@
                     </span>
                   </span>
                   <select id="deriveNetwork">
-                    <option value="main" selected>Mainnet</option>
-                    <option value="test">Testnet / Signet paths (tb1…)</option>
+                    <option value="test" selected>Testnet / Signet paths (tb1…)</option>
+                    <option value="main">Mainnet</option>
                   </select>
                 </label>
               </div>
@@ -1527,11 +1528,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.5"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.5"></script>
-  <script src="js/glossary.js?v=0.16.5"></script>
-  <script src="js/help-ui.js?v=0.16.5"></script>
-  <script src="js/learn-levels.js?v=0.16.5"></script>
-  <script src="js/app.js?v=0.16.5"></script>
+  <script src="js/site-version.js?v=0.16.6"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.6"></script>
+  <script src="js/glossary.js?v=0.16.6"></script>
+  <script src="js/help-ui.js?v=0.16.6"></script>
+  <script src="js/learn-levels.js?v=0.16.6"></script>
+  <script src="js/app.js?v=0.16.6"></script>
 </body>
 </html>

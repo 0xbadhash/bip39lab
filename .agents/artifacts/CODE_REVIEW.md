@@ -1,14 +1,14 @@
 # CODE-REVIEW
 
 **Marker:** CODE-REVIEW  
-**Base:** v0.16.4 · **Head:** B–H classroom  
-**Date:** 2026-08-13  
+**Base:** v0.16.5 · **Head:** P0 lab-safety  
+**Date:** 2026-08-18  
 
 ## Scope
-Recovery drill, Extra help C/D/E/G, glossary F, PSBT H.
+Lab banner, Seed QR/print walls, Testnet default, session handoff, leak-ack, light `.warn` contrast. No Figure/Card. No P1 honesty pass.
 
 ## Secrets
-Public pubs, educational PSBT only.
+None.
 
 ## Findings
 ### P0

@@ -21,6 +21,12 @@ export async function pasteMnemonic(page: Page, text: string) {
   await page.waitForTimeout(450);
 }
 
+/** Mainnet goldens (abandon). Lab default network is Testnet. */
+export async function selectLabMainnet(page: Page) {
+  await page.locator("#deriveNetwork").selectOption("main");
+  await page.waitForTimeout(400);
+}
+
 export async function waitForTableRows(page: Page, min = 5) {
   await expect
     .poll(async () => page.locator("#addrTableBody tr:not(.empty-row)").count(), {

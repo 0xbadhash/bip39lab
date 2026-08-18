@@ -164,7 +164,7 @@
     if (!list.length) {
       setStatus(
         $("balStatus"),
-        "No Lab addresses in this browser session. Open Lab, Generate/derive, then return here.",
+        "No Lab addresses in this browser session. On Lab, click Send addresses → Network after you opt in.",
         "err"
       );
       return;

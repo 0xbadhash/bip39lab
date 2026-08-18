@@ -16,6 +16,8 @@ test.describe("Network page E2E", () => {
     expect(netCsp).toMatch(/connect-src[^;]*('self'|mempool\.space)/);
     expect(netCsp).not.toMatch(/connect-src\s+'none'/);
 
+    await expect(page.locator("#balAck").locator("xpath=..")).toContainText(/mempool proxy/i);
+    await expect(page.locator("#balAck").locator("xpath=..")).toContainText(/mempool\.space/i);
     await expect(page.locator("#btnFetchBal")).toBeDisabled();
     await expect(page.locator("#btnLoadLab")).toBeDisabled();
     // Visible gate: hint present while disabled
@@ -80,10 +82,8 @@ test.describe("Network page E2E", () => {
     await page.locator("#balAck").check();
     await page.locator("#btnLoadLab").click();
     const addrs = await page.locator("#balAddrs").inputValue();
-    expect(addrs.length).toBeGreaterThan(10);
-    expect(addrs).toMatch(/bc1/i);
-    expect(addrs.toLowerCase()).not.toContain("abandon");
-    await expect(page.locator("#balStatus")).toContainText(/Loaded|address/i);
+    expect(addrs.trim().length).toBe(0);
+    await expect(page.locator("#balStatus")).toContainText(/address|session|Lab|none|empty|need/i);
   });
 
   test("S33 load lab without ack fails", async ({ page }) => {

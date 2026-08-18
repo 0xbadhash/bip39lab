@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S79 · Playwright 98 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S80 · Playwright 100 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S79 · Playwright 98 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
 
-`Product: 0.16.5 · Contract: 2 · Last aligned: 2026-08-13 · Scenarios: S0–S79 · Playwright S-ids: 98`
+`Product: 0.16.6 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S80 · Playwright S-ids: 100`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **98** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **100** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S79** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S80** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -458,9 +458,10 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 
 ### S0 — Smoke
 Open Lab → title Offline BIP-39 lab; Generate visible; **6** nav (Lab…Glossary, **includes Shamir**, no About/Balance); Offline crypto + airgap chips; CSP `connect-src 'none'`.
+`#labSafetyBanner`: crypto stays in this tab; progress/theme may be saved; addresses to Network only after opt-in; do not use a funded phrase. Must **not** say “nothing is written to disk or sent to a server.”
 
 ### S0b — Theme
-Theme toggles dark/light; page usable.
+Theme toggles dark/light; page usable. Light-theme `#labSafetyBanner` contrast ≥ 4.5:1. Sidebar classroom controls stay readable.
 
 ### S0c — Keyboard `?`
 Focus body → `?` → Tools panel + path playground.
@@ -470,7 +471,10 @@ Focus body → `?` → Tools panel + path playground.
 ## Lab mnemonic & table
 
 ### S1 — Generate 12
-Word count 12 → Generate → 12 words; entropy `128 bits…`; ≥5 table rows; default `bc1p`.
+Word count 12 → Generate → 12 words; entropy `128 bits…`; ≥5 table rows; default network Testnet → `tb1p`.
+
+### S80 — Generate replace confirm
+After a phrase exists, Generate asks confirm; dismiss keeps phrase; accept replaces.
 
 ### S1b — Generate 24
 Word count 24 → Generate → 24 words; entropy `256 bits…`.
@@ -491,7 +495,7 @@ BIP84 golden → passphrase `test` → address ≠ golden; clear passphrase → 
 Indices 10 → 10 rows; change 1 → path mentions change; account 1 → ≠ golden; reset 0/0/5 → golden.
 
 ### S5 — Mainnet / testnet
-Main BIP84 golden → Network Test → `tb1…` → Main restores golden.
+Default Test → `tb1…` → Main restores abandon BIP84 golden → Test again `tb1`.
 
 ### S6 — Copy
 Copy first address → Copied / `#copyFeedback`.
@@ -509,10 +513,13 @@ Hide private → mnemonic hidden; Clear → empty mnemonic + empty table.
 Garbage → no valid abandon goldens.
 
 ### S15 — Seed QR
-Confirm dialog → seed QR modal (careful).
+Paste valid phrase → confirm → `#qrModal` visible with seed image + live words.
+
+### S15b — Invalid Seed QR
+Garbage words → no modal; status refuses QR.
 
 ### S16 — Send → Network
-Lab addresses → Network session Load works (no mnemonic in Network).
+**Send addresses → Network** writes session; Load works (no mnemonic). Derive alone does not fill session.
 
 ---
 
@@ -603,6 +610,7 @@ Multisig → Lab; Multisig → Network.
 
 ### S32 — Shell + gate
 Network heading; 6-nav; CSP mempool/`self`; balances gated until ack.
+Leak-ack copy: addresses and IP go to this site’s mempool proxy, then mempool.space.
 
 ### S13b — Fee snapshot
 Fetch → sat/vB bands, traffic, example; status OK (needs public API or proxy).
@@ -611,7 +619,8 @@ Fetch → sat/vB bands, traffic, example; status OK (needs public API or proxy).
 Mnemonic rejected; golden address + ack → row status ok|unknown|error.
 
 ### S13d — Session bridge
-Lab → Load from Lab on Network → addresses only.
+Derive on Lab without Send → Network Load finds **no** session addresses.
+(S16 is the explicit handoff.)
 
 ### S33 — No ack
 Load Lab disabled without ack.
