@@ -757,7 +757,23 @@
     updatePathSummary(path, path.count);
     if (!m) {
       clearAddressTable();
+      if (!quiet) {
+        setStatus("Missing data — generate or paste a recovery phrase first.", "err");
+      }
       setPlainStatus("No phrase yet — generate one or paste a valid recovery phrase.", "");
+      return;
+    }
+    const wordN = m.split(/\s+/).filter(Boolean).length;
+    if (!ENT_BITS_BY_WORDS[wordN]) {
+      if (!quiet) {
+        setStatus(
+          "Invalid length (" + wordN + " words) — need 12, 15, 18, 21, or 24 words.",
+          "err"
+        );
+      }
+      clearAddressTable("Invalid length — need 12/15/18/21/24 words.");
+      setPlainStatus("Invalid length — addresses cannot be listed until word count is valid.", "err");
+      await refreshMnemonicEntropy();
       return;
     }
     if (!quiet) setStatus("Working…", "");
@@ -834,6 +850,19 @@
     }
     setPlainStatus("Cleared — nothing was saved to disk. Tools will use TEST DATA if you run them next.", "");
     setStatus("Cleared (memory fields only; nothing was stored).", "");
+  }
+
+  function labSiteVersionLabel() {
+    var chip = document.querySelector("[data-site-version]");
+    if (chip) {
+      var t = String(chip.textContent || "").trim();
+      if (t && t !== "…" && t !== "...") return t;
+    }
+    if (typeof BIP39LAB_SITE_TAG === "string" && BIP39LAB_SITE_TAG) return BIP39LAB_SITE_TAG;
+    if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
+      return "v" + BIP39LAB_SITE_VERSION;
+    }
+    return "v0.16.6";
   }
 
   function setStatus(text, kind) {
@@ -2019,8 +2048,8 @@
     updateAirgapChip();
     initTheme();
 
-    const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
-    setStatus("Ready (offline lab v" + ver + "). Generate fills the address table automatically.", "");
+    const ver = labSiteVersionLabel();
+    setStatus("Ready (offline lab " + ver + "). Generate fills the address table automatically.", "");
     setPlainStatus(
       "Tip: Generate a phrase to fill the table. Tools panel has path playground, PSBT inspect, descriptors. Shortcuts: G / D / ?",
       ""

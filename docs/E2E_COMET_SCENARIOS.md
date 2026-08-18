@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S80 · Playwright 100 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S81 · Playwright 102 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S80 · Playwright 100 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
 
-`Product: 0.16.6 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S80 · Playwright S-ids: 100`
+`Product: 0.16.6 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S81 · Playwright S-ids: 102`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **100** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **102** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S80** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S81** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -459,6 +459,13 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 ### S0 — Smoke
 Open Lab → title Offline BIP-39 lab; Generate visible; **6** nav (Lab…Glossary, **includes Shamir**, no About/Balance); Offline crypto + airgap chips; CSP `connect-src 'none'`.
 `#labSafetyBanner`: crypto stays in this tab; progress/theme may be saved; addresses to Network only after opt-in; do not use a funded phrase. Must **not** say “nothing is written to disk or sent to a server.”
+Sidebar chip HTML (before JS) and `#status` Ready line show the same product tag (not `0.11.0-scure`).
+
+### S81 — Empty Validate & derive
+Clear mnemonic → Validate & derive → `#status` missing-data (not silent Ready).
+
+### S11b — 11-word length status
+11 abandon words → `#status` says length (not wordlist/checksum).
 
 ### S0b — Theme
 Theme toggles dark/light; page usable. Light-theme `#labSafetyBanner` contrast ≥ 4.5:1. Sidebar classroom controls stay readable.

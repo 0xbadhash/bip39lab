@@ -41,6 +41,15 @@ def test_stamp_comet_header_updates_product_and_range():
         assert "S70" in comet
 
 
+def test_html_chip_has_semver_before_js():
+    ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    tag = f"v{ver}"
+    for name in ("index.html", "multisig.html", "network.html", "shamir.html", "slip39.html"):
+        html = (ROOT / "web" / name).read_text(encoding="utf-8")
+        assert f">{tag}</span>" in html, name
+        assert 'data-site-version title="Release tag">…</span>' not in html
+
+
 def test_stamp_site_version_invokes_comet_stamp():
     src = (ROOT / "scripts" / "stamp_site_version.py").read_text(encoding="utf-8")
     assert "stamp_comet_header" in src

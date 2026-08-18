@@ -1,12 +1,13 @@
 # BEHAVIOR-REPORT
 
 **Marker:** BEHAVIOR-REPORT  
-**Target:** HTTP /VERSION + PLAYWRIGHT_LAST.md  
+**Target:** stamp + derive status  
 
 | Clause | Status | Evidence |
 |--------|--------|----------|
-| Files on disk | pass | web/VERSION + web/PLAYWRIGHT_LAST.md = 0.16.6 |
-| Stamp script | pass | stamp_site_version writes both |
-| No product bump | pass | VERSION 0.16.6 |
+| Chip HTML v0.16.6 | pass | S0 |
+| No scure in status | pass | S0 |
+| Empty derive | pass | S81 |
+| 11-word length | pass | S11b |
 
 NEXT_SKILL=/pr_review --validate

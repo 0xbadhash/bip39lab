@@ -1,38 +1,34 @@
-# PR Draft: publish /VERSION and PLAYWRIGHT_LAST.md
+# PR Draft: one stamp 0.16.6 + derive status
 
-**Spec:** `.agents/specs/2026-08-18-publish-e2e-stamps.md`
+**Spec:** `.agents/specs/2026-08-18-stamp-and-derive-status.md`
 
 ## What Problem This Solves
 
-Agents got HTTP 404 on `/VERSION` and `/PLAYWRIGHT_LAST.md` while live product was already 0.16.6.
+Chip HTML was `…` until JS; Ready status used leftover `0.11.0-scure`. Empty derive stayed Ready. 11-word status said checksum.
 
 ## Why This Change Was Made
 
-E2E lock needs live === comet === PLAYWRIGHT_LAST === /VERSION. Docs/static publish only. No product bump. No tag past v0.16.6.
-
-## User Impact
-
-Those two URLs 200 on bip39.catalyxt.xyz. P0 lab-safety unchanged.
+CEO stamp lock + two status bugs. Stay on 0.16.6. No P0 isolation reopen.
 
 ## Traceability
 
-| AC | Evidence |
-|----|----------|
-| web/VERSION | `test_http_version_and_playwright_last_match_sot` |
-| PLAYWRIGHT_LAST | same + stamp script |
-| stamp writes both | `test_stamp_site_version_invokes_comet_stamp` |
+| AC | Test |
+|----|------|
+| Chip + Ready 0.16.6 | S0, test_html_chip_has_semver_before_js |
+| Empty derive | S81 |
+| 11-word length | S11b |
 
 ## Red-proof
 
-- red_cmd: `.venv/bin/python -m pytest -q tests/test_stamp_comet_header.py::test_http_version_and_playwright_last_match_sot`
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_stamp_comet_header.py::test_http_version_and_playwright_last_match_sot`
+- red_cmd: `npx playwright test e2e/lab.spec.ts -g "S81|S11b"`
+- green_cmd: `npx playwright test e2e/lab.spec.ts -g "S81|S11b"`
 
 ## Evidence pack
 
-pytest stamp tests + check_web_e2e. Product still 0.16.6 / 100 S-ids.
+pytest 104 + targeted Playwright. Full suite at ship.
 
 ## Things that look bad but are actually fine
 
-1. No new git tag — CEO: do not tag past the docs.
-2. site-version.js re-stamped in place at v0.16.6 (no bump).
-3. Untracked `config/` not in this ship.
+1. Product stays 0.16.6 (no bump, no new tag).
+2. `BIP39Lab.VERSION` 0.11.0-scure remains in the bundle as library build id — UI no longer shows it.
+3. P0 banner/QR/session/testnet/leak/contrast not reopened.

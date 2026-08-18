@@ -2,7 +2,7 @@
 
 **Marker:** CODE-REVIEW  
 **Date:** 2026-08-18  
-**Scope:** HTTP stamps only. No P0 reopen.
+**Scope:** chip HTML, Ready status site tag, empty/length derive messages.
 
 ## Findings
 ### P0

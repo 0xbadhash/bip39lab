@@ -23,7 +23,12 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipOffline")).toContainText(/Offline/i);
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
-    await expect(page.locator("[data-site-version]").first()).toContainText(/^v\d+\.\d+\.\d+$/);
+    const chip = page.locator("[data-site-version]").first();
+    await expect(chip).toContainText(/^v0\.16\.6$/);
+    const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
+    expect(htmlChip).toContain("v0.16.6");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.6/);
+    await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
     await labCspOffline(page);
@@ -287,6 +292,23 @@ test.describe("Lab mnemonic & derive", () => {
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await expect(page.locator("#entropyMnemonic")).toHaveText("—");
     await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
+  });
+
+  test("S81 empty validate-and-derive missing data", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#btnClear").click();
+    await page.locator("#btnDerive").click();
+    await expect(page.locator("#status")).toContainText(/Missing data|paste a recovery phrase/i);
+    await expect(page.locator("#status")).not.toContainText(/^Ready/i);
+  });
+
+  test("S11b eleven-word status says length", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#mnemonic").fill("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon");
+    await page.locator("#btnDerive").click();
+    await expect(page.locator("#status")).toContainText(/length|11 word/i);
+    await expect(page.locator("#status")).not.toContainText(/wordlist or checksum/i);
+    await expect(page.locator("#entropyMnemonic")).toContainText(/length|12\/15\/18\/21\/24/i);
   });
 
   test("S11 invalid mnemonic", async ({ page }) => {

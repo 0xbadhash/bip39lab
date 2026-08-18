@@ -69,6 +69,16 @@ def main() -> int:
             rf'href="\1?v={ver}"',
             new,
         )
+        new = re.sub(
+            r'(<span class="site-version-chip" data-site-version[^>]*>)([^<]*)(</span>)',
+            rf'\1{tag}\3',
+            new,
+        )
+        new = re.sub(
+            r'(<span class="site-version-chip" data-site-version )title="[^"]*"',
+            rf'\1title="Site release {tag}"',
+            new,
+        )
         if new != text:
             html.write_text(new, encoding="utf-8")
             print(f"  cache-bust assets in {html.relative_to(ROOT)}")
