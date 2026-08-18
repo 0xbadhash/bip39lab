@@ -2,7 +2,7 @@
   "card_id": null,
   "phase": "init",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-18-p0-lab-safety.md",
-  "task": "P0 lab-safety",
-  "waiver": "chore"
+  "spec_id": ".agents/specs/2026-08-18-publish-e2e-stamps.md",
+  "task": "publish HTTP stamps",
+  "waiver": "docs-only"
 }
