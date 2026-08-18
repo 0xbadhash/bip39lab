@@ -24,10 +24,10 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.7$/);
+    await expect(chip).toContainText(/^v0\.16\.8$/);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.7");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.7/);
+    expect(htmlChip).toContain("v0.16.8");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.8/);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
@@ -302,8 +302,11 @@ test.describe("Lab mnemonic & derive", () => {
     await expect(page.locator("#card-addresses .card-lede")).toContainText(/this tab|opt-in/i);
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
-    await expect(page.locator("#panel-tools")).not.toContainText(/Nothing is sent to a server/i);
-    await expect(page.locator("[data-cmp-step='1']")).toContainText(/this tab/i);
+    await page.locator("#btnTeach").click();
+    await expect(page.locator("#btnTeach")).toContainText(/Extra help: Off/i);
+    await expect(page.locator("#cmpHonestyIntro")).toBeVisible();
+    await expect(page.locator("#cmpHonestyIntro")).toContainText(/opt in on Network/i);
+    await expect(page.locator("#panel-tools")).not.toContainText(/Nothing is sent to a server|nothing is sent/i);
   });
 
   test("S81 empty validate-and-derive missing data", async ({ page }) => {

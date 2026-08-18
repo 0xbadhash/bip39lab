@@ -1,34 +1,34 @@
-# PR Draft: v0.16.7 comet range + Receive/Compare honesty
+# PR Draft: v0.16.8 Compare opt-in always visible
 
-**Spec:** `.agents/specs/2026-08-18-comet-range-honesty.md`
+**Spec:** `.agents/specs/2026-08-18-compare-optin-visible.md`
 
 ## What Problem This Solves
 
-Comet prompts still said S0–S71. Receive/Compare said nothing is sent.
+Compare opt-in was Extra-help-only.
 
 ## Why This Change Was Made
 
-CEO leftovers. Increment to 0.16.7. Do not reopen P0 walls or S81/S11b rec-flow.
+CEO leftover. Bump 0.16.8. Do not reopen P0 or rec-flow.
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| No S0–S71 | test_comet_and_agent_prompt_have_no_stale_s0_s71 |
-| Honest copy | S82 |
-| Stamps 0.16.7 | S0 + HTTP files |
+| Opt-in Extra help Off | S82 `#cmpHonestyIntro` |
+| nothing is sent banned | S82 |
+| Stamp 0.16.8 | S0 chip HTML |
 
 ## Red-proof
 
-- red_cmd: `.venv/bin/python -m pytest -q tests/test_stamp_comet_header.py::test_comet_and_agent_prompt_have_no_stale_s0_s71`
-- green_cmd: same
+- red_cmd: `npx playwright test e2e/lab.spec.ts -g S82`
+- green_cmd: `npx playwright test e2e/lab.spec.ts -g S82`
 
 ## Evidence pack
 
-pytest 105 · Playwright 103 · check_web_e2e
+pytest 105 · Playwright 103
 
 ## Things that look bad but are actually fine
 
-1. Historical “Fixed” table now says S0–S82 after stamp replace — still a history row, not a live pin.
+1. Step 1 Extra help still repeats opt-in.
 2. S81/S11b unchanged.
-3. Dark/amber identity unchanged.
+3. Lab CSP still connect-src none.

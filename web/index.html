@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.7" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.8" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.7">v0.16.7</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.8">v0.16.8</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -1235,9 +1235,10 @@
                 <span class="help-tip-panel" hidden></span>
               </span>
             </h2>
-            <p class="control-help">
+            <p class="control-help" id="cmpHonestyIntro">
               <strong>Same BIP-39 mnemonic + different optional passphrases = different wallets (addresses).</strong>
               This demo runs in this tab (crypto stays here). Progress/theme may be saved in the browser.
+              Addresses leave only if you opt in on Network.
               It uses the Lab phrase when you have one, or a throwaway test phrase.
             </p>
 
@@ -1531,11 +1532,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.7"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.7"></script>
-  <script src="js/glossary.js?v=0.16.7"></script>
-  <script src="js/help-ui.js?v=0.16.7"></script>
-  <script src="js/learn-levels.js?v=0.16.7"></script>
-  <script src="js/app.js?v=0.16.7"></script>
+  <script src="js/site-version.js?v=0.16.8"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.8"></script>
+  <script src="js/glossary.js?v=0.16.8"></script>
+  <script src="js/help-ui.js?v=0.16.8"></script>
+  <script src="js/learn-levels.js?v=0.16.8"></script>
+  <script src="js/app.js?v=0.16.8"></script>
 </body>
 </html>

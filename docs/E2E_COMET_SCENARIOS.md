@@ -39,7 +39,7 @@ scenarios: S0–S82 · Playwright 103 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.7 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S82 · Playwright S-ids: 103`
+`Product: 0.16.8 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S82 · Playwright S-ids: 103`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -462,7 +462,8 @@ Open Lab → title Offline BIP-39 lab; Generate visible; **6** nav (Lab…Glossa
 Sidebar chip HTML (before JS) and `#status` Ready line show the same product tag (not `0.11.0-scure`).
 
 ### S82 — Receive / Compare honesty
-Receive lede and Compare step 1 do **not** say “nothing is sent.” Copy matches P0: crypto in this tab; progress/theme may persist; Network only after opt-in.
+Receive lede and Compare intro (`#cmpHonestyIntro`) do **not** say “nothing is sent.”
+Compare opt-in (“Addresses leave only if you opt in on Network.”) is **visible with Extra help Off**. Extra help may repeat it.
 
 ### S81 — Empty Validate & derive
 Clear mnemonic → Validate & derive → `#status` missing-data (not silent Ready).
