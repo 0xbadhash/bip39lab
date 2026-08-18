@@ -54,7 +54,7 @@ If C fails, open Lab HTML with `?t=T` and read `[data-site-version]` / visible v
 ### 0.3 Parse stamps (do not invent)
 
 From **doc A** (or B):
-- `DOC_PRODUCT` = the line starting with `Product:` (e.g. `Product: 0.16.2 · Contract: 2 · Last aligned: … · Scenarios: S0–S71 · Playwright S-ids: 90`)
+- `DOC_PRODUCT` = the line starting with `Product:` (discover `Scenarios:` and `Playwright S-ids:` from that line)
 - `DOC_VER` = semver X.Y.Z inside that line
 - `DOC_SCENARIO_RANGE` = the `Scenarios: …` field (or S0–S… range in the line)
 - `DOC_N` = integer after `Playwright S-ids:` (denominator for scoring)
@@ -99,7 +99,7 @@ Rules:
 | MATCH (live==doc) | YES|NO |
 ```
 
-### 0.5 Scenario set is also discovered (not hardcoded S0–S71)
+### 0.5 Scenario set is also discovered (not hardcoded in sticky instructions)
 
 - Execute **every scenario ID** that appears in the **report template** of the *fresh* doc (and lettered variants listed there).
 - If the stamped range is wider than the template, use the **template rows** as the mandatory list; note any catalogue IDs not in the template as “doc gap.”

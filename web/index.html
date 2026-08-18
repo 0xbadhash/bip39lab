@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.6" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.7" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.6">v0.16.6</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.7">v0.16.7</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -853,7 +853,8 @@
               <h2>Receive addresses</h2>
             </div>
             <p class="card-lede">
-              Offline “account numbers” from your phrase — nothing is sent to the internet from this page.
+              Offline “account numbers” from your phrase. Crypto stays in this tab.
+              Progress/theme may be saved in the browser. Addresses go to Network only after explicit opt-in.
             </p>
             <details class="help-fold teach-only">
               <summary>Bank vault metaphor</summary>
@@ -1236,13 +1237,15 @@
             </h2>
             <p class="control-help">
               <strong>Same BIP-39 mnemonic + different optional passphrases = different wallets (addresses).</strong>
-              This demo is offline and step-by-step. It uses the Lab phrase when you have one, or a throwaway test phrase.
+              This demo runs in this tab (crypto stays here). Progress/theme may be saved in the browser.
+              It uses the Lab phrase when you have one, or a throwaway test phrase.
             </p>
 
             <div class="cmp-step" data-cmp-step="1">
               <h3 class="cmp-step-title">Step 1 — Mnemonic (the seed words)</h3>
               <p class="control-help teach-only" style="margin-top:0">
-                Source is the same field as Lab tab (<code>#mnemonic</code>). Nothing is sent to a server.
+                Source is the same field as Lab tab (<code>#mnemonic</code>). Crypto stays in this tab.
+                Progress/theme may be saved. Addresses leave only if you opt in on Network.
               </p>
               <p id="cmpMnSource" class="control-help" style="margin:0.35rem 0">Source: —</p>
               <pre class="out" id="cmpMnPreview" style="white-space:pre-wrap;word-break:break-word">—</pre>
@@ -1528,11 +1531,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.6"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.6"></script>
-  <script src="js/glossary.js?v=0.16.6"></script>
-  <script src="js/help-ui.js?v=0.16.6"></script>
-  <script src="js/learn-levels.js?v=0.16.6"></script>
-  <script src="js/app.js?v=0.16.6"></script>
+  <script src="js/site-version.js?v=0.16.7"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.7"></script>
+  <script src="js/glossary.js?v=0.16.7"></script>
+  <script src="js/help-ui.js?v=0.16.7"></script>
+  <script src="js/learn-levels.js?v=0.16.7"></script>
+  <script src="js/app.js?v=0.16.7"></script>
 </body>
 </html>

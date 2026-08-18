@@ -1,8 +1,8 @@
 {
   "card_id": null,
-  "phase": "init",
+  "phase": "approved",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-18-stamp-and-derive-status.md",
-  "task": "stamp+derive status",
+  "spec_id": ".agents/specs/2026-08-18-comet-range-honesty.md",
+  "task": "v0.16.7 comet+honesty",
   "waiver": "docs-only"
 }

@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S81 · Playwright 102 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S82 · Playwright 103 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -37,9 +37,9 @@ scenarios: S0–S81 · Playwright 102 tests · auto-stamped from e2e/ + VERSION
 > **STALE COPY CHECK:** If this file shows Product `0.13.9`, toggle name **Teach On/Off**, or score **`/68`**, you have an outdated copy. Re-fetch **now** from:
 > - Live: https://bip39.catalyxt.xyz/docs/E2E_COMET_SCENARIOS.md
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
-> Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
+> Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.6 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S81 · Playwright S-ids: 102`
+`Product: 0.16.7 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S82 · Playwright S-ids: 103`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -52,7 +52,7 @@ Agents re-reading **live** bip39.catalyxt.xyz may still see older copy until dep
 
 | Report issue | Status in repo |
 |--------------|----------------|
-| Score `/68` / template ends S56 | **Fixed** — report template S0–S71 + dynamic denominator (header Playwright count) |
+| Score `/68` / template ends S56 | **Fixed** — report template S0–S82 + dynamic denominator (header Playwright count) |
 | Teach vs Extra help | **Fixed** — doc uses **Extra help**; UI is Extra help |
 | Tools “no rail” vs toolsStepRail | **Fixed** — no mid-page rails; S44/S44b match Playwright |
 | Playwright “74 tests” | **Fixed** — header auto-stamps current S-id count (e.g. 89) |
@@ -61,7 +61,7 @@ Agents re-reading **live** bip39.catalyxt.xyz may still see older copy until dep
 | S61 localStorage | **Hardened** — reload asserts ticks + level |
 | S38/S39/S39b / S67 | **NEEDS-DOM** in template; covered by Playwright site-chrome + S67 |
 
-Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help + S0–S71.
+Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help + S0–S82.
 
 
 | Surface | URL | Playwright |
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **102** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **103** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S81** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S82** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -122,7 +122,7 @@ Preference is one `localStorage` flag across pages.
 ## PROMPT FOR COMET / PERPLEXITY
 
 ```text
-You are a browser QA agent for bip39lab. Execute the FULL suite S0–S71 (all
+You are a browser QA agent for bip39lab. Execute the FULL suite S0–S82 (all
 S-ids in Playwright titles + body of this file). Also complete the HUMAN
 COHERENCE checklist for EVERY page (section “Human process flows”).
 
@@ -159,7 +159,7 @@ makes sense / intuitive) per page. End with the Report template (score __ / N).
 
 ```text
 You are a product-UX auditor for bip39lab (https://bip39.catalyxt.xyz).
-Run this pass on EVERY shell after (or with) S0–S56. Do not skip pages.
+Run this pass on EVERY shell after (or with) S0–S82. Do not skip pages.
 
 GOAL: Verify the live UI, on-page descriptions, and security guidelines stay
 consistent with each other and with the product mental model in
@@ -452,7 +452,7 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 
 ---
 
-# Scenario catalogue (S0–S56)
+# Scenario catalogue (S0–S82)
 
 ## Lab shell
 
@@ -460,6 +460,9 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 Open Lab → title Offline BIP-39 lab; Generate visible; **6** nav (Lab…Glossary, **includes Shamir**, no About/Balance); Offline crypto + airgap chips; CSP `connect-src 'none'`.
 `#labSafetyBanner`: crypto stays in this tab; progress/theme may be saved; addresses to Network only after opt-in; do not use a funded phrase. Must **not** say “nothing is written to disk or sent to a server.”
 Sidebar chip HTML (before JS) and `#status` Ready line show the same product tag (not `0.11.0-scure`).
+
+### S82 — Receive / Compare honesty
+Receive lede and Compare step 1 do **not** say “nothing is sent.” Copy matches P0: crypto in this tab; progress/theme may persist; Network only after opt-in.
 
 ### S81 — Empty Validate & derive
 Clear mnemonic → Validate & derive → `#status` missing-data (not silent Ready).
@@ -1012,7 +1015,7 @@ Step rails: FAIL if any mid-page [data-step-rail] / *StepRail appears.
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (**S0–S71** + human process flows) against Lab, Multisig, Shamir, SLIP-39, Network. UI label is **Extra help** (not Teach); **no mid-page step rails**. Return the Report template including Human coherence, score with stamped S-id denominator, and ui_consistent / copy_aligned / flow_intuitive.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (**S0–S82** + human process flows) against Lab, Multisig, Shamir, SLIP-39, Network. UI label is **Extra help** (not Teach); **no mid-page step rails**. Return the Report template including Human coherence, score with stamped S-id denominator, and ui_consistent / copy_aligned / flow_intuitive.
 
 ---
 

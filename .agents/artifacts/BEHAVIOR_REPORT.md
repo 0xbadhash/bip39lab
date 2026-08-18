@@ -1,13 +1,13 @@
 # BEHAVIOR-REPORT
 
 **Marker:** BEHAVIOR-REPORT  
-**Target:** stamp + derive status  
+**Target:** v0.16.7 comet + honesty  
 
 | Clause | Status | Evidence |
 |--------|--------|----------|
-| Chip HTML v0.16.6 | pass | S0 |
-| No scure in status | pass | S0 |
-| Empty derive | pass | S81 |
-| 11-word length | pass | S11b |
+| Comet range | pass | no S0–S71 leftover |
+| Receive/Compare | pass | S82 |
+| Rec-flow | pass | S81 S11b kept |
+| Stamp | pass | 0.16.7 chip HTML |
 
 NEXT_SKILL=/pr_review --validate

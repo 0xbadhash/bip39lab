@@ -24,13 +24,15 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.6$/);
+    await expect(chip).toContainText(/^v0\.16\.7$/);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.6");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.6/);
+    expect(htmlChip).toContain("v0.16.7");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.7/);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
+    await expect(page.locator("#card-addresses")).not.toContainText(/nothing is sent/i);
+    await expect(page.locator("#panel-tools")).not.toContainText(/Nothing is sent to a server/i);
     await labCspOffline(page);
   });
 
@@ -292,6 +294,16 @@ test.describe("Lab mnemonic & derive", () => {
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await expect(page.locator("#entropyMnemonic")).toHaveText("—");
     await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
+  });
+
+  test("S82 receive and compare do not over-claim nothing-is-sent", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("#card-addresses .card-lede")).not.toContainText(/nothing is sent/i);
+    await expect(page.locator("#card-addresses .card-lede")).toContainText(/this tab|opt-in/i);
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#panel-tools")).toBeVisible();
+    await expect(page.locator("#panel-tools")).not.toContainText(/Nothing is sent to a server/i);
+    await expect(page.locator("[data-cmp-step='1']")).toContainText(/this tab/i);
   });
 
   test("S81 empty validate-and-derive missing data", async ({ page }) => {

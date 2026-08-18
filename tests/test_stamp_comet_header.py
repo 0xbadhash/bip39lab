@@ -19,6 +19,23 @@ def test_multisig_checklist_has_bip67_help_tip():
     )
 
 
+def test_comet_and_agent_prompt_have_no_stale_s0_s71():
+    for rel in (
+        "docs/E2E_COMET_SCENARIOS.md",
+        "docs/E2E_AGENT_PROMPT.md",
+        "web/docs/E2E_COMET_SCENARIOS.md",
+        "web/docs/E2E_AGENT_PROMPT.md",
+    ):
+        p = ROOT / rel
+        if not p.is_file() and p.is_symlink():
+            p = p.resolve()
+        if not p.is_file():
+            continue
+        text = p.read_text(encoding="utf-8")
+        assert "S0–S71" not in text, rel
+        assert "S0–S56" not in text, rel
+
+
 def test_stamp_comet_header_updates_product_and_range():
     r = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "stamp_comet_header.py"), "--root", str(ROOT)],

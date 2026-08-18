@@ -1,31 +1,26 @@
-# RELEASE_RUNBOOK — v0.16.6 HTTP stamps (no new tag)
-
-**Note:** Publish `/VERSION` + `/PLAYWRIGHT_LAST.md` only. Product stays **0.16.6**. **No tag** past v0.16.6.
-
-# RELEASE_RUNBOOK — v0.16.6 P0 lab-safety (prior)
+# RELEASE_RUNBOOK — v0.16.7 comet range + honesty
 
 **Marker:** RELEASE-RUNBOOK  
 **Date:** 2026-08-18  
-**Version:** 0.16.6  
-**Tag:** v0.16.6  
-**Spec:** `.agents/specs/2026-08-18-p0-lab-safety.md`  
+**Version:** 0.16.7  
+**Tag:** v0.16.7  
+**Spec:** `.agents/specs/2026-08-18-comet-range-honesty.md`
 
-## Smoke table
+## Smoke
 
 | Step | Exit |
 |------|------|
-| pytest | 0 (102) |
-| Playwright | 0 (100) |
+| pytest | 0 (105) |
+| Playwright | 0 (103) |
 | check_web_e2e | 0 |
 
-## Comet
-`Product: 0.16.6 · Scenarios: S0–S80 · Playwright S-ids: 100`  
-live === comet === PLAYWRIGHT_LAST === /VERSION === **0.16.6** (100 S-ids)
+## Stamp
+live === comet === PLAYWRIGHT_LAST === /VERSION === chip HTML === **0.16.7**
 
 ## Rollback
-`git checkout v0.16.5`
+`git checkout v0.16.6`
 
 ## §9
-1. Mainnet goldens still exist; default path is Testnet.  
-2. Quiz/theme storage is disclosed, not removed.  
-3. P1 honesty items not in this ship.
+1. Historical comet table now shows current range after auto-replace.
+2. P0 walls not reopened.
+3. S81/S11b rec-flow unchanged.
