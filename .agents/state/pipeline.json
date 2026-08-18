@@ -1,6 +1,6 @@
 {
   "card_id": null,
-  "phase": "approved",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-18-comet-range-honesty.md",
   "task": "v0.16.7 comet+honesty",
