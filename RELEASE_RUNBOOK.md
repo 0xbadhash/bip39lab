@@ -1,4 +1,8 @@
-# RELEASE_RUNBOOK — v0.16.6 P0 lab-safety
+# RELEASE_RUNBOOK — v0.16.6 HTTP stamps (no new tag)
+
+**Note:** Publish `/VERSION` + `/PLAYWRIGHT_LAST.md` only. Product stays **0.16.6**. **No tag** past v0.16.6.
+
+# RELEASE_RUNBOOK — v0.16.6 P0 lab-safety (prior)
 
 **Marker:** RELEASE-RUNBOOK  
 **Date:** 2026-08-18  
@@ -16,7 +20,7 @@
 
 ## Comet
 `Product: 0.16.6 · Scenarios: S0–S80 · Playwright S-ids: 100`  
-live === comet === PLAYWRIGHT_LAST = **100**
+live === comet === PLAYWRIGHT_LAST === /VERSION === **0.16.6** (100 S-ids)
 
 ## Rollback
 `git checkout v0.16.5`

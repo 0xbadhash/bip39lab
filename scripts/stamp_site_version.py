@@ -82,6 +82,35 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — release path must not hide stamp failure
         print(f"stamp_comet_header failed: {e}", file=sys.stderr)
         return 1
+    # HTTP stamps at nginx web root (live /VERSION and /PLAYWRIGHT_LAST.md)
+    n_ids = 0
+    s_range = "S?"
+    try:
+        from stamp_comet_header import collect_playwright_ids, scenario_range_label
+
+        ids = collect_playwright_ids(ROOT)
+        n_ids = len(ids)
+        s_range = scenario_range_label(ids)
+    except Exception as e:  # noqa: BLE001
+        print(f"playwright id collect failed: {e}", file=sys.stderr)
+        return 1
+    web_ver = ROOT / "web" / "VERSION"
+    web_ver.write_text(ver + "\n", encoding="utf-8")
+    print(f"stamped {web_ver.relative_to(ROOT)} → {ver}")
+    last = ROOT / "web" / "PLAYWRIGHT_LAST.md"
+    last.write_text(
+        (
+            f"# PLAYWRIGHT_LAST\n\n"
+            f"product: {ver}\n"
+            f"tag: {tag}\n"
+            f"s_ids: {n_ids}\n"
+            f"scenarios: {s_range}\n"
+            f"aligned: auto-stamped from VERSION + e2e/\n\n"
+            f"live === comet === PLAYWRIGHT_LAST === /VERSION === {ver}\n"
+        ),
+        encoding="utf-8",
+    )
+    print(f"stamped {last.relative_to(ROOT)} → {ver} (n={n_ids})")
     return 0
 
 

@@ -45,3 +45,14 @@ def test_stamp_site_version_invokes_comet_stamp():
     src = (ROOT / "scripts" / "stamp_site_version.py").read_text(encoding="utf-8")
     assert "stamp_comet_header" in src
     assert "stamp_comet_doc" in src
+    assert "PLAYWRIGHT_LAST.md" in src
+    assert 'web" / "VERSION' in src or "web/VERSION" in src
+
+
+def test_http_version_and_playwright_last_match_sot():
+    ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    web_ver = (ROOT / "web" / "VERSION").read_text(encoding="utf-8").strip()
+    last = (ROOT / "web" / "PLAYWRIGHT_LAST.md").read_text(encoding="utf-8")
+    assert web_ver == ver
+    assert f"product: {ver}" in last
+    assert f"=== {ver}" in last or f"=== {ver}\n" in last

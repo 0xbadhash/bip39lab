@@ -1,44 +1,38 @@
-# PR Draft: P0 lab-safety
+# PR Draft: publish /VERSION and PLAYWRIGHT_LAST.md
 
-**Spec:** `.agents/specs/2026-08-18-p0-lab-safety.md`
+**Spec:** `.agents/specs/2026-08-18-publish-e2e-stamps.md`
 
 ## What Problem This Solves
 
-Over-claimed “no disk / no server,” silent session leak of addresses, Seed QR/print without a valid live phrase, Mainnet default, leak-ack missing proxy, light-theme banner contrast.
+Agents got HTTP 404 on `/VERSION` and `/PLAYWRIGHT_LAST.md` while live product was already 0.16.6.
 
 ## Why This Change Was Made
 
-CEO P0 lab-safety for window 6 / bip39lab only. No P1 honesty pass. No visual redesign.
+E2E lock needs live === comet === PLAYWRIGHT_LAST === /VERSION. Docs/static publish only. No product bump. No tag past v0.16.6.
 
 ## User Impact
 
-Honest banner; Testnet default; QR/print walls; opt-in Network handoff; proxy-named leak-ack; readable light banner.
+Those two URLs 200 on bip39.catalyxt.xyz. P0 lab-safety unchanged.
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| Banner | S0 |
-| Contrast | S0b |
-| Testnet default | S1 tb1p, S5 |
-| Goldens | S2–S4 select main |
-| No silent session | S13d |
-| Seed QR | S15, S15b |
-| Handoff | S16 |
-| Leak-ack | S32 |
-| Generate wall | S80 |
+| web/VERSION | `test_http_version_and_playwright_last_match_sot` |
+| PLAYWRIGHT_LAST | same + stamp script |
+| stamp writes both | `test_stamp_site_version_invokes_comet_stamp` |
 
 ## Red-proof
 
-- red_cmd: `npx playwright test e2e/lab.spec.ts -g "S0 smoke"`
-- green_cmd: `npx playwright test e2e/lab.spec.ts -g "S0 smoke"`
+- red_cmd: `.venv/bin/python -m pytest -q tests/test_stamp_comet_header.py::test_http_version_and_playwright_last_match_sot`
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_stamp_comet_header.py::test_http_version_and_playwright_last_match_sot`
 
 ## Evidence pack
 
-Playwright + pytest + check_web_e2e at ship.
+pytest stamp tests + check_web_e2e. Product still 0.16.6 / 100 S-ids.
 
 ## Things that look bad but are actually fine
 
-1. Goldens still mainnet — testers select Main. Default is Testnet on purpose.
-2. sessionStorage still used for quiz docks and explicit address handoff.
-3. Progress/theme localStorage is disclosed in the banner.
+1. No new git tag — CEO: do not tag past the docs.
+2. site-version.js re-stamped in place at v0.16.6 (no bump).
+3. Untracked `config/` not in this ship.
