@@ -202,6 +202,8 @@
   }
 
   var HOUR_RETURN_KEY = "bip39lab.hourReturn";
+  var HOUR_ACTIVE_KEY = "bip39lab.hourActive";
+  var HOUR_EVIDENCE_KEY = "bip39lab.hourEvidence";
   var QUIZ_RETURN_KEY = "bip39lab.quizReturn";
   var QUIZ_ACTIVE_KEY = "bip39lab.quizActive";
   var INT_QUIZ_KEY = "bip39lab.intQuiz";
@@ -240,6 +242,228 @@
    * One floating dock only — never stack hour + quiz sticky bars over content.
    * mode: "hour" | "quiz" | "intquiz" | "advquiz" | null (hide)
    */
+  function loadHourEvidence() {
+    try {
+      var raw = sessionStorage.getItem(HOUR_EVIDENCE_KEY);
+      if (!raw) return {};
+      var ev = JSON.parse(raw);
+      return ev && typeof ev === "object" ? ev : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveHourEvidence(ev) {
+    try {
+      sessionStorage.setItem(HOUR_EVIDENCE_KEY, JSON.stringify(ev || {}));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function getHourActive() {
+    try {
+      return sessionStorage.getItem(HOUR_ACTIVE_KEY) || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function setHourActive(id) {
+    try {
+      if (id) sessionStorage.setItem(HOUR_ACTIVE_KEY, id);
+      else sessionStorage.removeItem(HOUR_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function addressesFilled() {
+    var body = $("addrTableBody");
+    if (!body) return false;
+    var rows = body.querySelectorAll("tr:not(.empty-row)");
+    return rows.length >= 1;
+  }
+
+  function quizPassedCount() {
+    var st = loadJson(QUIZ_KEY, {});
+    return (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0) + (st.q4 ? 1 : 0);
+  }
+
+  function hourStepReady(id) {
+    var ev = loadHourEvidence();
+    if (id === "h1") return !!ev.h1SeenOrientation;
+    if (id === "h2") return !!ev.h2Generated;
+    if (id === "h3") return !!ev.h3Derived || addressesFilled();
+    if (id === "h4") {
+      return !!(ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index);
+    }
+    if (id === "h5") return !!ev.h5ComparedDiff;
+    if (id === "h6") {
+      var q = loadJson(QUIZ_KEY, {});
+      return !!(q.q1 && q.q2 && q.q3 && q.q4);
+    }
+    if (id === "h7") return !!ev.h7Ack;
+    if (id === "h8") return false;
+    return false;
+  }
+
+  function hourNeedCopy(id) {
+    var ready = hourStepReady(id);
+    var n = quizPassedCount();
+    if (id === "h1") {
+      return ready
+        ? "You saw the table. Mark done to check step 1 and return."
+        : "Read the air-gap note and the What this is / isn’t table. Mark done turns on after that table is on screen.";
+    }
+    if (id === "h2") {
+      return ready
+        ? "Practice phrase generated. Mark done to check step 2 and return."
+        : "Press Generate for a practice phrase (not funded). Mark done stays off until Generate succeeds.";
+    }
+    if (id === "h3") {
+      if (!ready) {
+        return "Press Validate & derive so addresses fill. Then we will take you to Receive addresses.";
+      }
+      return "Addresses are filled. Mark done to check step 3 and return.";
+    }
+    if (id === "h4") {
+      return ready
+        ? "You used purpose / coin / account / change / index. Mark done to check step 4 and return."
+        : "In Path playground, use purpose, coin, account, change, and index (Lab path controls). Mark done stays off until all five have been used.";
+    }
+    if (id === "h5") {
+      return ready
+        ? "Empty vs test produced different addresses. Mark done to check step 5 and return."
+        : "Compare empty vs test. Mark done stays off until the two sides show different addresses.";
+    }
+    if (id === "h6") {
+      if (n < 4) {
+        return "Mark Q1–Q4 Passed when each idea is clear (" + n + " / 4). Step 6 checks itself at 4/4.";
+      }
+      return "Guided quiz 4/4 Passed. Next: 7 Network (optional) — fees and leak-ack — then 8 Raise to Beginner.";
+    }
+    if (id === "h7") {
+      return ready
+        ? "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
+        : "Tick the leak-ack: addresses and your IP go to the mempool proxy. Mark done stays off until that box is ticked.";
+    }
+    if (id === "h8") {
+      return "Use Set Beginner on the checklist (one click — no separate Mark done).";
+    }
+    return "";
+  }
+
+  function snapshotH4IfNeeded() {
+    var ev = loadHourEvidence();
+    if (ev.h4Snap) return;
+    ev.h4Snap = {
+      network: ($("deriveNetwork") && $("deriveNetwork").value) || "",
+      account: ($("deriveAccount") && $("deriveAccount").value) || "",
+      change: ($("deriveChange") && $("deriveChange").value) || "",
+      count: ($("deriveCount") && $("deriveCount").value) || "",
+    };
+    saveHourEvidence(ev);
+  }
+
+  function noteHour(key, val) {
+    if (val === undefined) val = true;
+    var ev = loadHourEvidence();
+    ev[key] = val;
+    saveHourEvidence(ev);
+    refreshHourGates();
+    if (key === "h3Derived" && getHourActive() === "h3" && addressesFilled()) {
+      var table = $("addrTable") || $("card-addresses");
+      if (table) {
+        try {
+          table.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (eS) {
+          /* ignore */
+        }
+      }
+    }
+    return ev;
+  }
+
+  function watchOrientationTable() {
+    var table = $("orientationTable");
+    if (!table || typeof IntersectionObserver === "undefined") {
+      if (table) noteHour("h1SeenOrientation", true);
+      return;
+    }
+    try {
+      var io = new IntersectionObserver(
+        function (ents) {
+          for (var i = 0; i < ents.length; i++) {
+            if (ents[i].isIntersecting && ents[i].intersectionRatio > 0) {
+              noteHour("h1SeenOrientation", true);
+              try {
+                io.disconnect();
+              } catch (eD) {
+                /* ignore */
+              }
+              break;
+            }
+          }
+        },
+        { threshold: [0.01, 0.2] }
+      );
+      io.observe(table);
+    } catch (e) {
+      noteHour("h1SeenOrientation", true);
+    }
+  }
+
+  function setHourMarkEnabled(btn, on) {
+    if (!btn) return;
+    btn.disabled = !on;
+    btn.setAttribute("aria-disabled", on ? "false" : "true");
+  }
+
+  function refreshHourGates() {
+    var active = getHourActive();
+    document.querySelectorAll("[data-hour-step]").forEach(function (el) {
+      var id = el.getAttribute("data-hour-step");
+      var ready = hourStepReady(id);
+      var doneBtn = el.querySelector(".hour-done");
+      var cb = el.querySelector(".hour-step-cb") || el.querySelector('input[type="checkbox"]');
+      if (cb) {
+        cb.disabled = true;
+        cb.setAttribute("aria-disabled", "true");
+        cb.onchange = null;
+      }
+      if (doneBtn) {
+        if (id === "h6") {
+          doneBtn.hidden = true;
+          doneBtn.disabled = true;
+        } else {
+          doneBtn.hidden = false;
+          setHourMarkEnabled(doneBtn, ready && id !== "h8");
+        }
+      }
+    });
+    var dockMark = $("btnHourMarkFromDock");
+    if (dockMark) {
+      var showDockMark = /^(h1|h2|h3|h4|h5|h7)$/.test(active);
+      dockMark.hidden = !showDockMark;
+      setHourMarkEnabled(dockMark, showDockMark && hourStepReady(active));
+    }
+    var hintEl = $("learnReturnBarHint");
+    if (hintEl && learnReturnMode === "hour") {
+      hintEl.textContent = hourNeedCopy(active) || "";
+    }
+    var qn = $("quizHourNext");
+    if (qn) qn.hidden = quizPassedCount() < 4;
+    var netMark = $("btnHourMarkFromDockNet");
+    if (netMark) {
+      var ev = loadHourEvidence();
+      netMark.hidden = false;
+      setHourMarkEnabled(netMark, !!ev.h7Ack);
+      var netHint = $("learnReturnDockNetHint");
+      if (netHint) netHint.textContent = hourNeedCopy("h7");
+    }
+  }
+
   function hideAllQuizMarkBtns() {
     ["btnMarkQ1FromTools", "btnMarkQ3FromEnt", "btnMarkQ4FromEnt", "btnMarkPathFromDock"].forEach(
       function (id) {
@@ -316,7 +540,7 @@
     if (mode === "quiz") return "Experiment, then mark passed only when clear.";
     if (mode === "intquiz") return "Keys ≠ shares ≠ share-words. Mark when clear.";
     if (mode === "advquiz") return "Ops mind offline. Mark when clear.";
-    return "Finish, then Mark done on the checklist.";
+    return hourNeedCopy(getHourActive()) || "Read the next First Hour step, then press Go.";
   }
 
   function showLearnReturn(mode, hint) {
@@ -337,12 +561,21 @@
     bar.setAttribute("data-return-mode", mode);
     setBodyReturnOpen(true);
     if (btn) btn.textContent = returnBtnLabel(mode);
-    if (hintEl) hintEl.textContent = hint || returnDefaultHint(mode);
+    if (hintEl) {
+      hintEl.textContent =
+        hint ||
+        (mode === "hour" ? hourNeedCopy(getHourActive()) : returnDefaultHint(mode));
+    }
     if (mode === "quiz") updateQuizMarkButtonsOnDock();
     else if (mode === "intquiz" || mode === "advquiz") {
       hideAllQuizMarkBtns();
       updatePathQuizMarkOnDock();
     } else hideAllQuizMarkBtns();
+    if (mode === "hour") refreshHourGates();
+    else {
+      var hm = $("btnHourMarkFromDock");
+      if (hm) hm.hidden = true;
+    }
   }
 
   function markQuizFromDock(q) {
@@ -408,6 +641,10 @@
   }
 
   function markHourStep(id, done) {
+    if (done) {
+      if (id === "h6") return;
+      if (id !== "h8" && !hourStepReady(id)) return;
+    }
     var st = loadJson(HOUR_KEY, {});
     st[id] = !!done;
     saveJson(HOUR_KEY, st);
@@ -419,9 +656,28 @@
     var href = li.getAttribute("data-hour-href");
     var tab = li.getAttribute("data-hour-tab");
     var target = li.getAttribute("data-hour-target");
+    var stepId = li.getAttribute("data-hour-step") || "";
     var needLevel = li.querySelector(".hour-go") && li.querySelector(".hour-go").getAttribute("data-hour-level");
     if (needLevel) setLevel(needLevel);
+    setHourActive(stepId);
+    if (stepId === "h4") snapshotH4IfNeeded();
     setHourReturn();
+    if (stepId === "h3" && !addressesFilled()) {
+      goTab("lab");
+      setTimeout(function () {
+        var btn = $("btnDerive");
+        if (btn) {
+          btn.scrollIntoView({ behavior: "smooth", block: "center" });
+          try {
+            btn.focus({ preventScroll: true });
+          } catch (eF) {
+            /* ignore */
+          }
+        }
+        refreshHourGates();
+      }, 100);
+      return;
+    }
     if (href) {
       // Network (or external page): return via bar on index after user navigates back, or query
       try {
@@ -454,9 +710,9 @@
       var cb = el.querySelector(".hour-step-cb") || el.querySelector('input[type="checkbox"]');
       if (cb) {
         cb.checked = !!st[id];
-        cb.onchange = function () {
-          markHourStep(id, cb.checked);
-        };
+        cb.disabled = true;
+        cb.setAttribute("aria-disabled", "true");
+        cb.onchange = null;
       }
       el.classList.toggle("hour-step-done", !!st[id]);
     });
@@ -469,6 +725,7 @@
     });
     var prog = $("firstHourProgress");
     if (prog) prog.textContent = done + " / " + total + " steps done";
+    refreshHourGates();
   }
 
   function wireFirstHour() {
@@ -495,7 +752,7 @@
             return;
           }
           markHourStep(id, true);
-          returnToFirstHour();
+          if (hourStepReady(id) || id === "h8") returnToFirstHour();
         });
       }
     });
@@ -532,6 +789,12 @@
       isLabIndexPage() &&
       /from=firsthour/.test(location.search || "")
     ) {
+      var hourSt = loadJson(HOUR_KEY, {});
+      var act = getHourActive();
+      if (act === "h7" && !hourSt.h7) {
+        setHourReturn();
+        showLearnReturn("hour");
+      } else {
       try {
         sessionStorage.removeItem(HOUR_RETURN_KEY);
       } catch (e) {
@@ -544,6 +807,7 @@
           card.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 120);
+      }
       try {
         if (window.history && history.replaceState) {
           history.replaceState(null, "", location.pathname + location.hash);
@@ -691,8 +955,33 @@
           act = "";
         }
         if (/^i[1-4]$/.test(act) || /^a[1-4]$/.test(act)) markPathQuiz(act);
+      } else if (t.id === "btnHourMarkFromDock" || t.id === "btnHourMarkFromDockNet") {
+        ev.preventDefault();
+        var hid = getHourActive() || "h7";
+        if (t.id === "btnHourMarkFromDockNet") hid = "h7";
+        if (hid === "h7") noteHour("h7Ack", true);
+        markHourStep(hid, true);
+        if (t.id === "btnHourMarkFromDockNet") {
+          window.location.href = "index.html?from=firsthour";
+        } else if (hourStepReady(hid) || (hid === "h7" && loadJson(HOUR_KEY, {}).h7)) {
+          returnToFirstHour();
+        }
       }
     });
+    var qNet = $("quizHourNextNet");
+    if (qNet) {
+      qNet.addEventListener("click", function () {
+        var li = document.querySelector('[data-hour-step="h7"]');
+        if (li) goHourStep(li);
+      });
+    }
+    var qBeg = $("quizHourNextBeginner");
+    if (qBeg) {
+      qBeg.addEventListener("click", function () {
+        var h8 = $("hourGoBeginner") || $("btnReadyBeginner");
+        if (h8) h8.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
   }
 
   var EVIDENCE_KEY = "bip39lab.quizEvidence";
@@ -755,6 +1044,9 @@
     }
     // First-hour step 6 tracks the quiz self-checks
     syncHourQuizStep(n === 4);
+    var qn = $("quizHourNext");
+    if (qn) qn.hidden = n < 4;
+    if (n === 4 && getHourActive() === "h6") refreshHourGates();
   }
 
   function syncHourQuizStep(allPassed) {
@@ -788,6 +1080,8 @@
     saveJson(HOUR_KEY, {});
     try {
       sessionStorage.removeItem(HOUR_RETURN_KEY);
+      sessionStorage.removeItem(HOUR_ACTIVE_KEY);
+      sessionStorage.removeItem(HOUR_EVIDENCE_KEY);
     } catch (e) {
       /* ignore */
     }
@@ -1521,6 +1815,11 @@
     if (rC) rC.addEventListener("click", resetClassroomProgress);
     applyLevel(getLevel(), { announce: false });
     updateFirstHourNext();
+    watchOrientationTable();
+    refreshHourGates();
+    window.addEventListener("pageshow", function () {
+      refreshHourGates();
+    });
   }
 
   if (document.readyState === "loading") {
@@ -1536,5 +1835,8 @@
     passQuiz: passQuiz,
     markQuiz: markQuiz,
     returnToQuiz: returnToQuiz,
+    noteHour: noteHour,
+    hourStepReady: hourStepReady,
+    markHourStep: markHourStep,
   };
 })();

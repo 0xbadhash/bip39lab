@@ -32,6 +32,9 @@
     if (gateHint) {
       gateHint.hidden = !!on;
     }
+    if (window.LearnLevels && LearnLevels.noteHour) {
+      LearnLevels.noteHour("h7Ack", !!on);
+    }
   }
 
   async function fetchSnapshot() {
@@ -304,8 +307,15 @@
     if (show) {
       try {
         sessionStorage.setItem("bip39lab.hourReturn", "1");
+        if (!sessionStorage.getItem("bip39lab.hourActive")) {
+          sessionStorage.setItem("bip39lab.hourActive", "h7");
+        }
       } catch (e3) {
         /* ignore */
+      }
+      if (window.LearnLevels && LearnLevels.noteHour) {
+        var ack = $("balAck");
+        LearnLevels.noteHour("h7Ack", !!(ack && ack.checked));
       }
     }
   }

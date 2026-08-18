@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.8" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.9" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.8">v0.16.8</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.9">v0.16.9</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -165,7 +165,7 @@
             </table>
             <p class="control-help">
               Prefer an air-gapped machine for anything that looks like a real seed.
-              Full human guide: <a href="docs/FIRST_HOUR.md">docs/FIRST_HOUR.md</a> (when served from repo) or the checklist below.
+              Use the First hour checklist below — that is the in-lab guide.
             </p>
           </div>
 
@@ -174,10 +174,9 @@
             <p class="control-help">
               Starter path (~15–30 min). Per step:
               <strong>Go</strong> jumps there (sticky <strong>← Back</strong> bar appears),
-              <strong>Mark done</strong> checks the box and returns here,
-              or tick the <strong>checkbox</strong> yourself. Progress is this browser only.
-              Full write-up: <a href="docs/FIRST_HOUR.md" id="linkFirstHourDoc">docs/FIRST_HOUR.md</a>
-              (also under repo <code>docs/</code> if this host has no <code>/docs</code>).
+              <strong>Mark done</strong> lights up after the step’s real action,
+              then checks the box and returns here.
+              Checkboxes are a readout (not a shortcut). Progress is this browser only.
             </p>
             <ol class="hour-list" id="firstHourList">
               <li class="hour-step" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#cardOrientation">
@@ -326,6 +325,17 @@
               the amber dock has <strong>← Back to Guided quiz</strong> while you are away.
               When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> if unsure.
             </p>
+            <div id="quizHourNext" class="first-hour-next" hidden role="region" aria-label="Next First hour steps">
+              <h3 class="first-hour-next-title">Guided quiz 4/4 Passed</h3>
+              <p class="control-help" style="margin:0.35rem 0 0.65rem">
+                Next First Hour: <strong>7 Network (optional)</strong> — fees only; understand the leak-ack.
+                Then <strong>8 Raise to Beginner</strong>.
+              </p>
+              <div class="row" style="flex-wrap:wrap;gap:0.5rem">
+                <button type="button" class="btn btn-sm" id="quizHourNextNet">Go to Network</button>
+                <button type="button" class="btn secondary btn-sm" id="quizHourNextBeginner">Jump to Set Beginner</button>
+              </div>
+            </div>
             <ul class="quiz-status-board" id="quizStatusBoard" aria-label="Quiz pass status">
               <li><span class="quiz-status-label">Q1 passphrase</span> <span id="quizBoard-q1" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q2 Shamir</span> <span id="quizBoard-q2" class="chip chip-warn">Not yet</span></li>
@@ -1038,7 +1048,7 @@
             <span class="chip chip-warn" style="vertical-align:middle">TEST DATA</span>
             — never assume results still use a phrase you cleared.
           </p>
-<p class="control-help teach-only" style="margin:0 0 0.75rem">
+          <p class="control-help teach-only" id="toolsTeachLine">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
           <div class="card card-wide" id="cardPathPlay">
@@ -1516,7 +1526,8 @@
   <!-- Viewport-fixed bottom dock (must be outside .app/.content so position:fixed sticks to screen bottom) -->
   <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
     <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Guided quiz</button>
-    <span class="learn-return-hint" id="learnReturnBarHint"></span>
+    <span class="learn-return-hint" id="learnReturnBarHint" aria-live="polite"></span>
+    <button type="button" class="btn btn-sm" id="btnHourMarkFromDock" hidden disabled>Mark done</button>
     <button type="button" class="btn btn-sm" id="btnMarkQ1FromTools" hidden>
       Mark Q1 passed &amp; return to quiz
     </button>
@@ -1532,11 +1543,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.8"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.8"></script>
-  <script src="js/glossary.js?v=0.16.8"></script>
-  <script src="js/help-ui.js?v=0.16.8"></script>
-  <script src="js/learn-levels.js?v=0.16.8"></script>
-  <script src="js/app.js?v=0.16.8"></script>
+  <script src="js/site-version.js?v=0.16.9"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.9"></script>
+  <script src="js/glossary.js?v=0.16.9"></script>
+  <script src="js/help-ui.js?v=0.16.9"></script>
+  <script src="js/learn-levels.js?v=0.16.9"></script>
+  <script src="js/app.js?v=0.16.9"></script>
 </body>
 </html>

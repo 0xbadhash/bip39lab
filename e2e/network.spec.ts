@@ -106,4 +106,23 @@ test.describe("Network page E2E", () => {
     await expect(page).toHaveURL(/#tools|tools/);
     await expect(page.locator("#panel-tools")).toBeVisible();
   });
+
+  test("S89 first hour Network leak-ack Mark done", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      localStorage.setItem("bip39lab.level", "starter");
+      localStorage.removeItem("bip39lab.firstHour");
+    });
+    await page.reload();
+    await page.locator('[data-hour-step="h7"] .hour-go').click();
+    await expect(page).toHaveURL(/network\.html/);
+    await expect(page.locator("#balAck")).toBeVisible();
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
+    await expect(page.locator("#learnReturnDockNetHint")).toContainText(/leak-ack/i);
+    await page.locator("#balAck").check();
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeEnabled();
+    await page.locator("#btnHourMarkFromDockNet").click();
+    await expect(page).toHaveURL(/index\.html|\/$/);
+    await expect(page.locator('[data-hour-step="h7"] input')).toBeChecked({ timeout: 8000 });
+  });
 });

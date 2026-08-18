@@ -536,6 +536,12 @@ body.theme-light .learn-return-dock {
   border-color: #ffe08a;
   color: #1a1406;
 }
+.learn-return-dock .btn:disabled,
+.learn-return-dock .btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 .learn-return-hint {
   flex: 1 1 16rem;
   font-size: 0.88rem;
@@ -1172,6 +1178,13 @@ a.nav-item:hover {
 /* Teach mode: hide long teaching chrome when Off */
 html[data-teach="off"] .teach-only {
   display: none !important;
+}
+
+#toolsTeachLine {
+  margin: 0 0 1.35rem;
+}
+#cardPathPlay {
+  margin-top: 0.35rem;
 }
 
 html[data-teach="off"] .help-tip:not(.help-tip-safety) {

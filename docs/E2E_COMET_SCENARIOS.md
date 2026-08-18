@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S82 · Playwright 103 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S90 · Playwright 111 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S82 · Playwright 103 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.8 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S82 · Playwright S-ids: 103`
+`Product: 0.16.9 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S90 · Playwright S-ids: 111`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **103** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **111** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S82** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S90** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -452,7 +452,7 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 
 ---
 
-# Scenario catalogue (S0–S82)
+# Scenario catalogue (S0–S90)
 
 ## Lab shell
 
@@ -464,6 +464,30 @@ Sidebar chip HTML (before JS) and `#status` Ready line show the same product tag
 ### S82 — Receive / Compare honesty
 Receive lede and Compare intro (`#cmpHonestyIntro`) do **not** say “nothing is sent.”
 Compare opt-in (“Addresses leave only if you opt in on Network.”) is **visible with Extra help Off**. Extra help may repeat it.
+
+### S83 — No FIRST_HOUR.md learner links
+Lab orientation + First hour must **not** link or show `docs/FIRST_HOUR.md` (live `/docs/FIRST_HOUR.md` is 500). Checklist is the guide.
+
+### S84 — First Hour form / results / compare
+Go h2 shows mnemonic + Generate. Checklist + dock Mark done **disabled** until Generate produces a valid phrase. Checkbox cannot self-tick. After Generate, Mark done enables, ticks, returns. Go h5 → compare. Same-passphrase compare: Mark done stays off. Empty vs `test` with different addresses: Mark done on.
+
+### S85 — Go h3 before derive (error)
+Go h3 with empty Receive table must land on Validate & derive (`#btnDerive`), not empty addresses. Banner: press Validate & derive so addresses fill. After derive, table has rows; Mark done enables.
+
+### S86 — Tools Path playground spacer
+Visible gap (≥8px) between the ⓘ / Extra help teach line and `#cardPathPlay`.
+
+### S87 — Dock names unfinished action (missing-data + plain English)
+Every First Hour dock names the unfinished action. Never leftover “Finish, then Mark done on the checklist.” h4: “In Path playground, use purpose, coin, account, change, and index (Lab path controls). Mark done stays off until all five have been used.” No CSS IDs in the dock. Mark done stays disabled until all five Lab path controls are used.
+
+### S88 — Quiz 4/4 recommendation
+After Guided quiz 4/4 Passed, `#quizHourNext` and the hour dock name **7 Network (optional)** then **8 Raise to Beginner**. Not blank.
+
+### S89 — Network h7 leak-ack
+Go h7 → leak-ack. `#btnHourMarkFromDockNet` disabled until `#balAck`. Tick → enable → Mark done writes h7 and returns to the checklist.
+
+### S90 — First Hour dock mobile wrap
+390px: dock Back + hint + Mark done wrap; no horizontal blowout.
 
 ### S81 — Empty Validate & derive
 Clear mnemonic → Validate & derive → `#status` missing-data (not silent Ready).
@@ -1003,6 +1027,14 @@ S68 Intermediate I1–I4: PASS|FAIL —
 S69 Advanced A1–A4: PASS|FAIL —
 S70 Mark I1 Multisig dock: PASS|FAIL —
 S71 Mark I4 Lab dock: PASS|FAIL —
+S83 No FIRST_HOUR.md links: PASS|FAIL —
+S84 First Hour form/compare gates: PASS|FAIL —
+S85 Go h3 before derive: PASS|FAIL —
+S86 Tools Path spacer: PASS|FAIL —
+S87 Dock unfinished action + h4: PASS|FAIL —
+S88 Quiz 4/4 next 7 then 8: PASS|FAIL —
+S89 Network h7 leak-ack Mark done: PASS|FAIL —
+S90 First Hour dock mobile wrap: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).

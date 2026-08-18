@@ -39,26 +39,32 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("[data-hour-step]")).toHaveCount(8);
     await expect(page.locator('[data-hour-step="h1"] .hour-go')).toBeVisible();
     await expect(page.locator('[data-hour-step="h1"] .hour-done')).toBeVisible();
-    await page.locator('[data-hour-step="h1"] input').check();
+    await expect(page.locator('[data-hour-step="h1"] input')).toBeDisabled();
+    await page.locator('[data-hour-step="h1"] .hour-go').click();
+    await expect(page.locator("#orientationTable")).toBeInViewport();
+    await expect(page.locator('[data-hour-step="h1"] .hour-done')).toBeEnabled({ timeout: 5000 });
+    await page.locator('[data-hour-step="h1"] .hour-done').click();
     await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*8/);
-    // Go → floating return dock → Mark done returns to checklist
     await page.locator('[data-hour-step="h2"] .hour-go').click();
     await expect(page.locator("#learnReturnBar")).toBeVisible();
     await expect(page.locator("#learnReturnBarBtn")).toContainText(/First hour/i);
     await expect(page.locator("#card-mnemonic")).toBeVisible();
-    await page.locator("#learnReturnBarBtn").click();
+    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#mnemonic")).not.toHaveValue("");
+    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
+    await page.locator("#btnHourMarkFromDock").click();
     await expect(page.locator("#cardFirstHour")).toBeInViewport();
-    await page.locator('[data-hour-step="h2"] .hour-done').click();
     await expect(page.locator("#firstHourProgress")).toContainText(/2\s*\/\s*8/);
-    // Ready for Beginner marks h8 + level
     await page.getByRole("button", { name: /I’m ready for Beginner|I'm ready for Beginner/i }).click();
     await expect(page.locator("#learnLevel")).toHaveValue("beginner");
     await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
-    // localStorage persistence: hard reload keeps checklist ticks + level
     await page.reload();
     await expect(page.locator("#learnLevel")).toHaveValue("beginner");
     await expect(page.locator('[data-hour-step="h1"] input')).toBeChecked();
     await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked();
+    await expect(page.locator('[data-hour-step="h1"] input')).toBeDisabled();
     await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
   });
 
@@ -214,5 +220,141 @@ test.describe("E3 mobile shell", () => {
       // Either fits or scrolls inside the scroll container
       expect(metrics.tableClientW).toBeLessThanOrEqual(metrics.viewW + 8);
     }
+  });
+});
+
+test.describe("First Hour real loop", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      try {
+        localStorage.setItem("bip39lab.level", "starter");
+        localStorage.setItem("bip39lab.teach", "on");
+        localStorage.removeItem("bip39lab.firstHour");
+        localStorage.removeItem("bip39lab.quiz");
+        sessionStorage.removeItem("bip39lab.hourEvidence");
+        sessionStorage.removeItem("bip39lab.hourActive");
+        sessionStorage.removeItem("bip39lab.hourReturn");
+      } catch (e) {
+        /* ignore */
+      }
+    });
+    await page.reload();
+  });
+
+  test("S83 no FIRST_HOUR.md user links", async ({ page }) => {
+    const hrefs = await page.locator("a[href]").evaluateAll((els) =>
+      els.map((a) => (a as HTMLAnchorElement).getAttribute("href") || "")
+    );
+    expect(hrefs.join("\n")).not.toMatch(/FIRST_HOUR/i);
+    await expect(page.locator("#cardOrientation")).not.toContainText(/docs\/FIRST_/i);
+    await expect(page.locator("#cardFirstHour")).not.toContainText(/docs\/FIRST_/i);
+  });
+
+  test("S84 first hour form + compare gates", async ({ page }) => {
+    await page.locator('[data-hour-step="h2"] .hour-go').click();
+    await expect(page.locator("#mnemonic")).toBeVisible();
+    await expect(page.locator('[data-hour-step="h2"] .hour-done')).toBeDisabled();
+    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#mnemonic")).toHaveValue(/.{20,}/);
+    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
+    await page.locator("#learnReturnBarBtn").click();
+    await page.locator('[data-hour-step="h5"] .hour-go').click();
+    await expect(page.locator("#cardCmpPp")).toBeVisible();
+    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    await page.locator("#cmpPpA").fill("");
+    await page.locator("#cmpPpB").fill("");
+    await page.locator("#btnCmpPp").click();
+    await expect(page.locator("#cmpPpVerdict")).toBeVisible();
+    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    await page.locator("#cmpPpB").fill("test");
+    await page.locator("#btnCmpPp").click();
+    await expect(page.locator("#cmpPpVerdict")).toContainText(/Different/i);
+    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
+    await page.locator("#btnHourMarkFromDock").click();
+    await expect(page.locator("#cardFirstHour")).toBeInViewport();
+    await expect(page.locator('[data-hour-step="h5"] input')).toBeChecked();
+  });
+
+  test("S85 Go h3 before derive", async ({ page }) => {
+    await page.locator('[data-hour-step="h3"] .hour-go').click();
+    await expect(page.locator("#btnDerive")).toBeInViewport();
+    await expect(page.locator("#learnReturnBarHint")).toContainText(/Validate & derive/i);
+    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    const emptyRows = await page.locator("#addrTableBody tr:not(.empty-row)").count();
+    expect(emptyRows).toBe(0);
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(page.locator("#addrTable")).toBeInViewport();
+    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled();
+  });
+
+  test("S86 Tools Path playground spacer", async ({ page }) => {
+    await page.locator('.nav-item[data-nav="tools"]').click();
+    await expect(page.locator("#cardPathPlay")).toBeVisible();
+    const gap = await page.evaluate(() => {
+      const p = document.getElementById("toolsTeachLine");
+      const c = document.getElementById("cardPathPlay");
+      if (!p || !c) return -1;
+      const a = p.getBoundingClientRect();
+      const b = c.getBoundingClientRect();
+      return b.top - a.bottom;
+    });
+    expect(gap).toBeGreaterThanOrEqual(8);
+  });
+
+  test("S87 dock names unfinished action", async ({ page }) => {
+    await page.locator('[data-hour-step="h4"] .hour-go').click();
+    const hint = page.locator("#learnReturnBarHint");
+    await expect(hint).toContainText(
+      /In Path playground, use purpose, coin, account, change, and index \(Lab path controls\)/
+    );
+    await expect(hint).not.toContainText(/#deriveNetwork|#deriveCount|#deriveAccount/i);
+    await expect(page.locator("#learnReturnBarHint")).not.toContainText(
+      /Finish, then Mark done on the checklist/
+    );
+    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    await page.locator("#btnPathToLab").click();
+    await page.locator("#deriveNetwork").selectOption({ index: 1 });
+    await page.locator("#deriveAccount").fill("1");
+    await page.locator("#deriveChange").selectOption({ index: 1 });
+    await page.locator("#deriveCount").selectOption({ index: 1 });
+    const otherTab = page.locator(".seg-tab[data-addr-type]:not(.is-active)").first();
+    await otherTab.click();
+    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 5000 });
+  });
+
+  test("S88 quiz 4/4 names next First Hour", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("beginner");
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "bip39lab.quiz",
+        JSON.stringify({ q1: true, q2: true, q3: true, q4: true })
+      );
+    });
+    await page.reload();
+    await page.locator("#learnLevel").selectOption("beginner");
+    await expect(page.locator("#quizHourNext")).toBeVisible();
+    await expect(page.locator("#quizHourNext")).toContainText(/7 Network/i);
+    await expect(page.locator("#quizHourNext")).toContainText(/8 Raise to Beginner/i);
+    await page.locator('[data-hour-step="h6"] .hour-go').click();
+    await expect(page.locator("#learnReturnBarHint")).toContainText(/7 Network/i);
+    await expect(page.locator("#learnReturnBarHint")).toContainText(/8 Raise to Beginner/i);
+  });
+
+  test("S90 first hour dock wraps on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('[data-hour-step="h2"] .hour-go').click();
+    await expect(page.locator("#learnReturnBar")).toBeVisible();
+    const box = await page.locator("#learnReturnBar").boundingBox();
+    expect(box).toBeTruthy();
+    expect(box!.width).toBeLessThanOrEqual(390);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow).toBeLessThanOrEqual(24);
   });
 });

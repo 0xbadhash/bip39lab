@@ -818,6 +818,9 @@
       await refreshMnemonicEntropy();
       refreshPassphraseEntropy();
       await refreshWatchOnly();
+      if (result && result.rows && result.rows.length && window.LearnLevels && LearnLevels.noteHour) {
+        LearnLevels.noteHour("h3Derived", true);
+      }
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
       clearAddressTable("Derivation failed.");
@@ -862,7 +865,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.8";
+    return "v0.16.9";
   }
 
   function setStatus(text, kind) {
@@ -1472,6 +1475,15 @@
         "-word throwaway phrase into Lab for this session."
       : "[Lab phrase] Using the mnemonic currently in Lab.";
     const same = aa === bb;
+    if (
+      !same &&
+      String(a).trim() === "" &&
+      String(b).trim() === "test" &&
+      window.LearnLevels &&
+      LearnLevels.noteHour
+    ) {
+      LearnLevels.noteHour("h5ComparedDiff", true);
+    }
     const verdict = same
       ? "Same address — passphrases match (or both empty). Same vault."
       : "Different addresses — the passphrase changed the wallet. Same words, two vaults.";
@@ -1775,6 +1787,19 @@
     await refreshMnemonicEntropy();
     refreshPassphraseEntropy();
     await deriveNow({ quiet: false });
+    try {
+      if (
+        window.BIP39Lab &&
+        BIP39Lab.validateMnemonic &&
+        BIP39Lab.validateMnemonic(m) &&
+        window.LearnLevels &&
+        LearnLevels.noteHour
+      ) {
+        LearnLevels.noteHour("h2Generated", true);
+      }
+    } catch (eGen) {
+      /* ignore */
+    }
     const path = getDeriveOptions();
     setStatus(
       "Generated offline · " + path.count + " receive addresses in the table below.",
@@ -1804,8 +1829,55 @@
       $(id).addEventListener("input", () => scheduleDerive());
     });
 
+    function noteH4FromControl(kind, el) {
+      if (!window.LearnLevels || !LearnLevels.noteHour) return;
+      var ev = {};
+      try {
+        ev = JSON.parse(sessionStorage.getItem("bip39lab.hourEvidence") || "{}") || {};
+      } catch (eE) {
+        ev = {};
+      }
+      if (!ev.h4Snap) return;
+      if (kind === "h4Coin" && el && el.value !== ev.h4Snap.network) LearnLevels.noteHour("h4Coin", true);
+      if (kind === "h4Account" && el && el.value !== ev.h4Snap.account) LearnLevels.noteHour("h4Account", true);
+      if (kind === "h4Change" && el && el.value !== ev.h4Snap.change) LearnLevels.noteHour("h4Change", true);
+      if (kind === "h4Index" && el && el.value !== ev.h4Snap.count) LearnLevels.noteHour("h4Index", true);
+    }
+    if ($("deriveNetwork")) {
+      $("deriveNetwork").addEventListener("change", function () {
+        noteH4FromControl("h4Coin", $("deriveNetwork"));
+      });
+    }
+    if ($("deriveAccount")) {
+      $("deriveAccount").addEventListener("input", function () {
+        noteH4FromControl("h4Account", $("deriveAccount"));
+      });
+      $("deriveAccount").addEventListener("change", function () {
+        noteH4FromControl("h4Account", $("deriveAccount"));
+      });
+    }
+    if ($("deriveChange")) {
+      $("deriveChange").addEventListener("change", function () {
+        noteH4FromControl("h4Change", $("deriveChange"));
+      });
+    }
+    if ($("deriveCount")) {
+      $("deriveCount").addEventListener("change", function () {
+        noteH4FromControl("h4Index", $("deriveCount"));
+      });
+    }
+
     document.querySelectorAll(".seg-tab[data-addr-type]").forEach((btn) => {
       btn.addEventListener("click", () => {
+        if (!btn.classList.contains("is-active") && window.LearnLevels && LearnLevels.noteHour) {
+          var evP = {};
+          try {
+            evP = JSON.parse(sessionStorage.getItem("bip39lab.hourEvidence") || "{}") || {};
+          } catch (eP) {
+            evP = {};
+          }
+          if (evP.h4Snap) LearnLevels.noteHour("h4Purpose", true);
+        }
         setSegActive(".seg-tab[data-addr-type]", "data-addr-type", btn.getAttribute("data-addr-type"));
         updateAddrTypeChrome();
         if (lastRows && lastRows.length) fillAddressTable({ rows: lastRows });
