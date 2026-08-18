@@ -39,7 +39,7 @@ scenarios: S0–S90 · Playwright 111 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.9 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S90 · Playwright S-ids: 111`
+`Product: 0.16.10 · Contract: 2 · Last aligned: 2026-08-18 · Scenarios: S0–S90 · Playwright S-ids: 111`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -466,7 +466,11 @@ Receive lede and Compare intro (`#cmpHonestyIntro`) do **not** say “nothing is
 Compare opt-in (“Addresses leave only if you opt in on Network.”) is **visible with Extra help Off**. Extra help may repeat it.
 
 ### S83 — No FIRST_HOUR.md learner links
-Lab orientation + First hour must **not** link or show `docs/FIRST_HOUR.md` (live `/docs/FIRST_HOUR.md` is 500). Checklist is the guide.
+Lab orientation + First hour must **not** link or show `docs/FIRST_HOUR.md`
+or any `FIRST_HOUR` / `docs/FIRST_` href or visible path.
+The in-lab checklist **is** the guide (zero FIRST_HOUR links in the lab).
+Hand-typed `/docs/FIRST_HOUR.md` **may** still return HTTP 200; that is
+not a FAIL. Do **not** require 500. Do **not** add the link back.
 
 ### S84 — First Hour form / results / compare
 Go h2 shows mnemonic + Generate. Checklist + dock Mark done **disabled** until Generate produces a valid phrase. Checkbox cannot self-tick. After Generate, Mark done enables, ticks, returns. Go h5 → compare. Same-passphrase compare: Mark done stays off. Empty vs `test` with different addresses: Mark done on.

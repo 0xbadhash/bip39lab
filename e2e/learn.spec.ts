@@ -243,6 +243,7 @@ test.describe("First Hour real loop", () => {
   });
 
   test("S83 no FIRST_HOUR.md user links", async ({ page }) => {
+    // In-lab guide only: no FIRST_HOUR / docs/FIRST_ links. Hand-typed URL may 200.
     const hrefs = await page.locator("a[href]").evaluateAll((els) =>
       els.map((a) => (a as HTMLAnchorElement).getAttribute("href") || "")
     );
