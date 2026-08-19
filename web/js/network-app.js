@@ -146,11 +146,14 @@
       $("snapResult").hidden = false;
       setStatus($("snapStatus"), "Snapshot OK (public API).", "ok");
     } catch (e) {
+      const msg = e && e.message ? e.message : String(e);
       setStatus(
         $("snapStatus"),
-        "Snapshot failed: " +
-          (e && e.message ? e.message : e) +
-          " — try hard-refresh (Ctrl+Shift+R). Lab proxy or mempool.space may be blocked on this network. (not showing fake zeros).",
+        /did not answer|could not be reached|unavailable/i.test(msg)
+          ? msg
+          : "Snapshot failed: " +
+              msg +
+              " — mempool did not answer. Public lookup is unavailable — this is not a fake zero.",
         "err"
       );
     }
@@ -240,13 +243,13 @@
     }
     setStatus($("balStatus"), "Fetching " + addrs.length + " address(es)…", "");
     const rows = [];
+    let miss = null;
     for (let i = 0; i < addrs.length; i++) {
       const address = addrs[i];
       try {
         const data = await api.fetchJson(api.addressUrl(address));
         const parsed = api.parseAddressBalanceJson(data);
         let detail = parsed.detail || "";
-        // Comet: legitimate zero looks like a failure — spell out empty wallet
         if (parsed.status === "ok" && parsed.satoshis === 0) {
           detail = (detail ? detail + " · " : "") + "0 sats is a valid empty result (not a fetch error)";
         }
@@ -257,16 +260,25 @@
           detail: detail,
         });
       } catch (e) {
+        const detail = e && e.message ? e.message : String(e);
         rows.push({
           address,
           status: "unknown",
           satoshis: null,
-          detail: e && e.message ? e.message : String(e),
+          detail: detail,
         });
-      }
-      // gentle pacing
-      if (i + 1 < addrs.length) {
-        await new Promise((r) => setTimeout(r, 120));
+        if (api.isMempoolMiss ? api.isMempoolMiss(e) : /did not answer|could not be reached|unavailable/i.test(detail)) {
+          miss = detail;
+          for (let j = i + 1; j < addrs.length; j++) {
+            rows.push({
+              address: addrs[j],
+              status: "unknown",
+              satoshis: null,
+              detail: "Skipped — mempool did not answer (fail-fast, not a fake zero).",
+            });
+          }
+          break;
+        }
       }
     }
     renderBalRows(rows);
@@ -277,8 +289,10 @@
     const unk = rows.length - okN;
     setStatus(
       $("balStatus"),
-      "Done: " + okN + " ok, " + unk + " unknown/error (fail-closed; no fake zeros on failure).",
-      unk ? "" : "ok"
+      miss
+        ? miss
+        : "Done: " + okN + " ok, " + unk + " unknown/error (fail-closed; no fake zeros on failure).",
+      miss ? "err" : unk ? "" : "ok"
     );
   }
 

@@ -5,7 +5,7 @@ const MEMPOOL_PUBLIC = "https://mempool.space/api";
 const MEMPOOL_PROXY_PATH = "/api/mempool";
 const EXAMPLE_VBYTES = 140; // simple 1-in-2-out P2WPKH estimate
 const SESSION_ADDR_KEY = "bip39lab.derivedAddresses";
-const FETCH_TIMEOUT_MS = 20_000;
+const FETCH_TIMEOUT_MS = 2500;
 
 /** @deprecated use resolveMempoolBase() — kept for tests/docs */
 const MEMPOOL_BASE = MEMPOOL_PUBLIC;
@@ -268,11 +268,21 @@ async function fetchOnce(url, fetcher, asText) {
     const name = e && e.name ? e.name : "";
     const msg = e && e.message ? e.message : String(e);
     if (name === "AbortError" || /aborted/i.test(msg)) {
-      throw new Error("timeout after " + FETCH_TIMEOUT_MS / 1000 + "s");
+      throw new Error(
+        "Mempool did not answer in time. Public lookup is unavailable — this is not a fake zero."
+      );
     }
-    // Browser TypeError: Failed to fetch → clearer
     if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) {
-      throw new Error("network blocked or unreachable (" + url + ")");
+      throw new Error(
+        "Mempool could not be reached. Public lookup is unavailable — this is not a fake zero."
+      );
+    }
+    if (/HTTP 50[234]|HTTP 408|HTTP 110/.test(msg)) {
+      throw new Error(
+        "Mempool proxy failed (" +
+          msg +
+          "). Public lookup is unavailable — this is not a fake zero."
+      );
     }
     throw e instanceof Error ? e : new Error(msg);
   } finally {
@@ -280,11 +290,18 @@ async function fetchOnce(url, fetcher, asText) {
   }
 }
 
-/** Browser fetch wrapper — inject for tests; retries alternate base once */
+function isMempoolMiss(err) {
+  const msg = err && err.message ? err.message : String(err || "");
+  return /did not answer|could not be reached|proxy failed|unavailable — this is not a fake zero/i.test(
+    msg
+  );
+}
+
 async function fetchJson(url, fetcher) {
   try {
     return await fetchOnce(url, fetcher, false);
   } catch (first) {
+    if (isMempoolMiss(first)) throw first;
     const primary = resolveMempoolBase();
     const alt = alternateBase(primary);
     const altUrl = alt ? rewriteUrlBase(url, primary, alt) : null;
@@ -301,6 +318,7 @@ async function fetchText(url, fetcher) {
   try {
     return await fetchOnce(url, fetcher, true);
   } catch (first) {
+    if (isMempoolMiss(first)) throw first;
     const primary = resolveMempoolBase();
     const alt = alternateBase(primary);
     const altUrl = alt ? rewriteUrlBase(url, primary, alt) : null;
@@ -321,6 +339,7 @@ const NetworkApi = {
   EXAMPLE_VBYTES,
   SESSION_ADDR_KEY,
   FETCH_TIMEOUT_MS,
+  isMempoolMiss,
   resolveMempoolBase,
   alternateBase,
   feesUrl,

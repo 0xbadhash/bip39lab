@@ -316,7 +316,8 @@ test.describe("First Hour real loop", () => {
 
   test("S85 Go h3 before derive", async ({ page }) => {
     await page.locator('[data-hour-step="h3"] .hour-go').click();
-    await expect(page.locator("#btnDerive")).toBeInViewport();
+    await expect(page.locator("#headingReceive")).toBeInViewport();
+    await expect(page.locator("#mnemonic")).not.toBeInViewport();
     await expect(page.locator("#learnReturnBarHint")).toContainText(/Validate & derive/i);
     await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
     await expect(page.locator("#cardOps")).not.toBeInViewport();

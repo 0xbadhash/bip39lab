@@ -87,6 +87,8 @@ def test_network_static_and_lab_csp():
     assert "location /api/mempool/" in conf
     assert "mempool.space" in conf
     assert "ipv6=off" in conf  # AAAA to mempool.space often blackholes from this host
+    assert "proxy_connect_timeout 2s" in conf
+    assert "proxy_read_timeout 2s" in conf
     lab = (ROOT / "web/index.html").read_text(encoding="utf-8")
     assert "connect-src 'none'" in lab
     assert "network.html" in lab

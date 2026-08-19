@@ -142,4 +142,19 @@ test.describe("Network page E2E", () => {
     await expect(page).toHaveURL(/index\.html|\/$/);
     await expect(page.locator('[data-hour-step="h7"] input')).toBeChecked({ timeout: 8000 });
   });
+
+  test("S98 mempool miss fail-fast plain English", async ({ page }) => {
+    await page.route(/mempool\.space|\/api\/mempool\//, async (route) => {
+      await new Promise((r) => setTimeout(r, 60_000));
+      await route.abort();
+    });
+    await page.goto("/network.html");
+    const t0 = Date.now();
+    await page.locator("#btnFetchSnap").click();
+    await expect(page.locator("#snapStatus")).toContainText(
+      /did not answer|unavailable|not a fake zero/i,
+      { timeout: 8000 }
+    );
+    expect(Date.now() - t0).toBeLessThan(6000);
+  });
 });

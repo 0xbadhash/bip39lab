@@ -711,21 +711,7 @@
     setHourActive(stepId);
     if (stepId === "h4") snapshotH4IfNeeded();
     setHourReturn();
-    if (stepId === "h3" && !addressesFilled()) {
-      goTab("lab");
-      setTimeout(function () {
-        var btn = $("btnDerive");
-        scrollPageToEl(btn);
-        try {
-          if (btn) btn.focus({ preventScroll: true });
-        } catch (eF) {
-          /* ignore */
-        }
-        refreshHourGates();
-      }, 80);
-      return;
-    }
-    if (stepId === "h3" && addressesFilled()) {
+    if (stepId === "h3") {
       goTab("lab");
       setTimeout(function () {
         scrollToReceiveHeading();
