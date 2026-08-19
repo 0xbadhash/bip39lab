@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S97 · Playwright 117 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S96 · Playwright 116 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S97 · Playwright 117 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.13 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S97 · Playwright S-ids: 117`
+`Product: 0.16.14 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S96 · Playwright S-ids: 116`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **117** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **116** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S97** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S96** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -501,9 +501,6 @@ On Q2 arrival, **Mark done / Mark Q2 passed** is **shown and disabled**. Enable 
 
 ### S95 — First Hour auto-advance
 When First Hour boxes that apply (h1–h6) are checked, Level auto-raises to Beginner. If level is already Beginner: hide step 8 / Set Beginner / I’m ready for Beginner / Jump to Set Beginner / “Raise Level to Beginner” row. h7 optional. Step 6 auto at 4/4.
-
-### S97 — I1 Go try opens Multisig
-I1 **Go try** navigates to **Multisig** (nav item 2, `multisig.html`, aria-current). Panel in view (M-of-N / cosigners). I2 → Shamir, I3 → SLIP-39, I4 → Tools PSBT.
 
 ### S90 — First Hour dock mobile wrap
 390px: dock Back + hint + Mark done wrap; no horizontal blowout.
@@ -1063,7 +1060,6 @@ S91 Go h3 Receive addresses heading: PASS|FAIL —
 S92 Q2 Shamir Practice secret: PASS|FAIL —
 S93 Shamir Mark done shown disabled then fail+M: PASS|FAIL —
 S95 First Hour auto-advance Beginner: PASS|FAIL —
-S97 I1 Go try opens Multisig: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).

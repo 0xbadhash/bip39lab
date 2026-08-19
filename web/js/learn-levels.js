@@ -1416,15 +1416,15 @@
     }
     setPathQuizReturn(q);
     if (q === "i1") {
-      window.location.assign("multisig.html?from=intquiz");
+      window.location.href = "multisig.html?from=intquiz";
       return;
     }
     if (q === "i2") {
-      window.location.assign("shamir.html?from=intquiz");
+      window.location.href = "shamir.html?from=intquiz";
       return;
     }
     if (q === "i3") {
-      window.location.assign("slip39.html?from=intquiz");
+      window.location.href = "slip39.html?from=intquiz";
       return;
     }
     if (q === "i4") {

@@ -24,10 +24,10 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.13$/);
+    await expect(chip).toContainText(/^v0\.16\.14$/);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.13");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.13/);
+    expect(htmlChip).toContain("v0.16.14");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.14/);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);

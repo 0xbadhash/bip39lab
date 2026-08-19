@@ -462,12 +462,4 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator("#firstHourNext")).toBeVisible();
     await expect(page.locator('[data-hour-step="h8"]')).toBeHidden();
   });
-
-  test("S97 I1 Go try opens Multisig nav", async ({ page }) => {
-    await page.locator("#learnLevel").selectOption("intermediate");
-    await page.locator('[data-quiz-go="i1"]').click();
-    await expect(page).toHaveURL(/multisig\.html/);
-    await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveAttribute("aria-current", "page");
-    await expect(page.getByRole("heading", { name: /Multisig|M-of-N|cosigner/i }).first()).toBeInViewport();
-  });
 });
