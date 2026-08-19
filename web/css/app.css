@@ -1180,6 +1180,10 @@ html[data-teach="off"] .teach-only {
   display: none !important;
 }
 
+#headingReceive,
+#headingIntQuiz {
+  scroll-margin-top: 0.75rem;
+}
 #toolsTeachLine {
   margin: 0 0 1.35rem;
 }

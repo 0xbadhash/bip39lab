@@ -192,6 +192,7 @@
       b.hidden = LEVELS.indexOf(level) >= LEVELS.indexOf(min);
     });
     updateFirstHourNext();
+    refreshBeginnerChrome();
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
       // For beginner, prefer the “what’s next” box over a random unlocked card jump
@@ -298,6 +299,46 @@
     return rows.length >= 1;
   }
 
+  function scrollPageToEl(el) {
+    if (!el) return;
+    try {
+      var top = el.getBoundingClientRect().top + (window.pageYOffset || 0) - 8;
+      window.scrollTo(0, Math.max(0, top));
+    } catch (e) {
+      try {
+        el.scrollIntoView({ behavior: "auto", block: "start" });
+      } catch (e2) {
+        /* ignore */
+      }
+    }
+  }
+
+  function scrollToReceiveHeading() {
+    if (typeof window.__bip39ShowTab === "function") window.__bip39ShowTab("lab");
+    var head = $("headingReceive") || $("card-addresses");
+    scrollPageToEl(head);
+    try {
+      var ops = $("cardOps");
+      if (head && ops) {
+        var ht = head.getBoundingClientRect().top;
+        var ot = ops.getBoundingClientRect().top;
+        if (Math.abs(ot) < 120 && ht > 80) scrollPageToEl(head);
+      }
+    } catch (e3) {
+      /* ignore */
+    }
+  }
+
+  function refreshBeginnerChrome() {
+    var risen = LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner");
+    var h8 = document.querySelector('[data-hour-step="h8"]');
+    if (h8) h8.hidden = risen;
+    ["hourGoBeginner", "btnReadyBeginner", "quizHourNextBeginner"].forEach(function (id) {
+      var el = $(id);
+      if (el) el.hidden = risen;
+    });
+  }
+
   function quizPassedCount() {
     var st = loadJson(QUIZ_KEY, {});
     return (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0) + (st.q4 ? 1 : 0);
@@ -357,9 +398,11 @@
       return "Guided quiz 4/4 Passed. Next: 7 Network (optional) — fees and leak-ack — then 8 Raise to Beginner.";
     }
     if (id === "h7") {
-      return ready
-        ? "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
-        : "Tick leak-ack, load addresses, then fetch info. Mark done stays off until that flow is done.";
+      var ev7 = loadHourEvidence();
+      if (ev7.h7Ack) {
+        return "Leak-ack accepted. Mark done to check step 7 and return to the checklist.";
+      }
+      return "Tick leak-ack, load addresses, then fetch info. Mark done stays off until that flow is done.";
     }
     if (id === "h8") {
       return "Level raises on its own when the First Hour steps that apply are done.";
@@ -386,14 +429,7 @@
     saveHourEvidence(ev);
     refreshHourGates();
     if (key === "h3Derived" && getHourActive() === "h3" && addressesFilled()) {
-      var head = $("headingReceive") || $("card-addresses");
-      if (head) {
-        try {
-          head.scrollIntoView({ behavior: "smooth", block: "start" });
-        } catch (eS) {
-          /* ignore */
-        }
-      }
+      scrollToReceiveHeading();
     }
     return ev;
   }
@@ -679,16 +715,22 @@
       goTab("lab");
       setTimeout(function () {
         var btn = $("btnDerive");
-        if (btn) {
-          btn.scrollIntoView({ behavior: "smooth", block: "center" });
-          try {
-            btn.focus({ preventScroll: true });
-          } catch (eF) {
-            /* ignore */
-          }
+        scrollPageToEl(btn);
+        try {
+          if (btn) btn.focus({ preventScroll: true });
+        } catch (eF) {
+          /* ignore */
         }
         refreshHourGates();
-      }, 100);
+      }, 80);
+      return;
+    }
+    if (stepId === "h3" && addressesFilled()) {
+      goTab("lab");
+      setTimeout(function () {
+        scrollToReceiveHeading();
+        refreshHourGates();
+      }, 80);
       return;
     }
     if (href) {
@@ -739,6 +781,7 @@
     var prog = $("firstHourProgress");
     if (prog) prog.textContent = done + " / " + total + " steps done";
     refreshHourGates();
+    refreshBeginnerChrome();
     maybeAutoBeginner();
   }
 
@@ -1373,15 +1416,15 @@
     }
     setPathQuizReturn(q);
     if (q === "i1") {
-      window.location.href = "multisig.html?from=intquiz";
+      window.location.assign("multisig.html?from=intquiz");
       return;
     }
     if (q === "i2") {
-      window.location.href = "shamir.html?from=intquiz";
+      window.location.assign("shamir.html?from=intquiz");
       return;
     }
     if (q === "i3") {
-      window.location.href = "slip39.html?from=intquiz";
+      window.location.assign("slip39.html?from=intquiz");
       return;
     }
     if (q === "i4") {

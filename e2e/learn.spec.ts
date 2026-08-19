@@ -319,6 +319,7 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator("#btnDerive")).toBeInViewport();
     await expect(page.locator("#learnReturnBarHint")).toContainText(/Validate & derive/i);
     await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    await expect(page.locator("#cardOps")).not.toBeInViewport();
     const emptyRows = await page.locator("#addrTableBody tr:not(.empty-row)").count();
     expect(emptyRows).toBe(0);
     page.once("dialog", (d) => d.accept());
@@ -327,6 +328,7 @@ test.describe("First Hour real loop", () => {
       timeout: 10_000,
     });
     await expect(page.locator("#headingReceive")).toBeInViewport();
+    await expect(page.locator("#cardOps")).not.toBeInViewport();
     await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled();
   });
 
@@ -402,6 +404,7 @@ test.describe("First Hour real loop", () => {
     });
     await page.locator('[data-hour-step="h3"] .hour-go').click();
     await expect(page.locator("#headingReceive")).toBeInViewport();
+    await expect(page.locator("#cardOps")).not.toBeInViewport();
     const tableTop = await page.locator("#addrTable").evaluate((el) => el.getBoundingClientRect().top);
     const headTop = await page.locator("#headingReceive").evaluate((el) => el.getBoundingClientRect().top);
     expect(headTop).toBeLessThan(tableTop);
@@ -452,7 +455,19 @@ test.describe("First Hour real loop", () => {
     await page.reload();
     await expect(page.locator("#learnLevel")).toHaveValue("beginner");
     await expect(page.locator('[data-hour-step="h6"] input')).toBeChecked();
-    await expect(page.locator('[data-hour-step="h8"] input')).toBeChecked();
+    await expect(page.locator('[data-hour-step="h8"]')).toBeHidden();
+    await expect(page.locator("#hourGoBeginner")).toBeHidden();
+    await expect(page.locator("#btnReadyBeginner")).toBeHidden();
+    await expect(page.locator("#quizHourNextBeginner")).toBeHidden();
     await expect(page.locator("#firstHourNext")).toBeVisible();
+    await expect(page.locator('[data-hour-step="h8"]')).toBeHidden();
+  });
+
+  test("S97 I1 Go try opens Multisig nav", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("intermediate");
+    await page.locator('[data-quiz-go="i1"]').click();
+    await expect(page).toHaveURL(/multisig\.html/);
+    await expect(page.locator('.nav-item[data-nav="multisig"]')).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("heading", { name: /Multisig|M-of-N|cosigner/i }).first()).toBeInViewport();
   });
 });

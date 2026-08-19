@@ -123,6 +123,9 @@ test.describe("Network page E2E", () => {
     await expect(page.locator("#balAck")).toBeVisible();
     await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
     await page.locator("#balAck").check();
+    await expect(page.locator("#learnReturnDockNetHint")).toHaveText(
+      "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
+    );
     await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
     await page.locator("#btnLoadLab").click();
     await expect(page.locator("#balAddrs")).not.toHaveValue("");

@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S96 · Playwright 116 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S97 · Playwright 117 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S96 · Playwright 116 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.12 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S96 · Playwright S-ids: 116`
+`Product: 0.16.13 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S97 · Playwright S-ids: 117`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **116** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **117** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S96** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S97** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -476,7 +476,7 @@ not a FAIL. Do **not** require 500. Do **not** add the link back.
 Go h2 shows mnemonic + Generate. Checklist + dock Mark done **disabled** until Generate produces a valid phrase. Checkbox cannot self-tick. After Generate, Mark done enables, ticks, returns. Go h5 → compare. Same-passphrase compare: Mark done stays off. Empty vs `test` with different addresses: Mark done on.
 
 ### S85 — Go h3 before derive (error)
-Go h3 with empty Receive table must land on Validate & derive (`#btnDerive`), not empty addresses. Banner: press Validate & derive so addresses fill. After derive, land on **Receive addresses** heading (`#headingReceive`), not the `# Address · BIP86 · Taproot` table. Mark done enables.
+**FAIL if Go h3 lands on A3 / Knots / `#cardOps`.** Empty path: Validate & derive (`#btnDerive`) **only if** addresses are empty. After derive / filled path (S91): **must** land on `#headingReceive` / “Receive addresses”. Never Knots.
 
 ### S86 — Tools Path playground spacer
 Visible gap (≥8px) between the ⓘ / Extra help teach line and `#cardPathPlay`.
@@ -488,7 +488,7 @@ Every First Hour dock names the unfinished action. Never leftover “Finish, the
 After Guided quiz 4/4 Passed, `#quizHourNext` and the hour dock name **7 Network (optional)** then **8 Raise to Beginner**. Not blank.
 
 ### S89 — Network h7 leak-ack
-Go h7 → leak-ack → **load addresses** → **fetch info**. Mark done stays disabled after ack-only. After the full flow, dock copy is exactly: “Leak-ack accepted. Mark done to check step 7 and return to the checklist.” Then Mark done writes h7 and returns.
+Go h7. After **ack-only**, dock copy is exactly: “Leak-ack accepted. Mark done to check step 7 and return to the checklist.” **Mark done stays disabled** until load addresses **and** fetch info complete, then enable.
 
 ### S91 — Go h3 lands on Receive addresses heading
 With addresses already filled, Go h3 scrolls to `#headingReceive` (“Receive addresses”), not the address table.
@@ -500,7 +500,10 @@ Guided quiz Q2 Go opens Shamir at `#headingPracticeSecret` (“Practice secret�
 On Q2 arrival, **Mark done / Mark Q2 passed** is **shown and disabled**. Enable only after under-threshold fail **then** M-of-N success. Do not hide the button until after the test.
 
 ### S95 — First Hour auto-advance
-When First Hour boxes that apply (h1–h6) are checked, Level auto-raises to Beginner. No extra Set Beginner click. h7 stays optional. Step 6 stays auto-done at quiz 4/4.
+When First Hour boxes that apply (h1–h6) are checked, Level auto-raises to Beginner. If level is already Beginner: hide step 8 / Set Beginner / I’m ready for Beginner / Jump to Set Beginner / “Raise Level to Beginner” row. h7 optional. Step 6 auto at 4/4.
+
+### S97 — I1 Go try opens Multisig
+I1 **Go try** navigates to **Multisig** (nav item 2, `multisig.html`, aria-current). Panel in view (M-of-N / cosigners). I2 → Shamir, I3 → SLIP-39, I4 → Tools PSBT.
 
 ### S90 — First Hour dock mobile wrap
 390px: dock Back + hint + Mark done wrap; no horizontal blowout.
@@ -1060,6 +1063,7 @@ S91 Go h3 Receive addresses heading: PASS|FAIL —
 S92 Q2 Shamir Practice secret: PASS|FAIL —
 S93 Shamir Mark done shown disabled then fail+M: PASS|FAIL —
 S95 First Hour auto-advance Beginner: PASS|FAIL —
+S97 I1 Go try opens Multisig: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).
