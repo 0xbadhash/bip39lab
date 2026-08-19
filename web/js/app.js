@@ -865,7 +865,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.11";
+    return "v0.16.12";
   }
 
   function setStatus(text, kind) {

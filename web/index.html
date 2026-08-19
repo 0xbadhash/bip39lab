@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.11" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.12" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.11">v0.16.11</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.12">v0.16.12</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -303,8 +303,8 @@
                   passphrase, Shamir, entropy too-low, then ~128 bits.
                 </li>
                 <li>
-                  <strong>Next (Intermediate):</strong> Level → Intermediate unlocks the
-                  <em>three-splits tour</em> and <em>I1–I4</em> self-check (keys vs shares vs words + PSBT inspect-only).
+                  <strong>Next (Intermediate):</strong> Level → Intermediate unlocks
+                  <em>I1–I4</em> self-check (keys vs shares vs words + PSBT inspect-only).
                 </li>
                 <li>
                   <strong>Later (Advanced):</strong> BIP-85, Ops, and <em>A1–A4</em> (watch-only, Knots limits, is-not).
@@ -461,26 +461,9 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardTour" data-level-min="intermediate">
-            <h2>Tour: three ways to split trust</h2>
-            <p class="control-help">Multisig (keys) ≠ Shamir (hex shares) ≠ SLIP-39 (lab share words).</p>
-            <div class="row">
-              <button type="button" class="btn" id="tourStart">Start / reset tour</button>
-            </div>
-            <div id="tourBox" class="card-sub" style="margin-top:0.75rem" hidden>
-              <p id="tourMeta" class="control-help">Step 1 / 3</p>
-              <h3 id="tourTitle">—</h3>
-              <p id="tourBody" class="control-help">—</p>
-              <div class="row">
-                <button type="button" class="btn secondary" id="tourOpen">Open this stop</button>
-                <button type="button" class="btn secondary" id="tourNext">Next stop</button>
-              </div>
-            </div>
-          </div>
-
           <div class="card card-wide" id="cardIntQuiz" data-level-min="intermediate">
             <div class="control-help level-gate-msg" data-level-gate-banner="intermediate" hidden></div>
-            <h2>
+            <h2 id="headingIntQuiz">
               Intermediate self-check
               <span class="chip">Three splits + Tools depth</span>
               <span id="intQuizSummary" class="chip">0 / 4</span>
@@ -1543,11 +1526,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.11"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.11"></script>
-  <script src="js/glossary.js?v=0.16.11"></script>
-  <script src="js/help-ui.js?v=0.16.11"></script>
-  <script src="js/learn-levels.js?v=0.16.11"></script>
-  <script src="js/app.js?v=0.16.11"></script>
+  <script src="js/site-version.js?v=0.16.12"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.12"></script>
+  <script src="js/glossary.js?v=0.16.12"></script>
+  <script src="js/help-ui.js?v=0.16.12"></script>
+  <script src="js/learn-levels.js?v=0.16.12"></script>
+  <script src="js/app.js?v=0.16.12"></script>
 </body>
 </html>

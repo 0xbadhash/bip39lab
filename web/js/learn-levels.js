@@ -8,7 +8,6 @@
   var LEVEL_KEY = "bip39lab.level";
   var HOUR_KEY = "bip39lab.firstHour";
   var QUIZ_KEY = "bip39lab.quiz";
-  var TOUR_KEY = "bip39lab.tour";
   var LEVELS = ["starter", "beginner", "intermediate", "advanced"];
 
   function $(id) {
@@ -56,11 +55,11 @@
 
   var LEVEL_BLURBS = {
     starter:
-      "Starter: orientation + First hour checklist. Quiz / tour stay dimmed until you raise Level.",
+      "Starter: orientation + First hour checklist. Quiz stays dimmed until you raise Level.",
     beginner:
-      "Beginner: Guided quiz is open (Q1–Q4). Do that next, then raise Level to Intermediate for the tour.",
+      "Beginner: Guided quiz is open (Q1–Q4). Do that next, then raise Level to Intermediate for I1–I4.",
     intermediate:
-      "Intermediate: three-splits tour + I1–I4 self-check (keys vs shares vs words + PSBT inspect). Next: Advanced.",
+      "Intermediate: I1–I4 self-check (keys vs shares vs words + PSBT inspect). Next: Advanced.",
     advanced:
       "Advanced: BIP-85 + Ops + A1–A4 self-check (watch-only, Knots limits, is-not).",
   };
@@ -68,7 +67,7 @@
   var LEVEL_UNLOCKS = {
     starter: "Orientation + First hour",
     beginner: "Guided quiz (Q1–Q4)",
-    intermediate: "Tour · I1–I4 three splits + inspect-only",
+    intermediate: "I1–I4 three splits + inspect-only",
     advanced: "BIP-85 · Ops · A1–A4 ops mind",
   };
 
@@ -95,7 +94,7 @@
           msg =
             "Beginner unlocked: Guided quiz is next. Scroll to the green “what’s next” box or open the quiz below.";
         } else if (level === "intermediate") {
-          msg = "Intermediate unlocked: tour + I1–I4 self-check (keys vs shares vs words + PSBT).";
+          msg = "Intermediate unlocked: I1–I4 self-check (keys vs shares vs words + PSBT).";
         } else if (level === "advanced") {
           msg = "Advanced unlocked: BIP-85, Ops, and A1–A4 self-check are open.";
         } else {
@@ -201,6 +200,11 @@
           var next = $("firstHourNext");
           if (next && !next.hidden) next.scrollIntoView({ behavior: "smooth", block: "nearest" });
           else if (firstUnlocked) firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 120);
+      } else if (level === "intermediate") {
+        setTimeout(function () {
+          var t = $("cardIntQuiz");
+          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 120);
       } else if (firstUnlocked) {
         setTimeout(function () {
@@ -788,7 +792,7 @@
       nextInt.addEventListener("click", function () {
         setLevel("intermediate", { announce: true });
         setTimeout(function () {
-          var t = $("cardIntQuiz") || $("cardTour");
+          var t = $("cardIntQuiz");
           if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 120);
       });
@@ -1117,7 +1121,7 @@
   function resetClassroomProgress() {
     if (
       !window.confirm(
-        "Reset first-hour checklist, quiz answers (incl. Intermediate/Advanced), demo evidence, and tour step in this browser?"
+        "Reset first-hour checklist, quiz answers (incl. Intermediate/Advanced), and demo evidence in this browser?"
       )
     ) {
       return;
@@ -1126,12 +1130,9 @@
     resetQuiz();
     resetIntQuiz();
     resetAdvQuiz();
-    saveJson(TOUR_KEY, { i: 0 });
-    var box = $("tourBox");
-    if (box) box.hidden = true;
     var toast = $("learnLevelToast");
     if (toast) {
-      toast.textContent = "Progress reset (checklist + quizzes + tour). Level unchanged.";
+      toast.textContent = "Progress reset (checklist + quizzes). Level unchanged.";
       toast.hidden = false;
       clearTimeout(showLevelToast._t);
       showLevelToast._t = setTimeout(function () {
@@ -1728,60 +1729,6 @@
     });
 
     wireQuiz();
-
-    // Tour
-    var tourSteps = [
-      {
-        title: "Stop 1 — Multisig (many keys)",
-        body: "Several people each hold a key. Spend needs M of N signatures. Keys are not “shares of one secret blob.”",
-        href: "multisig.html",
-      },
-      {
-        title: "Stop 2 — Shamir educational (hex shares)",
-        body: "One practice secret split into hex shares. Not BIP-39 words, not SLIP-39. Under-threshold recombine must fail.",
-        href: "shamir.html",
-      },
-      {
-        title: "Stop 3 — SLIP-39 lab (Trezor-shaped words)",
-        body: "Share mnemonics in a Trezor-shaped format. Lab only — not Suite, not for funded wallets. Deep-link from Shamir, not a 7th nav item.",
-        href: "slip39.html",
-      },
-    ];
-    var tourIdx = loadJson(TOUR_KEY, { i: 0 }).i || 0;
-    function renderTour() {
-      var title = $("tourTitle");
-      var body = $("tourBody");
-      var step = tourSteps[tourIdx] || tourSteps[0];
-      if (title) title.textContent = step.title;
-      if (body) body.textContent = step.body;
-      var meta = $("tourMeta");
-      if (meta) meta.textContent = "Step " + (tourIdx + 1) + " / " + tourSteps.length;
-    }
-    var tStart = $("tourStart");
-    if (tStart)
-      tStart.addEventListener("click", function () {
-        tourIdx = 0;
-        saveJson(TOUR_KEY, { i: 0 });
-        renderTour();
-        var box = $("tourBox");
-        if (box) box.hidden = false;
-      });
-    var tNext = $("tourNext");
-    if (tNext)
-      tNext.addEventListener("click", function () {
-        if (tourIdx < tourSteps.length - 1) {
-          tourIdx++;
-          saveJson(TOUR_KEY, { i: tourIdx });
-          renderTour();
-        }
-      });
-    var tOpen = $("tourOpen");
-    if (tOpen)
-      tOpen.addEventListener("click", function () {
-        var step = tourSteps[tourIdx] || tourSteps[0];
-        window.location.href = step.href;
-      });
-    renderTour();
 
     // BIP-85 educational demo: derive display-only child label from hash (not full BIP-85 crypto)
     var b85 = $("btnBip85Demo");

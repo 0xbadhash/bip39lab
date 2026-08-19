@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S95 · Playwright 115 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S96 · Playwright 116 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S95 · Playwright 115 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.11 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S95 · Playwright S-ids: 115`
+`Product: 0.16.12 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S96 · Playwright S-ids: 116`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **115** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **116** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S95** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S96** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -855,8 +855,12 @@ Level select starter→advanced; data-level on html; advanced shows BIP-85 + Ops
 Beginner+: four quiz items (incl. Q3 TOO LOW + Q4 ~128 bits) with status board;
 Go try + amber return dock; Mark passed → green Passed chips; entropy pad Mark Q3/Q4.
 
-### S64 — Three splits tour
-Intermediate+: start tour; Multisig then Shamir titles.
+### S64 — No mid-page three-splits tour
+No `#cardTour` / “Tour: three ways to split trust” / “Start / reset tour” between Guided quiz and Intermediate.
+I1–I3 already teach Multisig ≠ Shamir ≠ SLIP-39. No empty hole — quiz card is immediately followed by `#cardIntQuiz`.
+
+### S96 — Intermediate select lands on Intermediate self-check
+Choosing Intermediate scrolls/shows **Intermediate self-check / Three splits + Tools depth** (`#headingIntQuiz`). Not First Hour, not Guided quiz, not a hole.
 
 ### S65 — BIP-85 shell
 Advanced: BIP-85 card; explain demo PRACTICE.
@@ -1035,7 +1039,8 @@ S60b Manual wrong-pp mismatch: PASS|FAIL —
 S61 First hour checklist (+ localStorage after reload): PASS|FAIL —
 S62 Level chip: PASS|FAIL —
 S63 Guided quiz Q1–Q4: PASS|FAIL —
-S64 Three-splits tour: PASS|FAIL —
+S64 No mid-page three-splits tour: PASS|FAIL —
+S96 Intermediate select → Intermediate self-check: PASS|FAIL —
 S65 BIP-85 shell: PASS|FAIL —
 S66 Ops card: PASS|FAIL —
 S67 Mobile ~390px: PASS|FAIL|NEEDS-DOM —

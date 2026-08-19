@@ -100,14 +100,49 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#quizSummary")).toContainText(/1\s*\/\s*4/);
   });
 
-  test("S64 three splits tour", async ({ page }) => {
+  test("S64 no mid-page three-splits tour", async ({ page }) => {
     await page.locator("#learnLevel").selectOption("intermediate");
-    await expect(page.locator("#cardTour")).toBeVisible();
-    await page.locator("#tourStart").click();
-    await expect(page.locator("#tourBox")).toBeVisible();
-    await expect(page.locator("#tourTitle")).toContainText(/Multisig/i);
-    await page.locator("#tourNext").click();
-    await expect(page.locator("#tourTitle")).toContainText(/Shamir/i);
+    await expect(page.locator("#cardTour")).toHaveCount(0);
+    await expect(page.locator("#tourStart")).toHaveCount(0);
+    await expect(page.locator("#panel-lab")).not.toContainText(/Tour: three ways to split trust/i);
+    await expect(page.locator("#panel-lab")).not.toContainText(/Start \/ reset tour/i);
+    await expect(page.locator("#cardQuiz")).toBeVisible();
+    await expect(page.locator("#cardIntQuiz")).toBeVisible();
+    await expect(page.locator("#headingIntQuiz")).toContainText(/Intermediate self-check/i);
+    await expect(page.locator("#headingIntQuiz")).toContainText(/Three splits \+ Tools depth/i);
+    await expect(page.locator("#quizPass-i1")).toBeVisible();
+    await expect(page.locator("#quizPass-i2")).toBeVisible();
+    await expect(page.locator("#quizPass-i3")).toBeVisible();
+    const gap = await page.evaluate(() => {
+      const q = document.getElementById("cardQuiz");
+      const i = document.getElementById("cardIntQuiz");
+      if (!q || !i) return -1;
+      return i.getBoundingClientRect().top - q.getBoundingClientRect().bottom;
+    });
+    expect(gap).toBeGreaterThan(0);
+    expect(gap).toBeLessThan(80);
+  });
+
+  test("S96 Intermediate select shows Intermediate self-check", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("intermediate");
+    await expect(page.locator("#headingIntQuiz")).toBeInViewport({ timeout: 5000 });
+    await expect(page.locator("#cardIntQuiz")).toBeInViewport();
+    await expect(page.locator("#headingIntQuiz")).toContainText(/Intermediate self-check/i);
+    await expect(page.locator("#headingIntQuiz")).toContainText(/Three splits \+ Tools depth/i);
+    const pos = await page.evaluate(() => {
+      const head = document.getElementById("headingIntQuiz");
+      const fh = document.getElementById("cardFirstHour");
+      const q = document.getElementById("cardQuiz");
+      return {
+        intTop: head ? head.getBoundingClientRect().top : 9999,
+        fhBottom: fh ? fh.getBoundingClientRect().bottom : 0,
+        quizBottom: q ? q.getBoundingClientRect().bottom : 0,
+        vh: window.innerHeight,
+      };
+    });
+    expect(pos.intTop).toBeGreaterThanOrEqual(-8);
+    expect(pos.intTop).toBeLessThan(pos.vh * 0.45);
+    expect(pos.fhBottom).toBeLessThan(pos.intTop);
   });
 
   test("S65 BIP-85 shell", async ({ page }) => {
