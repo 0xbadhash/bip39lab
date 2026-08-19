@@ -150,9 +150,7 @@ def score(
         from cross_review_gate import evaluate as _xrev_eval  # type: ignore
 
         xrev = _xrev_eval(diff, pr_draft)
-        if xrev.get("soft_warn"):
-            warnings.append(xrev["message"])
-        elif xrev.get("message"):
+        if xrev.get("soft_warn") or xrev.get("message"):
             warnings.append(xrev["message"])
     except Exception as e:  # noqa: BLE001
         warnings.append(f"cross_review soft-gate skipped: {e}")

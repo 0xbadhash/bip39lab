@@ -27,7 +27,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -41,14 +41,16 @@ KANBAN_AUTO_MARKER = "auto:night_shift_readiness"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from night_shift_log import (  # noqa: E402
+from night_shift_log import (
     format_when_dual,
+)
+from night_shift_log import (
     write_night_shift_log as prepend_night_shift_log,
 )
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _run(
@@ -116,7 +118,7 @@ def _load_plugin(root: Path = ROOT) -> dict[str, Any]:
     # minimal parse without requiring PyYAML
     data: dict[str, Any] = {}
     text = path.read_text(encoding="utf-8")
-    m = re.search(r"^product_id:\s*(\S+)", text, re.M)
+    m = re.search(r"^product_id:\s*(\S+)", text, re.MULTILINE)
     if m:
         data["product_id"] = m.group(1).strip().strip("\"'")
     # vault block
