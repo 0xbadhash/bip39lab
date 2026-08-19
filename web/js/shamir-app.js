@@ -185,7 +185,21 @@
     var dockHint = $("learnReturnDockShamirHint");
     var topHint = $("quizBackBarShamirHint");
     if (banner) banner.hidden = !ready;
-    if (markBtn) markBtn.hidden = !ready;
+    if (markBtn) {
+      var intMode = false;
+      try {
+        intMode = sessionStorage.getItem("bip39lab.quizReturn") === "intquiz";
+      } catch (eI) {
+        intMode = false;
+      }
+      if (intMode) {
+        markBtn.hidden = true;
+      } else {
+        markBtn.hidden = false;
+        markBtn.disabled = !ready;
+        markBtn.setAttribute("aria-disabled", ready ? "false" : "true");
+      }
+    }
     var hint = ready
       ? "Both demos done (fail + success). Mark Q2 passed & return — self-check, not auto-graded."
       : ev.q2Fail && !ev.q2Ok

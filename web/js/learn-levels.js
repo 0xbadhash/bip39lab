@@ -137,6 +137,15 @@
     }, 150);
   }
 
+  /** h1–h6 apply; h7 is optional. No extra Set Beginner click. */
+  function maybeAutoBeginner() {
+    if (getLevel() !== "starter") return;
+    var st = loadJson(HOUR_KEY, {});
+    if (st.h1 && st.h2 && st.h3 && st.h4 && st.h5 && st.h6) {
+      graduateToBeginner();
+    }
+  }
+
   function applyLevel(level, opts) {
     opts = opts || {};
     var prev = document.documentElement.getAttribute("data-level") || getLevel();
@@ -303,7 +312,7 @@
       var q = loadJson(QUIZ_KEY, {});
       return !!(q.q1 && q.q2 && q.q3 && q.q4);
     }
-    if (id === "h7") return !!ev.h7Ack;
+    if (id === "h7") return !!(ev.h7Ack && ev.h7Loaded && ev.h7Fetched);
     if (id === "h8") return false;
     return false;
   }
@@ -346,10 +355,10 @@
     if (id === "h7") {
       return ready
         ? "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
-        : "Tick the leak-ack: addresses and your IP go to the mempool proxy. Mark done stays off until that box is ticked.";
+        : "Tick leak-ack, load addresses, then fetch info. Mark done stays off until that flow is done.";
     }
     if (id === "h8") {
-      return "Use Set Beginner on the checklist (one click — no separate Mark done).";
+      return "Level raises on its own when the First Hour steps that apply are done.";
     }
     return "";
   }
@@ -373,10 +382,10 @@
     saveHourEvidence(ev);
     refreshHourGates();
     if (key === "h3Derived" && getHourActive() === "h3" && addressesFilled()) {
-      var table = $("addrTable") || $("card-addresses");
-      if (table) {
+      var head = $("headingReceive") || $("card-addresses");
+      if (head) {
         try {
-          table.scrollIntoView({ behavior: "smooth", block: "start" });
+          head.scrollIntoView({ behavior: "smooth", block: "start" });
         } catch (eS) {
           /* ignore */
         }
@@ -458,7 +467,7 @@
     if (netMark) {
       var ev = loadHourEvidence();
       netMark.hidden = false;
-      setHourMarkEnabled(netMark, !!ev.h7Ack);
+      setHourMarkEnabled(netMark, hourStepReady("h7"));
       var netHint = $("learnReturnDockNetHint");
       if (netHint) netHint.textContent = hourNeedCopy("h7");
     }
@@ -726,6 +735,7 @@
     var prog = $("firstHourProgress");
     if (prog) prog.textContent = done + " / " + total + " steps done";
     refreshHourGates();
+    maybeAutoBeginner();
   }
 
   function wireFirstHour() {
@@ -1047,6 +1057,7 @@
     var qn = $("quizHourNext");
     if (qn) qn.hidden = n < 4;
     if (n === 4 && getHourActive() === "h6") refreshHourGates();
+    maybeAutoBeginner();
   }
 
   function syncHourQuizStep(allPassed) {
@@ -1056,6 +1067,7 @@
       st.h6 = true;
       saveJson(HOUR_KEY, st);
       refreshFirstHour();
+      maybeAutoBeginner();
       return;
     }
     if (!allPassed && was) {
@@ -1461,7 +1473,7 @@
       } catch (e) {
         /* ignore */
       }
-      window.location.href = "shamir.html?from=quiz#shCardRecombine";
+      window.location.href = "shamir.html?from=quiz#headingPracticeSecret";
       return;
     }
     if (q === "q3" || q === "q4") {

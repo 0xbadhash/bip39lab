@@ -174,6 +174,9 @@
     }
     $("balAddrs").value = list.join("\n");
     setStatus($("balStatus"), "Loaded " + list.length + " address(es) from Lab session.", "ok");
+    if (window.LearnLevels && LearnLevels.noteHour) {
+      LearnLevels.noteHour("h7Loaded", true);
+    }
   }
 
   function renderBalRows(rows) {
@@ -267,6 +270,9 @@
       }
     }
     renderBalRows(rows);
+    if (rows.length && window.LearnLevels && LearnLevels.noteHour) {
+      LearnLevels.noteHour("h7Fetched", true);
+    }
     const okN = rows.filter((r) => r.status === "ok").length;
     const unk = rows.length - okN;
     setStatus(

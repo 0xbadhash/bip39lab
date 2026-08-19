@@ -113,13 +113,27 @@ test.describe("Network page E2E", () => {
       localStorage.setItem("bip39lab.level", "starter");
       localStorage.removeItem("bip39lab.firstHour");
     });
-    await page.reload();
+    await pasteMnemonic(page, ABANDON);
+    await waitForTableRows(page, 1);
+    await page.locator("#btnSendNetwork").click();
+    await expect(page).toHaveURL(/network\.html/);
+    await page.goto("/");
     await page.locator('[data-hour-step="h7"] .hour-go').click();
     await expect(page).toHaveURL(/network\.html/);
     await expect(page.locator("#balAck")).toBeVisible();
     await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
-    await expect(page.locator("#learnReturnDockNetHint")).toContainText(/leak-ack/i);
     await page.locator("#balAck").check();
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
+    await page.locator("#btnLoadLab").click();
+    await expect(page.locator("#balAddrs")).not.toHaveValue("");
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
+    await page.locator("#btnFetchBal").click();
+    await expect
+      .poll(async () => page.locator("#balTableBody tr:not(.empty-row)").count(), { timeout: 30_000 })
+      .toBeGreaterThanOrEqual(1);
+    await expect(page.locator("#learnReturnDockNetHint")).toHaveText(
+      "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
+    );
     await expect(page.locator("#btnHourMarkFromDockNet")).toBeEnabled();
     await page.locator("#btnHourMarkFromDockNet").click();
     await expect(page).toHaveURL(/index\.html|\/$/);

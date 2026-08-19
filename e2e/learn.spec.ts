@@ -291,7 +291,7 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
-    await expect(page.locator("#addrTable")).toBeInViewport();
+    await expect(page.locator("#headingReceive")).toBeInViewport();
     await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled();
   });
 
@@ -357,5 +357,67 @@ test.describe("First Hour real loop", () => {
     expect(box!.width).toBeLessThanOrEqual(390);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(24);
+  });
+
+  test("S91 Go h3 lands on Receive addresses heading", async ({ page }) => {
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.locator('[data-hour-step="h3"] .hour-go').click();
+    await expect(page.locator("#headingReceive")).toBeInViewport();
+    const tableTop = await page.locator("#addrTable").evaluate((el) => el.getBoundingClientRect().top);
+    const headTop = await page.locator("#headingReceive").evaluate((el) => el.getBoundingClientRect().top);
+    expect(headTop).toBeLessThan(tableTop);
+    expect(headTop).toBeGreaterThanOrEqual(-8);
+  });
+
+  test("S92 Q2 Go lands on Practice secret", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("beginner");
+    await page.locator("#quizOpenShamir, [data-quiz-go='q2']").first().click();
+    await expect(page).toHaveURL(/shamir\.html/);
+    await expect(page.locator("#headingPracticeSecret")).toBeInViewport();
+    const recTop = await page.locator("#shCardRecombine").evaluate((el) => el.getBoundingClientRect().top);
+    const pracTop = await page.locator("#headingPracticeSecret").evaluate((el) => el.getBoundingClientRect().top);
+    expect(pracTop).toBeLessThan(recTop);
+  });
+
+  test("S93 Shamir Mark done visible disabled until fail then M-of-N", async ({ page }) => {
+    await page.locator("#learnLevel").selectOption("beginner");
+    await page.locator("[data-quiz-go='q2']").click();
+    await expect(page.locator("#btnMarkQ2FromShamir")).toBeVisible();
+    await expect(page.locator("#btnMarkQ2FromShamir")).toBeDisabled();
+    await page.locator("#btnShGen").click();
+    await page.locator("#shM").fill("2");
+    await page.locator("#shN").fill("3");
+    await page.locator("#btnShSplit").click();
+    await expect(page.locator(".share-line").first()).toBeVisible();
+    const one = await page.locator(".share-line").first().innerText();
+    await page.locator("#shRecombineIn").fill(one);
+    await page.locator("#btnShRecombine").click();
+    await expect(page.locator("#btnMarkQ2FromShamir")).toBeDisabled();
+    await page.locator("#btnShFillM").click();
+    await page.locator("#btnShRecombine").click();
+    await expect(page.locator("#btnMarkQ2FromShamir")).toBeEnabled({ timeout: 8000 });
+  });
+
+  test("S95 First Hour auto-advances to Beginner when applicable steps done", async ({ page }) => {
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "bip39lab.firstHour",
+        JSON.stringify({ h1: true, h2: true, h3: true, h4: true, h5: true })
+      );
+      localStorage.setItem(
+        "bip39lab.quiz",
+        JSON.stringify({ q1: true, q2: true, q3: true, q4: true })
+      );
+      localStorage.setItem("bip39lab.level", "starter");
+    });
+    await page.reload();
+    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
+    await expect(page.locator('[data-hour-step="h6"] input')).toBeChecked();
+    await expect(page.locator('[data-hour-step="h8"] input')).toBeChecked();
+    await expect(page.locator("#firstHourNext")).toBeVisible();
   });
 });
