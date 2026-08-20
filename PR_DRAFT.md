@@ -48,3 +48,10 @@ Each overlay: read dense copy, press OK, action runs. No Cancel. No Continue.
 1. QR/print confirm strings still say “Continue only on…” — not overlay buttons.
 2. S80 native replace confirm still after Generate OK.
 3. ok-wip four-face dirty files not in this ship.
+
+## Cross-review
+
+blockers=0 major=0 nit=0.
+
+### Obsolete / cleanup (scoped)
+Tier A: 0.
