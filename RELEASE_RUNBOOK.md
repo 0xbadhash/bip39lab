@@ -1,8 +1,8 @@
-# Release v0.16.22 — Intermediate app-shell stills
+# Release v0.16.23 — Starter rail + Beginner/Advanced stills
 
 **Date:** 2026-08-20
-**Tag:** v0.16.22
-**Commit:** b20c5e2
+**Tag:** v0.16.23
+**Commit:** fbd7523 (feat e640577)
 
 ## Smoke
 
@@ -17,15 +17,16 @@ No vps_infra_ops.
 
 ## Evidence pack
 
-- Three PNGs 200 on Intermediate
-- I1–I4 kept; overlay OK; Beginner visual
+- hard_gates ok
+- Playwright faces + overlay OK
+- Intermediate stills unchanged
 
 ## Rollback
 
-Revert to v0.16.21.
+Revert to v0.16.22.
 
 ## §9
 
-1. Old line-art SVG unused as face art.
-2. PNGs from locked Imagine stills (no re-Imagine).
+1. Live Mnemonic lab is not a screenshot of starter-first-hour.png.
+2. Intermediate PNGs untouched.
 3. README-only `/sync_docs` after tag is FLAG.
