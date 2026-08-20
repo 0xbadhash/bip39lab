@@ -50,3 +50,10 @@ Beginner learners see Passphrase and entropy, the mock visual, and Q1–Q4 tiles
 1. quizStatusBoard still exists as visually-hidden inventory, not a heading.
 2. quizSummary chip is visually-hidden for JS counters.
 3. ok-wip OK-only overlays were not merged.
+
+## Cross-review
+
+blockers=0 major=0 nit=0. Personas: security / maintainability / domain — none.
+
+### Obsolete / cleanup (scoped)
+Tier A: 0.
