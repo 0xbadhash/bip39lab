@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.15" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.16" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.15">v0.16.15</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.16">v0.16.16</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -106,7 +106,7 @@
       <header class="topbar">
         <div>
           <h1 id="panel-title">Offline BIP-39 lab</h1>
-          <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
+          <p class="sub" id="panel-sub">Generate, validate, and derive receive addresses — English wordlist only.</p>
         </div>
         <div class="topbar-actions" id="topbarStatusChips">
           <p class="level-change-toast" id="learnLevelToast" hidden role="status" aria-live="polite"></p>
@@ -1491,6 +1491,43 @@
     </div>
   </div>
 
+  <div id="overlayGenerate" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayGenerateTitle">
+    <div class="lab-overlay-card">
+      <h3 id="overlayGenerateTitle">Generate a practice phrase</h3>
+      <p class="control-help" id="overlayGenerateBody">
+        Practice <span id="overlayGenerateWords">12</span>-word phrase, English wordlist only, not funded, stays in this tab.
+      </p>
+      <div class="row" style="justify-content:flex-end;gap:0.5rem">
+        <button type="button" class="btn secondary lab-overlay-cancel" data-overlay-cancel="overlayGenerate">Cancel</button>
+        <button type="button" class="btn lab-overlay-continue" id="overlayGenerateGo" data-overlay-continue="overlayGenerate">Continue</button>
+      </div>
+    </div>
+  </div>
+  <div id="overlayDerive" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayDeriveTitle">
+    <div class="lab-overlay-card">
+      <h3 id="overlayDeriveTitle">Validate &amp; derive</h3>
+      <p class="control-help" id="overlayDeriveBody">
+        Checks the phrase, fills receive addresses offline. No send. Network only after explicit opt-in.
+      </p>
+      <div class="row" style="justify-content:flex-end;gap:0.5rem">
+        <button type="button" class="btn secondary lab-overlay-cancel" data-overlay-cancel="overlayDerive">Cancel</button>
+        <button type="button" class="btn lab-overlay-continue" id="overlayDeriveGo" data-overlay-continue="overlayDerive">Continue</button>
+      </div>
+    </div>
+  </div>
+  <div id="overlayClear" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayClearTitle">
+    <div class="lab-overlay-card">
+      <h3 id="overlayClearTitle">Clear secrets</h3>
+      <p class="control-help" id="overlayClearBody">
+        Empties Lab memory only (phrase, passphrase, listed addresses in this tab). Not a wallet wipe.
+        Tools may mint TEST DATA next time if you run a demo without a Lab phrase.
+      </p>
+      <div class="row" style="justify-content:flex-end;gap:0.5rem">
+        <button type="button" class="btn secondary lab-overlay-cancel" data-overlay-cancel="overlayClear">Cancel</button>
+        <button type="button" class="btn danger lab-overlay-continue" id="overlayClearGo" data-overlay-continue="overlayClear">Continue</button>
+      </div>
+    </div>
+  </div>
   <!-- Offline QR modal -->
   <div id="qrModal" class="qr-modal" hidden role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
     <div class="qr-modal-card">
@@ -1526,11 +1563,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.15"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.15"></script>
-  <script src="js/glossary.js?v=0.16.15"></script>
-  <script src="js/help-ui.js?v=0.16.15"></script>
-  <script src="js/learn-levels.js?v=0.16.15"></script>
-  <script src="js/app.js?v=0.16.15"></script>
+  <script src="js/site-version.js?v=0.16.16"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.16"></script>
+  <script src="js/glossary.js?v=0.16.16"></script>
+  <script src="js/help-ui.js?v=0.16.16"></script>
+  <script src="js/learn-levels.js?v=0.16.16"></script>
+  <script src="js/app.js?v=0.16.16"></script>
 </body>
 </html>

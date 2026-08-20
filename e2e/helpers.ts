@@ -16,6 +16,22 @@ export const GOLDEN = {
 /** Six primary nav items (Shamir after Multisig). */
 export const NAV = ["lab", "multisig", "shamir", "network", "tools", "glossary"] as const;
 
+/** Click Lab Generate/Derive/Clear then Continue on THAT overlay. */
+export async function clickLabAction(page: Page, which: "generate" | "derive" | "clear") {
+  const btn =
+    which === "generate" ? "#btnGenerate" : which === "derive" ? "#btnDerive" : "#btnClear";
+  const overlay =
+    which === "generate"
+      ? "#overlayGenerate"
+      : which === "derive"
+        ? "#overlayDerive"
+        : "#overlayClear";
+  await page.locator(btn).click();
+  await expect(page.locator(overlay)).toBeVisible();
+  await page.locator(`${overlay} .lab-overlay-continue`).click();
+  await expect(page.locator(overlay)).toBeHidden();
+}
+
 export async function pasteMnemonic(page: Page, text: string) {
   await page.locator("#mnemonic").fill(text);
   await page.waitForTimeout(450);

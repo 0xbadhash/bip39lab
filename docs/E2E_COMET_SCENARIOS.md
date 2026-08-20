@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S98 · Playwright 117 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S100 · Playwright 119 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S98 · Playwright 117 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.15 · Contract: 2 · Last aligned: 2026-08-19 · Scenarios: S0–S98 · Playwright S-ids: 117`
+`Product: 0.16.16 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S100 · Playwright S-ids: 119`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **117** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **119** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S98** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S100** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -504,6 +504,12 @@ When First Hour boxes that apply (h1–h6) are checked, Level auto-raises to Beg
 
 ### S98 — Mempool miss fail-fast
 Hung `/api/mempool` (or mempool.space) must return in a **couple of seconds** with plain-English “did not answer / unavailable / not a fake zero”. No 30–60s hang. nginx proxy connect/read **2s**; browser fetch **2.5s**. Mark done still gated on leak-ack + load + fetch.
+
+### S99 — Reset progress → Starter intro
+`#btnResetClassroom` from Intermediate (or leftover level) sets Starter. `#panel-title` Offline BIP-39 lab and `#panel-sub` exactly: “Generate, validate, and derive receive addresses — English wordlist only.” In view. Toast does not say Level unchanged.
+
+### S100 — Three distinct Lab overlays
+`#overlayGenerate` / `#overlayDerive` / `#overlayClear` are separate. Generate: practice N-word, English, not funded, this tab. Derive: checks phrase, receive addresses offline, no send, Network opt-in. Clear: Lab memory only, not a wallet wipe, TEST DATA. Cancel does not run the action. Continue then existing action. S80 native replace confirm still after Generate overlay when a phrase exists.
 
 ### S90 — First Hour dock mobile wrap
 390px: dock Back + hint + Mark done wrap; no horizontal blowout.
@@ -1064,6 +1070,8 @@ S92 Q2 Shamir Practice secret: PASS|FAIL —
 S93 Shamir Mark done shown disabled then fail+M: PASS|FAIL —
 S95 First Hour auto-advance Beginner: PASS|FAIL —
 S98 Mempool miss fail-fast: PASS|FAIL —
+S99 Reset → Starter intro receive-addresses subtitle: PASS|FAIL —
+S100 Three distinct Lab overlays: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).

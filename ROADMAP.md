@@ -72,6 +72,20 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] Reset to Starter intro + three Lab action overlays
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-reset-starter-lab-overlays.md`
+- **Plan:** none
+- **Next:** true
+- **Acceptance:**
+  - [ ] Reset sets Starter and lands on Offline BIP-39 lab intro with exact `#panel-sub` receive-addresses sentence
+  - [ ] Three distinct overlays for Generate / Validate & derive / Clear secrets; Continue vs Cancel
+  - [ ] S80 native replace confirm after Generate overlay; S81 missing-data after Derive overlay Continue
+  - [ ] Playwright + comet + stamp 0.16.16 lockstep
+- **Smoke:** product smoke + S99–S102 (Reset/overlays) + existing S80/S81/S85/S89
+- **Notes:** grill-me complete (operator brief; no live interview)
+
 ### [DONE] Shamir recombine (educational, non-SLIP-39)
 - **Status:** done
 - **Priority:** P1

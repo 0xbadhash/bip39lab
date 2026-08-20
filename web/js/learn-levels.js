@@ -1148,20 +1148,32 @@
   }
 
   function resetClassroomProgress() {
-    if (
-      !window.confirm(
-        "Reset first-hour checklist, quiz answers (incl. Intermediate/Advanced), and demo evidence in this browser?"
-      )
-    ) {
-      return;
-    }
     resetFirstHour();
     resetQuiz();
     resetIntQuiz();
     resetAdvQuiz();
+    setLevel("starter", { announce: false });
+    goTab("lab");
+    try {
+      if (window.history && history.replaceState) {
+        history.replaceState(null, "", (location.pathname || "/") + (location.search || ""));
+      }
+    } catch (eH) {
+      /* ignore */
+    }
+    setTimeout(function () {
+      var title = $("panel-title") || $("panel-sub");
+      if (title) {
+        try {
+          title.scrollIntoView({ behavior: "auto", block: "start" });
+        } catch (eS) {
+          /* ignore */
+        }
+      }
+    }, 80);
     var toast = $("learnLevelToast");
     if (toast) {
-      toast.textContent = "Progress reset (checklist + quizzes). Level unchanged.";
+      toast.textContent = "Progress reset. Level is Starter.";
       toast.hidden = false;
       clearTimeout(showLevelToast._t);
       showLevelToast._t = setTimeout(function () {

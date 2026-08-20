@@ -1637,6 +1637,33 @@ table[id]:focus-visible,
   margin: 0 0 0.45rem;
 }
 
+.lab-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 1rem;
+}
+.lab-overlay[hidden] {
+  display: none !important;
+}
+.lab-overlay-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  max-width: 26rem;
+  width: 100%;
+  text-align: left;
+}
+.lab-overlay-card h3 {
+  margin: 0 0 0.5rem;
+}
+
 .qr-modal {
   position: fixed;
   inset: 0;

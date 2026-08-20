@@ -7,6 +7,7 @@ import {
   pasteMnemonic,
   selectLabMainnet,
   waitForTableRows,
+  clickLabAction,
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
@@ -24,10 +25,10 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.15$/);
+    await expect(chip).toContainText(/^v0\.16\.16$/);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.15");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.15/);
+    expect(htmlChip).toContain("v0.16.16");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.16/);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
@@ -98,13 +99,54 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#panel-tools")).toBeVisible();
     await expect(page.locator("#pathPlayOut")).toBeVisible();
   });
+
+  test("S99 reset progress returns to Starter lab intro", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#learnLevel").selectOption("intermediate");
+    await expect(page.locator("html")).toHaveAttribute("data-level", "intermediate");
+    await page.locator("#btnResetClassroom").click();
+    await expect(page.locator("#learnLevel")).toHaveValue("starter");
+    await expect(page.locator("html")).toHaveAttribute("data-level", "starter");
+    await expect(page.locator("#panel-title")).toBeInViewport();
+    await expect(page.locator("#panel-sub")).toHaveText(
+      "Generate, validate, and derive receive addresses — English wordlist only."
+    );
+    await expect(page.locator("#panel-sub")).toBeInViewport();
+    await expect(page.locator("#learnLevelToast")).toContainText(/Starter/i);
+    await expect(page.locator("#learnLevelToast")).not.toContainText(/unchanged/i);
+    await expect(page.locator("#cardIntQuiz")).not.toBeInViewport();
+  });
+
+  test("S100 three distinct Lab overlays", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#wordCount").selectOption("24");
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#overlayGenerate")).toBeVisible();
+    await expect(page.locator("#overlayGenerate")).toContainText(/24-word phrase/i);
+    await expect(page.locator("#overlayGenerate")).toContainText(/English wordlist only/i);
+    await expect(page.locator("#overlayGenerate")).toContainText(/not funded/i);
+    await page.locator("#overlayGenerate [data-overlay-cancel]").click();
+    await expect(page.locator("#overlayGenerate")).toBeHidden();
+    await expect(page.locator("#mnemonic")).toHaveValue("");
+    await page.locator("#btnDerive").click();
+    await expect(page.locator("#overlayDerive")).toBeVisible();
+    await expect(page.locator("#overlayDerive")).toContainText(/receive addresses offline/i);
+    await expect(page.locator("#overlayDerive")).toContainText(/No send/i);
+    await expect(page.locator("#overlayGenerate")).toBeHidden();
+    await page.locator("#overlayDerive [data-overlay-cancel]").click();
+    await page.locator("#btnClear").click();
+    await expect(page.locator("#overlayClear")).toBeVisible();
+    await expect(page.locator("#overlayClear")).toContainText(/Lab memory only/i);
+    await expect(page.locator("#overlayClear")).toContainText(/Not a wallet wipe/i);
+    await expect(page.locator("#overlayClear")).toContainText(/TEST DATA/i);
+  });
 });
 
 test.describe("Lab mnemonic & derive", () => {
   test("S1 generate 12-word fills entropy + table", async ({ page }) => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("12");
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await waitForTableRows(page, 5);
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(12);
@@ -115,14 +157,14 @@ test.describe("Lab mnemonic & derive", () => {
   test("S80 generate replace confirm", async ({ page }) => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("12");
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await waitForTableRows(page, 5);
     const first = await page.locator("#mnemonic").inputValue();
     page.once("dialog", (d) => d.dismiss());
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await expect(page.locator("#mnemonic")).toHaveValue(first);
     page.once("dialog", (d) => d.accept());
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await waitForTableRows(page, 5);
     const second = await page.locator("#mnemonic").inputValue();
     expect(second.trim().split(/\s+/).length).toBe(12);
@@ -131,7 +173,7 @@ test.describe("Lab mnemonic & derive", () => {
   test("S1b generate 24-word entropy bits", async ({ page }) => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("24");
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await waitForTableRows(page, 5);
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(24);
@@ -148,7 +190,7 @@ test.describe("Lab mnemonic & derive", () => {
 
   test("S2 abandon golden BIP86 + BIP84 + BIP49 + BIP44", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#btnClear").click();
+    await clickLabAction(page, "clear");
     await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
@@ -290,7 +332,7 @@ test.describe("Lab mnemonic & derive", () => {
     await expect(page.locator("#mnemonic")).toBeHidden();
     await page.locator("#hidePrivate").uncheck();
     await expect(page.locator("#mnemonic")).toBeVisible();
-    await page.locator("#btnClear").click();
+    await clickLabAction(page, "clear");
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await expect(page.locator("#entropyMnemonic")).toHaveText("—");
     await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
@@ -311,8 +353,8 @@ test.describe("Lab mnemonic & derive", () => {
 
   test("S81 empty validate-and-derive missing data", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#btnClear").click();
-    await page.locator("#btnDerive").click();
+    await clickLabAction(page, "clear");
+    await clickLabAction(page, "derive");
     await expect(page.locator("#status")).toContainText(/Missing data|paste a recovery phrase/i);
     await expect(page.locator("#status")).not.toContainText(/^Ready/i);
   });
@@ -320,7 +362,7 @@ test.describe("Lab mnemonic & derive", () => {
   test("S11b eleven-word status says length", async ({ page }) => {
     await page.goto("/");
     await page.locator("#mnemonic").fill("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon");
-    await page.locator("#btnDerive").click();
+    await clickLabAction(page, "derive");
     await expect(page.locator("#status")).toContainText(/length|11 word/i);
     await expect(page.locator("#status")).not.toContainText(/wordlist or checksum/i);
     await expect(page.locator("#entropyMnemonic")).toContainText(/length|12\/15\/18\/21\/24/i);
@@ -328,7 +370,7 @@ test.describe("Lab mnemonic & derive", () => {
 
   test("S11 invalid mnemonic", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#btnClear").click();
+    await clickLabAction(page, "clear");
     await page.locator("#mnemonic").fill("not a real seed phrase here at all xx");
     await page.waitForTimeout(500);
     const ent = await page.locator("#entropyMnemonic").innerText();
@@ -462,7 +504,7 @@ test.describe("Lab Tools panel", () => {
   });
 
   test("S18c clear secrets then compare auto-gens TEST DATA", async ({ page }) => {
-    await page.locator("#btnClear").click();
+    await clickLabAction(page, "clear");
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await page.locator('.nav-item[data-nav="tools"]').click();
     await page.locator("#cmpPpB").fill("test");

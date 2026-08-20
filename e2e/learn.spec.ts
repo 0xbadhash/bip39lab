@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { clickLabAction } from "./helpers";
 
 test.describe("Learning levels E0–E6", () => {
   test.beforeEach(async ({ page }) => {
@@ -51,7 +52,7 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
     page.once("dialog", (d) => d.accept());
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
     await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
     await page.locator("#btnHourMarkFromDock").click();
@@ -232,7 +233,7 @@ test.describe("E3 mobile shell", () => {
     await expect(page.locator(".sidebar")).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
     // Generate so the address table has wide bc1 rows
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
@@ -293,7 +294,7 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator('[data-hour-step="h2"] .hour-done')).toBeDisabled();
     await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
     page.once("dialog", (d) => d.accept());
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await expect(page.locator("#mnemonic")).toHaveValue(/.{20,}/);
     await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
     await page.locator("#learnReturnBarBtn").click();
@@ -324,7 +325,7 @@ test.describe("First Hour real loop", () => {
     const emptyRows = await page.locator("#addrTableBody tr:not(.empty-row)").count();
     expect(emptyRows).toBe(0);
     page.once("dialog", (d) => d.accept());
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
@@ -399,7 +400,7 @@ test.describe("First Hour real loop", () => {
 
   test("S91 Go h3 lands on Receive addresses heading", async ({ page }) => {
     page.once("dialog", (d) => d.accept());
-    await page.locator("#btnGenerate").click();
+    await clickLabAction(page, "generate");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });

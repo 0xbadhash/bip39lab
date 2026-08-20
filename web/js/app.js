@@ -865,7 +865,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.15";
+    return "v0.16.16";
   }
 
   function setStatus(text, kind) {
@@ -1808,9 +1808,46 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    $("btnGenerate").addEventListener("click", () => onGenerate().catch(console.error));
-    $("btnDerive").addEventListener("click", () => deriveNow({ quiet: false }).catch(console.error));
-    $("btnClear").addEventListener("click", clearSecrets);
+    function hideLabOverlay(id) {
+      const el = $(id);
+      if (!el) return;
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
+    }
+    function showLabOverlay(id) {
+      ["overlayGenerate", "overlayDerive", "overlayClear"].forEach(hideLabOverlay);
+      const el = $(id);
+      if (!el) return;
+      if (id === "overlayGenerate") {
+        const n = $("wordCount") ? $("wordCount").value : "12";
+        const span = $("overlayGenerateWords");
+        if (span) span.textContent = String(n || "12");
+      }
+      el.hidden = false;
+      el.setAttribute("aria-hidden", "false");
+    }
+    $("btnGenerate").addEventListener("click", () => showLabOverlay("overlayGenerate"));
+    $("btnDerive").addEventListener("click", () => showLabOverlay("overlayDerive"));
+    $("btnClear").addEventListener("click", () => showLabOverlay("overlayClear"));
+    document.querySelectorAll("[data-overlay-continue]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-overlay-continue");
+        hideLabOverlay(id);
+        if (id === "overlayGenerate") onGenerate().catch(console.error);
+        else if (id === "overlayDerive") deriveNow({ quiet: false }).catch(console.error);
+        else if (id === "overlayClear") clearSecrets();
+      });
+    });
+    document.querySelectorAll("[data-overlay-cancel]").forEach((btn) => {
+      btn.addEventListener("click", () => hideLabOverlay(btn.getAttribute("data-overlay-cancel")));
+    });
+    ["overlayGenerate", "overlayDerive", "overlayClear"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener("click", (e) => {
+        if (e.target === el) hideLabOverlay(id);
+      });
+    });
     $("hidePrivate").addEventListener("change", (e) => setPrivateVisible(!e.target.checked));
 
     $("mnemonic").addEventListener("input", () => {
