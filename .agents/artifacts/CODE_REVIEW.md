@@ -2,25 +2,8 @@
 
 **Marker:** CODE-REVIEW
 
-- command: `/code_review` after execute_dev v0.16.16
-- base: origin/master (pre-commit working tree reviewed)
-- secrets: no mnemonic/private keys in overlay copy or tests (ABANDON vector only)
+Overlay copy leftover v0.16.17. Three bodies rewritten; JS Continue/Cancel untouched except stamps. S80 still native confirm after overlay. No P0. Secrets scan on product files only.
 
-## Findings accepted
-None P0.
-
-## Findings rejected
-None.
-
-## P0 count
-0
-
-## Follow-ups
-- Overlay keyboard focus trap / Esc — not required this ship.
-
-## Tests
-S0, S80, S81, S85, S91, S99, S100 passed.
-
-## Scope
-Reset + three overlays + subtitle + helper + stamps. No First Hour reopen. No dirty scripts.
-```
+P0 count: 0
+Follow-ups: none
+Tests: S0 S80 S99 S100 S81 passed.

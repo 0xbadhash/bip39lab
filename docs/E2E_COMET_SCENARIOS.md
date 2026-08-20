@@ -39,7 +39,7 @@ scenarios: S0–S100 · Playwright 119 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.16 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S100 · Playwright S-ids: 119`
+`Product: 0.16.17 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S100 · Playwright S-ids: 119`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -509,7 +509,11 @@ Hung `/api/mempool` (or mempool.space) must return in a **couple of seconds** wi
 `#btnResetClassroom` from Intermediate (or leftover level) sets Starter. `#panel-title` Offline BIP-39 lab and `#panel-sub` exactly: “Generate, validate, and derive receive addresses — English wordlist only.” In view. Toast does not say Level unchanged.
 
 ### S100 — Three distinct Lab overlays
-`#overlayGenerate` / `#overlayDerive` / `#overlayClear` are separate. Generate: practice N-word, English, not funded, this tab. Derive: checks phrase, receive addresses offline, no send, Network opt-in. Clear: Lab memory only, not a wallet wipe, TEST DATA. Cancel does not run the action. Continue then existing action. S80 native replace confirm still after Generate overlay when a phrase exists.
+`#overlayGenerate` / `#overlayDerive` / `#overlayClear` stay separate (not one-liners).
+Generate: practice recovery phrase, English words only, N-word count, not a funded seed, nothing leaves this tab.
+Derive: valid BIP-39, receive addresses, in this tab, does not send bitcoin / look up balance / talk to the network; Network only if you later opt in.
+Clear: wipes this lab tab’s memory, not deleting a real wallet, cannot reach coins, TEST DATA, paper unchanged.
+Cancel does not run the action. Continue then existing action. S80 native replace confirm still after Generate overlay when a phrase exists.
 
 ### S90 — First Hour dock mobile wrap
 390px: dock Back + hint + Mark done wrap; no horizontal blowout.

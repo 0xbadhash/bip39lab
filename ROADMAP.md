@@ -72,6 +72,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] Overlay copy density
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-overlay-copy-density.md`
+- **Plan:** `.agents/specs/2026-08-20-overlay-copy-density-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Three overlay bodies dense, distinct, locked intent
+  - [ ] S100 + comet updated; S80 still after Generate overlay
+  - [ ] Stamp 0.16.17 lockstep
+- **Notes:** grill-me complete (locked brief)
+
 ### [DONE] Reset to Starter intro + three Lab action overlays
 - **Status:** done
 - **Priority:** P1

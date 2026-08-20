@@ -1,55 +1,55 @@
-# PR Draft: v0.16.16 Reset Starter intro + three Lab overlays
+# PR Draft: v0.16.17 overlay copy density
 
-**Spec:** `.agents/specs/2026-08-20-reset-starter-lab-overlays.md`
-**Plan:** `.agents/specs/2026-08-20-reset-starter-lab-overlays-plan.md`
+**Spec:** `.agents/specs/2026-08-20-overlay-copy-density.md`
+**Plan:** `.agents/specs/2026-08-20-overlay-copy-density-plan.md`
 
 ## What Problem This Solves
 
-Reset progress left Level unchanged and did not land on the lab intro. Generate / Derive / Clear fired with no distinct in-page overlay.
+Overlays were one-line jargon. Learners need distinct dense copy for Generate / Derive / Clear.
 
 ## Why This Change Was Made
 
-CEO leftover Window 6. Stamp 0.16.16.
+Window 6 leftover. Stamp 0.16.17.
 
 ## User Impact
 
-Reset returns to Offline BIP-39 lab at Starter with the receive-addresses subtitle. Each of Generate, Validate & derive, and Clear secrets has its own overlay; Cancel does not run the action.
+Each overlay uses the card space: practice unfunded phrase; offline receive addresses; tab memory wipe only.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC Reset Starter intro exact `#panel-sub` | Playwright S99 |
-| AC three distinct overlays Continue/Cancel | Playwright S100 |
-| AC S80 native replace after Generate overlay | Playwright S80 |
-| AC S81 missing-data after Derive overlay Continue | Playwright S81 smoke e2e |
-| AC S85 Receive heading | Playwright S85 |
-| AC stamp 0.16.16 chip | Playwright S0 |
+| AC Generate dense copy + word span | Playwright S100 |
+| AC Derive BIP-39 / no send / no network | Playwright S100 |
+| AC Clear tab memory / TEST DATA / paper | Playwright S100 |
+| AC Cancel no-op | Playwright S100 |
+| AC S80 after Generate overlay | Playwright S80 |
+| AC Reset intro unchanged | Playwright S99 |
+| AC stamp 0.16.17 | Playwright S0 |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/lab.spec.ts -g "S99|S100|S80|S81|S0 smoke"`
+- green_cmd: `npx playwright test e2e/lab.spec.ts -g "S100|S80|S99|S0 smoke"`
 
 ## Threat notes
 
-- secrets: overlays do not log phrases; S80 native confirm still gates replace.
-- xss: overlay copy is static text, not innerHTML of user mnemonic.
-- csrf: no new network POST; Clear/Generate stay in-tab.
+- secrets: copy does not echo the mnemonic.
+- xss: static overlay HTML, word count from select only.
+- csrf: no new network writes.
 
 ## Evidence pack
 
-- Playwright S0, S80, S81, S85, S91, S99, S100 (e2e smoke)
-- pytest not required this slice (no .py product change)
-- hard_gates / validate to be re-run on this draft
-- coverage: overlay Continue vs Cancel + Reset path
+- Playwright S0, S80, S99, S100 (e2e smoke)
+- hard_gates / validate on this draft
+- pytest: pyproject version stamp
 
 ## Things that look bad but are actually fine
 
-1. Reset no longer uses `window.confirm` (brief: always return to Starter).
-2. Dirty leftover `scripts/*.py` and `config/` are not in this commit.
-3. S80 remains a native confirm after the Generate overlay by design.
+1. Overlay HTML is longer; ids and Continue/Cancel unchanged.
+2. Dirty leftover scripts/*.py not in this commit.
+3. S89 FLAG / tag-vs-HEAD README FLAG not retagged.
 
 ## Cross-review
 
-blocker=0. See `.agents/artifacts/CROSS_REVIEW.md`.
+blocker=0. Overlay copy only.
