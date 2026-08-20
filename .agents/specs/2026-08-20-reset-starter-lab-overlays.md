@@ -5,7 +5,7 @@
 - **Status:** ready-for-agent
 - **Priority:** P1
 - **Roadmap:** ROADMAP.md → Open work
-- **Plan:** none
+- **Plan:** `.agents/specs/2026-08-20-reset-starter-lab-overlays-plan.md`
 - **Tracker:** local
 - **Constitution:** AGENTS.md
 - **Grill-me:** complete
