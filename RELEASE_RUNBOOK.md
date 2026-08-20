@@ -1,34 +1,32 @@
-# Release v0.16.19 — four level-gate faces
+# Release v0.16.20 — Beginner visual (locked mock)
 
 **Date:** 2026-08-20
-**Tag:** v0.16.19
-**Commit:** dc3b02c (after feat 5c316a9 + plan/pyproject + S0 lockstep)
+**Tag:** v0.16.20
+**Commit:** 76a9c89 (feat 03394b5)
 
 ## Smoke
 
 | Step | Exit |
 |------|------|
-| pytest (unit) | 0 |
-| Playwright S0 / S102–S108 / S13b retry | 0 |
+| Playwright S102–S108 S0 | 0 (S103/S108 after tile CSS + Mark passed) |
 | check_web_e2e | 0 |
-| Full `npm run test:e2e` first pass | 1 (S0 pin 0.16.18 + S13b flake); fixed S0; S13b rerun pass |
+| hard_gates / pr_validator | 100 |
 
 ## Infra
 
-No vps_infra_ops this ship. nginx deploy is independent after origin tag.
+No vps_infra_ops. nginx deploy independent.
 
 ## Evidence pack
 
-- hard_gates ok (score 100 on wip HEAD 68251c7)
-- Playwright faces 7/7
-- S0 chip v0.16.19
+- hard_gates ok
+- Playwright faces S103 mock + S102/S104/S105/S106/S107 kept
 
 ## Rollback
 
-Keep live at 0.16.18 until nginx deploy of this tag.
+Live 0.16.19 until this tag deploys.
 
 ## §9
 
-1. Duplicate DS SVG aliases for CSP `'self'`.
-2. S13b can flake on local mempool proxy.
+1. quizSummary visually-hidden inventory.
+2. Hairline beginner-seed.svg unused on this face.
 3. Tag may precede README-only `/sync_docs` (FLAG, no force-retag).
