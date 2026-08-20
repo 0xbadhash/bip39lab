@@ -1,7 +1,7 @@
 # bip39lab — offline BIP-39 / entropy lab
 
 <!-- CURRENT_RELEASE -->
-**Current release:** `v0.16.16` (docs synced via `/sync_docs`)
+**Current release:** `v0.16.17` (docs synced via `/sync_docs`)
 <!-- /CURRENT_RELEASE -->
 
 **Repo:** [github.com/0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)
