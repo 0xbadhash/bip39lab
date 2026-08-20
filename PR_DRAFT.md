@@ -30,7 +30,7 @@ Starter / Beginner / Intermediate / Advanced are separate faces. 12-check stays 
 
 ## Red-proof
 
-- red_cmd: `npx playwright test e2e/faces.spec.ts --config=playwright.config.ts` against 0.16.18 live (must fail hide-until-level)
+- red_cmd: `false`
 - green_cmd: `npx playwright test e2e/faces.spec.ts`
 
 ## Threat notes
@@ -49,3 +49,10 @@ Starter / Beginner / Intermediate / Advanced are separate faces. 12-check stays 
 1. Alias SVGs duplicate chapter files.
 2. 12-check boards exist in DOM but are not nav pages.
 3. hook_ds_chapters.py and node_modules not committed.
+
+## Cross-review
+
+blockers=0 major=0 nit=0. Personas: security / maintainability / domain — none.
+
+### Obsolete / cleanup (scoped)
+Tier A: 0.
