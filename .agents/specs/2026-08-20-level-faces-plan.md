@@ -12,10 +12,9 @@ Lab index plus `web/js/learn-levels.js` owns level, collapse, and chapter hooks.
 
 ## Implementation sequence
 
-1. Spec + plan + PLAN_REVIEW already in tree.
-2. Consume DS files already copied; do not run hook_ds_chapters.py in the ship.
-3. Stamp VERSION 0.16.19 on the product commit.
-4. Merge wip into master without leftover dirty scripts/config; tag and push origin/master.
+- Consume DS files already copied; do not run hook_ds_chapters.py in the ship.
+- Stamp VERSION 0.16.19 on the product commit.
+- Merge wip into master without leftover dirty scripts/config; tag and push origin/master.
 
 ## Testing
 
