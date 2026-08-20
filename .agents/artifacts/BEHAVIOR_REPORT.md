@@ -1,11 +1,10 @@
 # BEHAVIOR-REPORT
 
-**Stamp:** 0.16.22
-
 | Clause | Result | Evidence |
 |--------|--------|----------|
-| 1 three PNGs | pass | S104 |
-| 2 I1–I4 | pass | S104 |
-| 3 leftovers | pass | S103 S106 S107 |
+| 1 rail | pass | S102 |
+| 2 beginner stills | pass | S103 |
+| 3 advanced PNG | pass | S105 |
+| 4 intermediate + OK | pass | S104 S106 |
 
 ✅ BEHAVIOR VALIDATED

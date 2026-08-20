@@ -40,8 +40,13 @@ test.describe("Level faces", () => {
     );
     await expect(page.locator("#cardOrientation")).toBeVisible();
     await expect(page.locator("#cardFirstHour")).toBeVisible();
+    await expect(page.locator("#starterSplit")).toBeVisible();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
+    await expect(page.locator("#firstHourList")).toContainText(/Air-gap warn/);
+    await expect(page.locator("#firstHourList")).toContainText(/Generate 12-word/);
+    await expect(page.locator("#firstHourList")).toContainText(/Set Beginner/);
+    await expect(page.locator("#card-mnemonic h2").first()).toHaveText(/Mnemonic/);
     await expect(page.locator("#cardQuiz")).toBeHidden();
     await expect(page.locator("#cardIntQuiz")).toBeHidden();
     await expect(page.locator("#cardAdvQuiz")).toBeHidden();
@@ -62,8 +67,12 @@ test.describe("Level faces", () => {
     await expect(page.locator("#cardQuiz")).not.toContainText(/Guided quiz \(self-check\)/);
     await expect(page.locator("#cardQuiz")).not.toContainText(/Go to Guided quiz/);
     await expect(page.locator("#beginnerEntropyEq")).toBeVisible();
-    await expect(page.locator("#beginnerEntropyEq img")).toBeVisible();
-    await expect(page.locator("#beginnerEntropyEq img")).toHaveAttribute("src", /assets\/ds\/faces\/beginner-entropy-eq\.svg/);
+    await expect(page.locator("#beginnerStillKey")).toBeVisible();
+    await expect(page.locator("#beginnerStillDice")).toBeVisible();
+    await expect(page.locator("#beginnerStillLock")).toBeVisible();
+    await expect(page.locator("#beginnerStillKey")).toHaveAttribute("src", /beginner-key\.png/);
+    await expect(page.locator("#beginnerStillDice")).toHaveAttribute("src", /beginner-dice\.png/);
+    await expect(page.locator("#beginnerStillLock")).toHaveAttribute("src", /beginner-lock\.png/);
     await expect(page.locator("#chapterBeginner")).toContainText(/Something you know/i);
     await expect(page.locator("#chapterBeginner")).toContainText(/Too few dice/i);
     await expect(page.locator("#chapterBeginner")).toContainText(/128 bits/i);
@@ -107,6 +116,9 @@ test.describe("Level faces", () => {
     await expect(page.locator("#chapterAdvanced")).toBeVisible();
     await expect(page.locator("#chapterAdvanced")).toContainText(/master → child keys/i);
     await expect(page.locator("#chapterAdvancedIsNot")).toContainText(/not a wallet/i);
+    await expect(page.locator("#advStillImg")).toBeVisible();
+    await expect(page.locator("#advStillImg")).toHaveAttribute("src", /advanced-master-child\.png/);
+    await expect(page.locator("#chapterAdvanced img.chapter-visual-img")).toHaveCount(0);
     await expect(page.locator("#cardAdvQuiz")).toBeVisible();
     await expect(page.locator("#quizPass-a1")).toBeVisible();
     await expect(page.locator("#quizPass-a4")).toBeVisible();

@@ -39,7 +39,7 @@ scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.22 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
+`Product: 0.16.23 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -740,16 +740,16 @@ Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if t
 Lab has 25 `.help-tip-btn`; hover shows the panel without a prior click. Sample the same hover behavior on Multisig, Network, Shamir, SLIP-39 (1 icon). Extra help Off still hides non-safety (i) (S42).
 
 ### S102 — Starter face
-Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses sentence; First hour + Generate/Validate/Clear visible; `#cardQuiz` / `#cardIntQuiz` / `#cardAdvQuiz` / BIP-85 / Ops **hidden**. 12-check boards not a fifth page. 6 nav items.
+Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses sentence; numbered 8-step First hour rail beside live Mnemonic lab (Air-gap warn … Set Beginner); Generate/Validate/Clear visible; `#cardQuiz` / `#cardIntQuiz` / `#cardAdvQuiz` / BIP-85 / Ops **hidden**. 12-check boards not a fifth page. 6 nav items.
 
 ### S103 — Beginner face
-Beginner: chapter **Passphrase and entropy**; visible key + dice = stronger seed visual (`#beginnerEntropyEq`, local `assets/ds/faces/beginner-entropy-eq.svg`); labels Something you know / Randomness / Stronger seed; bar Too few dice → 128 bits. **Four Q1–Q4 tiles** (grid, Go try + Mark passed). No heading “Guided quiz (self-check)” and no “Go to Guided quiz”. Intermediate hidden. Starter orientation/lab **collapsed**.
+Beginner: chapter **Passphrase and entropy**; three locked stills key + dice = lock (`beginner-key.png`, `beginner-dice.png`, `beginner-lock.png`); labels Something you know / Randomness / Stronger seed; bar Too few dice → 128 bits. **Four Q1–Q4 tiles**. No Guided quiz heading. Intermediate hidden. Starter orientation/lab **collapsed**.
 
 ### S104 — Intermediate face
 Intermediate: **keys ≠ shares ≠ share-words**; three locked app-shell stills visible (`intermediate-keys.png`, `intermediate-hex-shares.png`, `intermediate-share-words.png`) — not the old line-art SVG as face art. I1–I4 visible; Advanced / BIP-85 hidden.
 
 ### S105 — Advanced face
-Advanced: **master → child keys**; this site is **not a wallet**; A1–A4.
+Advanced: **master → child keys**; this site is **not a wallet**; visible `advanced-master-child.png` (not faint SVG); A1–A4.
 
 ### S106 — Faces + Reset + overlays
 Reset from a later level still lands Starter exact intro (S99). Generate overlay still 0.16.17 first line. One OK, no Cancel/Continue. Do not reopen hover (S101).

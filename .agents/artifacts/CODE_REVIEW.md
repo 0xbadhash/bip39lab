@@ -1,9 +1,6 @@
 # CODE-REVIEW
 
-**Base:** 5ae3c88
-**Secrets:** expected clean
-**P0:** 0
+**Base:** cc74f67 **P0:** 0
+Rail beside live lab; beginner/advanced PNGs; Intermediate HTML/PNG untouched.
 
-PNGs local, visible imgs not hooked hidden. I1–I4 kept. Overlay OK untouched.
-
-✅ CODE-REVIEW DONE  p0=0  follow_ups=0
+✅ CODE-REVIEW DONE  p0=0

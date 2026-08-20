@@ -1,35 +1,36 @@
-# PR Draft: v0.16.22 Intermediate stills
+# PR Draft: v0.16.23 Starter rail + Beginner/Advanced stills
 
-**Spec:** `.agents/specs/2026-08-20-int-stills.md`
-**Plan:** `.agents/specs/2026-08-20-int-stills-plan.md`
+**Spec:** `.agents/specs/2026-08-20-sba-stills.md`
+**Plan:** `.agents/specs/2026-08-20-sba-stills-plan.md`
 
 ## What Problem This Solves
 
-Intermediate used one faint SVG. CEO locked three app-shell stills.
+Starter First hour was a stacked novel. Beginner equation was gold SVG. Advanced art was a faint SVG.
 
 ## Why This Change Was Made
 
-Hold lifted. Stamp 0.16.22. Do not Imagine again.
+Hold lifted. Locked stills exist. Stamp 0.16.23. Do not Imagine. Do not touch Intermediate.
 
 ## User Impact
 
-Intermediate shows Multisig keys, Shamir hex shares, SLIP-39 word tiles. I1–I4 unchanged.
+Starter: numbered rail beside live Mnemonic lab. Beginner: key + dice = lock stills. Advanced: master→child PNG.
 
 ## Traceability
 
-| AC | Test / smoke |
-|----|----------------|
-| Three PNGs visible | Playwright S104 |
-| I1–I4 | Playwright S104 |
-| Beginner | Playwright S103 |
-| Overlay OK | Playwright S106 |
-| Hover | Playwright S107 |
-| Stamp 0.16.22 | Playwright S0 |
+| AC | Test |
+|----|------|
+| Starter rail | S102 |
+| Beginner three stills | S103 |
+| Intermediate unchanged | S104 |
+| Advanced PNG | S105 |
+| Overlay OK | S106 |
+| Hover | S107 |
+| Stamp | S0 |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/faces.spec.ts -g S104`
+- green_cmd: `npx playwright test e2e/faces.spec.ts`
 
 ## Threat notes
 
@@ -39,18 +40,18 @@ Intermediate shows Multisig keys, Shamir hex shares, SLIP-39 word tiles. I1–I4
 
 ## Evidence pack
 
-- Playwright S0 S102–S108
-- hard_gates / e2e smoke
+- Playwright S0 S100 S102–S108
+- hard_gates
 
 ## Things that look bad but are actually fine
 
-1. Old intermediate-keys-shares.svg remains on disk unused as face art.
-2. Still files are Imagine JPEGs saved as PNG.
+1. Live lab is not the PNG screenshot.
+2. Intermediate PNGs unchanged.
 3. Dirty harness scripts not in this ship.
 
 ## Cross-review
 
-blockers=0 major=0 nit=0.
+blockers=0.
 
 ### Obsolete / cleanup (scoped)
-Tier A: 0. Old SVG unused as face art.
+Tier A: 0.

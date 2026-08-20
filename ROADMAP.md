@@ -72,8 +72,21 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Intermediate app-shell stills
+### [OPEN] Starter rail + Beginner/Advanced stills
 - **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-sba-stills.md`
+- **Plan:** `.agents/specs/2026-08-20-sba-stills-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Starter 8-step rail beside live lab
+  - [ ] Beginner three stills; Advanced PNG
+  - [ ] Intermediate stills untouched; stamp 0.16.23
+- **Smoke:** e2e/faces.spec.ts S102 S103 S104 S105
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Intermediate app-shell stills
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-20-int-stills.md`
 - **Plan:** `.agents/specs/2026-08-20-int-stills-plan.md`

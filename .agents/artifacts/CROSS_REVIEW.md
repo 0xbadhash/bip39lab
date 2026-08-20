@@ -12,11 +12,11 @@ None.
 Tier A: 0.
 
 ## Domain Specialist
-None. Three stills + I1–I4.
+None.
 
 ## §9
-1. Old SVG remains on disk.
-2. PNG bytes from Imagine JPEG wrap.
+1. Live lab not a screenshot.
+2. Intermediate stills unchanged.
 3. README after tag FLAG.
 
 ✅ CROSS-REVIEW DONE blockers=0 obsolete_tier_a=0

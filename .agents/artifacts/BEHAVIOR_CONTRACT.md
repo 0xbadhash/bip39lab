@@ -1,5 +1,6 @@
-# Behavior contract — Intermediate stills 0.16.22
+# Behavior contract 0.16.23
 
-1. Intermediate shows three stills (keys / hex-shares / share-words).
-2. I1–I4 still present; Advanced hidden.
-3. Overlay OK; Beginner visual; Reset; hover kept.
+1. Starter 8-step rail beside Mnemonic lab.
+2. Beginner three stills not gold SVG.
+3. Advanced PNG not faint SVG.
+4. Intermediate three stills remain. Overlay OK remains.
