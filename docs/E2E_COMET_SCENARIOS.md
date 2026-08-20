@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S101 · Playwright 120 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S101 · Playwright 120 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.18 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S101 · Playwright S-ids: 120`
+`Product: 0.16.19 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **120** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **127** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S101** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S108** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -739,6 +739,27 @@ Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if t
 ### S101 — Every visible (i) hover
 Lab has 25 `.help-tip-btn`; hover shows the panel without a prior click. Sample the same hover behavior on Multisig, Network, Shamir, SLIP-39 (1 icon). Extra help Off still hides non-safety (i) (S42).
 
+### S102 — Starter face
+Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses sentence; First hour + Generate/Validate/Clear visible; `#cardQuiz` / `#cardIntQuiz` / `#cardAdvQuiz` / BIP-85 / Ops **hidden**. 12-check boards not a fifth page. 6 nav items.
+
+### S103 — Beginner face
+Beginner: chapter **Passphrase and entropy**; Q1–Q4 (wrong passphrase, under-threshold Shamir, TOO LOW, ~128 bits). Intermediate hidden. Starter orientation/lab **collapsed**.
+
+### S104 — Intermediate face
+Intermediate: **keys ≠ shares ≠ share-words**; I1–I4 visible; Advanced / BIP-85 hidden.
+
+### S105 — Advanced face
+Advanced: **master → child keys**; this site is **not a wallet**; A1–A4.
+
+### S106 — Faces + Reset + overlays
+Reset from a later level still lands Starter exact intro (S99). Generate overlay still 0.16.17 first line. Do not reopen hover (S101).
+
+### S107 — Faces keep hover-(i)
+On Starter, hover an (i) without click; panel visible.
+
+### S108 — Faces rec-flow
+390px: Generate produces phrase + table (form/results); empty Derive missing-data; next-step Beginner chapter; Intermediate hides Advanced; Advanced not-a-wallet; no page blowout; 12-check not a nav page.
+
 ### S44 — First-hour Go (replaces step rail)
 First hour checklist: **Go** on a step scrolls to target (e.g. mnemonic) and shows amber **← Back to First hour** dock; Back returns to checklist. No mid-page step-rail wizard.
 
@@ -1080,6 +1101,13 @@ S95 First Hour auto-advance Beginner: PASS|FAIL —
 S98 Mempool miss fail-fast: PASS|FAIL —
 S99 Reset → Starter intro receive-addresses subtitle: PASS|FAIL —
 S100 Three distinct Lab overlays: PASS|FAIL —
+S102 Starter face later hidden: PASS|FAIL —
+S103 Beginner Passphrase and entropy Q1–Q4: PASS|FAIL —
+S104 Intermediate keys ≠ shares ≠ share-words I1–I4: PASS|FAIL —
+S105 Advanced master → child keys not a wallet A1–A4: PASS|FAIL —
+S106 Faces Reset + overlays kept: PASS|FAIL —
+S107 Faces hover-(i) kept: PASS|FAIL —
+S108 Faces rec-flow form/results/missing/next/mobile: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).

@@ -72,6 +72,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] Level faces (four gates)
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-level-faces.md`
+- **Plan:** `.agents/specs/2026-08-20-level-faces-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Four faces live at 0.16.19; later hidden until gate
+  - [ ] 12-check not a fifth nav; 6 nav items
+  - [ ] Local DS SVGs; PW + comet same ship
+- **Smoke:** product smoke + e2e/faces.spec.ts F1–F7
+- **Notes:** grill-me complete (locked brief)
+
 ### [DONE] Hover-(i) tips
 - **Status:** done
 - **Priority:** P1

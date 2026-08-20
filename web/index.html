@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.18" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.19" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.18">v0.16.18</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.19">v0.16.19</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -138,8 +138,16 @@
         <!-- Panel: Lab -->
         <section id="panel-lab" class="panel active" role="tabpanel">
           <!-- E0 orientation + first hour -->
-          <div class="card card-wide" id="cardOrientation">
-            <h2>What this is / isn’t</h2>
+          <div class="card card-wide" id="cardOrientation" data-face="starter">
+            <h2>What this is / isn’t
+              <span class="help-tip help-tip-safety" data-chapter="starter">
+                <button type="button" class="help-tip-btn" aria-label="Starter chapter visual">i</button>
+                <span class="help-tip-panel" hidden>
+                  Offline BIP-39 lab + First hour + lab. Later levels stay off this face.
+                  <img class="chapter-visual-img" data-chapter="starter" data-ds-asset="assets/ds/faces/bip39-starter.svg" alt="Starter chapter" hidden src="assets/catalyxt/chapters/starter-info.svg" />
+                </span>
+              </span>
+            </h2>
             <table class="compare-table" id="orientationTable">
               <thead>
                 <tr><th scope="col">This lab is</th><th scope="col">This lab is not</th></tr>
@@ -169,7 +177,7 @@
             </p>
           </div>
 
-          <div class="card card-wide" id="cardFirstHour">
+          <div class="card card-wide" id="cardFirstHour" data-face="starter">
             <h2>First hour checklist <span id="firstHourProgress" class="chip">0 / 0</span></h2>
             <p class="control-help">
               Starter path (~15–30 min). Per step:
@@ -291,25 +299,13 @@
               </button>
             </div>
             <!-- Shown after Level is Beginner (and ideally first hour finished) -->
-            <div id="firstHourNext" class="first-hour-next" hidden role="region" aria-label="What to do next">
+            <div id="firstHourNext" class="first-hour-next face-keep" hidden role="region" aria-label="What to do next">
               <h3 class="first-hour-next-title">You’re a Beginner — what’s next?</h3>
               <p class="control-help" style="margin:0.35rem 0 0.65rem">
-                Level is a <strong>curriculum soft gate</strong>, not a wallet. Raising it unlocks the next Lab cards
-                so you know what to study. You can always raise Level further in the left pane anytime.
+                Starter lab is collapsed. This face is <strong>Passphrase and entropy</strong> — Q1–Q4
+                (wrong passphrase, under-threshold Shamir, TOO LOW, ~128 bits).
+                Intermediate stays off this face. Raise Level when this chapter is done.
               </p>
-              <ol class="first-hour-next-list">
-                <li>
-                  <strong>Now (Beginner):</strong> complete the <em>Guided quiz</em> (Q1–Q4) below —
-                  passphrase, Shamir, entropy too-low, then ~128 bits.
-                </li>
-                <li>
-                  <strong>Next (Intermediate):</strong> Level → Intermediate unlocks
-                  <em>I1–I4</em> self-check (keys vs shares vs words + PSBT inspect-only).
-                </li>
-                <li>
-                  <strong>Later (Advanced):</strong> BIP-85, Ops, and <em>A1–A4</em> (watch-only, Knots limits, is-not).
-                </li>
-              </ol>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.65rem">
                 <button type="button" class="btn" id="btnNextGoQuiz">Go to Guided quiz</button>
                 <button type="button" class="btn secondary" id="btnNextGoIntermediate">Raise Level to Intermediate</button>
@@ -317,10 +313,21 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardQuiz" data-level-min="beginner">
+          <div class="card card-wide" id="cardQuiz" data-face="beginner" data-level-min="beginner" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
+            <header class="chapter-head" id="chapterBeginner">
+              <h2 class="chapter-title">Passphrase and entropy</h2>
+              <figure class="chapter-visual" data-chapter="beginner">
+                <img class="chapter-visual-img" data-chapter="beginner" data-ds-asset="assets/ds/faces/bip39-beginner.svg" alt="Passphrase and entropy" hidden src="assets/catalyxt/chapters/beginner-seed.svg" />
+                <figcaption class="chapter-visual-hook" data-chapter-hook="beginner">
+                  Chapter visual (DS) — hook <code>assets/catalyxt/chapters/beginner-seed.svg</code>
+                  from ui.catalyxt.xyz when it lands.
+                </figcaption>
+              </figure>
+            </header>
             <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 4</span></h2>
             <p class="control-help">
+              Q1–Q4: wrong passphrase, under-threshold Shamir, TOO LOW, ~128 bits.
               Self-graded only — nothing auto-passes. <strong>Go try</strong> opens the demo;
               the amber dock has <strong>← Back to Guided quiz</strong> while you are away.
               When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> if unsure.
@@ -461,15 +468,25 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardIntQuiz" data-level-min="intermediate">
+          <div class="card card-wide" id="cardIntQuiz" data-face="intermediate" data-level-min="intermediate" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="intermediate" hidden></div>
             <h2 id="headingIntQuiz">
               Intermediate self-check
               <span class="chip">Three splits + Tools depth</span>
               <span id="intQuizSummary" class="chip">0 / 4</span>
             </h2>
+            <header class="chapter-head" id="chapterIntermediate">
+              <h2 class="chapter-title">keys ≠ shares ≠ share-words</h2>
+              <figure class="chapter-visual" data-chapter="intermediate">
+                <img class="chapter-visual-img" data-chapter="intermediate" data-ds-asset="assets/ds/faces/bip39-intermediate.svg" alt="keys ≠ shares ≠ share-words" hidden src="assets/catalyxt/chapters/intermediate-keys-shares.svg" />
+                <figcaption class="chapter-visual-hook" data-chapter-hook="intermediate">
+                  Chapter visual (DS) — hook <code>assets/catalyxt/chapters/intermediate-keys-shares.svg</code>
+                  (fallback <code>intermediate.svg</code> if that URL is 200 later).
+                </figcaption>
+              </figure>
+            </header>
             <p class="control-help">
-              Keys ≠ shares ≠ share-words, plus PSBT inspect-only.
+              Keys ≠ shares ≠ share-words, plus PSBT inspect-only. Advanced stays off this face.
               Self-graded — <strong>Go try</strong>, then <strong>Mark passed</strong> when the idea is clear.
             </p>
             <ul class="quiz-status-board" id="intQuizStatusBoard" aria-label="Intermediate quiz status">
@@ -575,7 +592,7 @@
             <div id="intQuizNext" class="first-hour-next" hidden role="region" aria-label="After Intermediate">
               <h3 class="first-hour-next-title">Intermediate self-checks done — what’s next?</h3>
               <p class="control-help" style="margin:0.35rem 0 0.65rem">
-                Raise Level to <strong>Advanced</strong> for BIP-85 idea, watch-only discipline, Knots limits, and “what this lab isn’t.”
+                Advanced stays off this face until you raise Level.
               </p>
               <button type="button" class="btn" id="btnIntGoAdvanced">Raise Level to Advanced</button>
             </div>
@@ -586,7 +603,7 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardBip85" data-level-min="advanced">
+          <div class="card card-wide" id="cardBip85" data-face="advanced" data-level-min="advanced" data-level-hide="1">
             <h2>BIP-85 — child seeds (advanced, educational)</h2>
             <p class="control-help">
               Idea: one master mnemonic can derive many <em>application</em> child mnemonics (different index → different app).
@@ -598,7 +615,7 @@
             <pre class="out" id="bip85Out">Raise Level to Advanced, put a practice phrase on Lab, then click Explain.</pre>
           </div>
 
-          <div class="card card-wide" id="cardOps" data-level-min="advanced">
+          <div class="card card-wide" id="cardOps" data-face="advanced" data-level-min="advanced" data-level-hide="1">
             <h2>Ops — private Knots / seed-scan</h2>
             <p class="control-help">
               Private balances and educational hash-only seed scans use a <strong>local Bitcoin Knots/Core</strong> node (Pi checklist),
@@ -611,14 +628,26 @@
             </ul>
           </div>
 
-          <div class="card card-wide" id="cardAdvQuiz" data-level-min="advanced">
+          <div class="card card-wide" id="cardAdvQuiz" data-face="advanced" data-level-min="advanced" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="advanced" hidden></div>
+            <header class="chapter-head" id="chapterAdvanced">
+              <h2 class="chapter-title">master → child keys</h2>
+              <p class="control-help face-keep" id="chapterAdvancedIsNot">This site is not a wallet.</p>
+              <figure class="chapter-visual" data-chapter="advanced">
+                <img class="chapter-visual-img" data-chapter="advanced" data-ds-asset="assets/ds/faces/bip39-advanced.svg" alt="master to child keys" hidden src="assets/catalyxt/chapters/advanced-master-child.svg" />
+                <figcaption class="chapter-visual-hook" data-chapter-hook="advanced">
+                  Chapter visual (DS) — hook <code>assets/catalyxt/chapters/advanced-master-child.svg</code>
+                  (fallback <code>advanced.svg</code> if that URL is 200 later).
+                </figcaption>
+              </figure>
+            </header>
             <h2>
               Advanced self-check
               <span class="chip">Ops mind offline</span>
               <span id="advQuizSummary" class="chip">0 / 4</span>
             </h2>
             <p class="control-help">
+              Master → child keys. This site is not a wallet.
               BIP-85 idea, watch-only handoff, Knots limits, and what this lab is <em>not</em>.
               Self-graded — experiment, then mark passed.
             </p>
@@ -730,7 +759,7 @@
           </div>
 
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
-<div class="card" id="card-mnemonic">
+<div class="card" id="card-mnemonic" data-face="starter">
             <div class="card-head">
               <h2>Mnemonic</h2>
             </div>
@@ -841,7 +870,7 @@
             <p id="status" class="status" aria-live="polite"></p>
           </div>
 
-          <div class="card card-wide" id="card-addresses">
+          <div class="card card-wide" id="card-addresses" data-face="starter">
             <div class="card-head">
               <h2 id="headingReceive">Receive addresses</h2>
             </div>
@@ -1570,11 +1599,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.18"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.18"></script>
-  <script src="js/glossary.js?v=0.16.18"></script>
-  <script src="js/help-ui.js?v=0.16.18"></script>
-  <script src="js/learn-levels.js?v=0.16.18"></script>
-  <script src="js/app.js?v=0.16.18"></script>
+  <script src="js/site-version.js?v=0.16.19"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.19"></script>
+  <script src="js/glossary.js?v=0.16.19"></script>
+  <script src="js/help-ui.js?v=0.16.19"></script>
+  <script src="js/learn-levels.js?v=0.16.19"></script>
+  <script src="js/app.js?v=0.16.19"></script>
 </body>
 </html>

@@ -55,21 +55,151 @@
 
   var LEVEL_BLURBS = {
     starter:
-      "Starter: orientation + First hour checklist. Quiz stays dimmed until you raise Level.",
+      "Starter: Offline BIP-39 lab + First hour + lab. Later levels stay off this face.",
     beginner:
-      "Beginner: Guided quiz is open (Q1–Q4). Do that next, then raise Level to Intermediate for I1–I4.",
+      "Beginner: Passphrase and entropy (Q1–Q4). Intermediate stays hidden.",
     intermediate:
-      "Intermediate: I1–I4 self-check (keys vs shares vs words + PSBT inspect). Next: Advanced.",
+      "Intermediate: keys ≠ shares ≠ share-words (I1–I4). Advanced stays hidden.",
     advanced:
-      "Advanced: BIP-85 + Ops + A1–A4 self-check (watch-only, Knots limits, is-not).",
+      "Advanced: master → child keys. This site is not a wallet (A1–A4).",
   };
 
   var LEVEL_UNLOCKS = {
-    starter: "Orientation + First hour",
-    beginner: "Guided quiz (Q1–Q4)",
-    intermediate: "I1–I4 three splits + inspect-only",
-    advanced: "BIP-85 · Ops · A1–A4 ops mind",
+    starter: "Offline BIP-39 lab + First hour + lab",
+    beginner: "Passphrase and entropy (Q1–Q4)",
+    intermediate: "keys ≠ shares ≠ share-words (I1–I4)",
+    advanced: "master → child keys · not a wallet (A1–A4)",
   };
+
+  var FACE_RANK = { starter: 0, beginner: 1, intermediate: 2, advanced: 3 };
+  var CHAPTER_ASSET = {
+    starter: [
+      "assets/catalyxt/chapters/starter-info.svg",
+      "assets/ds/faces/bip39-starter.svg",
+    ],
+    beginner: [
+      "assets/catalyxt/chapters/beginner-seed.svg",
+      "assets/ds/faces/bip39-beginner.svg",
+    ],
+    intermediate: [
+      "assets/catalyxt/chapters/intermediate-keys-shares.svg",
+      "assets/catalyxt/chapters/intermediate.svg",
+      "assets/ds/faces/bip39-intermediate.svg",
+    ],
+    advanced: [
+      "assets/catalyxt/chapters/advanced-master-child.svg",
+      "assets/catalyxt/chapters/advanced.svg",
+      "assets/ds/faces/bip39-advanced.svg",
+    ],
+  };
+
+  function chapterCandidates(id, img) {
+    var out = [];
+    var ds = img.getAttribute("data-ds-asset");
+    if (ds) out.push(ds);
+    var listed = CHAPTER_ASSET[id];
+    if (typeof listed === "string") out.push(listed);
+    else if (listed) out = out.concat(listed);
+    var src = img.getAttribute("src");
+    if (src) out.push(src);
+    var seen = {};
+    return out.filter(function (s) {
+      if (!s || seen[s]) return false;
+      seen[s] = 1;
+      return true;
+    });
+  }
+
+  function hookChapterVisuals() {
+    document.querySelectorAll("img.chapter-visual-img[data-chapter]").forEach(function (img) {
+      var id = img.getAttribute("data-chapter");
+      var cands = chapterCandidates(id, img);
+      if (!cands.length) return;
+      var key = cands.join("|");
+      if (img.getAttribute("data-chapter-hooked") === key) return;
+      img.setAttribute("data-chapter-hooked", key);
+      img.hidden = true;
+      var i = 0;
+      function hideHook(on) {
+        document.querySelectorAll('[data-chapter-hook="' + id + '"]').forEach(function (hook) {
+          hook.hidden = !!on;
+        });
+      }
+      function tryNext() {
+        if (i >= cands.length) {
+          img.hidden = true;
+          hideHook(false);
+          return;
+        }
+        var src = cands[i++];
+        function ok() {
+          img.removeEventListener("load", ok);
+          img.removeEventListener("error", fail);
+          img.hidden = false;
+          hideHook(true);
+        }
+        function fail() {
+          img.removeEventListener("load", ok);
+          img.removeEventListener("error", fail);
+          tryNext();
+        }
+        img.addEventListener("load", ok);
+        img.addEventListener("error", fail);
+        if (img.getAttribute("src") === src && img.complete && img.naturalWidth) ok();
+        else img.setAttribute("src", src);
+      }
+      tryNext();
+    });
+  }
+
+  function applyFaces(level) {
+    level = level || getLevel();
+    var li = FACE_RANK[level];
+    if (li == null) li = 0;
+    document.querySelectorAll("[data-face]").forEach(function (el) {
+      var face = el.getAttribute("data-face") || "starter";
+      var fi = FACE_RANK[face];
+      if (fi == null) fi = 0;
+      var force = el.getAttribute("data-level-force") === "show";
+      el.classList.remove("face-current", "face-past", "face-later", "face-collapsed");
+      if (force) {
+        el.hidden = false;
+        el.classList.add("face-current");
+        return;
+      }
+      if (fi === li) {
+        el.hidden = false;
+        el.classList.add("face-current");
+      } else if (fi < li) {
+        el.hidden = false;
+        el.classList.add("face-past");
+        if (!(el.id === "cardFirstHour" && level === "beginner")) {
+          el.classList.add("face-collapsed");
+        }
+      } else {
+        el.hidden = true;
+        el.classList.add("face-later");
+      }
+    });
+    hookChapterVisuals();
+  }
+
+  function wireFaceToggles() {
+    if (wireFaceToggles._done) return;
+    wireFaceToggles._done = true;
+    document.addEventListener("click", function (ev) {
+      var head = ev.target && ev.target.closest ? ev.target.closest("[data-face] > h2, [data-face] > .card-head") : null;
+      if (!head) return;
+      if (ev.target.closest && ev.target.closest(".help-tip, button, a")) return;
+      var card = head.parentElement;
+      if (!card || !card.classList.contains("face-collapsed") && !card.classList.contains("face-past")) return;
+      if (card.classList.contains("face-collapsed")) {
+        card.classList.remove("face-collapsed");
+      } else {
+        card.classList.add("face-collapsed");
+      }
+    });
+  }
 
   function updateLevelHint(level) {
     var hint = $("learnLevelHint");
@@ -131,7 +261,7 @@
         next.hidden = false;
         next.scrollIntoView({ behavior: "smooth", block: "nearest" });
       } else if (quiz) {
-        quiz.scrollIntoView({ behavior: "smooth", block: "start" });
+        quiz.scrollIntoView({ behavior: "auto", block: "start" });
       }
     }, 150);
   }
@@ -193,24 +323,18 @@
     });
     updateFirstHourNext();
     refreshBeginnerChrome();
+    applyFaces(level);
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
-      // For beginner, prefer the “what’s next” box over a random unlocked card jump
       if (level === "beginner") {
-        setTimeout(function () {
-          var next = $("firstHourNext");
-          if (next && !next.hidden) next.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          else if (firstUnlocked) firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 120);
+        var ch = $("chapterBeginner") || $("cardQuiz");
+        if (ch) ch.scrollIntoView({ behavior: "auto", block: "start" });
+        else if (firstUnlocked) firstUnlocked.scrollIntoView({ behavior: "auto", block: "nearest" });
       } else if (level === "intermediate") {
-        setTimeout(function () {
-          var t = $("cardIntQuiz");
-          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 120);
+        var intCard = $("cardIntQuiz");
+        if (intCard) intCard.scrollIntoView({ behavior: "auto", block: "start" });
       } else if (firstUnlocked) {
-        setTimeout(function () {
-          firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 120);
+        firstUnlocked.scrollIntoView({ behavior: "auto", block: "nearest" });
       }
     }
   }
@@ -678,7 +802,7 @@
     setTimeout(function () {
       var card = $("cardFirstHour");
       if (card) {
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
           card.focus({ preventScroll: true });
@@ -733,7 +857,7 @@
     setTimeout(function () {
       var el = target ? document.querySelector(target) : null;
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
           el.focus({ preventScroll: true });
@@ -812,7 +936,7 @@
             q.setAttribute("data-level-force", "show");
             q.classList.remove("level-gated");
             q.hidden = false;
-            q.scrollIntoView({ behavior: "smooth", block: "start" });
+            q.scrollIntoView({ behavior: "auto", block: "start" });
           }
         }, 80);
       });
@@ -822,7 +946,7 @@
         setLevel("intermediate", { announce: true });
         setTimeout(function () {
           var t = $("cardIntQuiz");
-          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (t) t.scrollIntoView({ behavior: "auto", block: "start" });
         }, 120);
       });
     // Returning to Lab from network.html?from=firsthour — open checklist
@@ -847,7 +971,7 @@
       setTimeout(function () {
         var card = $("cardFirstHour");
         if (card) {
-          card.scrollIntoView({ behavior: "smooth", block: "start" });
+          card.scrollIntoView({ behavior: "auto", block: "start" });
         }
       }, 120);
       }
@@ -939,7 +1063,7 @@
         card.setAttribute("data-level-force", "show");
         card.classList.remove("level-gated");
         card.hidden = false;
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
           card.focus({ preventScroll: true });
@@ -1343,7 +1467,7 @@
         card.setAttribute("data-level-force", "show");
         card.classList.remove("level-gated");
         card.hidden = false;
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
           card.focus({ preventScroll: true });
@@ -1397,7 +1521,7 @@
       el.setAttribute("data-level-force", "show");
       el.classList.remove("level-gated");
       el.hidden = false;
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({ behavior: "auto", block: "start" });
       try {
         if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
         el.focus({ preventScroll: true });
@@ -1497,7 +1621,7 @@
       setTimeout(function () {
         var t = $("cardCmpPp");
         if (t) {
-          t.scrollIntoView({ behavior: "smooth", block: "start" });
+          t.scrollIntoView({ behavior: "auto", block: "start" });
           try {
             if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
             t.focus({ preventScroll: true });
@@ -1526,7 +1650,7 @@
           t.setAttribute("data-level-force", "show");
           t.classList.remove("level-gated");
           t.hidden = false;
-          t.scrollIntoView({ behavior: "smooth", block: "start" });
+          t.scrollIntoView({ behavior: "auto", block: "start" });
           try {
             if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
             t.focus({ preventScroll: true });
@@ -1597,7 +1721,7 @@
         setLevel("advanced", { announce: true });
         setTimeout(function () {
           var c = $("cardAdvQuiz");
-          if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (c) c.scrollIntoView({ behavior: "auto", block: "start" });
         }, 120);
       });
       // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
@@ -1765,6 +1889,7 @@
           el.setAttribute("data-level-force", "show");
           el.classList.remove("level-gated");
           el.hidden = false;
+          applyFaces(getLevel());
         }
       });
     });
@@ -1813,7 +1938,9 @@
       });
     var rC = $("btnResetClassroom");
     if (rC) rC.addEventListener("click", resetClassroomProgress);
+    wireFaceToggles();
     applyLevel(getLevel(), { announce: false });
+    applyFaces(getLevel());
     updateFirstHourNext();
     watchOrientationTable();
     refreshHourGates();
@@ -1832,6 +1959,7 @@
     getLevel: getLevel,
     setLevel: setLevel,
     applyLevel: applyLevel,
+    applyFaces: applyFaces,
     passQuiz: passQuiz,
     markQuiz: markQuiz,
     returnToQuiz: returnToQuiz,

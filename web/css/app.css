@@ -1087,6 +1087,68 @@ a.nav-item:hover {
   font-size: 0.9rem;
 }
 
+
+/* —— Level faces (local 0.16.18-wip; do not ship live) —— */
+.card.face-later {
+  display: none !important;
+}
+.card.face-collapsed {
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+.card.face-collapsed > :not(h2):not(.card-head):not(.face-keep):not(#firstHourNext) {
+  display: none !important;
+}
+.card.face-collapsed > .card-head ~ *:not(.face-keep):not(#firstHourNext) {
+  display: none !important;
+}
+.card.face-collapsed > h2,
+.card.face-collapsed > .card-head {
+  cursor: pointer;
+  margin-bottom: 0;
+}
+.card.face-collapsed > h2::after,
+.card.face-collapsed > .card-head h2::after {
+  content: " · collapsed";
+  font-weight: 550;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.card.face-current > h2.chapter-title {
+  letter-spacing: 0.01em;
+}
+.chapter-visual {
+  color: var(--text, currentColor);
+  margin: 0.65rem 0 0.85rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+.chapter-visual img {
+  display: block;
+  max-width: min(100%, 420px);
+  height: auto;
+}
+.chapter-visual-hook {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.chapter-head {
+  margin: 0 0 0.75rem;
+}
+.chapter-head h2 {
+  margin: 0 0 0.35rem;
+}
+.help-tip-panel .chapter-visual {
+  margin: 0.4rem 0 0;
+  padding: 0.4rem;
+}
+.quiz-status-board {
+  /* inventory for THIS face only — not a 12-check fifth page */
+}
+
 /* —— Help UX hybrid (P0–P4) —— */
 .card-head {
   display: flex;
@@ -2133,4 +2195,14 @@ button.btn.secondary:disabled:hover {
   .nav-item {
     flex: 1 1 140px;
   }
+}
+
+/* Beginner still uses First hour Go (S88). Do not hide the checklist if JS marks the card collapsed. */
+html[data-level="beginner"] #cardFirstHour.face-collapsed > .hour-list,
+html[data-level="beginner"] #cardFirstHour.face-collapsed > p,
+html[data-level="beginner"] #cardFirstHour.face-collapsed > .row {
+  display: block !important;
+}
+html[data-level="beginner"] #cardFirstHour.face-collapsed > .hour-list {
+  display: block !important;
 }

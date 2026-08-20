@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 96" fill="none" role="img" aria-label="Intermediate keys versus hex shares versus share-words">
+  <defs>
+    <marker id="cx-ah-int" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 1 L8 4 L0 7" stroke="currentColor" stroke-width="1" fill="none"/>
+    </marker>
+  </defs>
+  <g transform="translate(0,16)">
+    <circle cx="24" cy="24" r="16" stroke="currentColor" stroke-width="1"/>
+    <rect x="36" y="20" width="28" height="8" rx="4" stroke="currentColor" stroke-width="1"/>
+    <text x="28" y="68" fill="currentColor" font-size="8" font-family="ui-monospace, monospace" text-anchor="middle">key</text>
+  </g>
+  <g transform="translate(56,16) scale(0.4,1)">
+    <path d="M8 24 H88" stroke="currentColor" stroke-width="1" marker-end="url(#cx-ah-int)"/>
+  </g>
+  <g transform="translate(108,8)">
+    <rect x="8" y="8" width="56" height="16" rx="8" stroke="currentColor" stroke-width="1"/>
+    <rect x="8" y="28" width="56" height="16" rx="8" stroke="currentColor" stroke-width="1"/>
+    <rect x="8" y="48" width="56" height="16" rx="8" stroke="currentColor" stroke-width="1"/>
+    <text x="36" y="20" fill="currentColor" font-size="7" font-family="ui-monospace, monospace" text-anchor="middle">a1b2</text>
+    <text x="36" y="40" fill="currentColor" font-size="7" font-family="ui-monospace, monospace" text-anchor="middle">c3d4</text>
+    <text x="36" y="60" fill="currentColor" font-size="7" font-family="ui-monospace, monospace" text-anchor="middle">e5f6</text>
+    <text x="36" y="84" fill="currentColor" font-size="8" font-family="ui-monospace, monospace" text-anchor="middle">hex shares</text>
+  </g>
+  <g transform="translate(168,16) scale(0.4,1)">
+    <path d="M8 24 H88" stroke="currentColor" stroke-width="1" marker-end="url(#cx-ah-int)"/>
+  </g>
+  <g transform="translate(216,8)">
+    <rect x="4" y="8" width="52" height="16" rx="8" stroke="currentColor" stroke-width="1"/>
+    <rect x="4" y="28" width="52" height="16" rx="8" stroke="currentColor" stroke-width="1"/>
+    <rect x="4" y="48" width="52" height="16" rx="8" stroke="currentColor" stroke-width="1"/>
+    <text x="30" y="20" fill="currentColor" font-size="7" font-family="ui-monospace, monospace" text-anchor="middle">word</text>
+    <text x="30" y="40" fill="currentColor" font-size="7" font-family="ui-monospace, monospace" text-anchor="middle">share</text>
+    <text x="30" y="60" fill="currentColor" font-size="7" font-family="ui-monospace, monospace" text-anchor="middle">list</text>
+    <text x="30" y="84" fill="currentColor" font-size="8" font-family="ui-monospace, monospace" text-anchor="middle">share-words</text>
+  </g>
+</svg>
