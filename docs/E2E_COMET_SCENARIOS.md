@@ -29,7 +29,7 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S100 · Playwright 119 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S101 · Playwright 120 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +39,7 @@ scenarios: S0–S100 · Playwright 119 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.17 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S100 · Playwright S-ids: 119`
+`Product: 0.16.18 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S101 · Playwright S-ids: 120`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +76,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **119** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **120** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S100** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S101** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -734,7 +734,10 @@ On Lab, Multisig, Shamir, Network, SLIP-39: sidebar **Classroom** (`#sidebarPref
 Off hides teach-only; safety chrome + leak/PSBT/seed ⓘ remain.
 
 ### S43 — ⓘ tip
-Mnemonic **i** opens; Esc closes.
+Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if the pointer is over the icon). Action overlays (Generate / Derive / Clear) still need click + Continue — they are not (i).
+
+### S101 — Every visible (i) hover
+Lab has 25 `.help-tip-btn`; hover shows the panel without a prior click. Sample the same hover behavior on Multisig, Network, Shamir, SLIP-39 (1 icon). Extra help Off still hides non-safety (i) (S42).
 
 ### S44 — First-hour Go (replaces step rail)
 First hour checklist: **Go** on a step scrolls to target (e.g. mnemonic) and shows amber **← Back to First hour** dock; Back returns to checklist. No mid-page step-rail wizard.
@@ -1020,7 +1023,8 @@ S40b Classroom panel every shell: PASS|FAIL —
 ### Help / Extra help (no step rails)
 S41 Extra help On + no Lab rail: PASS|FAIL —
 S42 Extra help Off: PASS|FAIL —
-S43 Help tip Esc: PASS|FAIL —
+S43 Help tip hover + Esc: PASS|FAIL —
+S101 Lab (i) hover no click required: PASS|FAIL —
 S44 First-hour Go + return dock: PASS|FAIL —
 S44b Tools: no mid-page rails: PASS|FAIL —
 S45 Multisig Extra help + BIP67 tip: PASS|FAIL —

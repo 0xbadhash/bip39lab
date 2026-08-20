@@ -1,55 +1,49 @@
-# PR Draft: v0.16.17 overlay copy density
+# PR Draft: v0.16.18 hover-(i)
 
-**Spec:** `.agents/specs/2026-08-20-overlay-copy-density.md`
-**Plan:** `.agents/specs/2026-08-20-overlay-copy-density-plan.md`
+**Spec:** `.agents/specs/2026-08-20-hover-info-tips.md`
+**Plan:** `.agents/specs/2026-08-20-hover-info-tips-plan.md`
 
 ## What Problem This Solves
 
-Overlays were one-line jargon. Learners need distinct dense copy for Generate / Derive / Clear.
+ⓘ required a click. Tips should appear on mouseover.
 
 ## Why This Change Was Made
 
-Window 6 leftover. Stamp 0.16.17.
+Window 6 leftover. Stamp 0.16.18.
 
 ## User Impact
 
-Each overlay uses the card space: practice unfunded phrase; offline receive addresses; tab memory wipe only.
+Hover or keyboard focus shows every (i) tip. Click is not required. Generate/Derive/Clear overlays still click + Continue.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC Generate dense copy + word span | Playwright S100 |
-| AC Derive BIP-39 / no send / no network | Playwright S100 |
-| AC Clear tab memory / TEST DATA / paper | Playwright S100 |
-| AC Cancel no-op | Playwright S100 |
-| AC S80 after Generate overlay | Playwright S80 |
-| AC Reset intro unchanged | Playwright S99 |
-| AC stamp 0.16.17 | Playwright S0 |
+| AC hover opens tip no click | Playwright S43 S101 |
+| AC Esc closes | Playwright S43 |
+| AC Extra help Off | Playwright S42 |
+| AC Multisig/Network tips hover | Playwright S45 S47 |
+| AC overlays still click | Playwright S100 |
+| AC stamp 0.16.18 | Playwright S0 |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/lab.spec.ts -g "S100|S80|S99|S0 smoke"`
+- green_cmd: `npx playwright test e2e/help-ux.spec.ts -g "S43|S101"`
 
 ## Threat notes
 
-- secrets: copy does not echo the mnemonic.
-- xss: static overlay HTML, word count from select only.
-- csrf: no new network writes.
+- secrets: tips do not expose mnemonics.
+- xss: glossary-filled panels already escaped in existing help-ui.
+- csrf: no new network.
 
 ## Evidence pack
 
-- Playwright S0, S80, S99, S100 (e2e smoke)
-- hard_gates / validate on this draft
-- pytest: pyproject version stamp
+- Playwright S0 S42 S43 S45 S46 S47 S100 S101
+- hard_gates / e2e smoke
 
 ## Things that look bad but are actually fine
 
-1. Overlay HTML is longer; ids and Continue/Cancel unchanged.
-2. Dirty leftover scripts/*.py not in this commit.
-3. S89 FLAG / tag-vs-HEAD README FLAG not retagged.
-
-## Cross-review
-
-blocker=0. Overlay copy only.
+1. Lab live DOM has ≥25 (i) after JS enhance (static HTML 25).
+2. Action overlays still require click — they are not (i).
+3. Dirty leftover scripts not in this commit.

@@ -72,6 +72,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] Hover-(i) tips
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-hover-info-tips.md`
+- **Plan:** `.agents/specs/2026-08-20-hover-info-tips-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] All (i) hover/focus, click not required
+  - [ ] S42 Extra help Off; overlays still click/Continue
+  - [ ] Stamp 0.16.18 + Playwright + comet
+- **Notes:** grill-me complete (locked brief)
+
 ### [DONE] Overlay copy density
 - **Status:** done
 - **Priority:** P1

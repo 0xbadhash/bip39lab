@@ -36,7 +36,7 @@ test.describe("Glossary educational terms", () => {
     await page.goto("/");
     // mnemonic tip uses data-term MNEMONIC — open i
     const tip = page.locator('#card-mnemonic .help-tip[data-term="MNEMONIC"]');
-    await tip.locator(".help-tip-btn").click();
+    await tip.locator(".help-tip-btn").hover();
     await expect(tip.locator(".help-tip-panel")).toBeVisible();
     await expect(tip.locator(".help-tip-panel")).toContainText(/BIP-39|recovery|words/i);
     await expect(tip.locator(".help-tip-panel a.gloss-link")).toBeVisible();
@@ -51,8 +51,9 @@ test.describe("Glossary educational terms", () => {
     // enhance attaches tip next to element with data-term on the button itself — tip is child append
     const tipBtn = page.locator('.seg-tab[data-addr-type="bip84"] .help-tip-btn, .seg-block .help-tip[data-term="BIP84"] .help-tip-btn').first();
     if (await tipBtn.count()) {
-      await tipBtn.click();
-      await expect(page.locator(".help-tip.is-open .help-tip-panel")).toContainText(/BIP-84|SegWit|bc1q/i);
+      await tipBtn.hover();
+      await expect(tipBtn.locator("xpath=ancestor::*[contains(@class,'help-tip')][1]//*[contains(@class,'help-tip-panel')]").first()).toBeVisible();
+      await expect(page.locator(".help-tip:hover .help-tip-panel, .help-tip.is-open .help-tip-panel").first()).toContainText(/BIP-84|SegWit|bc1q/i);
     } else {
       // fallback: glossary has BIP84
       await page.locator('.nav-item[data-nav="glossary"]').click();

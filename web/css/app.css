@@ -1145,7 +1145,9 @@ a.nav-item:hover {
   outline: none;
 }
 
-.help-tip-panel {
+.help-tip-panel,
+.help-tip-panel[hidden] {
+  display: none;
   position: absolute;
   z-index: 40;
   left: 0;
@@ -1162,6 +1164,20 @@ a.nav-item:hover {
   line-height: 1.4;
   font-weight: 400;
   font-style: normal;
+}
+
+.help-tip:hover .help-tip-panel,
+.help-tip:hover .help-tip-panel[hidden],
+.help-tip:focus-within .help-tip-panel,
+.help-tip:focus-within .help-tip-panel[hidden],
+.help-tip.is-open .help-tip-panel,
+.help-tip.is-open .help-tip-panel[hidden] {
+  display: block !important;
+}
+
+.help-tip.tip-force-hide .help-tip-panel,
+.help-tip.tip-force-hide .help-tip-panel[hidden] {
+  display: none !important;
 }
 
 .help-tip-panel strong {
