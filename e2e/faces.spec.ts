@@ -87,6 +87,13 @@ test.describe("Level faces", () => {
     await page.locator("#learnLevel").selectOption("intermediate");
     await expect(page.locator("#chapterIntermediate")).toBeVisible();
     await expect(page.locator("#chapterIntermediate")).toContainText(/keys ≠ shares ≠ share-words/i);
+    await expect(page.locator("#intStillKeys")).toBeVisible();
+    await expect(page.locator("#intStillShares")).toBeVisible();
+    await expect(page.locator("#intStillWords")).toBeVisible();
+    await expect(page.locator("#intStillKeys")).toHaveAttribute("src", /assets\/ds\/faces\/intermediate-keys\.png/);
+    await expect(page.locator("#intStillShares")).toHaveAttribute("src", /intermediate-hex-shares\.png/);
+    await expect(page.locator("#intStillWords")).toHaveAttribute("src", /intermediate-share-words\.png/);
+    await expect(page.locator("#chapterIntermediate img.chapter-visual-img")).toHaveCount(0);
     await expect(page.locator("#cardIntQuiz")).toBeVisible();
     await expect(page.locator("#quizPass-i1")).toBeVisible();
     await expect(page.locator("#quizPass-i4")).toBeVisible();

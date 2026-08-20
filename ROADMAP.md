@@ -72,8 +72,21 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Overlay OK-only
+### [OPEN] Intermediate app-shell stills
 - **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-int-stills.md`
+- **Plan:** `.agents/specs/2026-08-20-int-stills-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Three locked PNGs visible on Intermediate
+  - [ ] I1–I4 kept; 0.16.16–0.16.21 leftovers held
+  - [ ] Stamp 0.16.22 + PW + comet
+- **Smoke:** e2e/faces.spec.ts S104
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Overlay OK-only
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-20-overlay-ok-only.md`
 - **Plan:** `.agents/specs/2026-08-20-overlay-ok-only-plan.md`

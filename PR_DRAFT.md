@@ -1,57 +1,56 @@
-# PR Draft: v0.16.21 overlay OK-only
+# PR Draft: v0.16.22 Intermediate stills
 
-**Spec:** `.agents/specs/2026-08-20-overlay-ok-only.md`
-**Plan:** `.agents/specs/2026-08-20-overlay-ok-only-plan.md`
+**Spec:** `.agents/specs/2026-08-20-int-stills.md`
+**Plan:** `.agents/specs/2026-08-20-int-stills-plan.md`
 
 ## What Problem This Solves
 
-Generate / Derive / Clear used Cancel + Continue. CEO locked one OK that runs the action.
+Intermediate used one faint SVG. CEO locked three app-shell stills.
 
 ## Why This Change Was Made
 
-Hold lifted. Cherry-pick c983024 onto 0.16.20. Stamp 0.16.21.
+Hold lifted. Stamp 0.16.22. Do not Imagine again.
 
 ## User Impact
 
-Each overlay: read dense copy, press OK, action runs. No Cancel. No Continue.
+Intermediate shows Multisig keys, Shamir hex shares, SLIP-39 word tiles. I1–I4 unchanged.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| One OK, no Cancel/Continue | Playwright S100 S106 lab overlay |
-| OK runs generate | Playwright S108 / S80 |
-| Copy 0.16.17 | Playwright S106 |
-| Beginner 0.16.20 | Playwright S103 |
+| Three PNGs visible | Playwright S104 |
+| I1–I4 | Playwright S104 |
+| Beginner | Playwright S103 |
+| Overlay OK | Playwright S106 |
 | Hover | Playwright S107 |
-| Reset | Playwright S106 |
-| Stamp 0.16.21 | Playwright S0 |
+| Stamp 0.16.22 | Playwright S0 |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/faces.spec.ts e2e/lab.spec.ts -g "S0 smoke|S100|S106"`
+- green_cmd: `npx playwright test e2e/faces.spec.ts -g S104`
 
 ## Threat notes
 
-- secrets: overlays stay in-tab
-- xss: static copy
+- secrets: static PNGs
+- xss: none
 - csrf: none
 
 ## Evidence pack
 
-- Playwright S0 S103 S106 S107 S108
+- Playwright S0 S102–S108
 - hard_gates / e2e smoke
 
 ## Things that look bad but are actually fine
 
-1. QR/print confirm strings still say “Continue only on…” — not overlay buttons.
-2. S80 native replace confirm still after Generate OK.
-3. ok-wip four-face dirty files not in this ship.
+1. Old intermediate-keys-shares.svg remains on disk unused as face art.
+2. Still files are Imagine JPEGs saved as PNG.
+3. Dirty harness scripts not in this ship.
 
 ## Cross-review
 
 blockers=0 major=0 nit=0.
 
 ### Obsolete / cleanup (scoped)
-Tier A: 0.
+Tier A: 0. Old SVG unused as face art.

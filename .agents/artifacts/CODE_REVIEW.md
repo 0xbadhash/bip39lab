@@ -1,9 +1,9 @@
 # CODE-REVIEW
 
-**Marker:** CODE-REVIEW
+**Base:** 5ae3c88
+**Secrets:** expected clean
+**P0:** 0
 
-Overlay copy leftover v0.16.17. Three bodies rewritten; JS Continue/Cancel untouched except stamps. S80 still native confirm after overlay. No P0. Secrets scan on product files only.
+PNGs local, visible imgs not hooked hidden. I1–I4 kept. Overlay OK untouched.
 
-P0 count: 0
-Follow-ups: none
-Tests: S0 S80 S99 S100 S81 passed.
+✅ CODE-REVIEW DONE  p0=0  follow_ups=0

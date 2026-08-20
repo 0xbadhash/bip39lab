@@ -1141,6 +1141,34 @@ a.nav-item:hover {
 .chapter-head h2 {
   margin: 0 0 0.35rem;
 }
+.int-stills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.65rem 0 0.35rem;
+}
+@media (max-width: 720px) {
+  .int-stills { grid-template-columns: 1fr; }
+}
+.int-still {
+  margin: 0;
+  border: 1px solid #3a4a60;
+  border-radius: 10px;
+  background: #161d27;
+  overflow: hidden;
+}
+.int-still img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.int-still figcaption {
+  margin: 0;
+  padding: 0.4rem 0.5rem 0.55rem;
+  text-align: center;
+  color: #8b9bb0;
+  font-size: 0.82rem;
+}
 .help-tip-panel .chapter-visual {
   margin: 0.4rem 0 0;
   padding: 0.4rem;

@@ -39,7 +39,7 @@ scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.21 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
+`Product: 0.16.22 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -746,7 +746,7 @@ Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses
 Beginner: chapter **Passphrase and entropy**; visible key + dice = stronger seed visual (`#beginnerEntropyEq`, local `assets/ds/faces/beginner-entropy-eq.svg`); labels Something you know / Randomness / Stronger seed; bar Too few dice → 128 bits. **Four Q1–Q4 tiles** (grid, Go try + Mark passed). No heading “Guided quiz (self-check)” and no “Go to Guided quiz”. Intermediate hidden. Starter orientation/lab **collapsed**.
 
 ### S104 — Intermediate face
-Intermediate: **keys ≠ shares ≠ share-words**; I1–I4 visible; Advanced / BIP-85 hidden.
+Intermediate: **keys ≠ shares ≠ share-words**; three locked app-shell stills visible (`intermediate-keys.png`, `intermediate-hex-shares.png`, `intermediate-share-words.png`) — not the old line-art SVG as face art. I1–I4 visible; Advanced / BIP-85 hidden.
 
 ### S105 — Advanced face
 Advanced: **master → child keys**; this site is **not a wallet**; A1–A4.
@@ -1103,7 +1103,7 @@ S99 Reset → Starter intro receive-addresses subtitle: PASS|FAIL —
 S100 Three distinct Lab overlays (one OK each): PASS|FAIL —
 S102 Starter face later hidden: PASS|FAIL —
 S103 Beginner tiles + key/dice visual, no Guided quiz heading: PASS|FAIL —
-S104 Intermediate keys ≠ shares ≠ share-words I1–I4: PASS|FAIL —
+S104 Intermediate three stills + I1–I4: PASS|FAIL —
 S105 Advanced master → child keys not a wallet A1–A4: PASS|FAIL —
 S106 Faces Reset + overlays kept: PASS|FAIL —
 S107 Faces hover-(i) kept: PASS|FAIL —
