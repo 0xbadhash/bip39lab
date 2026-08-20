@@ -222,7 +222,7 @@
       if (ni > pi) {
         if (level === "beginner") {
           msg =
-            "Beginner unlocked: Guided quiz is next. Scroll to the green “what’s next” box or open the quiz below.";
+            "Beginner unlocked: Passphrase and entropy (Q1–Q4) is next.";
         } else if (level === "intermediate") {
           msg = "Intermediate unlocked: I1–I4 self-check (keys vs shares vs words + PSBT).";
         } else if (level === "advanced") {
@@ -519,7 +519,7 @@
       if (n < 4) {
         return "Mark Q1–Q4 Passed when each idea is clear (" + n + " / 4). Step 6 checks itself at 4/4.";
       }
-      return "Guided quiz 4/4 Passed. Next: 7 Network (optional) — fees and leak-ack — then 8 Raise to Beginner.";
+      return "Q1–Q4 complete. Next: 7 Network (optional) — fees and leak-ack — then 8 Raise to Beginner.";
     }
     if (id === "h7") {
       var ev7 = loadHourEvidence();
@@ -703,7 +703,7 @@
   }
 
   function returnBtnLabel(mode) {
-    if (mode === "quiz") return "← Back to Guided quiz";
+    if (mode === "quiz") return "← Back to Beginner";
     if (mode === "intquiz") return "← Back to Intermediate quiz";
     if (mode === "advquiz") return "← Back to Advanced quiz";
     return "← Back to First hour";
@@ -1193,8 +1193,8 @@
         passBtn.textContent = passed
           ? "Q" + q.slice(1) + " passed ✓"
           : ready
-            ? "Mark Q" + q.slice(1) + " passed (demo ready)"
-            : "Mark Q" + q.slice(1) + " passed";
+            ? "Mark passed"
+            : "Mark passed";
         passBtn.disabled = passed;
         passBtn.setAttribute("aria-disabled", passed ? "true" : "false");
         if (ready && !passed) {
@@ -1207,7 +1207,8 @@
     var sum = $("quizSummary");
     if (sum) {
       sum.textContent = n + " / 4 passed";
-      sum.className = "chip " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
+      sum.className =
+        "chip visually-hidden " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
     }
     // First-hour step 6 tracks the quiz self-checks
     syncHourQuizStep(n === 4);

@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.19" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.20" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.19">v0.16.19</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.20">v0.16.20</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -307,7 +307,7 @@
                 Intermediate stays off this face. Raise Level when this chapter is done.
               </p>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.65rem">
-                <button type="button" class="btn" id="btnNextGoQuiz">Go to Guided quiz</button>
+                <button type="button" class="btn" id="btnNextGoQuiz" hidden>Go to Q1–Q4</button>
                 <button type="button" class="btn secondary" id="btnNextGoIntermediate">Raise Level to Intermediate</button>
               </div>
             </div>
@@ -315,25 +315,33 @@
 
           <div class="card card-wide" id="cardQuiz" data-face="beginner" data-level-min="beginner" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
-            <header class="chapter-head" id="chapterBeginner">
-              <h2 class="chapter-title">Passphrase and entropy</h2>
-              <figure class="chapter-visual" data-chapter="beginner">
-                <img class="chapter-visual-img" data-chapter="beginner" data-ds-asset="assets/ds/faces/bip39-beginner.svg" alt="Passphrase and entropy" hidden src="assets/catalyxt/chapters/beginner-seed.svg" />
-                <figcaption class="chapter-visual-hook" data-chapter-hook="beginner">
-                  Chapter visual (DS) — hook <code>assets/catalyxt/chapters/beginner-seed.svg</code>
-                  from ui.catalyxt.xyz when it lands.
-                </figcaption>
-              </figure>
+            <header class="chapter-head beginner-chapter" id="chapterBeginner">
+              <p class="chapter-kicker">Chapter 1</p>
+              <div class="beginner-chapter-row">
+                <div class="beginner-chapter-copy">
+                  <h2 class="chapter-title">Passphrase and entropy</h2>
+                  <p class="control-help beginner-lede">
+                    Stronger passphrases come from more entropy.
+                    More entropy = stronger seed = stronger security.
+                  </p>
+                </div>
+                <figure class="beginner-eq" id="beginnerEntropyEq">
+                  <img class="beginner-eq-img" src="assets/ds/faces/beginner-entropy-eq.svg" alt="key + dice = stronger seed. Something you know plus Randomness (entropy) equals Stronger seed." width="420" height="120" />
+                  <figcaption class="beginner-eq-captions">
+                    <span>Something you know</span>
+                    <span>Randomness (entropy)</span>
+                    <span>Stronger seed</span>
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="entropy-bar" aria-label="Too few dice versus 128 bits">
+                <span class="entropy-bar-low">Too few dice</span>
+                <span class="entropy-bar-ok">128 bits</span>
+              </div>
             </header>
-            <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 4</span></h2>
-            <p class="control-help">
-              Q1–Q4: wrong passphrase, under-threshold Shamir, TOO LOW, ~128 bits.
-              Self-graded only — nothing auto-passes. <strong>Go try</strong> opens the demo;
-              the amber dock has <strong>← Back to Guided quiz</strong> while you are away.
-              When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> if unsure.
-            </p>
+            <span id="quizSummary" class="chip visually-hidden">0 / 4</span>
             <div id="quizHourNext" class="first-hour-next" hidden role="region" aria-label="Next First hour steps">
-              <h3 class="first-hour-next-title">Guided quiz 4/4 Passed</h3>
+              <h3 class="first-hour-next-title">Q1–Q4 complete</h3>
               <p class="control-help" style="margin:0.35rem 0 0.65rem">
                 Next First Hour: <strong>7 Network (optional)</strong> — fees only; understand the leak-ack.
                 Then <strong>8 Raise to Beginner</strong>.
@@ -343,123 +351,119 @@
                 <button type="button" class="btn secondary btn-sm" id="quizHourNextBeginner">Jump to Set Beginner</button>
               </div>
             </div>
-            <ul class="quiz-status-board" id="quizStatusBoard" aria-label="Quiz pass status">
+            <ul class="quiz-status-board visually-hidden" id="quizStatusBoard" aria-label="Quiz pass status">
               <li><span class="quiz-status-label">Q1 passphrase</span> <span id="quizBoard-q1" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q2 Shamir</span> <span id="quizBoard-q2" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q3 too low</span> <span id="quizBoard-q3" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q4 enough bits</span> <span id="quizBoard-q4" class="chip chip-warn">Not yet</span></li>
             </ul>
-            <div class="quiz-item hour-step" data-quiz="q1">
+            <div class="quiz-tile-grid" id="quizTileGrid">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q1">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q1 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q1 — Wrong passphrase → different vault
-                    <span id="quizBadge-q1" class="chip chip-warn">Not yet</span>
+                    Wrong passphrase → different vault
+                    <span id="quizBadge-q1" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    Empty passphrase vs <code>test</code> on the same mnemonic must change the first address.
+                    Test that a small change creates a completely different vault.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q1">
                     <strong>Not yet.</strong> Open compare, leave A empty and set B to <code>test</code>,
-                    run derive — addresses must differ. Keep experimenting until that is obvious; only then mark passed.
+                    run derive — addresses must differ.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q1" hidden>
                     <strong>Passed (self-check).</strong> You confirmed wrong passphrase = different vault.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenPp" data-quiz-go="q1">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q1">Mark Q1 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenPp" data-quiz-go="q1">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q1">Mark passed</button>
                 </div>
               </div>
             </div>
-            <div class="quiz-item hour-step" data-quiz="q2">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q2">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q2 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q2 — Under-threshold Shamir fails
-                    <span id="quizBadge-q2" class="chip chip-warn">Not yet</span>
+                    Under-threshold Shamir fails
+                    <span id="quizBadge-q2" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    With 2-of-3 educational shares, one share alone must not recombine successfully.
+                    See what happens when you don’t have enough shares.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q2">
-                    <strong>Not yet (self-check).</strong> On Shamir: split 2-of-3, recombine with
-                    <em>only one</em> share (must fail), then with M shares (must succeed).
-                    That does <em>not</em> auto-pass — after both, use <strong>Mark Q2 passed</strong> here
-                    or <strong>Mark Q2 passed &amp; return</strong> on the Shamir dock.
+                    <strong>Not yet.</strong> Split 2-of-3, recombine with one share (fail), then M shares (succeed).
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q2" hidden>
                     <strong>Passed (self-check).</strong> Under-threshold recombine fails; threshold works.
                   </p>
                   <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q2" hidden>
-                    <strong>Demo evidence ready.</strong> You already saw fail + success on Shamir.
-                    Click <strong>Mark Q2 passed</strong> to record the self-check.
+                    <strong>Demo evidence ready.</strong> Mark passed to record the self-check.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenShamir" data-quiz-go="q2">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q2">Mark Q2 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenShamir" data-quiz-go="q2">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q2">Mark passed</button>
                 </div>
               </div>
             </div>
-            <div class="quiz-item hour-step" data-quiz="q3">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q3">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q3 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q3 — A few rolls = TOO LOW
-                    <span id="quizBadge-q3" class="chip chip-warn">Not yet</span>
+                    A few rolls = TOO LOW
+                    <span id="quizBadge-q3" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    Roll dice only a few times (~3). The pad must show <strong>TOO LOW</strong> vs 128 bits.
-                    Practice only — never fund. Then mark passed on the pad or here.
+                    Measure entropy with just a few dice rolls.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q3">
-                    <strong>Not yet.</strong> <strong>Go try</strong> → roll d6 about 3 times → read the live verdict
-                    (TOO LOW). Optional: Build practice seed to see the same in Step 3. Then
-                    <strong>Mark Q3 passed</strong> (also appears on the entropy pad when ready).
+                    <strong>Not yet.</strong> Go try → roll d6 about 3 times → read TOO LOW.
                   </p>
                   <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q3" hidden>
-                    <strong>Demo ready.</strong> You saw TOO LOW with a short pad. Mark Q3 passed.
+                    <strong>Demo ready.</strong> You saw TOO LOW with a short pad.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q3" hidden>
                     <strong>Passed.</strong> Few rolls are not enough for a real 12-word wallet.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt" data-quiz-go="q3">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q3">Mark Q3 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenEnt" data-quiz-go="q3">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q3">Mark passed</button>
                 </div>
               </div>
             </div>
-            <div class="quiz-item hour-step" data-quiz="q4">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q4">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q4 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q4 — Need ~128 bits (≈50 d6 rolls), not fewer
-                    <span id="quizBadge-q4" class="chip chip-warn">Not yet</span>
+                    Need ~128 bits (~50 d6)
+                    <span id="quizBadge-q4" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    <strong>Less is not better.</strong> BIP-39 12-word needs <strong>128 bits</strong> of real entropy.
-                    With dice (~2.58 bits each) that is about <strong>50 d6 rolls</strong> (or 128 coin flips) —
-                    keep rolling until the pad estimate is no longer TOO LOW. Never fund pad words.
+                    Hit the target: generate ~128 bits with about 50 rolls.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q4">
-                    <strong>Not yet.</strong> On the entropy pad, keep rolling (aim for ~50 d6). Watch the estimate
-                    climb toward 128 bits. When the pad says estimate ≥ 128 bits, mark Q4 passed there or here.
+                    <strong>Not yet.</strong> Keep rolling toward 128 bits, then mark passed.
                   </p>
                   <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q4" hidden>
-                    <strong>Demo ready.</strong> Pad estimate reached the 128-bit target (still practice-only). Mark Q4.
+                    <strong>Demo ready.</strong> Pad estimate reached the 128-bit target.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q4" hidden>
-                    <strong>Passed.</strong> You saw that “enough” needs many rolls — fewer rolls is worse, not safer.
+                    <strong>Passed.</strong> You saw that “enough” needs many rolls.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt4" data-quiz-go="q4">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q4">Mark Q4 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenEnt4" data-quiz-go="q4">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q4">Mark passed</button>
                 </div>
               </div>
+            </div>
             </div>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
               <button type="button" class="btn secondary btn-sm" id="btnResetQuiz" title="Clear all quiz pass marks in this browser">
@@ -1581,7 +1585,7 @@
 
   <!-- Viewport-fixed bottom dock (must be outside .app/.content so position:fixed sticks to screen bottom) -->
   <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
-    <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Guided quiz</button>
+    <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Beginner</button>
     <span class="learn-return-hint" id="learnReturnBarHint" aria-live="polite"></span>
     <button type="button" class="btn btn-sm" id="btnHourMarkFromDock" hidden disabled>Mark done</button>
     <button type="button" class="btn btn-sm" id="btnMarkQ1FromTools" hidden>
@@ -1599,11 +1603,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.19"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.19"></script>
-  <script src="js/glossary.js?v=0.16.19"></script>
-  <script src="js/help-ui.js?v=0.16.19"></script>
-  <script src="js/learn-levels.js?v=0.16.19"></script>
-  <script src="js/app.js?v=0.16.19"></script>
+  <script src="js/site-version.js?v=0.16.20"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.20"></script>
+  <script src="js/glossary.js?v=0.16.20"></script>
+  <script src="js/help-ui.js?v=0.16.20"></script>
+  <script src="js/learn-levels.js?v=0.16.20"></script>
+  <script src="js/app.js?v=0.16.20"></script>
 </body>
 </html>

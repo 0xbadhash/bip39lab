@@ -360,7 +360,7 @@
       } else {
         if (backA) {
           backA.href = "index.html?from=quiz";
-          backA.textContent = "← Back to Guided quiz";
+          backA.textContent = "← Back to Beginner";
         }
         if (hint) hint.textContent = "Q2: fail with 1 share, then succeed with M.";
         if (markI2) markI2.hidden = true;

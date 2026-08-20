@@ -865,7 +865,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.19";
+    return "v0.16.20";
   }
 
   function setStatus(text, kind) {
@@ -1159,7 +1159,7 @@
       }
     }
     if (dockBtn) {
-      dockBtn.textContent = "← Back to Guided quiz";
+      dockBtn.textContent = "← Back to Beginner";
     }
     if (b3) {
       b3.hidden = !(q3Ready && !quiz.q3);

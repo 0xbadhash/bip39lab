@@ -54,16 +54,27 @@ test.describe("Level faces", () => {
     await expect(page.locator("#advQuizStatusBoard")).toBeHidden();
   });
 
-  test("S103 F2 Beginner face: starter collapses; chapter + Q1–Q4; Intermediate hidden", async ({ page }) => {
+  test("S103 F2 Beginner face: tiles + key/dice visual; no Guided quiz heading; Intermediate hidden", async ({ page }) => {
     await page.locator("#learnLevel").selectOption("beginner");
     await expect(page.locator("#chapterBeginner")).toBeVisible();
     await expect(page.locator("#chapterBeginner")).toContainText(/Passphrase and entropy/i);
     await expect(page.locator("#cardQuiz")).toBeVisible();
+    await expect(page.locator("#cardQuiz")).not.toContainText(/Guided quiz \(self-check\)/);
+    await expect(page.locator("#cardQuiz")).not.toContainText(/Go to Guided quiz/);
+    await expect(page.locator("#beginnerEntropyEq")).toBeVisible();
+    await expect(page.locator("#beginnerEntropyEq img")).toBeVisible();
+    await expect(page.locator("#beginnerEntropyEq img")).toHaveAttribute("src", /assets\/ds\/faces\/beginner-entropy-eq\.svg/);
+    await expect(page.locator("#chapterBeginner")).toContainText(/Something you know/i);
+    await expect(page.locator("#chapterBeginner")).toContainText(/Too few dice/i);
+    await expect(page.locator("#chapterBeginner")).toContainText(/128 bits/i);
+    await expect(page.locator("#quizTileGrid")).toBeVisible();
+    await expect(page.locator(".quiz-tile")).toHaveCount(4);
+    await expect(page.locator("#quizPass-q1")).toHaveText(/Mark passed/);
+    await expect(page.locator("#quizOpenPp")).toHaveText(/Go try/);
     await expect(page.locator("#quizHint-q1")).toBeVisible();
     await expect(page.locator("#cardQuiz")).toContainText(/wrong passphrase/i);
     await expect(page.locator("#cardQuiz")).toContainText(/under-threshold Shamir/i);
     await expect(page.locator("#cardQuiz")).toContainText(/TOO LOW/i);
-    await expect(page.locator("#cardQuiz")).toContainText(/128 bits/i);
     await expect(page.locator("#cardIntQuiz")).toBeHidden();
     await expect(page.locator("#cardAdvQuiz")).toBeHidden();
     await expect(page.locator("#cardFirstHour")).toBeVisible();
@@ -135,6 +146,9 @@ test.describe("Level faces", () => {
     await expect(page.locator("#status")).toContainText(/phrase|mnemonic|missing|need|empty|word/i);
     await page.locator("#learnLevel").selectOption("beginner");
     await expect(page.locator("#chapterBeginner")).toContainText(/Passphrase and entropy/i);
+    await expect(page.locator("#cardQuiz")).not.toContainText(/Guided quiz \(self-check\)/);
+    await expect(page.locator("#beginnerEntropyEq")).toBeVisible();
+    await expect(page.locator(".quiz-tile")).toHaveCount(4);
     await expect(page.locator("#quizHint-q1")).toContainText(/Not yet/i);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(24);

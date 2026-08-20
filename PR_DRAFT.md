@@ -1,32 +1,33 @@
-# PR Draft: v0.16.19 level faces
+# PR Draft: v0.16.20 Beginner visual
 
-**Spec:** `.agents/specs/2026-08-20-level-faces.md`
-**Plan:** `.agents/specs/2026-08-20-level-faces-plan.md`
+**Spec:** `.agents/specs/2026-08-20-beginner-visual.md`
+**Plan:** `.agents/specs/2026-08-20-beginner-visual-plan.md`
 
 ## What Problem This Solves
 
-Later-level cards mixed onto earlier faces. Four CEO-locked faces need a live stamp.
+Beginner still showed Guided quiz heading novels and a hidden placeholder SVG. The locked mock is four tiles plus a visible key + dice = seed visual.
 
 ## Why This Change Was Made
 
-Window 6 leftover. 0.16.18 hover is locked. Stamp 0.16.19.
+Window 6 leftover. 0.16.19 S/I/A locked. Stamp 0.16.20.
 
 ## User Impact
 
-Starter / Beginner / Intermediate / Advanced are separate faces. 12-check stays inventory. Six nav items. Local DS chapter SVGs.
+Beginner learners see Passphrase and entropy, the mock visual, and Q1–Q4 tiles. Overlays stay Cancel + Continue. Starter/Intermediate/Advanced faces unchanged.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| Starter later hidden | Playwright S102 |
-| Beginner Q1–Q4 | Playwright S103 |
-| Intermediate I1–I4 | Playwright S104 |
-| Advanced A1–A4 | Playwright S105 |
-| Reset + overlays kept | Playwright S106 S99 S100 |
-| Hover kept | Playwright S107 S101 |
+| No Guided quiz heading | Playwright S103 |
+| Q1–Q4 tiles | Playwright S103 |
+| Visible key/dice visual | Playwright S103 |
+| Intermediate hidden; Starter collapsed | Playwright S103 |
 | Rec-flow | Playwright S108 |
-| Stamp 0.16.19 | Playwright S0 |
+| S/I/A not reopened | Playwright S102 S104 S105 |
+| Overlays Continue/Cancel | Playwright S106 |
+| Hover | Playwright S107 |
+| Stamp 0.16.20 | Playwright S0 |
 
 ## Red-proof
 
@@ -35,24 +36,17 @@ Starter / Beginner / Intermediate / Advanced are separate faces. 12-check stays 
 
 ## Threat notes
 
-- secrets: no new network; CSP img-src self for SVGs
-- xss: static SVGs from repo
+- secrets: local SVG only
+- xss: static asset
 - csrf: none
 
 ## Evidence pack
 
-- Playwright S102–S108 + S0
+- Playwright S102–S108 S0
 - hard_gates / e2e smoke
 
 ## Things that look bad but are actually fine
 
-1. Alias SVGs duplicate chapter files.
-2. 12-check boards exist in DOM but are not nav pages.
-3. hook_ds_chapters.py and node_modules not committed.
-
-## Cross-review
-
-blockers=0 major=0 nit=0. Personas: security / maintainability / domain — none.
-
-### Obsolete / cleanup (scoped)
-Tier A: 0.
+1. quizStatusBoard still exists as visually-hidden inventory, not a heading.
+2. quizSummary chip is visually-hidden for JS counters.
+3. ok-wip OK-only overlays were not merged.

@@ -72,12 +72,24 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Level faces (four gates)
+### [OPEN] Beginner visual (locked mock)
 - **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-beginner-visual.md`
+- **Plan:** `.agents/specs/2026-08-20-beginner-visual-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Tiles Q1–Q4 + visible key/dice/seed visual
+  - [ ] No Guided quiz heading novel
+  - [ ] Stamp 0.16.20 + PW + comet
+- **Smoke:** e2e/faces.spec.ts S103 S108
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Level faces (four gates)
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-20-level-faces.md`
 - **Plan:** `.agents/specs/2026-08-20-level-faces-plan.md`
-- **Next:** true
 - **Acceptance:**
   - [ ] Four faces live at 0.16.19; later hidden until gate
   - [ ] 12-check not a fifth nav; 6 nav items

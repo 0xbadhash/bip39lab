@@ -88,7 +88,7 @@ test.describe("Learning levels E0–E6", () => {
     // Go try → single floating dock (not stacked sticky bars) → return to quiz
     await page.locator("#quizOpenPp").click();
     await expect(page.locator("#learnReturnBar")).toBeVisible();
-    await expect(page.locator("#learnReturnBarBtn")).toContainText(/Guided quiz|quiz/i);
+    await expect(page.locator("#learnReturnBarBtn")).toContainText(/Beginner|Q1|quiz/i);
     await expect(page.locator("#panel-tools")).toBeVisible();
     await expect(page.locator("#cardCmpPp")).toBeVisible();
     await page.locator("#learnReturnBarBtn").click();
