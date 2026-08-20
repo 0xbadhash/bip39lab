@@ -17,15 +17,16 @@ Starter: numbered rail beside live Mnemonic lab. Beginner: key + dice = lock sti
 
 ## Traceability
 
-| AC | Test |
-|----|------|
-| Starter rail | S102 |
-| Beginner three stills | S103 |
-| Intermediate unchanged | S104 |
-| Advanced PNG | S105 |
-| Overlay OK | S106 |
-| Hover | S107 |
-| Stamp | S0 |
+| AC | Test / smoke |
+|----|----------------|
+| AC Starter 8-step rail beside live lab | Playwright S102 |
+| AC Beginner three stills not gold SVG | Playwright S103 |
+| AC Intermediate three stills unchanged | Playwright S104 |
+| AC Advanced PNG not faint SVG | Playwright S105 |
+| AC Overlay OK; Reset exact | Playwright S106 S100 |
+| AC Hover | Playwright S107 |
+| AC rec-flow | Playwright S108 |
+| AC stamp 0.16.23 | Playwright S0 |
 
 ## Red-proof
 
@@ -40,8 +41,9 @@ Starter: numbered rail beside live Mnemonic lab. Beginner: key + dice = lock sti
 
 ## Evidence pack
 
-- Playwright S0 S100 S102–S108
-- hard_gates
+- hard_gates / pr_validator (this ship)
+- Playwright S0 S100 S102–S108 local smoke
+- pytest via compliance_engine on /pr_review --validate
 
 ## Things that look bad but are actually fine
 
