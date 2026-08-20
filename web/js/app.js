@@ -1829,23 +1829,13 @@
     $("btnGenerate").addEventListener("click", () => showLabOverlay("overlayGenerate"));
     $("btnDerive").addEventListener("click", () => showLabOverlay("overlayDerive"));
     $("btnClear").addEventListener("click", () => showLabOverlay("overlayClear"));
-    document.querySelectorAll("[data-overlay-continue]").forEach((btn) => {
+    document.querySelectorAll("[data-overlay-ok]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-overlay-continue");
+        const id = btn.getAttribute("data-overlay-ok");
         hideLabOverlay(id);
         if (id === "overlayGenerate") onGenerate().catch(console.error);
         else if (id === "overlayDerive") deriveNow({ quiet: false }).catch(console.error);
         else if (id === "overlayClear") clearSecrets();
-      });
-    });
-    document.querySelectorAll("[data-overlay-cancel]").forEach((btn) => {
-      btn.addEventListener("click", () => hideLabOverlay(btn.getAttribute("data-overlay-cancel")));
-    });
-    ["overlayGenerate", "overlayDerive", "overlayClear"].forEach((id) => {
-      const el = $(id);
-      if (!el) return;
-      el.addEventListener("click", (e) => {
-        if (e.target === el) hideLabOverlay(id);
       });
     });
     $("hidePrivate").addEventListener("change", (e) => setPrivateVisible(!e.target.checked));

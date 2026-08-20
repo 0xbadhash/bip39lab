@@ -122,29 +122,58 @@ test.describe("Lab shell & chrome", () => {
     await page.locator("#wordCount").selectOption("24");
     await page.locator("#btnGenerate").click();
     await expect(page.locator("#overlayGenerate")).toBeVisible();
+    await expect(page.locator("#overlayGenerateBody")).toContainText(
+      "This makes a new practice recovery phrase"
+    );
     await expect(page.locator("#overlayGenerate")).toContainText(/practice recovery phrase/i);
     await expect(page.locator("#overlayGenerate")).toContainText(/English words only/i);
     await expect(page.locator("#overlayGenerateBody")).toContainText(/24-word/);
     await expect(page.locator("#overlayGenerate")).toContainText(/not a funded seed/i);
     await expect(page.locator("#overlayGenerate")).toContainText(/Nothing leaves this browser tab/i);
-    await page.locator("#overlayGenerate [data-overlay-cancel]").click();
+    const genBtns = page.locator("#overlayGenerate .lab-overlay-card button");
+    await expect(genBtns).toHaveCount(1);
+    await expect(genBtns).toHaveText("OK");
+    await expect(page.locator("#overlayGenerate")).not.toContainText("Cancel");
+    await expect(page.locator("#overlayGenerate")).not.toContainText("Continue");
+    await genBtns.click();
     await expect(page.locator("#overlayGenerate")).toBeHidden();
-    await expect(page.locator("#mnemonic")).toHaveValue("");
+    await waitForTableRows(page, 5);
+    const mnemonic = await page.locator("#mnemonic").inputValue();
+    expect(mnemonic.trim().split(/\s+/).length).toBe(24);
     await page.locator("#btnDerive").click();
     await expect(page.locator("#overlayDerive")).toBeVisible();
+    await expect(page.locator("#overlayDeriveBody")).toContainText(
+      "This checks the words you typed"
+    );
     await expect(page.locator("#overlayDerive")).toContainText(/valid BIP-39 phrase/i);
     await expect(page.locator("#overlayDerive")).toContainText(/receive addresses/i);
     await expect(page.locator("#overlayDerive")).toContainText(/does not send bitcoin/i);
     await expect(page.locator("#overlayDerive")).toContainText(/does not talk to the network/i);
     await expect(page.locator("#overlayGenerate")).toBeHidden();
-    await page.locator("#overlayDerive [data-overlay-cancel]").click();
+    const derBtns = page.locator("#overlayDerive .lab-overlay-card button");
+    await expect(derBtns).toHaveCount(1);
+    await expect(derBtns).toHaveText("OK");
+    await expect(page.locator("#overlayDerive")).not.toContainText("Cancel");
+    await expect(page.locator("#overlayDerive")).not.toContainText("Continue");
+    await derBtns.click();
+    await expect(page.locator("#overlayDerive")).toBeHidden();
+    await waitForTableRows(page, 5);
     await page.locator("#btnClear").click();
     await expect(page.locator("#overlayClear")).toBeVisible();
+    await expect(page.locator("#overlayClearBody")).toContainText("This wipes the phrase");
     await expect(page.locator("#overlayClear")).toContainText(/this lab tab/i);
     await expect(page.locator("#overlayClear")).toContainText(/not deleting a real wallet/i);
     await expect(page.locator("#overlayClear")).toContainText(/cannot reach coins/i);
     await expect(page.locator("#overlayClear")).toContainText(/TEST DATA/i);
     await expect(page.locator("#overlayClear")).toContainText(/Paper you already wrote down is unchanged/i);
+    const clrBtns = page.locator("#overlayClear .lab-overlay-card button");
+    await expect(clrBtns).toHaveCount(1);
+    await expect(clrBtns).toHaveText("OK");
+    await expect(page.locator("#overlayClear")).not.toContainText("Cancel");
+    await expect(page.locator("#overlayClear")).not.toContainText("Continue");
+    await clrBtns.click();
+    await expect(page.locator("#overlayClear")).toBeHidden();
+    await expect(page.locator("#mnemonic")).toHaveValue("");
   });
 });
 

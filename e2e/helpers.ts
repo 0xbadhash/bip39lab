@@ -16,7 +16,7 @@ export const GOLDEN = {
 /** Six primary nav items (Shamir after Multisig). */
 export const NAV = ["lab", "multisig", "shamir", "network", "tools", "glossary"] as const;
 
-/** Click Lab Generate/Derive/Clear then Continue on THAT overlay. */
+/** Click Lab Generate/Derive/Clear then OK on THAT overlay. */
 export async function clickLabAction(page: Page, which: "generate" | "derive" | "clear") {
   const btn =
     which === "generate" ? "#btnGenerate" : which === "derive" ? "#btnDerive" : "#btnClear";
@@ -28,7 +28,7 @@ export async function clickLabAction(page: Page, which: "generate" | "derive" | 
         : "#overlayClear";
   await page.locator(btn).click();
   await expect(page.locator(overlay)).toBeVisible();
-  await page.locator(`${overlay} .lab-overlay-continue`).click();
+  await page.locator(`${overlay} .lab-overlay-ok`).click();
   await expect(page.locator(overlay)).toBeHidden();
 }
 

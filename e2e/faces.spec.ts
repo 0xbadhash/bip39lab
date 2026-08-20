@@ -122,7 +122,11 @@ test.describe("Level faces", () => {
     await page.locator("#btnGenerate").click();
     await expect(page.locator("#overlayGenerate")).toBeVisible();
     await expect(page.locator("#overlayGenerateBody")).toContainText(/practice recovery phrase/i);
-    await page.locator("#overlayGenerate [data-overlay-cancel], #overlayGenerate .lab-overlay-cancel, #overlayGenerate button:has-text('Cancel')").first().click();
+    const genBtns = page.locator("#overlayGenerate .lab-overlay-card button");
+    await expect(genBtns).toHaveCount(1);
+    await expect(genBtns).toHaveText("OK");
+    await expect(page.locator("#overlayGenerate")).not.toContainText("Cancel");
+    await expect(page.locator("#overlayGenerate")).not.toContainText("Continue");
   });
 
   test("S107 F6 (i) hover still not click-gated", async ({ page }) => {
