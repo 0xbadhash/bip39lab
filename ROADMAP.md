@@ -72,8 +72,21 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Beginner visual (locked mock)
+### [OPEN] Overlay OK-only
 - **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-overlay-ok-only.md`
+- **Plan:** `.agents/specs/2026-08-20-overlay-ok-only-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] One OK per overlay; no Cancel/Continue; OK runs action
+  - [ ] 0.16.17 copy; Beginner 0.16.20 intact
+  - [ ] Stamp 0.16.21 + PW + comet
+- **Smoke:** e2e/faces.spec.ts S106 + lab overlay tests
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Beginner visual (locked mock)
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-20-beginner-visual.md`
 - **Plan:** `.agents/specs/2026-08-20-beginner-visual-plan.md`

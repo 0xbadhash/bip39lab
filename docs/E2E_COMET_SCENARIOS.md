@@ -39,7 +39,7 @@ scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.20 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
+`Product: 0.16.21 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -513,7 +513,7 @@ Hung `/api/mempool` (or mempool.space) must return in a **couple of seconds** wi
 Generate: practice recovery phrase, English words only, N-word count, not a funded seed, nothing leaves this tab.
 Derive: valid BIP-39, receive addresses, in this tab, does not send bitcoin / look up balance / talk to the network; Network only if you later opt in.
 Clear: wipes this lab tab’s memory, not deleting a real wallet, cannot reach coins, TEST DATA, paper unchanged.
-Cancel does not run the action. Continue then existing action. S80 native replace confirm still after Generate overlay when a phrase exists.
+One **OK** per overlay (no Cancel, no Continue). OK runs the existing action. S80 native replace confirm still after Generate overlay OK when a phrase exists.
 
 ### S90 — First Hour dock mobile wrap
 390px: dock Back + hint + Mark done wrap; no horizontal blowout.
@@ -734,7 +734,7 @@ On Lab, Multisig, Shamir, Network, SLIP-39: sidebar **Classroom** (`#sidebarPref
 Off hides teach-only; safety chrome + leak/PSBT/seed ⓘ remain.
 
 ### S43 — ⓘ tip
-Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if the pointer is over the icon). Action overlays (Generate / Derive / Clear) still need click + Continue — they are not (i).
+Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if the pointer is over the icon). Action overlays (Generate / Derive / Clear) still need click + **OK** — they are not (i).
 
 ### S101 — Every visible (i) hover
 Lab has 25 `.help-tip-btn`; hover shows the panel without a prior click. Sample the same hover behavior on Multisig, Network, Shamir, SLIP-39 (1 icon). Extra help Off still hides non-safety (i) (S42).
@@ -752,7 +752,7 @@ Intermediate: **keys ≠ shares ≠ share-words**; I1–I4 visible; Advanced / B
 Advanced: **master → child keys**; this site is **not a wallet**; A1–A4.
 
 ### S106 — Faces + Reset + overlays
-Reset from a later level still lands Starter exact intro (S99). Generate overlay still 0.16.17 first line. Do not reopen hover (S101).
+Reset from a later level still lands Starter exact intro (S99). Generate overlay still 0.16.17 first line. One OK, no Cancel/Continue. Do not reopen hover (S101).
 
 ### S107 — Faces keep hover-(i)
 On Starter, hover an (i) without click; panel visible.
@@ -1100,7 +1100,7 @@ S93 Shamir Mark done shown disabled then fail+M: PASS|FAIL —
 S95 First Hour auto-advance Beginner: PASS|FAIL —
 S98 Mempool miss fail-fast: PASS|FAIL —
 S99 Reset → Starter intro receive-addresses subtitle: PASS|FAIL —
-S100 Three distinct Lab overlays: PASS|FAIL —
+S100 Three distinct Lab overlays (one OK each): PASS|FAIL —
 S102 Starter face later hidden: PASS|FAIL —
 S103 Beginner tiles + key/dice visual, no Guided quiz heading: PASS|FAIL —
 S104 Intermediate keys ≠ shares ≠ share-words I1–I4: PASS|FAIL —
