@@ -598,23 +598,30 @@
     document.querySelectorAll("[data-hour-step]").forEach(function (el) {
       var id = el.getAttribute("data-hour-step");
       var ready = hourStepReady(id);
-      var doneBtn = el.querySelector(".hour-done");
       var cb = el.querySelector(".hour-step-cb") || el.querySelector('input[type="checkbox"]');
       if (cb) {
         cb.disabled = true;
         cb.setAttribute("aria-disabled", "true");
         cb.onchange = null;
       }
-      if (doneBtn) {
-        if (id === "h6") {
-          doneBtn.hidden = true;
-          doneBtn.disabled = true;
-        } else {
-          doneBtn.hidden = false;
-          setHourMarkEnabled(doneBtn, ready && id !== "h8");
-        }
-      }
     });
+    var railDone = $("hourRailDone");
+    var railGo = $("hourRailGo");
+    var railGrad = $("hourGoBeginner");
+    var sel = getSelectedHourLi();
+    var sid = sel ? sel.getAttribute("data-hour-step") : "h1";
+    var sReady = hourStepReady(sid);
+    if (railGrad) railGrad.hidden = sid !== "h8";
+    if (railGo) railGo.hidden = sid === "h8";
+    if (railDone) {
+      if (sid === "h6" || sid === "h8") {
+        railDone.hidden = true;
+        railDone.disabled = true;
+      } else {
+        railDone.hidden = false;
+        setHourMarkEnabled(railDone, sReady);
+      }
+    }
     var dockMark = $("btnHourMarkFromDock");
     if (dockMark) {
       var showDockMark = /^(h1|h2|h3|h4|h5|h7)$/.test(active);
@@ -830,7 +837,7 @@
     var tab = li.getAttribute("data-hour-tab");
     var target = li.getAttribute("data-hour-target");
     var stepId = li.getAttribute("data-hour-step") || "";
-    var needLevel = li.querySelector(".hour-go") && li.querySelector(".hour-go").getAttribute("data-hour-level");
+    var needLevel = li.getAttribute("data-hour-level");
     if (needLevel) setLevel(needLevel);
     setHourActive(stepId);
     if (stepId === "h4") snapshotH4IfNeeded();
@@ -895,34 +902,67 @@
     maybeAutoBeginner();
   }
 
-  function wireFirstHour() {
-    document.querySelectorAll("[data-hour-step]").forEach(function (li) {
-      var id = li.getAttribute("data-hour-step");
-      var go = li.querySelector(".hour-go");
-      var doneBtn = li.querySelector(".hour-done");
-      if (go) {
-        go.addEventListener("click", function (ev) {
-          ev.preventDefault();
-          if (go.id === "hourGoBeginner") {
-            graduateToBeginner();
-            return;
-          }
-          goHourStep(li);
-        });
-      }
-      if (doneBtn) {
-        doneBtn.addEventListener("click", function (ev) {
-          ev.preventDefault();
-          // Step 8 has no Mark done — only Set Beginner
-          if (id === "h8") {
-            graduateToBeginner();
-            return;
-          }
-          markHourStep(id, true);
-          if (hourStepReady(id) || id === "h8") returnToFirstHour();
-        });
-      }
+  function getSelectedHourLi() {
+    return (
+      document.querySelector("#firstHourList .hour-step.is-selected") ||
+      document.querySelector("#firstHourList [data-hour-step]")
+    );
+  }
+
+  function selectHourStep(id) {
+    var list = $("firstHourList");
+    if (!list || !id) return;
+    list.querySelectorAll("[data-hour-step]").forEach(function (el) {
+      var on = el.getAttribute("data-hour-step") === id;
+      el.classList.toggle("is-selected", on);
     });
+    refreshHourGates();
+  }
+
+  function wireFirstHour() {
+    var list = $("firstHourList");
+    if (list) {
+      list.querySelectorAll("[data-hour-step]").forEach(function (li) {
+        li.addEventListener("click", function (ev) {
+          if (ev.target && ev.target.closest && ev.target.closest("a, .hour-go, .hour-done")) return;
+          ev.preventDefault();
+          selectHourStep(li.getAttribute("data-hour-step"));
+        });
+        li.addEventListener("keydown", function (ev) {
+          if (ev.key !== "Enter" && ev.key !== " ") return;
+          ev.preventDefault();
+          selectHourStep(li.getAttribute("data-hour-step"));
+        });
+      });
+    }
+    var go = $("hourRailGo");
+    if (go) {
+      go.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        goHourStep(getSelectedHourLi());
+      });
+    }
+    var doneBtn = $("hourRailDone");
+    if (doneBtn) {
+      doneBtn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var li = getSelectedHourLi();
+        var id = li && li.getAttribute("data-hour-step");
+        if (!id || id === "h8") {
+          graduateToBeginner();
+          return;
+        }
+        markHourStep(id, true);
+        if (hourStepReady(id)) returnToFirstHour();
+      });
+    }
+    var grad = $("hourGoBeginner");
+    if (grad) {
+      grad.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        graduateToBeginner();
+      });
+    }
     var back = $("hourScrollTop");
     if (back) back.addEventListener("click", returnToFirstHour);
     var nextQuiz = $("btnNextGoQuiz");

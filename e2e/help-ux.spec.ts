@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { expectNavCount } from "./helpers";
+import { expectNavCount, hourRailGo } from "./helpers";
 
 /**
  * Help UX hybrid P0–P4: tips, Extra help (no mid-page step rails).
@@ -56,7 +56,7 @@ test.describe("Help UX hybrid", () => {
   test("S44 first-hour Go jumps to Lab sections (replaces step rail)", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await page.locator('[data-hour-step="h2"] .hour-go').click();
+    await hourRailGo(page, "h2");
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#learnReturnBar")).toBeVisible();
     await page.locator("#learnReturnBarBtn").click();

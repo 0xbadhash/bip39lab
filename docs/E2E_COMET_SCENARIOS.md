@@ -39,7 +39,7 @@ scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.23 · Contract: 2 · Last aligned: 2026-08-20 · Scenarios: S0–S108 · Playwright S-ids: 127`
+`Product: 0.16.24 · Contract: 2 · Last aligned: 2026-08-21 · Scenarios: S0–S108 · Playwright S-ids: 127`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -740,7 +740,7 @@ Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if t
 Lab has 25 `.help-tip-btn`; hover shows the panel without a prior click. Sample the same hover behavior on Multisig, Network, Shamir, SLIP-39 (1 icon). Extra help Off still hides non-safety (i) (S42).
 
 ### S102 — Starter face
-Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses sentence; numbered 8-step First hour rail beside live Mnemonic lab (Air-gap warn … Set Beginner); Generate/Validate/Clear visible; `#cardQuiz` / `#cardIntQuiz` / `#cardAdvQuiz` / BIP-85 / Ops **hidden**. 12-check boards not a fifth page. 6 nav items.
+Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses sentence; **slim** numbered 8-step labels beside live Mnemonic lab (Air-gap warn … Set Beginner) — **not** a fat rail with Go/Mark done on every step. One `#hourRailGo` / `#hourRailDone` pair for the **selected** step. Generate + Validate accent; Clear secrets filled red. `#cardQuiz` / later faces **hidden**. 12-check boards not a fifth page. 6 nav items.
 
 ### S103 — Beginner face
 Beginner: chapter **Passphrase and entropy**; three locked stills key + dice = lock (`beginner-key.png`, `beginner-dice.png`, `beginner-lock.png`); labels Something you know / Randomness / Stronger seed; bar Too few dice → 128 bits. **Four Q1–Q4 tiles**. No Guided quiz heading. Intermediate hidden. Starter orientation/lab **collapsed**.

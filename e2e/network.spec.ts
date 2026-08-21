@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { ABANDON, GOLDEN, expectNavCount, labCspOffline, pasteMnemonic, waitForTableRows } from "./helpers";
+import { ABANDON, GOLDEN, expectNavCount, hourRailGo, labCspOffline, pasteMnemonic, waitForTableRows } from "./helpers";
 
 test.describe("Network page E2E", () => {
   test("S32 shell · 6-nav · mempool CSP · balances gated", async ({ page }) => {
@@ -118,7 +118,7 @@ test.describe("Network page E2E", () => {
     await page.locator("#btnSendNetwork").click();
     await expect(page).toHaveURL(/network\.html/);
     await page.goto("/");
-    await page.locator('[data-hour-step="h7"] .hour-go').click();
+    await hourRailGo(page, "h7");
     await expect(page).toHaveURL(/network\.html/);
     await expect(page.locator("#balAck")).toBeVisible();
     await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();

@@ -72,8 +72,21 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] Starter rail + Beginner/Advanced stills
+### [OPEN] Slim Starter First-hour rail
 - **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-21-slim-rail.md`
+- **Plan:** `.agents/specs/2026-08-21-slim-rail-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Slim 1–8 labels; one Go/Mark done for selected step
+  - [ ] Clear secrets filled red; Mnemonic title
+  - [ ] Stamp 0.16.24; leftovers hold
+- **Smoke:** e2e/faces.spec.ts S102 + learn first-hour
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Starter rail + Beginner/Advanced stills
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-20-sba-stills.md`
 - **Plan:** `.agents/specs/2026-08-20-sba-stills-plan.md`

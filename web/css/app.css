@@ -1190,6 +1190,42 @@ a.nav-item:hover {
   border-color: #3d8bfd;
   color: #0b0f14;
 }
+.hour-list-slim .hour-step {
+  padding: 0;
+  border-bottom: none;
+}
+.hour-rail-pick {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0.28rem 0.2rem;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 550;
+  color: #eef2f7;
+}
+.hour-step.is-selected .hour-rail-pick {
+  background: #161d27;
+  outline: 1px solid #3d8bfd;
+}
+.hour-rail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.65rem 0 0.25rem;
+}
+#card-mnemonic #btnGenerate,
+#card-mnemonic #btnDerive {
+  background: #3d8bfd;
+  border-color: #3d8bfd;
+  color: #0b0f14;
+}
+#card-mnemonic #btnClear.btn.danger {
+  background: #e2483d;
+  border-color: #e2483d;
+  color: #fff;
+}
 .beginner-eq-row {
   display: flex;
   flex-wrap: wrap;

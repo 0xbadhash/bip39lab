@@ -46,6 +46,11 @@ test.describe("Level faces", () => {
     await expect(page.locator("#firstHourList")).toContainText(/Air-gap warn/);
     await expect(page.locator("#firstHourList")).toContainText(/Generate 12-word/);
     await expect(page.locator("#firstHourList")).toContainText(/Set Beginner/);
+    await expect(page.locator("#firstHourList .hour-go")).toHaveCount(0);
+    await expect(page.locator("#firstHourList .hour-done")).toHaveCount(0);
+    await expect(page.locator("#hourRailGo")).toBeVisible();
+    await expect(page.locator("#hourRailDone")).toBeVisible();
+    await expect(page.locator("#btnClear")).toHaveClass(/danger/);
     await expect(page.locator("#card-mnemonic h2").first()).toHaveText(/Mnemonic/);
     await expect(page.locator("#cardQuiz")).toBeHidden();
     await expect(page.locator("#cardIntQuiz")).toBeHidden();

@@ -32,6 +32,18 @@ export async function clickLabAction(page: Page, which: "generate" | "derive" | 
   await expect(page.locator(overlay)).toBeHidden();
 }
 
+/** Slim rail: select a First-hour step then Go. */
+export async function hourRailGo(page: Page, step: string) {
+  await page.locator(`#firstHourList [data-hour-step="${step}"]`).click();
+  await page.locator("#hourRailGo").click();
+}
+
+/** Slim rail: select a First-hour step then Mark done. */
+export async function hourRailMark(page: Page, step: string) {
+  await page.locator(`#firstHourList [data-hour-step="${step}"]`).click();
+  await page.locator("#hourRailDone").click();
+}
+
 export async function pasteMnemonic(page: Page, text: string) {
   await page.locator("#mnemonic").fill(text);
   await page.waitForTimeout(450);
