@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" data-paint="starter" data-teach="on" data-level="starter">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MOCK FULL FLOW · strip + Teach-A/B/C · zoo vector</title>
+<style>
+:root {
+  --bg: #0b0f14;
+  --bg-elevated: #121821;
+  --panel: #161d27;
+  --panel-2: #1a2330;
+  --border: #243044;
+  --text: #e8eef7;
+  --muted: #8b9bb4;
+  --accent: #3d8bfd;
+  --ok: #3ecf8e;
+  --warn: #e6b84d;
+  --bad: #e85d5d;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.45; }
+a { color: var(--accent); }
+.app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.sidebar {
+  background: var(--bg-elevated); border-right: 1px solid var(--border);
+  padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;
+}
+.brand { font-weight: 700; letter-spacing: 0.04em; padding: 0.35rem 0.55rem 0.85rem; color: var(--text); }
+.brand span { color: var(--accent); }
+.nav-item {
+  display: block; padding: 0.45rem 0.6rem; border-radius: var(--radius-sm);
+  color: var(--muted); text-decoration: none; font-size: 0.9rem;
+}
+.nav-item.active, .nav-item:hover { background: var(--panel); color: var(--text); }
+.nav-item.active { border-left: 3px solid var(--accent); padding-left: calc(0.6rem - 3px); }
+.main { padding: 1rem 1.25rem 2.5rem; max-width: 920px; }
+.warn {
+  background: rgba(230,184,77,0.1); border: 1px solid rgba(230,184,77,0.35);
+  color: #f0d78a; border-radius: var(--radius-sm); padding: 0.65rem 0.8rem; margin: 0 0 1rem; font-size: 0.82rem;
+}
+.warn code { background: rgba(0,0,0,0.25); padding: 0.05rem 0.3rem; border-radius: 4px; font-size: 0.78rem; }
+.row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.85rem; align-items: center; }
+.btn {
+  appearance: none; border: 1px solid var(--border); background: var(--panel);
+  color: var(--text); border-radius: var(--radius-sm); padding: 0.4rem 0.75rem;
+  font: inherit; cursor: pointer; font-size: 0.85rem;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.secondary { background: transparent; }
+.btn.active-lvl { border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.chip {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  border: 1px solid var(--border); border-radius: 999px; padding: 0.15rem 0.55rem;
+  font-size: 0.72rem; color: var(--muted); background: var(--bg-elevated);
+}
+.chip.ok { border-color: rgba(62,207,142,0.45); color: var(--ok); }
+.chip.warn { border-color: rgba(230,184,77,0.45); color: var(--warn); }
+.card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.85rem 1rem; margin-bottom: 0.9rem;
+}
+.card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.55rem; gap: 0.5rem; }
+.card-head h2 { margin: 0; font-size: 0.95rem; font-weight: 650; }
+.muted { color: var(--muted); font-size: 0.8rem; }
+.rail {
+  display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.85rem;
+}
+.rail-step {
+  flex: 0 0 auto; border: 1px solid var(--border); border-radius: 999px;
+  padding: 0.2rem 0.55rem; font-size: 0.72rem; color: var(--muted); background: transparent;
+}
+.rail-step.done { border-color: rgba(62,207,142,0.5); color: var(--ok); }
+.rail-step.current { border-color: var(--accent); color: var(--accent); font-weight: 650; }
+
+/* ===== STRIP ===== */
+.lab-strip {
+  margin: 0.5rem 0 0.85rem; padding: 0.7rem 0.75rem;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg);
+}
+.lab-strip-stages { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.35rem; }
+.lab-strip-arrow { color: var(--muted); align-self: center; font-size: 0.85rem; opacity: 0.7; }
+.lab-stage {
+  flex: 1 1 6rem; min-width: 5rem;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: transparent; padding: 0.45rem 0.5rem; opacity: 0.38;
+  transition: opacity .15s, border-color .15s, background .15s;
+}
+.lab-stage .stage-label {
+  display: block; font-size: 0.65rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--muted); font-weight: 700;
+}
+.lab-stage .stage-detail {
+  display: block; font-family: var(--mono); font-size: 0.72rem;
+  color: var(--muted); margin-top: 0.2rem; word-break: break-all;
+}
+.lab-stage .stage-caption {
+  display: block; margin-top: 0.3rem; font-size: 0.72rem; color: var(--muted); line-height: 1.3;
+}
+html[data-teach="off"] .stage-caption { display: none !important; }
+
+/* paint lighting */
+#labStrip[data-paint="starter"] .stage-words,
+#labStrip[data-paint="beginner"] .stage-entropy,
+#labStrip[data-paint="beginner"] .stage-checksum,
+#labStrip[data-paint="beginner"] .stage-words,
+#labStrip[data-paint="beginner"] .stage-address,
+#labStrip[data-paint="intermediate"] .stage-entropy,
+#labStrip[data-paint="intermediate"] .stage-checksum,
+#labStrip[data-paint="intermediate"] .stage-words,
+#labStrip[data-paint="intermediate"] .stage-address,
+#labStrip[data-paint="advanced"] .lab-stage {
+  opacity: 1; background: var(--panel); border-color: var(--accent);
+}
+#labStrip[data-paint="starter"] .stage-entropy .stage-detail,
+#labStrip[data-paint="starter"] .stage-checksum .stage-detail,
+#labStrip[data-paint="starter"] .stage-seed .stage-detail,
+#labStrip[data-paint="starter"] .stage-address .stage-detail { visibility: hidden; }
+
+/* Teach-A entropy bar + checksum bits */
+.ent-bar-wrap { margin-top: 0.35rem; }
+.ent-bar {
+  height: 8px; border-radius: 4px; background: var(--border); overflow: hidden;
+  display: flex;
+}
+.ent-seg { flex: 1; height: 100%; background: transparent; transition: background .12s; }
+.ent-seg.on { background: var(--accent); }
+.cs-bits { display: flex; gap: 3px; margin-top: 0.35rem; flex-wrap: wrap; }
+.cs-bit {
+  width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border);
+  background: transparent; font-size: 0.55rem; display: flex; align-items: center; justify-content: center;
+  color: transparent; font-family: var(--mono);
+}
+.cs-bit.on { background: rgba(62,207,142,0.25); border-color: var(--ok); color: var(--ok); }
+
+/* Teach-B word card = mnemonic */
+.word-grid {
+  list-style: none; margin: 0.4rem 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.28rem;
+}
+.word-grid li {
+  border: 1px solid var(--border); border-radius: 6px; background: var(--panel-2);
+  padding: 0.28rem 0.35rem 0.32rem; font-size: 0.78rem; color: var(--text);
+  cursor: default; position: relative;
+}
+.word-grid .wi { display: block; font-size: 0.62rem; color: var(--muted); font-weight: 700; }
+.word-grid .ww { font-family: var(--mono); }
+html[data-paint="intermediate"] .word-grid li:nth-child(-n+4) .ww,
+html[data-paint="advanced"] .word-grid li:nth-child(-n+4) .ww { font-weight: 750; color: #fff; }
+.word-grid li:hover .tip {
+  display: block;
+}
+.tip {
+  display: none; position: absolute; z-index: 5; left: 0; bottom: calc(100% + 4px);
+  background: var(--panel); border: 1px solid var(--accent); border-radius: 6px;
+  padding: 0.25rem 0.4rem; font-size: 0.68rem; color: var(--muted); white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.stamp {
+  margin-top: 0.45rem; font-size: 0.72rem; color: var(--warn);
+  border: 1px dashed rgba(230,184,77,0.4); border-radius: 6px; padding: 0.3rem 0.45rem;
+  display: inline-block;
+}
+
+/* extras */
+.lab-strip-extra { display: none; margin-top: 0.55rem; gap: 0.5rem; }
+#labStrip[data-paint="intermediate"] .lab-strip-extra.int-only,
+#labStrip[data-paint="advanced"] .lab-strip-extra.int-only,
+#labStrip[data-paint="advanced"] .lab-strip-extra.adv-only { display: grid; }
+.ks-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+.ks-box {
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0.45rem 0.55rem; background: var(--panel); font-size: 0.78rem;
+}
+.ks-box strong { display: block; margin-bottom: 0.15rem; }
+.ks-box .stage-detail { margin-top: 0.15rem; }
+
+/* Teach-C air-gap on card */
+.airgap-row {
+  display: none; margin-top: 0.65rem; gap: 0.75rem; align-items: flex-start; flex-wrap: wrap;
+}
+#labStrip[data-paint="advanced"] .airgap-row { display: flex; }
+.qr-box {
+  width: 88px; height: 88px; border: 1px solid var(--border); border-radius: 8px;
+  background:
+    linear-gradient(45deg, var(--panel-2) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--panel-2) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--panel-2) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--panel-2) 75%);
+  background-size: 12px 12px; background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; color: var(--muted); text-align: center; padding: 0.3rem;
+}
+.airgap-actions { display: flex; flex-direction: column; gap: 0.35rem; }
+.level-gate { display: none; }
+html[data-paint="beginner"] .gate-beg,
+html[data-paint="intermediate"] .gate-beg,
+html[data-paint="intermediate"] .gate-int,
+html[data-paint="advanced"] .gate-beg,
+html[data-paint="advanced"] .gate-int,
+html[data-paint="advanced"] .gate-adv { display: block; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
+.field { margin-top: 0.55rem; }
+.field label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.2rem; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.addr-chip {
+  font-family: var(--mono); font-size: 0.72rem; background: var(--panel-2);
+  border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.45rem;
+  word-break: break-all; margin-top: 0.25rem;
+}
+.flow-guide {
+  border-left: 3px solid var(--accent); padding: 0.5rem 0.75rem;
+  background: rgba(61,139,253,0.06); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-bottom: 1rem; font-size: 0.82rem;
+}
+.flow-guide strong { color: var(--accent); }
+.legend {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.4rem; margin-top: 0.75rem; font-size: 0.75rem; color: var(--muted);
+}
+.legend b { color: var(--text); }
+@media (max-width: 720px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">bip39<span>·lab</span></div>
+    <a class="nav-item active" href="#">Lab</a>
+    <a class="nav-item" href="#">Multisig</a>
+    <a class="nav-item" href="#">Shamir</a>
+    <a class="nav-item" href="#">Network</a>
+    <a class="nav-item" href="#">Tools</a>
+    <a class="nav-item" href="#">Glossary</a>
+    <div style="flex:1"></div>
+    <span class="chip warn">MOCK · not live</span>
+    <span class="chip">zoo vector</span>
+  </aside>
+
+  <main class="main">
+    <p class="warn">
+      <strong>Full-flow mock</strong> — strip + Teach-A/B/C + existing chrome in one review surface.
+      Live Lab stays <code>abandon…about → bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu</code>.
+      This page uses <code>zoo…wrong → bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</code>.
+      No production overwrite. Click levels left→right to walk the teach flow.
+    </p>
+
+    <div class="flow-guide" id="flowGuide">
+      <strong>Starter flow:</strong> Card is the only lit stage. Generate fills the numbered backup object. No entropy bits, no path, no QR yet.
+    </div>
+
+    <!-- existing first-hour slim rail -->
+    <div class="rail" id="firstHourRail" aria-label="First hour">
+      <span class="rail-step current">1 Orient</span>
+      <span class="rail-step">2 Generate</span>
+      <span class="rail-step">3 Validate</span>
+      <span class="rail-step">4 Address</span>
+      <span class="rail-step">5 Backup</span>
+      <span class="rail-step">6 Hide</span>
+      <span class="rail-step">7 Clear</span>
+      <span class="rail-step">8 Next level</span>
+    </div>
+
+    <div class="row">
+      <button type="button" class="btn secondary active-lvl" data-paint-set="starter">Starter</button>
+      <button type="button" class="btn secondary" data-paint-set="beginner">Beginner</button>
+      <button type="button" class="btn secondary" data-paint-set="intermediate">Intermediate</button>
+      <button type="button" class="btn secondary" data-paint-set="advanced">Advanced</button>
+      <button type="button" class="btn secondary" id="btnTeachToggle">Extra help Off</button>
+      <span class="chip ok" id="levelChip">level · starter</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Mnemonic · practice specimen</h2>
+        <span class="chip warn">Not a wallet</span>
+      </div>
+
+      <!-- THE STRIP -->
+      <div id="labStrip" class="lab-strip" data-paint="starter">
+        <div class="lab-strip-stages">
+
+          <!-- ENTROPY — Teach-A paints this -->
+          <div class="lab-stage stage-entropy">
+            <span class="stage-label">entropy</span>
+            <span class="stage-detail" id="entDetail">128 bits</span>
+            <div class="ent-bar-wrap gate-beg level-gate">
+              <div class="ent-bar" id="entBar" title="ENT slider paints these segments"></div>
+            </div>
+            <span class="stage-caption">Entropy · random bits before checksum</span>
+          </div>
+          <span class="lab-strip-arrow">→</span>
+
+          <!-- CHECKSUM — Teach-A ok bits -->
+          <div class="lab-stage stage-checksum">
+            <span class="stage-label">checksum</span>
+            <span class="stage-detail" id="csDetail">4 bits</span>
+            <div class="cs-bits gate-beg level-gate" id="csBits"></div>
+            <span class="stage-caption">Checksum · SHA-256 first n bits</span>
+          </div>
+          <span class="lab-strip-arrow">→</span>
+
+          <!-- WORDS — Teach-B: this IS the mnemonic -->
+          <div class="lab-stage stage-words lit">
+            <span class="stage-label">words</span>
+            <ol class="word-grid" id="stripWordGrid"></ol>
+            <span class="stamp">This card is a practice backup. Not a wallet.</span>
+            <span class="stage-caption">Numbered card · the mnemonic object</span>
+          </div>
+          <span class="lab-strip-arrow">→</span>
+
+          <!-- SEED -->
+          <div class="lab-stage stage-seed">
+            <span class="stage-label">seed</span>
+            <span class="stage-detail">PBKDF2 · 2048</span>
+            <span class="stage-caption">Seed · mnemonic + optional passphrase</span>
+          </div>
+          <span class="lab-strip-arrow">→</span>
+
+          <!-- ADDRESS -->
+          <div class="lab-stage stage-address">
+            <span class="stage-label">address</span>
+            <span class="stage-detail" id="stripAddr">bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</span>
+            <span class="stage-caption">Address · BIP84 /0 receive</span>
+          </div>
+        </div>
+
+        <!-- Intermediate extras -->
+        <div class="lab-strip-extra int-only">
+          <div class="ks-row">
+            <div class="ks-box">
+              <strong>Passphrase A / B</strong>
+              <span class="stage-detail">A empty · bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</span>
+              <span class="stage-detail">B TREZOR · bc1qeruu9tjx0ux75w98mhwsz867w5hp5259630tt4</span>
+            </div>
+            <div class="ks-box">
+              <strong>Keys ≠ shares</strong>
+              <span class="stage-detail">HD key is not a Shamir share</span>
+              <span class="stage-detail">Shamir / SLIP-39 live on their own nav</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced extras -->
+        <div class="lab-strip-extra adv-only">
+          <div class="ks-box">
+            <strong>master → child</strong>
+            <span class="stage-detail">m/84h/0h/0h/0/0 · bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</span>
+            <span class="stage-detail">m/84h/0h/0h/0/1 · bc1qkd33yck74lg0kaq4tdcmu3hk4yruhjayxpe9ug</span>
+          </div>
+        </div>
+
+        <!-- Teach-C air-gap on card (Advanced) -->
+        <div class="airgap-row">
+          <div class="qr-box">Seed QR<br/>(offline)</div>
+          <div class="airgap-actions">
+            <button type="button" class="btn secondary">Print backup card</button>
+            <button type="button" class="btn secondary">Show zpub / watch-only</button>
+            <span class="muted">Same accent · no SeedSigner orange · walls still apply (P0 lab-safety)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- existing action row -->
+      <div class="controls">
+        <button type="button" class="btn primary" id="btnGen">Generate</button>
+        <button type="button" class="btn secondary" id="btnVal">Validate &amp; derive</button>
+        <button type="button" class="btn secondary" id="btnClear">Clear secrets</button>
+      </div>
+
+      <!-- Teach-A control: ENT slider (gated Beginner+) -->
+      <div class="field gate-beg level-gate">
+        <label for="entSlider">ENT bits (Teach-A · paints entropy bar + checksum width)</label>
+        <input type="range" id="entSlider" min="128" max="256" step="32" value="128"/>
+        <div class="muted" id="entLabel">128 bits → 12 words · 4 checksum bits</div>
+      </div>
+
+      <!-- address table stub gated -->
+      <div class="field gate-beg level-gate">
+        <label>BIP84 receive · one row (Beginner+)</label>
+        <div class="addr-chip" id="addrChip">bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</div>
+      </div>
+
+      <div class="field gate-adv level-gate">
+        <label>Path playground stub (Advanced · same card, not new chrome)</label>
+        <div class="addr-chip">m/84h/0h/0h/0/<input type="number" value="0" min="0" max="19" style="width:3.5rem;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:0.1rem 0.25rem"/> → live child</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>What this mock covers</h2></div>
+      <div class="legend">
+        <div><b>Strip + paint</b><br/>Starter→Advanced lights the same composition</div>
+        <div><b>Teach-A</b><br/>ENT slider paints entropy segments; checksum bits go ok-green</div>
+        <div><b>Teach-B</b><br/>3×4 numbered cells ARE the mnemonic (no textarea)</div>
+        <div><b>Teach-C</b><br/>Seed QR + print sit on the card at Advanced</div>
+        <div><b>Existing</b><br/>Sidebar, first-hour rail, G/V/C, Extra help, level chip</div>
+        <div><b>Out of mock</b><br/>Live crypto, Multisig/Shamir/Network pages, real QR encoding</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var words12 = "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong".split(" ");
+  var words24 = "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong".split(" ");
+  var addr = {
+    a: "bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2",
+    b: "bc1qeruu9tjx0ux75w98mhwsz867w5hp5259630tt4",
+    c1: "bc1qkd33yck74lg0kaq4tdcmu3hk4yruhjayxpe9ug"
+  };
+  var guides = {
+    starter: "<strong>Starter flow:</strong> Only the numbered word card is lit. Generate fills the backup object. Ghost stages show the pipeline exists but stay unreadable. First-hour rail stays slim.",
+    beginner: "<strong>Beginner flow:</strong> Entropy bar + checksum bits light. ENT slider (Teach-A) paints segments. Hover a word for 11-bit index. One BIP84 address row. Seed stage still ghost.",
+    intermediate: "<strong>Intermediate flow:</strong> Passphrase A/B compare + keys≠shares under the card. First-4 prefixes bold. Hide/reveal tiles (simulated). Master→child still ghost.",
+    advanced: "<strong>Advanced flow:</strong> Full strip lit including seed/PBKDF2 and master→child. Teach-C: Seed QR + print on the card. Path playground attaches to the same card — no new page chrome."
+  };
+
+  function wordIndex(w) {
+    // toy index for hover tip only (not real BIP39 index)
+    var n = 0; for (var i = 0; i < w.length; i++) n = (n * 31 + w.charCodeAt(i)) % 2048;
+    return n;
+  }
+
+  function renderGrid(bits) {
+    var list = bits >= 256 ? words24 : words12;
+    var grid = document.getElementById("stripWordGrid");
+    grid.style.gridTemplateColumns = bits >= 256 ? "repeat(6, minmax(0,1fr))" : "repeat(4, minmax(0,1fr))";
+    grid.innerHTML = list.map(function (w, i) {
+      return "<li title=\"hover for index\"><span class=\"wi\">" + (i + 1) + "</span><span class=\"ww\">" + w + "</span>" +
+        "<span class=\"tip\">11-bit index · " + wordIndex(w) + " / 2047</span></li>";
+    }).join("");
+  }
+
+  function paintEntropy(bits) {
+    var segs = bits / 8; // visual density
+    var bar = document.getElementById("entBar");
+    bar.innerHTML = "";
+    for (var i = 0; i < segs; i++) {
+      var d = document.createElement("div");
+      d.className = "ent-seg on";
+      bar.appendChild(d);
+    }
+    document.getElementById("entDetail").textContent = bits + " bits";
+    var cs = bits / 32; // 128→4, 256→8
+    document.getElementById("csDetail").textContent = cs + " bits";
+    var csEl = document.getElementById("csBits");
+    csEl.innerHTML = "";
+    for (var j = 0; j < cs; j++) {
+      var b = document.createElement("div");
+      b.className = "cs-bit on";
+      b.textContent = "1";
+      csEl.appendChild(b);
+    }
+    var words = bits / 32 * 3; // 128→12, 256→24
+    document.getElementById("entLabel").textContent = bits + " bits → " + words + " words · " + cs + " checksum bits";
+    renderGrid(bits);
+  }
+
+  function setLevel(lvl) {
+    document.documentElement.setAttribute("data-paint", lvl);
+    document.documentElement.setAttribute("data-level", lvl);
+    document.getElementById("labStrip").setAttribute("data-paint", lvl);
+    document.getElementById("levelChip").textContent = "level · " + lvl;
+    document.getElementById("flowGuide").innerHTML = guides[lvl];
+    document.querySelectorAll("[data-paint-set]").forEach(function (btn) {
+      btn.classList.toggle("active-lvl", btn.getAttribute("data-paint-set") === lvl);
+    });
+    // rail demo: advance current marker lightly
+    var steps = document.querySelectorAll(".rail-step");
+    var idx = { starter: 0, beginner: 2, intermediate: 4, advanced: 7 }[lvl] || 0;
+    steps.forEach(function (s, i) {
+      s.classList.remove("current", "done");
+      if (i < idx) s.classList.add("done");
+      if (i === idx) s.classList.add("current");
+    });
+  }
+
+  document.querySelectorAll("[data-paint-set]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setLevel(btn.getAttribute("data-paint-set"));
+    });
+  });
+
+  document.getElementById("btnTeachToggle").addEventListener("click", function () {
+    var on = document.documentElement.getAttribute("data-teach") !== "off";
+    document.documentElement.setAttribute("data-teach", on ? "off" : "on");
+    this.textContent = on ? "Extra help On" : "Extra help Off";
+  });
+
+  document.getElementById("entSlider").addEventListener("input", function () {
+    paintEntropy(parseInt(this.value, 10));
+  });
+
+  document.getElementById("btnGen").addEventListener("click", function () {
+    paintEntropy(parseInt(document.getElementById("entSlider").value, 10));
+    document.getElementById("addrChip").textContent = addr.a;
+    document.getElementById("stripAddr").textContent = addr.a;
+  });
+  document.getElementById("btnClear").addEventListener("click", function () {
+    document.getElementById("stripWordGrid").innerHTML = "";
+    document.getElementById("entBar").innerHTML = "";
+    document.getElementById("csBits").innerHTML = "";
+    document.getElementById("stripAddr").textContent = "—";
+    document.getElementById("addrChip").textContent = "—";
+  });
+  document.getElementById("btnVal").addEventListener("click", function () {
+    document.getElementById("stripAddr").textContent = addr.a;
+    document.getElementById("addrChip").textContent = addr.a;
+  });
+
+  // init
+  paintEntropy(128);
+  setLevel("starter");
+})();
+</script>
+</body>
+</html>
