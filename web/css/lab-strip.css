@@ -1,34 +1,36 @@
-/* Gradual visual teach strip (0.16.25-wip, app-shell tokens only) */
+/* Gradual visual teach strip — Catalyxt app-shell tokens only. Stamp 0.16.25 */
 .lab-strip {
-  margin: 0.75rem 0 1rem;
-  padding: 0.65rem 0.7rem;
+  margin: 0.5rem 0 0.85rem;
+  padding: 0.7rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--bg-elevated);
+  background: var(--bg);
 }
 .lab-strip-stages {
   display: flex;
   flex-wrap: wrap;
   align-items: stretch;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 .lab-strip-arrow {
   color: var(--muted);
   align-self: center;
   font-size: 0.85rem;
+  opacity: 0.7;
 }
 .lab-stage {
-  flex: 1 1 5.5rem;
-  min-width: 4.5rem;
+  flex: 1 1 6rem;
+  min-width: 5rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: transparent;
-  padding: 0.4rem 0.45rem;
+  padding: 0.45rem 0.5rem;
   opacity: 0.38;
+  transition: opacity 0.15s, border-color 0.15s, background 0.15s;
 }
 .lab-stage .stage-label {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
@@ -89,17 +91,30 @@ html[data-teach="off"] .lab-strip .stage-caption {
   color: var(--muted);
   font-weight: 700;
 }
+.word-grid .ww {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 html[data-paint="intermediate"] .word-grid li:nth-child(-n+4) .ww,
 html[data-level="intermediate"] .word-grid li:nth-child(-n+4) .ww,
 html[data-paint="advanced"] .word-grid li:nth-child(-n+4) .ww,
 html[data-level="advanced"] .word-grid li:nth-child(-n+4) .ww {
   font-weight: 750;
+  color: var(--text);
 }
 #labStrip[data-paint="starter"] .stage-entropy .stage-detail,
 #labStrip[data-paint="starter"] .stage-checksum .stage-detail,
 #labStrip[data-paint="starter"] .stage-seed .stage-detail,
 #labStrip[data-paint="starter"] .stage-address .stage-detail {
   visibility: hidden;
+}
+.stamp-warn {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--warn, #e6b84d);
+  border: 1px dashed rgba(230, 184, 77, 0.4);
+  border-radius: 6px;
+  padding: 0.25rem 0.4rem;
 }
 .lab-strip-extra {
   display: none;
@@ -123,4 +138,16 @@ html[data-level="advanced"] .word-grid li:nth-child(-n+4) .ww {
   background: var(--panel);
   font-size: 0.78rem;
 }
-.ks-box strong { display: block; }
+.ks-box strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+.ks-box .stage-detail {
+  display: block;
+  margin-top: 0.1rem;
+}
+@media (max-width: 640px) {
+  .ks-row {
+    grid-template-columns: 1fr;
+  }
+}

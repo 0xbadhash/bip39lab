@@ -1,21 +1,24 @@
-/* Site version stamp — single source for sidebar chip + S0. */
+/**
+ * Auto-stamped from VERSION by scripts/stamp_site_version.py — do not edit by hand.
+ * Release tag shown in sidebar/footer on every page.
+ */
 (function (g) {
   "use strict";
   g.BIP39LAB_SITE_VERSION = "0.16.25";
   g.BIP39LAB_SITE_TAG = "v0.16.25";
-  function paint() {
-    var v = g.BIP39LAB_SITE_VERSION;
-    var tag = g.BIP39LAB_SITE_TAG;
+  function apply() {
+    var label = g.BIP39LAB_SITE_TAG || ("v" + (g.BIP39LAB_SITE_VERSION || ""));
+    if (!label || label === "v") return;
     document.querySelectorAll("[data-site-version]").forEach(function (el) {
-      el.setAttribute("data-site-version", v);
-      if (el.classList.contains("site-version-chip") || el.getAttribute("data-site-version-text") === "1") {
-        el.textContent = tag;
-      }
+      el.textContent = label;
+      el.setAttribute("title", "Site release " + label);
     });
   }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", paint);
-  } else {
-    paint();
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", apply);
+    } else {
+      apply();
+    }
   }
-})(typeof window !== "undefined" ? window : this);
+})(typeof globalThis !== "undefined" ? globalThis : this);
