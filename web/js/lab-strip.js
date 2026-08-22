@@ -1,9 +1,12 @@
 /**
  * Gradual visual teach strip — injects #labStrip and paints by Classroom level.
- * Compare page: compare-paint.html uses the zoo vector (not abandon…about).
+ * Spec: .agents/specs/2026-08-22-gradual-visual-teach.md
+ * Stamp: 0.16.25 (after slim-rail 0.16.24). Teach-A/B/C are later ships.
  */
 (function () {
   "use strict";
+
+  var STRIP_CSS_V = "0.16.25";
 
   function $(id) {
     return document.getElementById(id);
@@ -14,7 +17,7 @@
     var link = document.createElement("link");
     link.id = "labStripCssLink";
     link.rel = "stylesheet";
-    link.href = "css/lab-strip.css";
+    link.href = "css/lab-strip.css?v=" + STRIP_CSS_V;
     document.head.appendChild(link);
   }
 
@@ -27,20 +30,33 @@
     wrap.innerHTML =
       '<div id="labStrip" class="lab-strip" data-paint="starter" aria-label="BIP-39 pipeline">' +
       '<div class="lab-strip-stages">' +
-      '<div class="lab-stage stage-entropy"><span class="stage-label">entropy</span><span class="stage-detail" id="stripEnt">ENT</span><span class="stage-caption">Entropy</span></div>' +
+      '<div class="lab-stage stage-entropy"><span class="stage-label">entropy</span><span class="stage-detail" id="stripEnt">—</span><span class="stage-caption">Entropy · random bits</span></div>' +
       '<span class="lab-strip-arrow" aria-hidden="true">→</span>' +
-      '<div class="lab-stage stage-checksum"><span class="stage-label">checksum</span><span class="stage-detail">CS</span><span class="stage-caption">Checksum</span></div>' +
+      '<div class="lab-stage stage-checksum"><span class="stage-label">checksum</span><span class="stage-detail" id="stripCs">—</span><span class="stage-caption">Checksum · SHA-256 n bits</span></div>' +
       '<span class="lab-strip-arrow" aria-hidden="true">→</span>' +
-      '<div class="lab-stage stage-words lit"><span class="stage-label">words</span><ol class="word-grid" id="stripWordGrid"></ol><span class="stage-caption">This card is a practice backup. Not a wallet.</span></div>' +
+      '<div class="lab-stage stage-words lit"><span class="stage-label">words</span><ol class="word-grid" id="stripWordGrid"></ol><span class="stamp-warn">This card is a practice backup. Not a wallet.</span><span class="stage-caption">Numbered card · the mnemonic object</span></div>' +
       '<span class="lab-strip-arrow" aria-hidden="true">→</span>' +
-      '<div class="lab-stage stage-seed"><span class="stage-label">seed</span><span class="stage-detail">PBKDF2</span><span class="stage-caption">Seed</span></div>' +
+      '<div class="lab-stage stage-seed"><span class="stage-label">seed</span><span class="stage-detail">PBKDF2 · 2048</span><span class="stage-caption">Seed · mnemonic + optional passphrase</span></div>' +
       '<span class="lab-strip-arrow" aria-hidden="true">→</span>' +
-      '<div class="lab-stage stage-address"><span class="stage-label">address</span><span class="stage-detail" id="stripAddr">—</span><span class="stage-caption">Address</span></div>' +
-      "</div></div>";
+      '<div class="lab-stage stage-address"><span class="stage-label">address</span><span class="stage-detail" id="stripAddr">—</span><span class="stage-caption">Address · BIP84 receive</span></div>' +
+      "</div>" +
+      '<div class="lab-strip-extra int-only" id="stripIntExtra">' +
+      '<div class="ks-row">' +
+      '<div class="ks-box"><strong>Passphrase A / B</strong><span class="stage-detail">Same words · different passphrase · different addresses</span></div>' +
+      '<div class="ks-box"><strong>Keys ≠ shares</strong><span class="stage-detail">HD key is not a Shamir share · Multisig / Shamir are other rooms</span></div>' +
+      "</div></div>" +
+      '<div class="lab-strip-extra adv-only" id="stripAdvExtra">' +
+      '<div class="ks-box"><strong>master → child</strong><span class="stage-detail">m/84h/0h/0h/0/0 and /0/1 derive from one seed · this site is not a wallet</span></div>' +
+      "</div>" +
+      "</div>";
     var node = wrap.firstChild;
     var ta = $("mnemonic");
     if (ta && ta.closest("label")) card.insertBefore(node, ta.closest("label"));
-    else card.insertBefore(node, card.firstChild);
+    else {
+      var head = card.querySelector(".card-head");
+      if (head && head.nextSibling) card.insertBefore(node, head.nextSibling);
+      else card.insertBefore(node, card.firstChild);
+    }
     return node;
   }
 
@@ -50,16 +66,37 @@
     if (grid) {
       var words = ta && ta.value ? ta.value.trim().split(/\s+/).filter(Boolean) : [];
       var n = words.length >= 24 ? 24 : 12;
+      grid.style.gridTemplateColumns =
+        n >= 24 ? "repeat(6, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))";
       var html = "";
       for (var i = 0; i < n; i++) {
-        html += "<li><span class=\"wi\">" + (i + 1) + "</span><span class=\"ww\">" + (words[i] || "—") + "</span></li>";
+        var w = words[i] || "—";
+        html +=
+          '<li title="word ' +
+          (i + 1) +
+          '"><span class="wi">' +
+          (i + 1) +
+          '</span><span class="ww">' +
+          w +
+          "</span></li>";
       }
       grid.innerHTML = html;
     }
     var ent = $("entropyMnemonic");
     var stripEnt = $("stripEnt");
+    var stripCs = $("stripCs");
     if (stripEnt && ent && ent.textContent) {
-      stripEnt.textContent = ent.textContent.trim().slice(0, 28) || "ENT";
+      var e = ent.textContent.trim();
+      stripEnt.textContent = e.slice(0, 32) || "—";
+      if (stripCs) {
+        var m = e.match(/(\d+)\s*bit/i);
+        if (m) {
+          var bits = parseInt(m[1], 10);
+          if (bits === 128 || bits === 160 || bits === 192 || bits === 224 || bits === 256) {
+            stripCs.textContent = bits / 32 + " bits";
+          }
+        }
+      }
     }
     var addrCell = document.querySelector("#addrTableBody tr:not(.empty-row) .addr-text");
     var stripAddr = $("stripAddr");
@@ -69,7 +106,10 @@
   function applyPaint(level) {
     var strip = ensureStrip();
     if (!level) {
-      level = document.documentElement.getAttribute("data-level") || "starter";
+      level =
+        document.documentElement.getAttribute("data-level") ||
+        ($("learnLevel") && $("learnLevel").value) ||
+        "starter";
     }
     document.documentElement.setAttribute("data-paint", level);
     if (strip) strip.setAttribute("data-paint", level);
@@ -88,7 +128,7 @@
     if (window.LearnLevels && LearnLevels.setLevel && !LearnLevels._stripHooked) {
       var orig = LearnLevels.setLevel;
       LearnLevels.setLevel = function (level, opts) {
-        var r = orig(level, opts);
+        var r = orig.apply(this, arguments);
         applyPaint(level);
         return r;
       };
@@ -100,8 +140,14 @@
       mn.addEventListener("input", paintFromLab);
     }
     document.addEventListener("click", function (ev) {
-      var id = ev.target && ev.target.id;
-      if (id === "btnGenerate" || id === "btnDerive" || id === "btnClear") {
+      var t = ev.target;
+      var id = t && t.id;
+      if (
+        id === "btnGenerate" ||
+        id === "btnDerive" ||
+        id === "btnClear" ||
+        (t && t.closest && t.closest("#btnGenerate, #btnDerive, #btnClear"))
+      ) {
         setTimeout(paintFromLab, 80);
         setTimeout(paintFromLab, 450);
       }
