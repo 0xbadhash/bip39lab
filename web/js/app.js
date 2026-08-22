@@ -820,6 +820,7 @@
       await refreshWatchOnly();
       if (result && result.rows && result.rows.length && window.LearnLevels && LearnLevels.noteHour) {
         LearnLevels.noteHour("h3Derived", true);
+        if (LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h3");
       }
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
@@ -865,7 +866,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.27";
+    return "v0.16.28";
   }
 
   function setStatus(text, kind) {
@@ -1717,13 +1718,6 @@
       setStatus("Invalid words or checksum — cannot QR as a backup.", "err");
       return;
     }
-    if (
-      !confirm(
-        "This will show a QR of the full recovery phrase from the live mnemonic field. Continue only on a private air-gapped machine."
-      )
-    ) {
-      return;
-    }
     const title = $("qrModalTitle");
     if (title) title.textContent = "Seed phrase QR (sensitive)";
     await showQr(m, "Seed phrase (sensitive) — live field");
@@ -1734,13 +1728,6 @@
     const m = field ? String(field.value || "").trim().replace(/\s+/g, " ") : "";
     if (!m || !BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
       setStatus("Invalid words or checksum — cannot print as a backup.", "err");
-      return;
-    }
-    if (
-      !confirm(
-        "This will print the full recovery phrase from the live mnemonic field. Continue only if this machine and printer are trusted."
-      )
-    ) {
       return;
     }
     const words = m.split(/\s+/).filter(Boolean);
@@ -1774,13 +1761,6 @@
   }
 
   async function onGenerate() {
-    const cur = $("mnemonic") ? String($("mnemonic").value || "").trim() : "";
-    if (cur) {
-      if (!confirm("Generate will replace the current phrase in this tab. Continue?")) {
-        setStatus("Generate cancelled — current phrase kept.", "");
-        return;
-      }
-    }
     const n = parseInt($("wordCount").value, 10);
     const m = await BIP39Lab.generateMnemonic(n);
     $("mnemonic").value = m;
@@ -1796,6 +1776,7 @@
         LearnLevels.noteHour
       ) {
         LearnLevels.noteHour("h2Generated", true);
+        if (LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h2");
       }
     } catch (eGen) {
       /* ignore */
@@ -1808,36 +1789,16 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    function hideLabOverlay(id) {
-      const el = $(id);
-      if (!el) return;
-      el.hidden = true;
-      el.setAttribute("aria-hidden", "true");
+    function syncGenerateWordsHint() {
+      const span = $("overlayGenerateWords");
+      const n = $("wordCount") ? $("wordCount").value : "12";
+      if (span) span.textContent = String(n || "12");
     }
-    function showLabOverlay(id) {
-      ["overlayGenerate", "overlayDerive", "overlayClear"].forEach(hideLabOverlay);
-      const el = $(id);
-      if (!el) return;
-      if (id === "overlayGenerate") {
-        const n = $("wordCount") ? $("wordCount").value : "12";
-        const span = $("overlayGenerateWords");
-        if (span) span.textContent = String(n || "12");
-      }
-      el.hidden = false;
-      el.setAttribute("aria-hidden", "false");
-    }
-    $("btnGenerate").addEventListener("click", () => showLabOverlay("overlayGenerate"));
-    $("btnDerive").addEventListener("click", () => showLabOverlay("overlayDerive"));
-    $("btnClear").addEventListener("click", () => showLabOverlay("overlayClear"));
-    document.querySelectorAll("[data-overlay-ok]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-overlay-ok");
-        hideLabOverlay(id);
-        if (id === "overlayGenerate") onGenerate().catch(console.error);
-        else if (id === "overlayDerive") deriveNow({ quiet: false }).catch(console.error);
-        else if (id === "overlayClear") clearSecrets();
-      });
-    });
+    syncGenerateWordsHint();
+    if ($("wordCount")) $("wordCount").addEventListener("change", syncGenerateWordsHint);
+    $("btnGenerate").addEventListener("click", () => onGenerate().catch(console.error));
+    $("btnDerive").addEventListener("click", () => deriveNow({ quiet: false }).catch(console.error));
+    $("btnClear").addEventListener("click", () => clearSecrets());
     $("hidePrivate").addEventListener("change", (e) => setPrivateVisible(!e.target.checked));
 
     $("mnemonic").addEventListener("input", () => {

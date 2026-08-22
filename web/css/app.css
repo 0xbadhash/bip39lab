@@ -2027,6 +2027,25 @@ table[id]:focus-visible,
   margin: 0 0 0.45rem;
 }
 
+.action-hover {
+  position: relative;
+  display: inline-block;
+}
+.action-hover .action-hover-panel {
+  min-width: 16rem;
+  max-width: 22rem;
+  z-index: 40;
+  text-align: left;
+  white-space: normal;
+}
+html[data-hour-active="h2"] #btnGenerate {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+html[data-hour-active="h3"] #btnDerive {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .lab-overlay {
   position: fixed;
   inset: 0;

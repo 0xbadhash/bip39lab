@@ -61,9 +61,10 @@
   }
 
   function decorateTip(tip, idx) {
-    const btn = tip.querySelector(".help-tip-btn");
+    const btn = tip.querySelector(".help-tip-btn") || tip.querySelector("button.btn, button");
     const panel = tip.querySelector(".help-tip-panel");
-    if (!btn || !panel) return;
+    if (!panel) return;
+    if (!btn) return;
     if (!btn.id) btn.id = "help-tip-btn-" + idx;
     panel.setAttribute("role", "tooltip");
     panel.id = panel.id || "help-tip-panel-" + idx;
@@ -139,6 +140,7 @@
         ev.stopPropagation();
         return;
       }
+      if (ev.target.closest && ev.target.closest(".action-hover")) return;
       if (ev.target.closest && ev.target.closest(".help-tip")) return;
       closeAllTips();
     });

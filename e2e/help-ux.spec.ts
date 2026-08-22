@@ -56,13 +56,9 @@ test.describe("Help UX hybrid", () => {
   test("S44 first-hour Go jumps to Lab sections (replaces step rail)", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await hourRailGo(page, "h2");
-    const ov = page.locator("#overlayGenerate");
-    if (await ov.isVisible()) await ov.locator(".lab-overlay-ok").click();
+    await page.locator('#firstHourList [data-hour-step="h2"]').click();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
-    await expect(page.locator("#learnReturnBar")).toBeVisible();
-    await page.locator("#learnReturnBarBtn").click();
-    await expect(page.locator("#cardFirstHour")).toBeInViewport();
+    await expect(page.locator("#btnGenerate")).toBeVisible();
   });
 
   test("S44b Tools panel opens without mid-page rails", async ({ page }) => {

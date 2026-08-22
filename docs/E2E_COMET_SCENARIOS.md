@@ -32,7 +32,7 @@ surfaces:
   - id: lab-strip
     path: /
     playwright: e2e/lab-strip.spec.ts
-scenarios: S0–S117 · Playwright 135 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S121 · Playwright 139 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -42,7 +42,7 @@ scenarios: S0–S117 · Playwright 135 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.27 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S117 · Playwright S-ids: 135`
+`Product: 0.16.28 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S121 · Playwright S-ids: 139`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -79,9 +79,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **135** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **139** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S117** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S121** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -787,7 +787,19 @@ Ghost stages (~28px ticks, no labels/details). Captions only on lit `.stage-word
 ### S117 — I’m ready for Beginner only on h8
 `#btnReadyBeginner` is hidden until First hour step h8 is selected.
 
-### S118 — Lab-strip rec-flow
+### S118 — Generate auto-marks h2
+Click `#btnGenerate` (no OK modal) auto-checks First hour step 2.
+
+### S119 — Derive auto-marks h3
+Validate & derive with a phrase auto-checks step 3.
+
+### S120 — Mark done hidden for h2/h3
+`#hourRailDone` is hidden for Generate / Derive steps.
+
+### S121 — Hover Generate overlay, no OK
+Hover `#btnGenerate` shows `#overlayGenerate` with practice recovery phrase; no OK button.
+
+### S122 — Lab-strip rec-flow
 Form: Generate fills mnemonic + strip cells. Results: strip paints from classroom level. Comparison: Intermediate extra vs Advanced extra. Missing-data: empty Derive. Recommendation: Mark done on step 2 after Generate. Plain English. Mobile 390px. Errors: invalid mnemonic. Textarea stays demoted (Teach-B later). is/isn’t stays collapsed; air-gap banner stays.
 
 ### S44 — First-hour Go (replaces step rail)

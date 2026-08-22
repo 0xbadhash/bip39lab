@@ -78,11 +78,46 @@ test.describe("gradual visual teach strip (0.16.25–0.16.27)", () => {
     expect(ent!.width).toBeLessThanOrEqual(32);
   });
 
-  test("S117 #btnReadyBeginner hidden until first-hour step h8 selected", async ({ page }) => {
+  test("S117 #btnReadyBeginner stays hidden; h8 label sets Beginner", async ({ page }) => {
     await expect(page.locator("#btnReadyBeginner")).toBeHidden();
     await page.locator('#firstHourList [data-hour-step="h2"]').click();
     await expect(page.locator("#btnReadyBeginner")).toBeHidden();
     await page.locator('#firstHourList [data-hour-step="h8"]').click();
-    await expect(page.locator("#btnReadyBeginner")).toBeVisible();
+    await expect(page.locator("#btnReadyBeginner")).toBeHidden();
+    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
+  });
+
+  test("S118 Generate click auto-marks first-hour step h2 (no Mark done required)", async ({
+    page,
+  }) => {
+    await expect(page.locator("#hourRailDone")).toBeHidden();
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked({ timeout: 8000 });
+    await expect(page.locator("#mnemonic")).not.toHaveValue("");
+  });
+
+  test("S119 Derive/validate with a phrase auto-marks h3", async ({ page }) => {
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator("#mnemonic")).not.toHaveValue("");
+    await page.locator("#btnDerive").click();
+    await expect(page.locator('[data-hour-step="h3"] input')).toBeChecked({ timeout: 8000 });
+  });
+
+  test("S120 #hourRailDone hidden or disabled for h2/h3", async ({ page }) => {
+    await page.locator('#firstHourList [data-hour-step="h2"]').click();
+    await expect(page.locator("#hourRailDone")).toBeHidden();
+    await page.locator('#firstHourList [data-hour-step="h3"]').click();
+    await expect(page.locator("#hourRailDone")).toBeHidden();
+  });
+
+  test("S121 hover #btnGenerate shows overlay with practice recovery phrase; no OK", async ({
+    page,
+  }) => {
+    await page.locator("#btnGenerate").hover();
+    await expect(page.locator("#overlayGenerate")).toBeVisible();
+    await expect(page.locator("#overlayGenerate")).toContainText(/practice recovery phrase/i);
+    await expect(page.locator("#overlayGenerate .lab-overlay-ok")).toHaveCount(0);
+    await expect(page.locator("#overlayGenerate")).not.toContainText(/^OK$/);
+    await expect(page.locator("#wrapGenerate button.lab-overlay-ok")).toHaveCount(0);
   });
 });

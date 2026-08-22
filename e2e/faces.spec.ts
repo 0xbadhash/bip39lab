@@ -48,8 +48,8 @@ test.describe("Level faces", () => {
     await expect(page.locator("#firstHourList")).toContainText(/Set Beginner/);
     await expect(page.locator("#firstHourList .hour-go")).toHaveCount(0);
     await expect(page.locator("#firstHourList .hour-done")).toHaveCount(0);
-    await expect(page.locator("#hourRailGo")).toBeVisible();
-    await expect(page.locator("#hourRailDone")).toBeVisible();
+    await expect(page.locator("#hourRailGo")).toBeHidden();
+    await expect(page.locator("#hourRailDone")).toBeHidden();
     await expect(page.locator("#btnClear")).toHaveClass(/danger/);
     await expect(page.locator("#card-mnemonic h2").first()).toHaveText(/Mnemonic/);
     await expect(page.locator("#cardQuiz")).toBeHidden();
@@ -142,13 +142,10 @@ test.describe("Level faces", () => {
     await expect(page.locator("#learnLevelToast")).toContainText(/Progress reset\. Level is Starter/);
     await expect(page.locator("#cardQuiz")).toBeHidden();
     // overlays still three ids
-    await expect(page.locator("#overlayGenerate")).toBeHidden();
-    await page.locator("#btnGenerate").click();
+    await page.locator("#btnGenerate").hover();
     await expect(page.locator("#overlayGenerate")).toBeVisible();
     await expect(page.locator("#overlayGenerateBody")).toContainText(/practice recovery phrase/i);
-    const genBtns = page.locator("#overlayGenerate .lab-overlay-card button");
-    await expect(genBtns).toHaveCount(1);
-    await expect(genBtns).toHaveText("OK");
+    await expect(page.locator("#overlayGenerate .lab-overlay-ok")).toHaveCount(0);
     await expect(page.locator("#overlayGenerate")).not.toContainText("Cancel");
     await expect(page.locator("#overlayGenerate")).not.toContainText("Continue");
   });

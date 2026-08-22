@@ -324,6 +324,10 @@
     updateFirstHourNext();
     refreshBeginnerChrome();
     applyFaces(level);
+    if (level === "beginner") {
+      autoCompleteHour("h6");
+      autoCompleteHour("h8");
+    }
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
       if (level === "beginner") {
@@ -460,13 +464,8 @@
     ["hourGoBeginner", "btnReadyBeginner", "quizHourNextBeginner"].forEach(function (id) {
       var el = $(id);
       if (!el) return;
-      if (id === "btnReadyBeginner") {
-        var selH = getSelectedHourLi();
-        var sidH = selH ? selH.getAttribute("data-hour-step") : "";
-        el.hidden = risen || sidH !== "h8";
-      } else {
-        el.hidden = risen;
-      }
+      if (id === "btnReadyBeginner") el.hidden = true;
+      else el.hidden = risen;
     });
   }
 
@@ -481,15 +480,18 @@
     if (id === "h2") return !!ev.h2Generated;
     if (id === "h3") return !!ev.h3Derived || addressesFilled();
     if (id === "h4") {
-      return !!(ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index);
+      return !!(ev.h4Opened || (ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index));
     }
-    if (id === "h5") return !!ev.h5ComparedDiff;
+    if (id === "h5") return !!(ev.h5Opened || ev.h5ComparedDiff);
     if (id === "h6") {
       var q = loadJson(QUIZ_KEY, {});
-      return !!(q.q1 && q.q2 && q.q3 && q.q4);
+      return (
+        !!(q.q1 && q.q2 && q.q3 && q.q4) ||
+        LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner")
+      );
     }
-    if (id === "h7") return !!(ev.h7Ack && ev.h7Loaded && ev.h7Fetched);
-    if (id === "h8") return false;
+    if (id === "h7") return !!(ev.h7Ack);
+    if (id === "h8") return LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner");
     return false;
   }
 
@@ -497,30 +499,23 @@
     var ready = hourStepReady(id);
     var n = quizPassedCount();
     if (id === "h1") {
-      return ready
-        ? "You saw the table. Mark done to check step 1 and return."
-        : "Read the air-gap note and the What this is / isn’t table. Mark done turns on after that table is on screen.";
+      return "Air-gap banner on this page is the warn. Step completes on load.";
     }
     if (id === "h2") {
       return ready
-        ? "Practice phrase generated. Mark done to check step 2 and return."
-        : "Press Generate for a practice phrase (not funded). Mark done stays off until Generate succeeds.";
+        ? "Practice phrase generated."
+        : "Press Generate for a practice phrase (not funded).";
     }
     if (id === "h3") {
-      if (!ready) {
-        return "Press Validate & derive so addresses fill. Then we will take you to Receive addresses.";
-      }
-      return "Addresses are filled. Mark done to check step 3 and return.";
+      return ready
+        ? "Addresses are filled."
+        : "Press Validate & derive so addresses fill.";
     }
     if (id === "h4") {
-      return ready
-        ? "You used purpose / coin / account / change / index. Mark done to check step 4 and return."
-        : "In Path playground, use purpose, coin, account, change, and index (Lab path controls). Mark done stays off until all five have been used.";
+      return "Open Path playground (Tools).";
     }
     if (id === "h5") {
-      return ready
-        ? "Empty vs test produced different addresses. Mark done to check step 5 and return."
-        : "Compare empty vs test. Mark done stays off until the two sides show different addresses.";
+      return "Open Passphrase compare (Tools).";
     }
     if (id === "h6") {
       if (n < 4) {
@@ -620,25 +615,19 @@
     var sReady = hourStepReady(sid);
     if (railGrad) railGrad.hidden = sid !== "h8";
     var readyBeg = $("btnReadyBeginner");
-    if (readyBeg) {
-      var risenNow = LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner");
-      readyBeg.hidden = risenNow || sid !== "h8";
-    }
-    if (railGo) railGo.hidden = sid === "h8";
+    if (readyBeg) readyBeg.hidden = true;
+    if (railGo) railGo.hidden = !/^(h4|h5|h7)$/.test(sid || "");
     if (railDone) {
-      if (sid === "h6" || sid === "h8") {
-        railDone.hidden = true;
-        railDone.disabled = true;
-      } else {
-        railDone.hidden = false;
-        setHourMarkEnabled(railDone, sReady);
-      }
+      railDone.hidden = true;
+      railDone.disabled = true;
     }
+    var back = $("hourScrollTop");
+    if (back) back.hidden = learnReturnMode !== "hour";
+    document.documentElement.setAttribute("data-hour-active", sid || "");
     var dockMark = $("btnHourMarkFromDock");
     if (dockMark) {
-      var showDockMark = /^(h1|h2|h3|h4|h5|h7)$/.test(active);
-      dockMark.hidden = !showDockMark;
-      setHourMarkEnabled(dockMark, showDockMark && hourStepReady(active));
+      dockMark.hidden = true;
+      setHourMarkEnabled(dockMark, false);
     }
     var hintEl = $("learnReturnBarHint");
     if (hintEl && learnReturnMode === "hour") {
@@ -834,13 +823,40 @@
 
   function markHourStep(id, done) {
     if (done) {
-      if (id === "h6") return;
-      if (id !== "h8" && !hourStepReady(id)) return;
+      if (id === "h6") {
+        /* lean: h6 may auto-complete without Q1–Q4 */
+      } else if (id !== "h8" && !hourStepReady(id) && id !== "h1" && id !== "h4" && id !== "h5") {
+        return;
+      }
     }
     var st = loadJson(HOUR_KEY, {});
     st[id] = !!done;
     saveJson(HOUR_KEY, st);
     refreshFirstHour();
+  }
+
+  function advanceToNextIncomplete() {
+    var order = ["h1", "h2", "h3", "h4", "h5", "h6", "h8"];
+    var st = loadJson(HOUR_KEY, {});
+    var next = null;
+    for (var i = 0; i < order.length; i++) {
+      if (!st[order[i]]) {
+        next = order[i];
+        break;
+      }
+    }
+    if (next) selectHourStep(next);
+  }
+
+  function autoCompleteHour(id) {
+    if (!id) return;
+    var st = loadJson(HOUR_KEY, {});
+    if (st[id]) return;
+    var st2 = loadJson(HOUR_KEY, {});
+    st2[id] = true;
+    saveJson(HOUR_KEY, st2);
+    refreshFirstHour();
+    advanceToNextIncomplete();
   }
 
   function goHourStep(li) {
@@ -854,35 +870,15 @@
     setHourActive(stepId);
     if (stepId === "h4") snapshotH4IfNeeded();
     setHourReturn();
-    if (stepId === "h3") {
-      goTab("lab");
-      setTimeout(function () {
-        var ta = $("mnemonic");
-        var filled = ta && String(ta.value || "").trim().split(/\s+/).filter(Boolean).length >= 12;
-        var der = $("btnDerive");
-        if (filled && der) der.click();
-        scrollToReceiveHeading();
-        refreshHourGates();
-      }, 80);
-      return;
+    if (stepId === "h4") {
+      goTab("tools");
+      autoCompleteHour("h4");
+      noteHour("h4Opened", true);
     }
-    if (stepId === "h2") {
-      goTab("lab");
-      setTimeout(function () {
-        var card = $("card-mnemonic");
-        if (card) card.scrollIntoView({ behavior: "auto", block: "start" });
-        var gen = $("btnGenerate");
-        if (gen) {
-          try {
-            gen.focus();
-          } catch (eF) {
-            /* ignore */
-          }
-          gen.click();
-        }
-        refreshHourGates();
-      }, 80);
-      return;
+    if (stepId === "h5") {
+      goTab("tools");
+      autoCompleteHour("h5");
+      noteHour("h5Opened", true);
     }
     if (href) {
       // Network (or external page): return via bar on index after user navigates back, or query
@@ -955,6 +951,7 @@
       el.classList.toggle("is-selected", on);
     });
     refreshHourGates();
+    if (id === "h8" && getLevel() === "starter") graduateToBeginner();
   }
 
   function wireFirstHour() {
@@ -1748,6 +1745,10 @@
 
   function goTab(name) {
     if (typeof window.__bip39ShowTab === "function") window.__bip39ShowTab(name);
+    if (name === "tools") {
+      noteHour("h4Opened", true);
+      autoCompleteHour("h4");
+    }
   }
 
   function wireQuiz() {
@@ -2022,6 +2023,7 @@
     applyFaces(getLevel());
     updateFirstHourNext();
     watchOrientationTable();
+    autoCompleteHour("h1");
     refreshHourGates();
     window.addEventListener("pageshow", function () {
       refreshHourGates();
@@ -2045,5 +2047,6 @@
     noteHour: noteHour,
     hourStepReady: hourStepReady,
     markHourStep: markHourStep,
+    autoCompleteHour: autoCompleteHour,
   };
 })();

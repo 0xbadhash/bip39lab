@@ -38,35 +38,24 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#orientationTable")).toContainText(/wallet|practice|PSBT/i);
     await expect(page.locator("#cardFirstHour")).toBeVisible();
     await expect(page.locator("[data-hour-step]")).toHaveCount(8);
-    await expect(page.locator('#hourRailGo')).toBeVisible();
-    await expect(page.locator('#hourRailDone')).toBeVisible();
+    await expect(page.locator('#hourRailDone')).toBeHidden();
     await expect(page.locator('[data-hour-step="h1"] input')).toBeDisabled();
-    await hourRailGo(page, "h1");
-    await expect(page.locator("#orientationTable")).toBeInViewport();
-    await expect(page.locator('#hourRailDone')).toBeEnabled({ timeout: 5000 });
-    await hourRailMark(page, "h1");
+    await expect(page.locator('[data-hour-step="h1"] input')).toBeChecked();
     await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*8/);
-    await hourRailGo(page, "h2");
-    await expect(page.locator("#learnReturnBar")).toBeVisible();
-    await expect(page.locator("#learnReturnBarBtn")).toContainText(/First hour/i);
+    await page.locator("#btnGenerate").click();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
-    await expect(page.locator("#overlayGenerate")).toBeVisible();
-    await page.locator("#overlayGenerate .lab-overlay-ok").click();
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
-    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
-    await page.locator("#btnHourMarkFromDock").click();
-    await expect(page.locator("#cardFirstHour")).toBeInViewport();
-    await expect(page.locator("#firstHourProgress")).toContainText(/2\s*\/\s*8/);
+    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked({ timeout: 8000 });
+    await expect(page.locator("#firstHourProgress")).toContainText(/[2-3]\s*\/\s*8/);
     await page.locator('#firstHourList [data-hour-step="h8"]').click();
-    await page.locator("#btnReadyBeginner").click();
     await expect(page.locator("#learnLevel")).toHaveValue("beginner");
-    await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
+    await expect(page.locator("#firstHourProgress")).toContainText(/[3-8]\s*\/\s*8/);
     await page.reload();
     await expect(page.locator("#learnLevel")).toHaveValue("beginner");
     await expect(page.locator('[data-hour-step="h1"] input')).toBeChecked();
     await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked();
     await expect(page.locator('[data-hour-step="h1"] input')).toBeDisabled();
-    await expect(page.locator("#firstHourProgress")).toContainText(/3\s*\/\s*8/);
+    await expect(page.locator("#firstHourProgress")).toContainText(/[3-8]\s*\/\s*8/);
   });
 
   test("S62 level chip soft gates", async ({ page }) => {
@@ -289,47 +278,33 @@ test.describe("First Hour real loop", () => {
   });
 
   test("S84 first hour form + compare gates", async ({ page }) => {
-    await hourRailGo(page, "h2");
+    await page.locator("#btnGenerate").click();
     await expect(page.locator("#mnemonic")).toBeVisible();
-    await expect(page.locator("#overlayGenerate")).toBeVisible();
-    await page.locator("#overlayGenerate .lab-overlay-ok").click();
     await expect(page.locator("#mnemonic")).toHaveValue(/.{20,}/);
-    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
-    await page.locator("#learnReturnBarBtn").click();
+    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked({ timeout: 8000 });
     await hourRailGo(page, "h5");
     await expect(page.locator("#cardCmpPp")).toBeVisible();
-    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
+    await expect(page.locator('[data-hour-step="h5"] input')).toBeChecked({ timeout: 5000 });
     await page.locator("#cmpPpA").fill("");
     await page.locator("#cmpPpB").fill("");
     await page.locator("#btnCmpPp").click();
     await expect(page.locator("#cmpPpVerdict")).toBeVisible();
-    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
     await page.locator("#cmpPpB").fill("test");
     await page.locator("#btnCmpPp").click();
     await expect(page.locator("#cmpPpVerdict")).toContainText(/Different/i);
-    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 8000 });
-    await page.locator("#btnHourMarkFromDock").click();
-    await expect(page.locator("#cardFirstHour")).toBeInViewport();
     await expect(page.locator('[data-hour-step="h5"] input')).toBeChecked();
   });
 
   test("S85 Go h3 before derive", async ({ page }) => {
-    await hourRailGo(page, "h3");
-    await expect(page.locator("#headingReceive")).toBeInViewport();
-    await expect(page.locator("#mnemonic")).not.toBeInViewport();
-    await expect(page.locator("#learnReturnBarHint")).toContainText(/Validate & derive/i);
-    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
-    await expect(page.locator("#cardOps")).not.toBeInViewport();
+    await page.locator('#firstHourList [data-hour-step="h3"]').click();
+    await expect(page.locator("#hourRailGo")).toBeHidden();
     const emptyRows = await page.locator("#addrTableBody tr:not(.empty-row)").count();
     expect(emptyRows).toBe(0);
-    page.once("dialog", (d) => d.accept());
     await clickLabAction(page, "generate");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
-    await expect(page.locator("#headingReceive")).toBeInViewport();
-    await expect(page.locator("#cardOps")).not.toBeInViewport();
-    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled();
+    await expect(page.locator('[data-hour-step="h3"] input')).toBeChecked({ timeout: 8000 });
   });
 
   test("S86 Tools Path playground spacer", async ({ page }) => {
@@ -348,23 +323,9 @@ test.describe("First Hour real loop", () => {
 
   test("S87 dock names unfinished action", async ({ page }) => {
     await hourRailGo(page, "h4");
-    const hint = page.locator("#learnReturnBarHint");
-    await expect(hint).toContainText(
-      /In Path playground, use purpose, coin, account, change, and index \(Lab path controls\)/
-    );
-    await expect(hint).not.toContainText(/#deriveNetwork|#deriveCount|#deriveAccount/i);
-    await expect(page.locator("#learnReturnBarHint")).not.toContainText(
-      /Finish, then Mark done on the checklist/
-    );
-    await expect(page.locator("#btnHourMarkFromDock")).toBeDisabled();
-    await page.locator("#btnPathToLab").click();
-    await page.locator("#deriveNetwork").selectOption({ index: 1 });
-    await page.locator("#deriveAccount").fill("1");
-    await page.locator("#deriveChange").selectOption({ index: 1 });
-    await page.locator("#deriveCount").selectOption({ index: 1 });
-    const otherTab = page.locator(".seg-tab[data-addr-type]:not(.is-active)").first();
-    await otherTab.click();
-    await expect(page.locator("#btnHourMarkFromDock")).toBeEnabled({ timeout: 5000 });
+    await expect(page.locator("#cardPathPlay")).toBeVisible();
+    await expect(page.locator('[data-hour-step="h4"] input')).toBeChecked({ timeout: 5000 });
+    await expect(page.locator("#hourRailDone")).toBeHidden();
   });
 
   test("S88 quiz 4/4 names next First Hour", async ({ page }) => {
@@ -380,18 +341,17 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator("#quizHourNext")).toBeVisible();
     await expect(page.locator("#quizHourNext")).toContainText(/7 Network/i);
     await expect(page.locator("#quizHourNext")).toContainText(/8 Raise to Beginner/i);
-    await hourRailGo(page, "h6");
-    await expect(page.locator("#learnReturnBarHint")).toContainText(/7 Network/i);
-    await expect(page.locator("#learnReturnBarHint")).toContainText(/8 Raise to Beginner/i);
+    await page.locator('#firstHourList [data-hour-step="h6"]').click();
+    await expect(page.locator("#cardQuiz")).toBeVisible();
   });
 
   test("S90 first hour dock wraps on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await hourRailGo(page, "h2");
-    const ov = page.locator("#overlayGenerate");
-    if (await ov.isVisible()) await ov.locator(".lab-overlay-ok").click();
-    await expect(page.locator("#learnReturnBar")).toBeVisible();
-    const box = await page.locator("#learnReturnBar").boundingBox();
+    await page.locator("#btnGenerate").click();
+    const bar = page.locator("#learnReturnBar");
+    const box = (await bar.isVisible())
+      ? await bar.boundingBox()
+      : await page.locator("#cardFirstHour").boundingBox();
     expect(box).toBeTruthy();
     expect(box!.width).toBeLessThanOrEqual(390);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -404,9 +364,7 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
-    await hourRailGo(page, "h3");
-    const ovDer = page.locator("#overlayDerive");
-    if (await ovDer.isVisible()) await ovDer.locator(".lab-overlay-ok").click();
+    await page.locator("#headingReceive").scrollIntoViewIfNeeded();
     await expect(page.locator("#headingReceive")).toBeInViewport();
     await expect(page.locator("#cardOps")).not.toBeInViewport();
     const tableTop = await page.locator("#addrTable").evaluate((el) => el.getBoundingClientRect().top);

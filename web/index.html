@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.27" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.28" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.27">v0.16.27</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.28">v0.16.28</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -235,15 +235,15 @@
               </li>
             </ol>
             <div class="hour-rail-actions" id="hourRailActions">
-              <button type="button" class="btn secondary btn-sm hour-go" id="hourRailGo">Go</button>
-              <button type="button" class="btn secondary btn-sm hour-done" id="hourRailDone">Mark done</button>
-              <button type="button" class="btn btn-sm" id="hourGoBeginner" hidden title="Sets Level to Beginner and marks this step done">
+              <button type="button" class="btn secondary btn-sm hour-go" id="hourRailGo" hidden>Go</button>
+              <button type="button" class="btn secondary btn-sm hour-done" id="hourRailDone" hidden>Mark done</button>
+              <button type="button" class="btn btn-sm" id="hourGoBeginner" hidden title="Sets Classroom level to Beginner">
                 Set Beginner
               </button>
             </div>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
-              <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner">I’m ready for Beginner</button>
-              <button type="button" class="btn secondary btn-sm" id="hourScrollTop" title="Jump back to this checklist">
+              <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner" hidden>I’m ready for Beginner</button>
+              <button type="button" class="btn secondary btn-sm" id="hourScrollTop" hidden title="Jump back to this checklist">
                 Back to this checklist
               </button>
               <button type="button" class="btn secondary btn-sm" id="btnResetFirstHour" title="Clear first-hour checkboxes in this browser">
@@ -291,9 +291,37 @@
             </label>
 
             <div class="row" id="mnemonicActionRow">
-              <button type="button" class="btn" id="btnGenerate">Generate</button>
-              <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
-              <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
+              <span class="help-tip action-hover" id="wrapGenerate">
+                <button type="button" class="btn" id="btnGenerate">Generate</button>
+                <span class="help-tip-panel action-hover-panel" id="overlayGenerate" hidden>
+                  <strong id="overlayGenerateTitle">Generate a practice phrase</strong>
+                  <p class="control-help" id="overlayGenerateBody">
+                    This makes a new practice recovery phrase — English words only
+                    (<span id="overlayGenerateWords">12</span>-word, or the word count you picked).
+                    Use it to learn. Do not put these words in a real wallet and do not send money to addresses from this phrase.
+                    Nothing leaves this browser tab. This is not a funded seed.
+                  </p>
+                </span>
+              </span>
+              <span class="help-tip action-hover" id="wrapDerive">
+                <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
+                <span class="help-tip-panel action-hover-panel" id="overlayDerive" hidden>
+                  <strong id="overlayDeriveTitle">Validate &amp; derive</strong>
+                  <p class="control-help" id="overlayDeriveBody">
+                    Fills receive addresses from the phrase in this tab; not a wallet.
+                    Checking and address math stay in this tab. It does not send bitcoin.
+                  </p>
+                </span>
+              </span>
+              <span class="help-tip action-hover" id="wrapClear">
+                <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
+                <span class="help-tip-panel action-hover-panel" id="overlayClear" hidden>
+                  <strong id="overlayClearTitle">Clear secrets</strong>
+                  <p class="control-help" id="overlayClearBody">
+                    Empties this tab only. It is not deleting a real wallet and cannot reach coins.
+                  </p>
+                </span>
+              </span>
             </div>
 
             <label class="field mnemonic-raw" data-private for="mnemonic">
@@ -307,9 +335,24 @@
             </label>
             <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
             <div class="row starter-hide" data-private data-level-min="beginner" data-level-hide="1" id="rowSeedAirgap">
-              <button type="button" class="btn secondary" id="btnSeedQr">Seed QR (offline, careful)</button>
-              <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
-              <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
+              <span class="help-tip action-hover">
+                <button type="button" class="btn secondary" id="btnSeedQr">Seed QR (offline, careful)</button>
+                <span class="help-tip-panel action-hover-panel" hidden>
+                  Shows a QR of the full recovery phrase from this tab. Continue only on a private air-gapped machine.
+                </span>
+              </span>
+              <span class="help-tip action-hover">
+                <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
+                <span class="help-tip-panel action-hover-panel" hidden>
+                  Prints the full recovery phrase. Continue only if this machine and printer are trusted.
+                </span>
+              </span>
+              <span class="help-tip action-hover">
+                <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
+                <span class="help-tip-panel action-hover-panel" hidden>
+                  Hands off addresses only — never the phrase. Opt-in Network lookup.
+                </span>
+              </span>
             </div>
             <details class="help-fold teach-only" data-private>
               <summary>About Seed QR, print, Network handoff</summary>
@@ -1494,47 +1537,6 @@
     </div>
   </div>
 
-  <div id="overlayGenerate" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayGenerateTitle">
-    <div class="lab-overlay-card">
-      <h3 id="overlayGenerateTitle">Generate a practice phrase</h3>
-      <p class="control-help" id="overlayGenerateBody">
-        This makes a new practice recovery phrase — English words only
-        (<span id="overlayGenerateWords">12</span>-word, or the word count you picked).
-        Use it to learn. Do not put these words in a real wallet and do not send money to addresses from this phrase.
-        Nothing leaves this browser tab. This is not a funded seed.
-      </p>
-      <div class="row" style="justify-content:flex-end;gap:0.5rem">
-        <button type="button" class="btn lab-overlay-ok" id="overlayGenerateGo" data-overlay-ok="overlayGenerate">OK</button>
-      </div>
-    </div>
-  </div>
-  <div id="overlayDerive" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayDeriveTitle">
-    <div class="lab-overlay-card">
-      <h3 id="overlayDeriveTitle">Validate &amp; derive</h3>
-      <p class="control-help" id="overlayDeriveBody">
-        This checks the words you typed or generated are a valid BIP-39 phrase, then shows the receive addresses that come from it.
-        Checking and address math stay in this tab. It does not send bitcoin, does not look up a balance, and does not talk to the network.
-        Addresses go to Network only if you later opt in.
-      </p>
-      <div class="row" style="justify-content:flex-end;gap:0.5rem">
-        <button type="button" class="btn lab-overlay-ok" id="overlayDeriveGo" data-overlay-ok="overlayDerive">OK</button>
-      </div>
-    </div>
-  </div>
-  <div id="overlayClear" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayClearTitle">
-    <div class="lab-overlay-card">
-      <h3 id="overlayClearTitle">Clear secrets</h3>
-      <p class="control-help" id="overlayClearBody">
-        This wipes the phrase and derived data from this lab tab’s memory.
-        It is not deleting a real wallet and it cannot reach coins.
-        Next time a Tools card needs a phrase, it may fill TEST DATA so the demo still runs.
-        Paper you already wrote down is unchanged.
-      </p>
-      <div class="row" style="justify-content:flex-end;gap:0.5rem">
-        <button type="button" class="btn danger lab-overlay-ok" id="overlayClearGo" data-overlay-ok="overlayClear">OK</button>
-      </div>
-    </div>
-  </div>
   <!-- Offline QR modal -->
   <div id="qrModal" class="qr-modal" hidden role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
     <div class="qr-modal-card">
@@ -1570,11 +1572,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.27"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.27"></script>
-  <script src="js/glossary.js?v=0.16.27"></script>
-  <script src="js/help-ui.js?v=0.16.27"></script>
-  <script src="js/learn-levels.js?v=0.16.27"></script>
-  <script src="js/app.js?v=0.16.27"></script>
+  <script src="js/site-version.js?v=0.16.28"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.28"></script>
+  <script src="js/glossary.js?v=0.16.28"></script>
+  <script src="js/help-ui.js?v=0.16.28"></script>
+  <script src="js/learn-levels.js?v=0.16.28"></script>
+  <script src="js/app.js?v=0.16.28"></script>
 </body>
 </html>
