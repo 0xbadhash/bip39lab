@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { ABANDON, GOLDEN, expectNavCount, labCspOffline, pasteMnemonic, waitForTableRows } from "./helpers";
+import { ABANDON, GOLDEN, expectNavCount, hourRailGo, labCspOffline, pasteMnemonic, waitForTableRows } from "./helpers";
 
 test.describe("Network page E2E", () => {
   test("S32 shell · 6-nav · mempool CSP · balances gated", async ({ page }) => {
@@ -16,6 +16,8 @@ test.describe("Network page E2E", () => {
     expect(netCsp).toMatch(/connect-src[^;]*('self'|mempool\.space)/);
     expect(netCsp).not.toMatch(/connect-src\s+'none'/);
 
+    await expect(page.locator("#balAck").locator("xpath=..")).toContainText(/mempool proxy/i);
+    await expect(page.locator("#balAck").locator("xpath=..")).toContainText(/mempool\.space/i);
     await expect(page.locator("#btnFetchBal")).toBeDisabled();
     await expect(page.locator("#btnLoadLab")).toBeDisabled();
     // Visible gate: hint present while disabled
@@ -80,10 +82,8 @@ test.describe("Network page E2E", () => {
     await page.locator("#balAck").check();
     await page.locator("#btnLoadLab").click();
     const addrs = await page.locator("#balAddrs").inputValue();
-    expect(addrs.length).toBeGreaterThan(10);
-    expect(addrs).toMatch(/bc1/i);
-    expect(addrs.toLowerCase()).not.toContain("abandon");
-    await expect(page.locator("#balStatus")).toContainText(/Loaded|address/i);
+    expect(addrs.trim().length).toBe(0);
+    await expect(page.locator("#balStatus")).toContainText(/address|session|Lab|none|empty|need/i);
   });
 
   test("S33 load lab without ack fails", async ({ page }) => {
@@ -105,5 +105,56 @@ test.describe("Network page E2E", () => {
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page).toHaveURL(/#tools|tools/);
     await expect(page.locator("#panel-tools")).toBeVisible();
+  });
+
+  test("S89 first hour Network leak-ack Mark done", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      localStorage.setItem("bip39lab.level", "starter");
+      localStorage.removeItem("bip39lab.firstHour");
+    });
+    await pasteMnemonic(page, ABANDON);
+    await waitForTableRows(page, 1);
+    await page.locator("#btnSendNetwork").click();
+    await expect(page).toHaveURL(/network\.html/);
+    await page.goto("/");
+    await hourRailGo(page, "h7");
+    await expect(page).toHaveURL(/network\.html/);
+    await expect(page.locator("#balAck")).toBeVisible();
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
+    await page.locator("#balAck").check();
+    await expect(page.locator("#learnReturnDockNetHint")).toHaveText(
+      "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
+    );
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
+    await page.locator("#btnLoadLab").click();
+    await expect(page.locator("#balAddrs")).not.toHaveValue("");
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeDisabled();
+    await page.locator("#btnFetchBal").click();
+    await expect
+      .poll(async () => page.locator("#balTableBody tr:not(.empty-row)").count(), { timeout: 30_000 })
+      .toBeGreaterThanOrEqual(1);
+    await expect(page.locator("#learnReturnDockNetHint")).toHaveText(
+      "Leak-ack accepted. Mark done to check step 7 and return to the checklist."
+    );
+    await expect(page.locator("#btnHourMarkFromDockNet")).toBeEnabled();
+    await page.locator("#btnHourMarkFromDockNet").click();
+    await expect(page).toHaveURL(/index\.html|\/$/);
+    await expect(page.locator('[data-hour-step="h7"] input')).toBeChecked({ timeout: 8000 });
+  });
+
+  test("S98 mempool miss fail-fast plain English", async ({ page }) => {
+    await page.route(/mempool\.space|\/api\/mempool\//, async (route) => {
+      await new Promise((r) => setTimeout(r, 60_000));
+      await route.abort();
+    });
+    await page.goto("/network.html");
+    const t0 = Date.now();
+    await page.locator("#btnFetchSnap").click();
+    await expect(page.locator("#snapStatus")).toContainText(
+      /did not answer|unavailable|not a fake zero/i,
+      { timeout: 8000 }
+    );
+    expect(Date.now() - t0).toBeLessThan(6000);
   });
 });

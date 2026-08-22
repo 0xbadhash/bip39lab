@@ -32,6 +32,9 @@
     if (gateHint) {
       gateHint.hidden = !!on;
     }
+    if (window.LearnLevels && LearnLevels.noteHour) {
+      LearnLevels.noteHour("h7Ack", !!on);
+    }
   }
 
   async function fetchSnapshot() {
@@ -143,11 +146,14 @@
       $("snapResult").hidden = false;
       setStatus($("snapStatus"), "Snapshot OK (public API).", "ok");
     } catch (e) {
+      const msg = e && e.message ? e.message : String(e);
       setStatus(
         $("snapStatus"),
-        "Snapshot failed: " +
-          (e && e.message ? e.message : e) +
-          " — try hard-refresh (Ctrl+Shift+R). Lab proxy or mempool.space may be blocked on this network. (not showing fake zeros).",
+        /did not answer|could not be reached|unavailable/i.test(msg)
+          ? msg
+          : "Snapshot failed: " +
+              msg +
+              " — mempool did not answer. Public lookup is unavailable — this is not a fake zero.",
         "err"
       );
     }
@@ -164,13 +170,16 @@
     if (!list.length) {
       setStatus(
         $("balStatus"),
-        "No Lab addresses in this browser session. Open Lab, Generate/derive, then return here.",
+        "No Lab addresses in this browser session. On Lab, click Send addresses → Network after you opt in.",
         "err"
       );
       return;
     }
     $("balAddrs").value = list.join("\n");
     setStatus($("balStatus"), "Loaded " + list.length + " address(es) from Lab session.", "ok");
+    if (window.LearnLevels && LearnLevels.noteHour) {
+      LearnLevels.noteHour("h7Loaded", true);
+    }
   }
 
   function renderBalRows(rows) {
@@ -234,13 +243,13 @@
     }
     setStatus($("balStatus"), "Fetching " + addrs.length + " address(es)…", "");
     const rows = [];
+    let miss = null;
     for (let i = 0; i < addrs.length; i++) {
       const address = addrs[i];
       try {
         const data = await api.fetchJson(api.addressUrl(address));
         const parsed = api.parseAddressBalanceJson(data);
         let detail = parsed.detail || "";
-        // Comet: legitimate zero looks like a failure — spell out empty wallet
         if (parsed.status === "ok" && parsed.satoshis === 0) {
           detail = (detail ? detail + " · " : "") + "0 sats is a valid empty result (not a fetch error)";
         }
@@ -251,25 +260,39 @@
           detail: detail,
         });
       } catch (e) {
+        const detail = e && e.message ? e.message : String(e);
         rows.push({
           address,
           status: "unknown",
           satoshis: null,
-          detail: e && e.message ? e.message : String(e),
+          detail: detail,
         });
-      }
-      // gentle pacing
-      if (i + 1 < addrs.length) {
-        await new Promise((r) => setTimeout(r, 120));
+        if (api.isMempoolMiss ? api.isMempoolMiss(e) : /did not answer|could not be reached|unavailable/i.test(detail)) {
+          miss = detail;
+          for (let j = i + 1; j < addrs.length; j++) {
+            rows.push({
+              address: addrs[j],
+              status: "unknown",
+              satoshis: null,
+              detail: "Skipped — mempool did not answer (fail-fast, not a fake zero).",
+            });
+          }
+          break;
+        }
       }
     }
     renderBalRows(rows);
+    if (rows.length && window.LearnLevels && LearnLevels.noteHour) {
+      LearnLevels.noteHour("h7Fetched", true);
+    }
     const okN = rows.filter((r) => r.status === "ok").length;
     const unk = rows.length - okN;
     setStatus(
       $("balStatus"),
-      "Done: " + okN + " ok, " + unk + " unknown/error (fail-closed; no fake zeros on failure).",
-      unk ? "" : "ok"
+      miss
+        ? miss
+        : "Done: " + okN + " ok, " + unk + " unknown/error (fail-closed; no fake zeros on failure).",
+      miss ? "err" : unk ? "" : "ok"
     );
   }
 
@@ -304,10 +327,27 @@
     if (show) {
       try {
         sessionStorage.setItem("bip39lab.hourReturn", "1");
+        if (!sessionStorage.getItem("bip39lab.hourActive")) {
+          sessionStorage.setItem("bip39lab.hourActive", "h7");
+        }
       } catch (e3) {
         /* ignore */
       }
+      if (window.LearnLevels && LearnLevels.noteHour) {
+        var ack = $("balAck");
+        LearnLevels.noteHour("h7Ack", !!(ack && ack.checked));
+      }
     }
+  }
+
+  function updateAirgapChip() {
+    const el = $("chipAirgap");
+    if (!el) return;
+    const on = typeof navigator !== "undefined" && navigator.onLine;
+    el.textContent = on ? "Browser online" : "Browser offline";
+    el.title = on
+      ? "Browser online — address lookups leave this machine"
+      : "Browser offline — fee/balance fetch will fail until online";
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -316,6 +356,9 @@
     $("btnFetchSnap").addEventListener("click", () => fetchSnapshot().catch(console.error));
     $("btnLoadLab").addEventListener("click", loadFromLab);
     $("btnFetchBal").addEventListener("click", () => fetchBalances().catch(console.error));
+    updateAirgapChip();
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
     setStatus($("snapStatus"), "Idle — click Fetch when you want public fee/traffic data.", "");
     setStatus($("balStatus"), "Idle — ack leak, then load/paste addresses.", "");
     showFirstHourReturn();

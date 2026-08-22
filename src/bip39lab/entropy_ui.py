@@ -85,4 +85,6 @@ def format_passphrase_strength(passphrase: str) -> str:
         return "Empty — no extra secret (not the 512-bit PBKDF2 seed size)"
     tier = passphrase_strength_tier(est)
     label = {"weak": "weak", "fair": "fair", "strong": "stronger"}[tier]
-    return f"~{round(est)} bits · {label} (estimate only — not a security guarantee)"
+    # Avoid "~0 bits" for single-char / no diversity (still weak)
+    shown = "<1" if est < 0.5 else str(round(est))
+    return f"~{shown} bits · {label} (estimate only — not a security guarantee)"

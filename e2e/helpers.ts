@@ -16,9 +16,43 @@ export const GOLDEN = {
 /** Six primary nav items (Shamir after Multisig). */
 export const NAV = ["lab", "multisig", "shamir", "network", "tools", "glossary"] as const;
 
+/** Click Lab Generate/Derive/Clear then OK on THAT overlay. */
+export async function clickLabAction(page: Page, which: "generate" | "derive" | "clear") {
+  const btn =
+    which === "generate" ? "#btnGenerate" : which === "derive" ? "#btnDerive" : "#btnClear";
+  const overlay =
+    which === "generate"
+      ? "#overlayGenerate"
+      : which === "derive"
+        ? "#overlayDerive"
+        : "#overlayClear";
+  await page.locator(btn).click();
+  await expect(page.locator(overlay)).toBeVisible();
+  await page.locator(`${overlay} .lab-overlay-ok`).click();
+  await expect(page.locator(overlay)).toBeHidden();
+}
+
+/** Slim rail: select a First-hour step then Go. */
+export async function hourRailGo(page: Page, step: string) {
+  await page.locator(`#firstHourList [data-hour-step="${step}"]`).click();
+  await page.locator("#hourRailGo").click();
+}
+
+/** Slim rail: select a First-hour step then Mark done. */
+export async function hourRailMark(page: Page, step: string) {
+  await page.locator(`#firstHourList [data-hour-step="${step}"]`).click();
+  await page.locator("#hourRailDone").click();
+}
+
 export async function pasteMnemonic(page: Page, text: string) {
   await page.locator("#mnemonic").fill(text);
   await page.waitForTimeout(450);
+}
+
+/** Mainnet goldens (abandon). Lab default network is Testnet. */
+export async function selectLabMainnet(page: Page) {
+  await page.locator("#deriveNetwork").selectOption("main");
+  await page.waitForTimeout(400);
 }
 
 export async function waitForTableRows(page: Page, min = 5) {

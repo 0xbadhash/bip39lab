@@ -7,7 +7,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Educational Shamir secret sharing demo — offline, not SLIP-39." />
   <title>Shamir lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.1" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.25" />
 </head>
 <body>
   <div class="app">
@@ -86,7 +86,7 @@
 
             <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.25">v0.16.25</span>
           <br />
           Educational Shamir only — not SLIP-39.
         </p>
@@ -106,7 +106,15 @@
           <h1>Shamir secret sharing</h1>
           <p class="sub">Educational M-of-N share split · offline · not SLIP-39</p>
         </div>
-            </header>
+        <div class="topbar-actions" id="topbarStatusChips">
+          <span class="topbar-status">
+            <span class="chip" id="chipOffline" title="CSP connect-src none">Offline crypto</span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+          </span>
+        </div>
+      </header>
 
       <main class="content">
         <div class="warn" role="alert" id="shDanger">
@@ -180,7 +188,7 @@
 
         <div class="card" id="shCardDemo">
           <div class="card-head">
-            <h2 class="label-row">Practice secret
+            <h2 class="label-row" id="headingPracticeSecret">Practice secret
               <span class="help-tip help-tip-safety" data-term="SLIP39">
                 <button type="button" class="help-tip-btn" aria-label="Not SLIP-39">i</button>
                 <span class="help-tip-panel" hidden></span>
@@ -301,7 +309,7 @@
   </div>
   <!-- Viewport-bottom only (no mid-page duplicate bar) -->
   <div id="learnReturnDockShamir" class="learn-return-dock" hidden role="navigation" aria-label="Quiz return">
-    <a class="btn secondary btn-sm" href="index.html?from=quiz">← Back to Guided quiz</a>
+    <a class="btn secondary btn-sm" href="index.html?from=quiz">← Back to Beginner</a>
     <span class="learn-return-hint" id="learnReturnDockShamirHint">Q2: fail with 1 share, then succeed with M.</span>
     <button type="button" class="btn btn-sm" id="btnMarkQ2FromShamir" hidden>
       Mark Q2 passed &amp; return
@@ -310,11 +318,11 @@
       Mark I2 passed &amp; return
     </button>
   </div>
-  <script src="js/site-version.js?v=0.16.1"></script>
-  <script src="js/glossary.js?v=0.16.1"></script>
-  <script src="js/help-ui.js?v=0.16.1"></script>
-  <script src="js/learn-levels.js?v=0.16.1"></script>
-  <script src="js/shamir-core.js?v=0.16.1"></script>
-  <script src="js/shamir-app.js?v=0.16.1"></script>
+  <script src="js/site-version.js?v=0.16.25"></script>
+  <script src="js/glossary.js?v=0.16.25"></script>
+  <script src="js/help-ui.js?v=0.16.25"></script>
+  <script src="js/learn-levels.js?v=0.16.25"></script>
+  <script src="js/shamir-core.js?v=0.16.25"></script>
+  <script src="js/shamir-app.js?v=0.16.25"></script>
 </body>
 </html>

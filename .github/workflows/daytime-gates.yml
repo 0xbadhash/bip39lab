@@ -1,0 +1,76 @@
+# Product daytime gates — CI-friendly smoke bar.
+# Creates .venv so product_smoke cmds that pin .venv/bin/python work.
+name: daytime-gates
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  daytime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+        if: hashFiles('package.json') != '' || hashFiles('app/package.json') != ''
+      - name: Python venv + deps
+        run: |
+          set -euo pipefail
+          python -m venv .venv
+          .venv/bin/pip install -U pip
+          if [ -f requirements-dev.txt ]; then .venv/bin/pip install -r requirements-dev.txt || true; fi
+          if [ -f requirements.txt ]; then
+            if grep -qE 'git\+|git@' requirements.txt 2>/dev/null; then
+              echo "requirements.txt has git deps — install filtered"
+              grep -vE 'git\+|git@' requirements.txt > /tmp/req-nongit.txt || true
+              .venv/bin/pip install -r /tmp/req-nongit.txt || true
+            else
+              .venv/bin/pip install -r requirements.txt || true
+            fi
+          fi
+          .venv/bin/pip install pytest hypothesis python-dotenv PyPDF2 ruff pyyaml 2>/dev/null || true
+          .venv/bin/pip install shamir-mnemonic 2>/dev/null || true
+      - name: npm ci (if Node project)
+        if: hashFiles('package.json') != '' || hashFiles('app/package.json') != ''
+        run: |
+          if [ -f package.json ]; then
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          fi
+          if [ -f app/package.json ]; then
+            (cd app && if [ -f package-lock.json ]; then npm ci; else npm install; fi)
+          fi
+      - name: J3 hardcodes
+        run: |
+          set -euo pipefail
+          test -f scripts/check_hardcodes.py
+          .venv/bin/python scripts/check_hardcodes.py
+      - name: J10 product smoke
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="${PYTHONPATH:-}:src:."
+          if [ -f scripts/product_smoke.py ]; then
+            PRODUCT_SMOKE_CI=1 .venv/bin/python scripts/product_smoke.py --root . --ci
+          else
+            .venv/bin/python -m pytest tests/ -q --tb=line -k "not e2e and not live" || \
+              .venv/bin/python -m pytest tests/ -q --tb=line
+          fi
+      - name: J7 secrets
+        run: |
+          set -euo pipefail
+          test -f scripts/check_secrets_diff.py
+          .venv/bin/python scripts/check_secrets_diff.py --base HEAD~1 --head HEAD \
+            || .venv/bin/python scripts/check_secrets_diff.py
+      - name: J12 Semgrep (warn-only)
+        run: |
+          if [ ! -f .semgrep.yml ]; then echo skip; exit 0; fi
+          .venv/bin/pip install -q semgrep
+          .venv/bin/semgrep --config .semgrep.yml --quiet . || true

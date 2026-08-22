@@ -48,48 +48,106 @@
   }
 
   function closeAllTips(except) {
-    document.querySelectorAll(".help-tip.is-open").forEach(function (tip) {
+    document.querySelectorAll(".help-tip.is-open, .help-tip").forEach(function (tip) {
       if (except && tip === except) return;
       tip.classList.remove("is-open");
       const btn = tip.querySelector(".help-tip-btn");
       const panel = tip.querySelector(".help-tip-panel");
       if (btn) btn.setAttribute("aria-expanded", "false");
-      if (panel) panel.hidden = true;
+      if (panel) {
+        panel.removeAttribute("hidden");
+      }
     });
+  }
+
+  function decorateTip(tip, idx) {
+    const btn = tip.querySelector(".help-tip-btn");
+    const panel = tip.querySelector(".help-tip-panel");
+    if (!btn || !panel) return;
+    if (!btn.id) btn.id = "help-tip-btn-" + idx;
+    panel.setAttribute("role", "tooltip");
+    panel.id = panel.id || "help-tip-panel-" + idx;
+    btn.setAttribute("aria-controls", panel.id);
+    if (!btn.getAttribute("aria-label")) btn.setAttribute("aria-label", "More information");
+    if (!btn.getAttribute("title")) btn.setAttribute("title", btn.getAttribute("aria-label"));
+    panel.removeAttribute("hidden");
+    btn.setAttribute("aria-expanded", "false");
+  }
+
+  function openTip(tip) {
+    if (!tip) return;
+    tip.classList.remove("tip-force-hide");
+    tip.classList.add("is-open");
+    const btn = tip.querySelector(".help-tip-btn");
+    if (btn) btn.setAttribute("aria-expanded", "true");
+  }
+
+  function hideTip(tip) {
+    if (!tip) return;
+    tip.classList.remove("is-open");
+    const btn = tip.querySelector(".help-tip-btn");
+    if (btn) btn.setAttribute("aria-expanded", "false");
   }
 
   function initTips() {
     document.querySelectorAll(".help-tip").forEach(function (tip, idx) {
-      const btn = tip.querySelector(".help-tip-btn");
-      const panel = tip.querySelector(".help-tip-panel");
-      if (!btn || !panel) return;
-      if (!btn.id) btn.id = "help-tip-btn-" + idx;
-      panel.setAttribute("role", "tooltip");
-      panel.id = panel.id || "help-tip-panel-" + idx;
-      btn.setAttribute("aria-controls", panel.id);
-      btn.setAttribute("aria-expanded", "false");
-      if (!btn.getAttribute("aria-label")) btn.setAttribute("aria-label", "More information");
-
-      btn.addEventListener("click", function (ev) {
+      decorateTip(tip, idx);
+    });
+    document.addEventListener(
+      "pointerenter",
+      function (ev) {
+        const tip = ev.target && ev.target.closest ? ev.target.closest(".help-tip") : null;
+        if (!tip) return;
+        openTip(tip);
+      },
+      true
+    );
+    document.addEventListener(
+      "pointerleave",
+      function (ev) {
+        const tip = ev.target && ev.target.closest ? ev.target.closest(".help-tip") : null;
+        if (!tip) return;
+        const rel = ev.relatedTarget;
+        if (rel && tip.contains(rel)) return;
+        hideTip(tip);
+      },
+      true
+    );
+    document.addEventListener(
+      "focusin",
+      function (ev) {
+        const tip = ev.target && ev.target.closest ? ev.target.closest(".help-tip") : null;
+        if (tip) openTip(tip);
+      },
+      true
+    );
+    document.addEventListener(
+      "focusout",
+      function (ev) {
+        const tip = ev.target && ev.target.closest ? ev.target.closest(".help-tip") : null;
+        if (!tip) return;
+        const rel = ev.relatedTarget;
+        if (rel && tip.contains(rel)) return;
+        hideTip(tip);
+      },
+      true
+    );
+    document.addEventListener("click", function (ev) {
+      const btn = ev.target && ev.target.closest ? ev.target.closest(".help-tip-btn") : null;
+      if (btn) {
         ev.preventDefault();
         ev.stopPropagation();
-        const open = tip.classList.contains("is-open");
-        closeAllTips();
-        if (!open) {
-          tip.classList.add("is-open");
-          btn.setAttribute("aria-expanded", "true");
-          panel.hidden = false;
-        }
-      });
-    });
-
-    document.addEventListener("click", function (ev) {
+        return;
+      }
       if (ev.target.closest && ev.target.closest(".help-tip")) return;
       closeAllTips();
     });
-
     document.addEventListener("keydown", function (ev) {
-      if (ev.key === "Escape") closeAllTips();
+      if (ev.key !== "Escape") return;
+      document.querySelectorAll(".help-tip").forEach(function (tip) {
+        tip.classList.add("tip-force-hide");
+        hideTip(tip);
+      });
     });
   }
 
@@ -105,7 +163,6 @@
 
   function focusStepTarget(el) {
     if (!el) return;
-    // Make section focusable without permanent tab stop, then move focus for a11y + :focus-visible ring
     if (!el.hasAttribute("tabindex")) {
       el.setAttribute("tabindex", "-1");
     }
@@ -114,22 +171,18 @@
     } catch (e) {
       try {
         el.focus();
-      } catch (e2) {
-        /* ignore */
-      }
+      } catch (e2) {}
     }
   }
 
   function flashStepTarget(el) {
     if (!el) return;
     el.classList.remove("step-flash");
-    // reflow so re-click restarts animation
     void el.offsetWidth;
     el.classList.add("step-flash");
     el.setAttribute("data-step-focused", "true");
     window.setTimeout(function () {
       el.classList.remove("step-flash");
-      // keep data-step-focused until next jump so tests can assert focus target
     }, 1600);
   }
 
@@ -176,25 +229,19 @@
           if (!sel) return;
           const el = document.querySelector(sel);
           if (!el) return;
-
-          // Lab tab switch first if needed (so target is visible)
           if (sel.indexOf("#panel-") === 0 && typeof window.__bip39ShowTab === "function") {
             const name = sel.replace("#panel-", "");
             window.__bip39ShowTab(name);
           }
-
           steps.forEach(function (s) {
             s.classList.remove("is-active");
             s.setAttribute("aria-current", "false");
           });
           btn.classList.add("is-active");
           btn.setAttribute("aria-current", "step");
-
-          // Clear prior jump markers on this page
           document.querySelectorAll("[data-step-focused]").forEach(function (prev) {
             if (prev !== el) prev.removeAttribute("data-step-focused");
           });
-
           scrollStepTargetIntoView(el);
           flashStepTarget(el);
           window.requestAnimationFrame(function () {
@@ -210,7 +257,16 @@
     });
   }
 
+  function loadLabStrip() {
+    if (document.getElementById("labStripSrc")) return;
+    var s = document.createElement("script");
+    s.id = "labStripSrc";
+    s.src = "js/lab-strip.js";
+    document.head.appendChild(s);
+  }
+
   function init() {
+    loadLabStrip();
     initTips();
     initTeachToggles();
     initStepRails();

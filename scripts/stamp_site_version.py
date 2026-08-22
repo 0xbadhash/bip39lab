@@ -64,9 +64,24 @@ def main() -> int:
             rf'src="\1?v={ver}"',
             text,
         )
+        new = re.sub(
+            r'href="(css/[^"?]+)(?:\?v=[^"]*)?"',
+            rf'href="\1?v={ver}"',
+            new,
+        )
+        new = re.sub(
+            r'(<span class="site-version-chip" data-site-version[^>]*>)([^<]*)(</span>)',
+            rf'\1{tag}\3',
+            new,
+        )
+        new = re.sub(
+            r'(<span class="site-version-chip" data-site-version )title="[^"]*"',
+            rf'\1title="Site release {tag}"',
+            new,
+        )
         if new != text:
             html.write_text(new, encoding="utf-8")
-            print(f"  cache-bust scripts in {html.relative_to(ROOT)}")
+            print(f"  cache-bust assets in {html.relative_to(ROOT)}")
     # Keep Comet header in lockstep with VERSION + Playwright S-ids
     if str(SCRIPTS) not in sys.path:
         sys.path.insert(0, str(SCRIPTS))
@@ -77,6 +92,38 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — release path must not hide stamp failure
         print(f"stamp_comet_header failed: {e}", file=sys.stderr)
         return 1
+    # HTTP stamps at nginx web root (live /VERSION and /PLAYWRIGHT_LAST.md)
+    n_ids = 0
+    s_range = "S?"
+    try:
+        from stamp_comet_header import collect_playwright_ids, scenario_range_label
+
+        ids = collect_playwright_ids(ROOT)
+        n_ids = len(ids)
+        s_range = scenario_range_label(ids)
+    except Exception as e:  # noqa: BLE001
+        print(f"playwright id collect failed: {e}", file=sys.stderr)
+        return 1
+    web_ver = ROOT / "web" / "VERSION"
+    web_ver.write_text(ver + "\n", encoding="utf-8")
+    print(f"stamped {web_ver.relative_to(ROOT)} → {ver}")
+    last_body = (
+        f"# PLAYWRIGHT_LAST\n\n"
+        f"product: {ver}\n"
+        f"tag: {tag}\n"
+        f"s_ids: {n_ids}\n"
+        f"scenarios: {s_range}\n"
+        f"aligned: auto-stamped from VERSION + e2e/\n\n"
+        f"live === comet === PLAYWRIGHT_LAST === /VERSION === {ver}\n"
+    )
+    last = ROOT / "web" / "PLAYWRIGHT_LAST.md"
+    last.write_text(last_body, encoding="utf-8")
+    print(f"stamped {last.relative_to(ROOT)} → {ver} (n={n_ids})")
+    # Required live URL: /docs/PLAYWRIGHT_LAST.md (nginx root = web/)
+    docs_last = ROOT / "web" / "docs" / "PLAYWRIGHT_LAST.md"
+    docs_last.parent.mkdir(parents=True, exist_ok=True)
+    docs_last.write_text(last_body, encoding="utf-8")
+    print(f"stamped {docs_last.relative_to(ROOT)} → {ver} (n={n_ids})")
     return 0
 
 

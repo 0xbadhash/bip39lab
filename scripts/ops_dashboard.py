@@ -804,6 +804,29 @@ def render(d: Dashboard, vault: Path | None) -> str:
     )
     lines.extend(section("☐ To-do", d.todos, "_No open action items from this aggregator._"))
 
+    # When tests run — same map as night-shift-log (SoT test_trigger_schedule.py)
+    try:
+        sys.path.insert(0, str(HARNESS / "scripts"))
+        from test_trigger_schedule import schedule_markdown  # type: ignore
+
+        lines.append(schedule_markdown(compact=False).rstrip())
+        lines.append("")
+        lines.append(
+            "> **Act rule:** GitHub daytime red → fix on GitHub. "
+            "Night FAIL on this dashboard → open product TODO / night-shift-log. "
+            "News/kanban → Attention links only."
+        )
+        lines.append("")
+    except Exception:  # noqa: BLE001
+        lines.extend(
+            [
+                "## When tests run",
+                "",
+                "_Install `scripts/test_trigger_schedule.py` (agent-harness SoT)._",
+                "",
+            ]
+        )
+
     lines.extend(
         [
             "## Source map (do not hunt 10 pages — start here)",
@@ -823,11 +846,43 @@ def render(d: Dashboard, vault: Path | None) -> str:
                 f"| Pipeline | {_wiki_link(vault, 'agent-tasks/pipeline-status.md', 'pipeline-status')} |",
                 f"| Kanban | {_wiki_link(vault, 'agent-tasks/kanban.md', 'kanban')} |",
                 f"| Security IoC (weekly deep) | {_wiki_link(vault, 'agent-tasks/security-ioc-status.md', 'security-ioc-status')} |",
+                "| Test schedule SoT | `agent-harness/scripts/test_trigger_schedule.py` + section above |",
+                "| Per-product night detail | `01-Projects/<id>/night-shift-log.md` (includes same schedule) |",
+                "| GitHub daytime CI | Each repo → Actions → `daytime-gates` |",
+                "| GitHub daytime snapshot | `python3 scripts/github_daytime_status.py --write` → section below |",
                 f"| This dashboard | {_wiki_link(vault, 'agent-tasks/OPS-DASHBOARD.md', 'OPS-DASHBOARD')} |",
             ]
         )
     else:
         lines.append("| Vault | not found — set PRODUCT_VAULT_ROOT |")
+
+    # Tier B-5: embed GitHub daytime snapshot (best-effort; never blocks dashboard)
+    try:
+        sys.path.insert(0, str(HARNESS / "scripts"))
+        from github_daytime_status import collect, render_markdown  # type: ignore
+
+        gh_rows = collect()
+        gh_md = render_markdown(gh_rows)
+        # Normalize H1 → H2 for embedding under OPS
+        gh_body_lines: list[str] = []
+        for ln in gh_md.splitlines():
+            if ln.startswith("# "):
+                gh_body_lines.append("## " + ln[2:])
+            else:
+                gh_body_lines.append(ln)
+        lines.append("")
+        lines.extend(gh_body_lines)
+        lines.append("")
+    except Exception:  # noqa: BLE001
+        lines.extend(
+            [
+                "",
+                "## GitHub daytime-gates status (Tier B-5)",
+                "",
+                "_Run `python3 scripts/github_daytime_status.py --write` (requires `gh`)._",
+                "",
+            ]
+        )
 
     lines.extend(
         [
@@ -838,6 +893,7 @@ def render(d: Dashboard, vault: Path | None) -> str:
             "export PRODUCT_VAULT_ROOT=/opt/second-brain/vault",
             "cd ~/agent-harness",
             "python3 scripts/night_shift_morning_triage.py",
+            "python3 scripts/github_daytime_status.py --write",
             "python3 scripts/ops_dashboard.py --write",
             "sudo python3 scripts/security_root_ioc_scan.py --deep --write-dashboard",
             "```",

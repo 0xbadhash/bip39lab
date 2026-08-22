@@ -185,7 +185,21 @@
     var dockHint = $("learnReturnDockShamirHint");
     var topHint = $("quizBackBarShamirHint");
     if (banner) banner.hidden = !ready;
-    if (markBtn) markBtn.hidden = !ready;
+    if (markBtn) {
+      var intMode = false;
+      try {
+        intMode = sessionStorage.getItem("bip39lab.quizReturn") === "intquiz";
+      } catch (eI) {
+        intMode = false;
+      }
+      if (intMode) {
+        markBtn.hidden = true;
+      } else {
+        markBtn.hidden = false;
+        markBtn.disabled = !ready;
+        markBtn.setAttribute("aria-disabled", ready ? "false" : "true");
+      }
+    }
     var hint = ready
       ? "Both demos done (fail + success). Mark Q2 passed & return — self-check, not auto-graded."
       : ev.q2Fail && !ev.q2Ok
@@ -346,7 +360,7 @@
       } else {
         if (backA) {
           backA.href = "index.html?from=quiz";
-          backA.textContent = "← Back to Guided quiz";
+          backA.textContent = "← Back to Beginner";
         }
         if (hint) hint.textContent = "Q2: fail with 1 share, then succeed with M.";
         if (markI2) markI2.hidden = true;
@@ -453,5 +467,17 @@
     });
     setStatus("Ready — educational Shamir only. Generate a practice secret, then Split demo.", "");
     showQuizReturn();
+    function updateAirgapChip() {
+      var el = $("chipAirgap");
+      if (!el) return;
+      var on = typeof navigator !== "undefined" && navigator.onLine;
+      el.textContent = on ? "Browser online" : "Browser offline";
+      el.title = on
+        ? "Browser reports online — prefer air-gap for funded practice"
+        : "Browser reports offline";
+    }
+    updateAirgapChip();
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
   });
 })();

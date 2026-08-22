@@ -242,9 +242,27 @@
     }
   }
 
+  function updateAirgapChip() {
+    var el = $("chipAirgap");
+    if (!el) return;
+    var on = typeof navigator !== "undefined" && navigator.onLine;
+    el.textContent = on ? "Browser online" : "Browser offline";
+    el.title = on
+      ? "Browser reports online — prefer air-gap for funded practice"
+      : "Browser reports offline";
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", wire);
+    document.addEventListener("DOMContentLoaded", function () {
+      wire();
+      updateAirgapChip();
+      window.addEventListener("online", updateAirgapChip);
+      window.addEventListener("offline", updateAirgapChip);
+    });
   } else {
     wire();
+    updateAirgapChip();
+    window.addEventListener("online", updateAirgapChip);
+    window.addEventListener("offline", updateAirgapChip);
   }
 })();

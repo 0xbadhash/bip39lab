@@ -19,6 +19,23 @@ def test_multisig_checklist_has_bip67_help_tip():
     )
 
 
+def test_comet_and_agent_prompt_have_no_stale_s0_s71():
+    for rel in (
+        "docs/E2E_COMET_SCENARIOS.md",
+        "docs/E2E_AGENT_PROMPT.md",
+        "web/docs/E2E_COMET_SCENARIOS.md",
+        "web/docs/E2E_AGENT_PROMPT.md",
+    ):
+        p = ROOT / rel
+        if not p.is_file() and p.is_symlink():
+            p = p.resolve()
+        if not p.is_file():
+            continue
+        text = p.read_text(encoding="utf-8")
+        assert "S0–S71" not in text, rel
+        assert "S0–S56" not in text, rel
+
+
 def test_stamp_comet_header_updates_product_and_range():
     r = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "stamp_comet_header.py"), "--root", str(ROOT)],
@@ -41,7 +58,30 @@ def test_stamp_comet_header_updates_product_and_range():
         assert "S70" in comet
 
 
+def test_html_chip_has_semver_before_js():
+    ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    tag = f"v{ver}"
+    for name in ("index.html", "multisig.html", "network.html", "shamir.html", "slip39.html"):
+        html = (ROOT / "web" / name).read_text(encoding="utf-8")
+        assert f">{tag}</span>" in html, name
+        assert 'data-site-version title="Release tag">…</span>' not in html
+
+
 def test_stamp_site_version_invokes_comet_stamp():
     src = (ROOT / "scripts" / "stamp_site_version.py").read_text(encoding="utf-8")
     assert "stamp_comet_header" in src
     assert "stamp_comet_doc" in src
+    assert "PLAYWRIGHT_LAST.md" in src
+    assert 'web" / "VERSION' in src or "web/VERSION" in src
+
+
+def test_http_version_and_playwright_last_match_sot():
+    ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    web_ver = (ROOT / "web" / "VERSION").read_text(encoding="utf-8").strip()
+    last = (ROOT / "web" / "PLAYWRIGHT_LAST.md").read_text(encoding="utf-8")
+    docs_last = (ROOT / "web" / "docs" / "PLAYWRIGHT_LAST.md").read_text(encoding="utf-8")
+    assert web_ver == ver
+    assert f"product: {ver}" in last
+    assert f"=== {ver}" in last or f"=== {ver}\n" in last
+    assert docs_last == last
+    assert f"product: {ver}" in docs_last

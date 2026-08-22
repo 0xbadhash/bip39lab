@@ -1,41 +1,32 @@
-# RELEASE_RUNBOOK — v0.16.1 Multisig teach + dock Mark parity
+# Release v0.16.24 — slim Starter First-hour rail
 
-**Marker:** RELEASE-RUNBOOK  
-**Date:** 2026-08-11  
-**Version:** 0.16.1  
-**Tag:** v0.16.1  
-**Spec waiver:** chore  
-**Score:** 100 · approved → shipped  
+**Date:** 2026-08-21
+**Tag:** v0.16.24
+**Commit:** e1eaf99
 
-## Smoke table
+## Smoke
 
-| Step | Command | Exit |
-|------|---------|------|
-| unit | `.venv/bin/python -m pytest -q` | 0 |
-| e2e | `npm run test:e2e` | 0 |
-| web_e2e | `python3 scripts/check_web_e2e.py --root .` | 0 |
-| secrets | `v0.16.0…HEAD` | clean |
-| hard_gates | ok score 100 | 0 |
+| Step | Exit |
+|------|------|
+| Playwright S0 S100 S102–S108 + First hour loop | 0 |
+| hard_gates / pr_validator | 100 |
+
+## Infra
+
+No vps_infra_ops.
 
 ## Evidence pack
 
-| Item | Result |
-|------|--------|
-| hard_gates | ok |
-| CODE-REVIEW | p0=0 |
-| CROSS-REVIEW | blockers=0 |
-| BEHAVIOR | B1–B6 pass |
-| Comet | S0–S71 auto-stamped |
-
-## Infra
-None (static web).
+- hard_gates ok
+- Slim labels + selected-step Go/Mark done
+- Clear secrets `.btn.danger` #e2483d
 
 ## Rollback
-1. `git checkout v0.16.0` / redeploy  
-2. Restore VERSION + site-version stamps  
 
-## §9 Things that look bad but are fine
-1. Self-graded Intermediate Mark buttons.  
-2. Cosigner replace requires new vault.  
-3. zpub educational only.  
-4. Soft level gates.  
+Revert to v0.16.23.
+
+## §9
+
+1. Slim still is a layout lock, not pasted as the page.
+2. CATALYSTS wordmark from Imagine still not copied.
+3. README-only `/sync_docs` after tag is FLAG.

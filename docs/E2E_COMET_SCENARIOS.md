@@ -29,7 +29,10 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
+  - id: lab-strip
+    path: /
+    playwright: e2e/lab-strip.spec.ts
+scenarios: S0–S113 · Playwright 131 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -37,9 +40,9 @@ scenarios: S0–S71 · Playwright 89 tests · auto-stamped from e2e/ + VERSION
 > **STALE COPY CHECK:** If this file shows Product `0.13.9`, toggle name **Teach On/Off**, or score **`/68`**, you have an outdated copy. Re-fetch **now** from:
 > - Live: https://bip39.catalyxt.xyz/docs/E2E_COMET_SCENARIOS.md
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
-> Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S71).
+> Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.1 · Contract: 2 · Last aligned: 2026-08-11 · Scenarios: S0–S71 · Playwright S-ids: 89`
+`Product: 0.16.25 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S113 · Playwright S-ids: 131`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -52,7 +55,7 @@ Agents re-reading **live** bip39.catalyxt.xyz may still see older copy until dep
 
 | Report issue | Status in repo |
 |--------------|----------------|
-| Score `/68` / template ends S56 | **Fixed** — report template S0–S71 + dynamic denominator (header Playwright count) |
+| Score `/68` / template ends S56 | **Fixed** — report template S0–S82 + dynamic denominator (header Playwright count) |
 | Teach vs Extra help | **Fixed** — doc uses **Extra help**; UI is Extra help |
 | Tools “no rail” vs toolsStepRail | **Fixed** — no mid-page rails; S44/S44b match Playwright |
 | Playwright “74 tests” | **Fixed** — header auto-stamps current S-id count (e.g. 89) |
@@ -61,7 +64,7 @@ Agents re-reading **live** bip39.catalyxt.xyz may still see older copy until dep
 | S61 localStorage | **Hardened** — reload asserts ticks + level |
 | S38/S39/S39b / S67 | **NEEDS-DOM** in template; covered by Playwright site-chrome + S67 |
 
-Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help + S0–S71.
+Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help + S0–S82.
 
 
 | Surface | URL | Playwright |
@@ -76,9 +79,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **89** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **131** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S71** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S113** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -122,7 +125,7 @@ Preference is one `localStorage` flag across pages.
 ## PROMPT FOR COMET / PERPLEXITY
 
 ```text
-You are a browser QA agent for bip39lab. Execute the FULL suite S0–S71 (all
+You are a browser QA agent for bip39lab. Execute the FULL suite S0–S82 (all
 S-ids in Playwright titles + body of this file). Also complete the HUMAN
 COHERENCE checklist for EVERY page (section “Human process flows”).
 
@@ -159,7 +162,7 @@ makes sense / intuitive) per page. End with the Report template (score __ / N).
 
 ```text
 You are a product-UX auditor for bip39lab (https://bip39.catalyxt.xyz).
-Run this pass on EVERY shell after (or with) S0–S56. Do not skip pages.
+Run this pass on EVERY shell after (or with) S0–S82. Do not skip pages.
 
 GOAL: Verify the live UI, on-page descriptions, and security guidelines stay
 consistent with each other and with the product mental model in
@@ -452,15 +455,80 @@ S10, S24, S36–S48b · `e2e/lab.spec.ts`, `site-chrome`, `help-ux`
 
 ---
 
-# Scenario catalogue (S0–S56)
+# Scenario catalogue (S0–S90)
 
 ## Lab shell
 
 ### S0 — Smoke
 Open Lab → title Offline BIP-39 lab; Generate visible; **6** nav (Lab…Glossary, **includes Shamir**, no About/Balance); Offline crypto + airgap chips; CSP `connect-src 'none'`.
+`#labSafetyBanner`: crypto stays in this tab; progress/theme may be saved; addresses to Network only after opt-in; do not use a funded phrase. Must **not** say “nothing is written to disk or sent to a server.”
+Sidebar chip HTML (before JS) and `#status` Ready line show the same product tag (not `0.11.0-scure`).
+
+### S82 — Receive / Compare honesty
+Receive lede and Compare intro (`#cmpHonestyIntro`) do **not** say “nothing is sent.”
+Compare opt-in (“Addresses leave only if you opt in on Network.”) is **visible with Extra help Off**. Extra help may repeat it.
+
+### S83 — No FIRST_HOUR.md learner links
+Lab orientation + First hour must **not** link or show `docs/FIRST_HOUR.md`
+or any `FIRST_HOUR` / `docs/FIRST_` href or visible path.
+The in-lab checklist **is** the guide (zero FIRST_HOUR links in the lab).
+Hand-typed `/docs/FIRST_HOUR.md` **may** still return HTTP 200; that is
+not a FAIL. Do **not** require 500. Do **not** add the link back.
+
+### S84 — First Hour form / results / compare
+Go h2 shows mnemonic + Generate. Checklist + dock Mark done **disabled** until Generate produces a valid phrase. Checkbox cannot self-tick. After Generate, Mark done enables, ticks, returns. Go h5 → compare. Same-passphrase compare: Mark done stays off. Empty vs `test` with different addresses: Mark done on.
+
+### S85 — Go h3 before derive (error)
+**FAIL if empty Go h3 lands on the mnemonic textarea / `#card-mnemonic`.** Empty or filled: land on `#headingReceive` / “Receive addresses” (empty table is OK). Dock may still say press Validate & derive. Never Knots. Mark done stays off until rows exist. Filled path (S91) still `#headingReceive`.
+
+### S86 — Tools Path playground spacer
+Visible gap (≥8px) between the ⓘ / Extra help teach line and `#cardPathPlay`.
+
+### S87 — Dock names unfinished action (missing-data + plain English)
+Every First Hour dock names the unfinished action. Never leftover “Finish, then Mark done on the checklist.” h4: “In Path playground, use purpose, coin, account, change, and index (Lab path controls). Mark done stays off until all five have been used.” No CSS IDs in the dock. Mark done stays disabled until all five Lab path controls are used.
+
+### S88 — Quiz 4/4 recommendation
+After Guided quiz 4/4 Passed, `#quizHourNext` and the hour dock name **7 Network (optional)** then **8 Raise to Beginner**. Not blank.
+
+### S89 — Network h7 leak-ack
+Go h7. After **ack-only**, dock copy is exactly: “Leak-ack accepted. Mark done to check step 7 and return to the checklist.” **Mark done stays disabled** until load addresses **and** fetch info complete, then enable.
+
+### S91 — Go h3 lands on Receive addresses heading
+With addresses already filled, Go h3 scrolls to `#headingReceive` (“Receive addresses”), not the address table.
+
+### S92 — Q2 / Shamir Go lands on Practice secret
+Guided quiz Q2 Go opens Shamir at `#headingPracticeSecret` (“Practice secret”), not the recombine card lower on the page.
+
+### S93 — Shamir Mark done visible then gated
+On Q2 arrival, **Mark done / Mark Q2 passed** is **shown and disabled**. Enable only after under-threshold fail **then** M-of-N success. Do not hide the button until after the test.
+
+### S95 — First Hour auto-advance
+When First Hour boxes that apply (h1–h6) are checked, Level auto-raises to Beginner. If level is already Beginner: hide step 8 / Set Beginner / I’m ready for Beginner / Jump to Set Beginner / “Raise Level to Beginner” row. h7 optional. Step 6 auto at 4/4.
+
+### S98 — Mempool miss fail-fast
+Hung `/api/mempool` (or mempool.space) must return in a **couple of seconds** with plain-English “did not answer / unavailable / not a fake zero”. No 30–60s hang. nginx proxy connect/read **2s**; browser fetch **2.5s**. Mark done still gated on leak-ack + load + fetch.
+
+### S99 — Reset progress → Starter intro
+`#btnResetClassroom` from Intermediate (or leftover level) sets Starter. `#panel-title` Offline BIP-39 lab and `#panel-sub` exactly: “Generate, validate, and derive receive addresses — English wordlist only.” In view. Toast does not say Level unchanged.
+
+### S100 — Three distinct Lab overlays
+`#overlayGenerate` / `#overlayDerive` / `#overlayClear` stay separate (not one-liners).
+Generate: practice recovery phrase, English words only, N-word count, not a funded seed, nothing leaves this tab.
+Derive: valid BIP-39, receive addresses, in this tab, does not send bitcoin / look up balance / talk to the network; Network only if you later opt in.
+Clear: wipes this lab tab’s memory, not deleting a real wallet, cannot reach coins, TEST DATA, paper unchanged.
+One **OK** per overlay (no Cancel, no Continue). OK runs the existing action. S80 native replace confirm still after Generate overlay OK when a phrase exists.
+
+### S90 — First Hour dock mobile wrap
+390px: dock Back + hint + Mark done wrap; no horizontal blowout.
+
+### S81 — Empty Validate & derive
+Clear mnemonic → Validate & derive → `#status` missing-data (not silent Ready).
+
+### S11b — 11-word length status
+11 abandon words → `#status` says length (not wordlist/checksum).
 
 ### S0b — Theme
-Theme toggles dark/light; page usable.
+Theme toggles dark/light; page usable. Light-theme `#labSafetyBanner` contrast ≥ 4.5:1. Sidebar classroom controls stay readable.
 
 ### S0c — Keyboard `?`
 Focus body → `?` → Tools panel + path playground.
@@ -470,7 +538,10 @@ Focus body → `?` → Tools panel + path playground.
 ## Lab mnemonic & table
 
 ### S1 — Generate 12
-Word count 12 → Generate → 12 words; entropy `128 bits…`; ≥5 table rows; default `bc1p`.
+Word count 12 → Generate → 12 words; entropy `128 bits…`; ≥5 table rows; default network Testnet → `tb1p`.
+
+### S80 — Generate replace confirm
+After a phrase exists, Generate asks confirm; dismiss keeps phrase; accept replaces.
 
 ### S1b — Generate 24
 Word count 24 → Generate → 24 words; entropy `256 bits…`.
@@ -491,7 +562,7 @@ BIP84 golden → passphrase `test` → address ≠ golden; clear passphrase → 
 Indices 10 → 10 rows; change 1 → path mentions change; account 1 → ≠ golden; reset 0/0/5 → golden.
 
 ### S5 — Mainnet / testnet
-Main BIP84 golden → Network Test → `tb1…` → Main restores golden.
+Default Test → `tb1…` → Main restores abandon BIP84 golden → Test again `tb1`.
 
 ### S6 — Copy
 Copy first address → Copied / `#copyFeedback`.
@@ -509,10 +580,13 @@ Hide private → mnemonic hidden; Clear → empty mnemonic + empty table.
 Garbage → no valid abandon goldens.
 
 ### S15 — Seed QR
-Confirm dialog → seed QR modal (careful).
+Paste valid phrase → confirm → `#qrModal` visible with seed image + live words.
+
+### S15b — Invalid Seed QR
+Garbage words → no modal; status refuses QR.
 
 ### S16 — Send → Network
-Lab addresses → Network session Load works (no mnemonic in Network).
+**Send addresses → Network** writes session; Load works (no mnemonic). Derive alone does not fill session.
 
 ---
 
@@ -603,6 +677,7 @@ Multisig → Lab; Multisig → Network.
 
 ### S32 — Shell + gate
 Network heading; 6-nav; CSP mempool/`self`; balances gated until ack.
+Leak-ack copy: addresses and IP go to this site’s mempool proxy, then mempool.space.
 
 ### S13b — Fee snapshot
 Fetch → sat/vB bands, traffic, example; status OK (needs public API or proxy).
@@ -611,7 +686,8 @@ Fetch → sat/vB bands, traffic, example; status OK (needs public API or proxy).
 Mnemonic rejected; golden address + ack → row status ok|unknown|error.
 
 ### S13d — Session bridge
-Lab → Load from Lab on Network → addresses only.
+Derive on Lab without Send → Network Load finds **no** session addresses.
+(S16 is the explicit handoff.)
 
 ### S33 — No ack
 Load Lab disabled without ack.
@@ -647,6 +723,9 @@ Network: `mempool.space` and/or `'self'`, not offline-only.
 ### S40 — Host branding
 Version + host branding in left sidebar only (no bottom footer version strip).
 
+### S40b — Classroom panel on every shell
+On Lab, Multisig, Shamir, Network, SLIP-39: sidebar **Classroom** (`#sidebarPrefs`) with Level select `#learnLevel` and Reset `#btnResetClassroom` visible.
+
 ---
 
 ## Help UX (Extra help + ⓘ) — no mid-page step rails
@@ -658,7 +737,46 @@ Version + host branding in left sidebar only (no bottom footer version strip).
 Off hides teach-only; safety chrome + leak/PSBT/seed ⓘ remain.
 
 ### S43 — ⓘ tip
-Mnemonic **i** opens; Esc closes.
+Mnemonic **i** opens on **hover** (click is not required). Esc closes (even if the pointer is over the icon). Action overlays (Generate / Derive / Clear) still need click + **OK** — they are not (i).
+
+### S101 — Every visible (i) hover
+Lab has 25 `.help-tip-btn`; hover shows the panel without a prior click. Sample the same hover behavior on Multisig, Network, Shamir, SLIP-39 (1 icon). Extra help Off still hides non-safety (i) (S42).
+
+### S102 — Starter face
+Starter: `#panel-title` Offline BIP-39 lab; `#panel-sub` exact receive-addresses sentence; **slim** numbered 8-step labels beside live Mnemonic lab (Air-gap warn … Set Beginner) — **not** a fat rail with Go/Mark done on every step. One `#hourRailGo` / `#hourRailDone` pair for the **selected** step. Generate + Validate accent; Clear secrets filled red. `#cardQuiz` / later faces **hidden**. 12-check boards not a fifth page. 6 nav items.
+
+### S103 — Beginner face
+Beginner: chapter **Passphrase and entropy**; three locked stills key + dice = lock (`beginner-key.png`, `beginner-dice.png`, `beginner-lock.png`); labels Something you know / Randomness / Stronger seed; bar Too few dice → 128 bits. **Four Q1–Q4 tiles**. No Guided quiz heading. Intermediate hidden. Starter orientation/lab **collapsed**.
+
+### S104 — Intermediate face
+Intermediate: **keys ≠ shares ≠ share-words**; three locked app-shell stills visible (`intermediate-keys.png`, `intermediate-hex-shares.png`, `intermediate-share-words.png`) — not the old line-art SVG as face art. I1–I4 visible; Advanced / BIP-85 hidden.
+
+### S105 — Advanced face
+Advanced: **master → child keys**; this site is **not a wallet**; visible `advanced-master-child.png` (not faint SVG); A1–A4.
+
+### S106 — Faces + Reset + overlays
+Reset from a later level still lands Starter exact intro (S99). Generate overlay still 0.16.17 first line. One OK, no Cancel/Continue. Do not reopen hover (S101).
+
+### S107 — Faces keep hover-(i)
+On Starter, hover an (i) without click; panel visible.
+
+### S108 — Faces rec-flow
+390px: Generate produces phrase + table (form/results); empty Derive missing-data; next-step Beginner chapter; Intermediate hides Advanced; Advanced not-a-wallet; no page blowout; 12-check not a nav page.
+
+### S110 — Lab strip follows classroom level
+`#labStrip` is visible on Lab. Changing `#learnLevel` sets `data-paint` to starter / beginner / intermediate / advanced. One strip, not four stacked faces as the live layout.
+
+### S111 — Starter strip is words only
+Starter `data-paint=starter`: word cards / `.stage-words` visible. Strip has **no** ENT slider (`input[type=range]`) and **no** QR (`img`, canvas, `[data-qr]`). Practice-backup stamp visible. Intermediate extra (keys≠shares) hidden.
+
+### S112 — Extra help Off hides captions, not the strip
+`data-teach=off` keeps `#labStrip` visible; `.stage-caption` is hidden. Extra help Off is captions-only for the strip.
+
+### S113 — Intermediate keys≠shares; Advanced master→child
+Intermediate: `.lab-strip-extra.int-only` visible with Keys vs shares. Advanced: `.lab-strip-extra.adv-only` visible with master → child. Do not reopen 0.16.16–0.16.24 faces/overlays.
+
+### S114 — Lab-strip rec-flow
+Form: Generate still fills mnemonic. Results: strip paints from classroom level. Comparison: Intermediate extra vs Advanced extra (not the same copy). Missing-data: empty Derive still missing-data. Recommendation: next-step Beginner still exists. Plain English: strip captions readable. Mobile 390px: strip visible, no blowout. Errors: invalid mnemonic still flagged. Textarea stays (Teach-B later).
 
 ### S44 — First-hour Go (replaces step rail)
 First hour checklist: **Go** on a step scrolls to target (e.g. mnemonic) and shows amber **← Back to First hour** dock; Back returns to checklist. No mid-page step-rail wizard.
@@ -792,8 +910,12 @@ Level select starter→advanced; data-level on html; advanced shows BIP-85 + Ops
 Beginner+: four quiz items (incl. Q3 TOO LOW + Q4 ~128 bits) with status board;
 Go try + amber return dock; Mark passed → green Passed chips; entropy pad Mark Q3/Q4.
 
-### S64 — Three splits tour
-Intermediate+: start tour; Multisig then Shamir titles.
+### S64 — No mid-page three-splits tour
+No `#cardTour` / “Tour: three ways to split trust” / “Start / reset tour” between Guided quiz and Intermediate.
+I1–I3 already teach Multisig ≠ Shamir ≠ SLIP-39. No empty hole — quiz card is immediately followed by `#cardIntQuiz`.
+
+### S96 — Intermediate select lands on Intermediate self-check
+Choosing Intermediate scrolls/shows **Intermediate self-check / Three splits + Tools depth** (`#headingIntQuiz`). Not First Hour, not Guided quiz, not a hole.
 
 ### S65 — BIP-85 shell
 Advanced: BIP-85 card; explain demo PRACTICE.
@@ -812,12 +934,37 @@ marks I1 Passed on Lab Intermediate quiz.
 ### S71 — Intermediate I4 mark on Lab dock
 I4 Go try → Tools PSBT + **Mark I4 passed & return** on amber dock → Passed.
 
+### S72 — Vault map after Build
+Multisig: 2-of-2 BIP67 golden pubs → `#msVaultMap` visible; `#msMapDesc` is `wsh(sortedmulti(2,…))` containing both compressed pubs; note says not a seed. Clear hides the map.
+
+### S73 — Recovery drill map vs keys-only
+After Build: **Rebuild from map** status matches P2WSH. **Try without map** errors (needs M/N/sort); does not invent a new address.
+
+### S74 — Vendor-diversity Extra help
+Multisig checklist `#msVendorDiversity` mentions independent vendor/firmware class.
+
+### S75 — Demo is not multi-vendor
+Generate demo → `#msDemoVendorNote` says Not multi-vendor / one browser RNG.
+
+### S76 — M=1 warning
+Build with M=1 → `#msM1Warn` singlesig warning. M=2 hides it. `#msPolicy` includes lose-map line.
+
+### S77 — PIN / file password / passphrase
+Glossary search finds Device PIN, Coordinator file password, and BIP-39 passphrase as distinct hits.
+
+### S78 — Coordinator cannot spend
+`#msCoordNote` visible without Extra help: coordinator, cannot spend, receive/watch without keys.
+
+### S79 — PSBT 1-of-2 partial sample
+Tools → **1-of-2 partial** → inspect `partial signatures: 1`; still educational / no sign.
+
 ### S69 — Advanced A1–A4 self-check
 Level Advanced: `#cardAdvQuiz`; A4 Go try → orientation + Advanced return dock;
 Mark A1–A4 → summary 4 / 4.
 
 ### S67 — Mobile layout
 Viewport ~390px: orientation + generate visible; sidebar stacks.
+After Generate: `#addrTable` may be wider than the viewport but **must stay inside** `#tableScroll` (`overflow-x: auto`); document `scrollWidth` must not grow far beyond the viewport (no full-page sideways overflow).
 
 # Report template
 
@@ -910,11 +1057,13 @@ S38 Multisig aria-current: PASS|FAIL|NEEDS-DOM —
 S39 Network aria-current: PASS|FAIL|NEEDS-DOM —
 S39b Shamir aria-current: PASS|FAIL|NEEDS-DOM —
 S40 Host branding (sidebar version only): PASS|FAIL —
+S40b Classroom panel every shell: PASS|FAIL —
 
 ### Help / Extra help (no step rails)
 S41 Extra help On + no Lab rail: PASS|FAIL —
 S42 Extra help Off: PASS|FAIL —
-S43 Help tip Esc: PASS|FAIL —
+S43 Help tip hover + Esc: PASS|FAIL —
+S101 Lab (i) hover no click required: PASS|FAIL —
 S44 First-hour Go + return dock: PASS|FAIL —
 S44b Tools: no mid-page rails: PASS|FAIL —
 S45 Multisig Extra help + BIP67 tip: PASS|FAIL —
@@ -946,7 +1095,8 @@ S60b Manual wrong-pp mismatch: PASS|FAIL —
 S61 First hour checklist (+ localStorage after reload): PASS|FAIL —
 S62 Level chip: PASS|FAIL —
 S63 Guided quiz Q1–Q4: PASS|FAIL —
-S64 Three-splits tour: PASS|FAIL —
+S64 No mid-page three-splits tour: PASS|FAIL —
+S96 Intermediate select → Intermediate self-check: PASS|FAIL —
 S65 BIP-85 shell: PASS|FAIL —
 S66 Ops card: PASS|FAIL —
 S67 Mobile ~390px: PASS|FAIL|NEEDS-DOM —
@@ -954,6 +1104,33 @@ S68 Intermediate I1–I4: PASS|FAIL —
 S69 Advanced A1–A4: PASS|FAIL —
 S70 Mark I1 Multisig dock: PASS|FAIL —
 S71 Mark I4 Lab dock: PASS|FAIL —
+S83 No FIRST_HOUR.md links: PASS|FAIL —
+S84 First Hour form/compare gates: PASS|FAIL —
+S85 Go h3 before derive: PASS|FAIL —
+S86 Tools Path spacer: PASS|FAIL —
+S87 Dock unfinished action + h4: PASS|FAIL —
+S88 Quiz 4/4 next 7 then 8: PASS|FAIL —
+S89 Network h7 leak-ack Mark done: PASS|FAIL —
+S90 First Hour dock mobile wrap: PASS|FAIL —
+S91 Go h3 Receive addresses heading: PASS|FAIL —
+S92 Q2 Shamir Practice secret: PASS|FAIL —
+S93 Shamir Mark done shown disabled then fail+M: PASS|FAIL —
+S95 First Hour auto-advance Beginner: PASS|FAIL —
+S98 Mempool miss fail-fast: PASS|FAIL —
+S99 Reset → Starter intro receive-addresses subtitle: PASS|FAIL —
+S100 Three distinct Lab overlays (one OK each): PASS|FAIL —
+S102 Starter face later hidden: PASS|FAIL —
+S103 Beginner tiles + key/dice visual, no Guided quiz heading: PASS|FAIL —
+S104 Intermediate three stills + I1–I4: PASS|FAIL —
+S105 Advanced master → child keys not a wallet A1–A4: PASS|FAIL —
+S106 Faces Reset + overlays kept: PASS|FAIL —
+S107 Faces hover-(i) kept: PASS|FAIL —
+S108 Faces rec-flow form/results/missing/next/mobile: PASS|FAIL —
+S110 Lab strip data-paint follows level: PASS|FAIL —
+S111 Starter strip words only, no ENT/QR: PASS|FAIL —
+S112 Extra help Off hides captions not strip: PASS|FAIL —
+S113 Intermediate keys≠shares; Advanced master→child: PASS|FAIL —
+S114 Lab-strip rec-flow form/results/comparison/missing/recommendation/plain English/mobile/errors: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).
@@ -967,7 +1144,7 @@ Step rails: FAIL if any mid-page [data-step-rail] / *StepRail appears.
 
 ## Operator one-liner
 
-> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (**S0–S71** + human process flows) against Lab, Multisig, Shamir, SLIP-39, Network. UI label is **Extra help** (not Teach); **no mid-page step rails**. Return the Report template including Human coherence, score with stamped S-id denominator, and ui_consistent / copy_aligned / flow_intuitive.
+> Read https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md — run PROMPT FOR COMET/PERPLEXITY (**S0–S82** + human process flows) against Lab, Multisig, Shamir, SLIP-39, Network. UI label is **Extra help** (not Teach); **no mid-page step rails**. Return the Report template including Human coherence, score with stamped S-id denominator, and ui_consistent / copy_aligned / flow_intuitive.
 
 ---
 
@@ -991,3 +1168,4 @@ npm run test:e2e:live         # production
 | `e2e/help-ux.spec.ts` | S41–S48b Extra help / tips (no rails) |
 | `e2e/glossary.spec.ts` | S49–S52 Glossary |
 | `e2e/learn.spec.ts` | S61–S71 learning levels + I1/I4 docks |
+| `e2e/lab-strip.spec.ts` | S110–S113 gradual visual teach strip |

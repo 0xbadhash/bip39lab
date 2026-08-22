@@ -1,33 +1,30 @@
 # CODE-REVIEW
 
-**Marker:** CODE-REVIEW  
-**Command:** `/code_review`  
-**Base:** `v0.16.0` · **Head:** `HEAD` (post-0.16.0 patch stack)  
-**Date:** 2026-08-11  
-
-## Scope
-Non-prose: Multisig/Shamir/SLIP-39 docks, learn-levels path marks, glossary teach, network fee guards, stamp_comet_header, e2e S70/S71.
+**command:** `/code_review` after `/execute_dev`
+**base:** main (6fc31f2) · **head:** feat/gradual-visual-teach
+**task:** v0.16.25 gradual visual teach strip
+**spec:** `.agents/specs/2026-08-22-gradual-visual-teach.md`
 
 ## Secrets
-```text
-check_secrets_diff.py --base v0.16.0 --head HEAD → clean
-```
+
+- Full `check_secrets_diff` vs origin/main failed here (shallow clone, no merge-base).
+- Fallback regex on strip JS/CSS/spec: clean (no keys / xprv / assigned mnemonic secrets).
+- Strip mirrors Lab `#mnemonic` into cells. No new retention.
 
 ## Findings
-### P0
-None.
 
-### Follow-ups (not blocking)
-1. Optional: shared `markPathQuizAndReturn` helper module for Multisig/Shamir/SLIP-39 (duplicated small handlers).  
-2. Advanced external pages none — A* stay Lab-only.  
+| ID | Sev | Class | Decision |
+|----|-----|-------|----------|
+| CR1 | P1 | follow_up | Word cells use innerHTML of Lab words. Not P0; Teach-B later. |
+| CR2 | nit | follow_up | Some HTML `?v=` may still read 0.16.24; VERSION + site-version.js are 0.16.25. |
+| CR3 | nit | follow_up | Lab→room next-CTA out of this spec. |
 
-## Smoke / tests
-- e2e S70/S71 green (prior session)  
-- product_smoke + check_web_e2e at release  
+**P0 accepted:** 0
+**Follow-ups:** 3
 
-## Verdict
-**p0=0** · Accept for `/pr_review --validate`.
+## Tests
 
-```text
-✅ CODE-REVIEW DONE  p0=0  follow_ups=2
-```
+Playwright S110–S113 authored. Runtime not run in this sandbox.
+
+✅ CODE-REVIEW DONE  p0=0  follow_ups=3
+NEXT_SKILL=/behavior_validator

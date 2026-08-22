@@ -204,13 +204,21 @@ export function buildMultisigFromText(partsText, m, options) {
   const scriptHex = bytesToHex(script);
   const p2sh = p2shAddress(script);
   const p2wsh = p2wshAddress(script);
+  const pubkeysHex = pubs.map(bytesToHex);
+  const fn = bip67 ? "sortedmulti" : "multi";
+  const descriptor = "wsh(" + fn + "(" + mNum + "," + pubkeysHex.join(",") + "))";
+  const keyIds = pubkeysHex.map((h) => h.slice(0, 8));
 
   return {
     m: mNum,
     n,
     bip67,
     orderNote,
-    pubkeysHex: pubs.map(bytesToHex),
+    pubkeysHex,
+    descriptor,
+    keyIds,
+    vaultMapNote:
+      "Public vault map — not a seed. Back up this string with each key. Lose the map AND one key and you may not rebuild the vault.",
     scriptHex,
     p2sh,
     p2wsh,
@@ -361,10 +369,36 @@ export function generateDemoCosigners(n, options) {
   };
 }
 
+/** Parse only this lab’s wsh((sorted)?multi(M,hex,…)) map. */
+export function parseWshMultiDescriptor(text) {
+  const t = String(text || "").trim();
+  const m = t.match(/^wsh\((sortedmulti|multi)\((\d+),([0-9a-fA-F,]+)\)\)$/);
+  if (!m) {
+    throw new Error("not a lab vault map (expected wsh(sortedmulti|multi(M,hex,…)))");
+  }
+  const pubs = m[3].split(",").filter(Boolean);
+  if (pubs.length < 2) throw new Error("vault map needs at least two public keys");
+  return { bip67: m[1] === "sortedmulti", m: Number(m[2]), pubs };
+}
+
+export function rebuildFromVaultMap(text) {
+  const p = parseWshMultiDescriptor(text);
+  return buildMultisigFromText(p.pubs.join("\n"), p.m, { bip67: p.bip67 });
+}
+
+export function tryWithoutMap() {
+  throw new Error(
+    "Without the vault map you cannot uniquely rebuild this vault. Keys alone omit M, N, and sort policy.",
+  );
+}
+
 export const MultisigLab = {
   buildMultisigFromText,
   generateDemoCosigners,
   looksPrivate,
+  parseWshMultiDescriptor,
+  rebuildFromVaultMap,
+  tryWithoutMap,
   WORD_STRENGTH,
   VERSION: "0.9.2-ms",
 };

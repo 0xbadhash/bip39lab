@@ -7819,6 +7819,7 @@ zoo`.split("\n");
       let maps = 0;
       let keysInMap = 0;
       let globalKeys = 0;
+      let partialSigs = 0;
       const mapKeyCounts = [];
       while (i < bytes.length) {
         if (bytes[i] === 0) {
@@ -7835,6 +7836,8 @@ zoo`.split("\n");
           keyLen = bytes[i] | bytes[i + 1] << 8;
           i += 2;
         }
+        const keyType = keyLen > 0 && i < bytes.length ? bytes[i] : 0;
+        if (keyType === 2 && maps >= 1) partialSigs += 1;
         i += keyLen;
         if (i >= bytes.length) break;
         let valLen = bytes[i++];
@@ -7851,7 +7854,8 @@ zoo`.split("\n");
         magic: "psbt\\xff",
         globalKeys,
         mapCount: maps,
-        detail: "Educational parse only \u2014 not a wallet. " + maps + " key-value map(s) after magic; global keys \u2248 " + globalKeys + ". Does not sign or broadcast."
+        partialSigs,
+        detail: "Educational parse only \u2014 not a wallet. " + maps + " key-value map(s) after magic; global keys \u2248 " + globalKeys + "; partial signatures: " + partialSigs + ". Does not sign or broadcast."
       };
     } catch (e) {
       return { status: "error", detail: String(e && e.message ? e.message : e) };

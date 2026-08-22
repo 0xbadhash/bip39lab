@@ -9,7 +9,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://mempool.space; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
   <title>Network · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.1" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.25" />
 </head>
 <body>
   <div class="app">
@@ -88,7 +88,7 @@
 
             <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.25">v0.16.25</span>
           <br />
           May contact mempool.space after you opt in.
         </p>
@@ -108,7 +108,17 @@
           <h1>Network (opt-in)</h1>
           <p class="sub">Public fees, traffic, and address-only balances — not your seed</p>
         </div>
-            </header>
+        <div class="topbar-actions" id="topbarStatusChips">
+          <span class="topbar-status">
+            <span class="chip" id="chipNetOpt" title="This page may contact mempool after you opt in">
+              Network opt-in
+            </span>
+          </span>
+          <span class="topbar-status" id="airgapStatus">
+            <span class="chip chip-airgap" id="chipAirgap" title="navigator.onLine">Checking…</span>
+          </span>
+        </div>
+      </header>
 
       <main class="content">
 <div class="card" id="netCardIntro">
@@ -188,12 +198,12 @@
           <!-- Safety always visible -->
           <label class="check label-row">
             <input type="checkbox" id="balAck" />
-            I understand these addresses will be sent to the public API (leak ack)
+            I understand these addresses and my IP go to this site’s mempool proxy, then mempool.space (leak ack)
             <span class="help-tip help-tip-safety">
               <button type="button" class="help-tip-btn" aria-label="About address privacy leak">i</button>
               <span class="help-tip-panel" hidden>
-                <strong>Address leak:</strong> the API host learns which addresses you care about
-                (like looking up a bank account number in public). Never paste a recovery phrase here.
+                <strong>Address leak:</strong> this site’s <code>/api/mempool/</code> proxy, then
+                mempool.space, learn the addresses and your IP. Never paste a recovery phrase here.
                 Prefer a local node (CLI + Knots) for private checks.
               </span>
             </span>
@@ -275,13 +285,14 @@
   <!-- Viewport-bottom only (no mid-page duplicate bar) -->
   <div id="learnReturnDockNet" class="learn-return-dock" hidden role="navigation" aria-label="Return to First hour">
     <a class="btn secondary btn-sm" href="index.html?from=firsthour">← Back to First hour checklist</a>
-    <span class="learn-return-hint">Optional Network step — fees only; understand leak ack, then return and mark done.</span>
+    <span class="learn-return-hint" id="learnReturnDockNetHint">Tick the leak-ack: addresses and your IP go to the mempool proxy. Mark done stays off until that box is ticked.</span>
+    <button type="button" class="btn btn-sm" id="btnHourMarkFromDockNet" hidden disabled>Mark done</button>
   </div>
-  <script src="js/site-version.js?v=0.16.1"></script>
-  <script src="js/glossary.js?v=0.16.1"></script>
-  <script src="js/help-ui.js?v=0.16.1"></script>
-  <script src="js/learn-levels.js?v=0.16.1"></script>
-  <script src="js/network.bundle.js?v=0.16.1"></script>
-  <script src="js/network-app.js?v=0.16.1"></script>
+  <script src="js/site-version.js?v=0.16.25"></script>
+  <script src="js/glossary.js?v=0.16.25"></script>
+  <script src="js/help-ui.js?v=0.16.25"></script>
+  <script src="js/learn-levels.js?v=0.16.25"></script>
+  <script src="js/network.bundle.js?v=0.16.25"></script>
+  <script src="js/network-app.js?v=0.16.25"></script>
 </body>
 </html>

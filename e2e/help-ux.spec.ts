@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { expectNavCount } from "./helpers";
+import { expectNavCount, hourRailGo } from "./helpers";
 
 /**
  * Help UX hybrid P0–P4: tips, Extra help (no mid-page step rails).
@@ -46,18 +46,17 @@ test.describe("Help UX hybrid", () => {
     const btn = tip.locator(".help-tip-btn");
     const panel = tip.locator(".help-tip-panel");
     await expect(panel).toBeHidden();
-    await btn.click();
-    await expect(tip).toHaveClass(/is-open/);
+    await btn.hover();
     await expect(panel).toBeVisible();
     await expect(panel).toContainText(/recovery|vault|air/i);
     await page.keyboard.press("Escape");
-    await expect(tip).not.toHaveClass(/is-open/);
+    await expect(panel).toBeHidden();
   });
 
   test("S44 first-hour Go jumps to Lab sections (replaces step rail)", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await page.locator('[data-hour-step="h2"] .hour-go').click();
+    await hourRailGo(page, "h2");
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#learnReturnBar")).toBeVisible();
     await page.locator("#learnReturnBarBtn").click();
@@ -83,7 +82,7 @@ test.describe("Help UX hybrid", () => {
     const tip = page.locator("#msCardBuild .help-tip").filter({
       has: page.locator('[aria-label="About BIP67"]'),
     });
-    await tip.locator(".help-tip-btn").click();
+    await tip.locator(".help-tip-btn").hover();
     await expect(tip.locator(".help-tip-panel")).toBeVisible();
     await expect(tip.locator(".help-tip-panel")).toContainText(/BIP67|same/i);
   });
@@ -101,20 +100,20 @@ test.describe("Help UX hybrid", () => {
     await expect(det).toContainText(/BIP67 sort agreed/i);
     const bip67Tip = det.locator('.help-tip[data-term="BIP67"]');
     await expect(bip67Tip).toBeVisible();
-    await bip67Tip.locator(".help-tip-btn").click();
+    await bip67Tip.locator(".help-tip-btn").hover();
     await expect(bip67Tip.locator(".help-tip-panel")).toBeVisible();
     await expect(bip67Tip.locator(".help-tip-panel")).toContainText(/same address|lexicographic|BIP67/i);
     await page.keyboard.press("Escape"); // close tip so next ⓘ is not covered
     // Vault verify: same address = multisig vault, not solo
     const vaultTip = det.locator('.help-tip[data-term="MSVAULTVERIFY"]');
     await expect(vaultTip).toBeVisible();
-    await vaultTip.locator(".help-tip-btn").click();
+    await vaultTip.locator(".help-tip-btn").hover();
     await expect(vaultTip.locator(".help-tip-panel")).toContainText(/vault|not each|single-sig|solo/i);
     await page.keyboard.press("Escape");
     // Cosigner replace tip
     const replTip = det.locator('.help-tip[data-term="COSIGNERREPLACE"]');
     await expect(replTip).toBeVisible();
-    await replTip.locator(".help-tip-btn").click();
+    await replTip.locator(".help-tip-btn").hover();
     await expect(replTip.locator(".help-tip-panel")).toContainText(/new vault|cannot|replace|spend out/i);
   });
 
@@ -128,7 +127,7 @@ test.describe("Help UX hybrid", () => {
     await expect(page.locator("#balAck")).toBeVisible();
     await page.locator("#btnTeach").click();
     const feeTip = page.locator("#netCardFees .help-tip").first();
-    await feeTip.locator(".help-tip-btn").click();
+    await feeTip.locator(".help-tip-btn").hover();
     await expect(feeTip.locator(".help-tip-panel")).toContainText(/sat\/vB|postage|fee/i);
   });
 
@@ -148,6 +147,36 @@ test.describe("Help UX hybrid", () => {
     await expect(page.locator("#btnTeach")).toContainText(/Extra help: Off|Teach: Off/i);
     await page.locator("#btnTeach").click();
     await expect(page.locator("html")).toHaveAttribute("data-teach", "on");
+  });
+
+  test("S101 every visible Lab (i) opens on hover without click", async ({ page }) => {
+    await forceTeach(page, "on");
+    await page.goto("/");
+    const n = await page.locator(".help-tip-btn").count();
+    expect(n).toBeGreaterThanOrEqual(25);
+    const tips = page.locator(".help-tip");
+    const tcount = await tips.count();
+    expect(tcount).toBeGreaterThanOrEqual(25);
+    for (let i = 0; i < Math.min(tcount, 12); i++) {
+      const tip = tips.nth(i);
+      await tip.scrollIntoViewIfNeeded();
+      if (!(await tip.isVisible())) continue;
+      await tip.locator(".help-tip-btn").hover();
+      await expect(tip.locator(".help-tip-panel")).toBeVisible();
+    }
+    await page.goto("/multisig.html");
+    await page.locator(".help-tip").first().locator(".help-tip-btn").hover();
+    await expect(page.locator(".help-tip").first().locator(".help-tip-panel")).toBeVisible();
+    await page.goto("/network.html");
+    await page.locator(".help-tip").first().locator(".help-tip-btn").hover();
+    await expect(page.locator(".help-tip").first().locator(".help-tip-panel")).toBeVisible();
+    await page.goto("/shamir.html");
+    await page.locator(".help-tip").first().locator(".help-tip-btn").hover();
+    await expect(page.locator(".help-tip").first().locator(".help-tip-panel")).toBeVisible();
+    await page.goto("/slip39.html");
+    await expect(page.locator(".help-tip-btn")).toHaveCount(1);
+    await page.locator(".help-tip-btn").hover();
+    await expect(page.locator(".help-tip-panel")).toBeVisible();
   });
 
   test("S48b Lab still 6-nav after help UX", async ({ page }) => {

@@ -325,6 +325,33 @@
         "Extra help On shows longer explanations under cards, help folds, and most ⓘ tips. Off keeps a compact UI but still shows safety ⓘ (recovery phrase, air-gap, CSP, PSBT, educational warnings). There is no mid-page “path” wizard — left nav and First-hour/Quiz Go buttons are the jumps. Preference is stored in this browser only — not secrets.",
     },
     {
+      id: "DEVICEPIN",
+      title: "Device PIN",
+      group: "Security",
+      short: "Unlocks the signer, not the seed math",
+      body:
+        "A PIN or device password unlocks a hardware or app signer so it can use a key already on that device. It does not change the BIP-39 seed. It is not the coordinator file password.",
+    },
+    {
+      id: "COORDPW",
+      title: "Coordinator file password",
+      group: "Security",
+      short: "Hides balance on that computer",
+      body:
+        "A password on Sparrow/Nunchuk (or similar) wallet file only hides history and balance on that machine. Spend still needs M signatures. It is not a BIP-39 passphrase and not a hardware PIN.",
+    },
+    {
+      id: "VAULTMAP",
+      title: "Vault map (config / descriptor)",
+      group: "Multisig",
+      short: "Public policy string — not a seed",
+      body:
+        "The vault map is the public recipe for the multisig address: M-of-N, key order (BIP-67), and the public keys " +
+        "(shown here as wsh(sortedmulti(…)) or wsh(multi(…))). Wallets export this as a descriptor or BSMS/config file. " +
+        "It is safe to store copies with each key. It is not a recovery phrase. " +
+        "If you lose the map and also lose one key (and its backup), you may not be able to rebuild the vault address even if you still have M keys.",
+    },
+    {
       id: "MULTISIG",
       title: "Multisig (M-of-N)",
       group: "Multisig",
@@ -633,6 +660,14 @@
         MOFN: "MOFN",
         "M-OF-N": "MOFN",
         MULTISIG: "MULTISIG",
+        VAULTMAP: "VAULTMAP",
+        DEVICEPIN: "DEVICEPIN",
+        "DEVICE PIN": "DEVICEPIN",
+        COORDPW: "COORDPW",
+        "FILE PASSWORD": "COORDPW",
+        "COORDINATOR FILE PASSWORD": "COORDPW",
+        "VAULT MAP": "VAULTMAP",
+        "CONFIG FILE": "VAULTMAP",
         MSVAULTVERIFY: "MSVAULTVERIFY",
         "VAULT ADDRESS": "MSVAULTVERIFY",
         "SAME ADDRESS": "MSVAULTVERIFY",

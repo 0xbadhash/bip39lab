@@ -86,9 +86,11 @@
     }
     const tier = passphraseStrengthTier(est);
     const label = tier === "strong" ? "stronger" : tier;
+    // Avoid "~0 bits" for single-char / no diversity (still weak)
+    const shown = est < 0.5 ? "<1" : String(Math.round(est));
     return (
       "~" +
-      Math.round(est) +
+      shown +
       " bits · " +
       label +
       " (estimate only — not a security guarantee)"
@@ -118,6 +120,12 @@
       "Empty — no extra secret (not the 512-bit PBKDF2 seed size)",
       "empty"
     );
+    const bar = $("ppStrengthBar");
+    if (bar) {
+      bar.style.width = "0%";
+      bar.setAttribute("aria-valuenow", "0");
+      bar.className = "pp-strength-bar-fill pp-tier-empty";
+    }
   }
 
   function getDeriveOptions() {
@@ -749,7 +757,23 @@
     updatePathSummary(path, path.count);
     if (!m) {
       clearAddressTable();
+      if (!quiet) {
+        setStatus("Missing data — generate or paste a recovery phrase first.", "err");
+      }
       setPlainStatus("No phrase yet — generate one or paste a valid recovery phrase.", "");
+      return;
+    }
+    const wordN = m.split(/\s+/).filter(Boolean).length;
+    if (!ENT_BITS_BY_WORDS[wordN]) {
+      if (!quiet) {
+        setStatus(
+          "Invalid length (" + wordN + " words) — need 12, 15, 18, 21, or 24 words.",
+          "err"
+        );
+      }
+      clearAddressTable("Invalid length — need 12/15/18/21/24 words.");
+      setPlainStatus("Invalid length — addresses cannot be listed until word count is valid.", "err");
+      await refreshMnemonicEntropy();
       return;
     }
     if (!quiet) setStatus("Working…", "");
@@ -764,8 +788,7 @@
       }
       const result = await BIP39Lab.deriveAddresses(m, pp, path);
       fillAddressTable(result);
-      // Bridge for Network page: addresses only (never mnemonic)
-      saveSessionAddresses(result);
+      // Do not write sessionStorage here — only Send addresses → Network
       updatePathSummary(path, (result.rows && result.rows.length) || path.count);
       const plain =
         "Done offline. Listed " +
@@ -795,6 +818,9 @@
       await refreshMnemonicEntropy();
       refreshPassphraseEntropy();
       await refreshWatchOnly();
+      if (result && result.rows && result.rows.length && window.LearnLevels && LearnLevels.noteHour) {
+        LearnLevels.noteHour("h3Derived", true);
+      }
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
       clearAddressTable("Derivation failed.");
@@ -827,6 +853,19 @@
     }
     setPlainStatus("Cleared — nothing was saved to disk. Tools will use TEST DATA if you run them next.", "");
     setStatus("Cleared (memory fields only; nothing was stored).", "");
+  }
+
+  function labSiteVersionLabel() {
+    var chip = document.querySelector("[data-site-version]");
+    if (chip) {
+      var t = String(chip.textContent || "").trim();
+      if (t && t !== "…" && t !== "...") return t;
+    }
+    if (typeof BIP39LAB_SITE_TAG === "string" && BIP39LAB_SITE_TAG) return BIP39LAB_SITE_TAG;
+    if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
+      return "v" + BIP39LAB_SITE_VERSION;
+    }
+    return "v0.16.25";
   }
 
   function setStatus(text, kind) {
@@ -1120,7 +1159,7 @@
       }
     }
     if (dockBtn) {
-      dockBtn.textContent = "← Back to Guided quiz";
+      dockBtn.textContent = "← Back to Beginner";
     }
     if (b3) {
       b3.hidden = !(q3Ready && !quiz.q3);
@@ -1436,6 +1475,15 @@
         "-word throwaway phrase into Lab for this session."
       : "[Lab phrase] Using the mnemonic currently in Lab.";
     const same = aa === bb;
+    if (
+      !same &&
+      String(a).trim() === "" &&
+      String(b).trim() === "test" &&
+      window.LearnLevels &&
+      LearnLevels.noteHour
+    ) {
+      LearnLevels.noteHour("h5ComparedDiff", true);
+    }
     const verdict = same
       ? "Same address — passphrases match (or both empty). Same vault."
       : "Different addresses — the passphrase changed the wallet. Same words, two vaults.";
@@ -1547,6 +1595,8 @@
   // Educational samples only — valid psbt\xff framing, not funded spends.
   // minimal: magic + empty global map terminator
   var PSBT_SAMPLE_MINIMAL = "cHNidP8A";
+  var PSBT_SAMPLE_PARTIAL =
+    "cHNidP8AIgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA";
   // slightly longer placeholder used in e2e / docs (still synthetic)
   var PSBT_SAMPLE_STORY = "cHNidP8BAAoCAAAAAA==";
 
@@ -1581,6 +1631,11 @@
           "you do not need to click “Inspect again” unless you edit the box."
       );
       // Keep long story in out via inspect + append
+    } else if (kind === "partial") {
+      input.value = PSBT_SAMPLE_PARTIAL;
+      setPsbtStory(
+        "1-of-2 educational sample: one partial-sig key (type 0x02). Not a funded wallet. Inspect ran automatically."
+      );
     } else {
       input.value = PSBT_SAMPLE_MINIMAL;
       setPsbtStory(
@@ -1635,6 +1690,7 @@
       (r.globalKeys != null
         ? "\n\nglobal key entries ≈ " + r.globalKeys + "\nkey/value maps after magic ≈ " + r.mapCount
         : "") +
+      (r.partialSigs != null ? "\npartial signatures: " + r.partialSigs : "") +
       (r.status === "ok" ? teach : "") +
       (opts.storyKind === "story" ? storyExtra : "");
   }
@@ -1651,20 +1707,43 @@
   }
 
   async function seedQr() {
-    const m = $("mnemonic").value.trim();
+    const field = $("mnemonic");
+    const m = field ? String(field.value || "").trim().replace(/\s+/g, " ") : "";
     if (!m) {
       setStatus("No mnemonic to QR.", "err");
       return;
     }
-    if (!confirm("Show a QR of the recovery phrase? Only continue on a private air-gapped machine.")) {
+    if (!BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
+      setStatus("Invalid words or checksum — cannot QR as a backup.", "err");
       return;
     }
-    await showQr(m, "Seed phrase (sensitive)");
+    if (
+      !confirm(
+        "This will show a QR of the full recovery phrase from the live mnemonic field. Continue only on a private air-gapped machine."
+      )
+    ) {
+      return;
+    }
+    const title = $("qrModalTitle");
+    if (title) title.textContent = "Seed phrase QR (sensitive)";
+    await showQr(m, "Seed phrase (sensitive) — live field");
   }
 
-  function printBackup() {
-    const m = $("mnemonic").value.trim();
-    const words = m ? m.split(/\s+/).filter(Boolean) : [];
+  async function printBackup() {
+    const field = $("mnemonic");
+    const m = field ? String(field.value || "").trim().replace(/\s+/g, " ") : "";
+    if (!m || !BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
+      setStatus("Invalid words or checksum — cannot print as a backup.", "err");
+      return;
+    }
+    if (
+      !confirm(
+        "This will print the full recovery phrase from the live mnemonic field. Continue only if this machine and printer are trusted."
+      )
+    ) {
+      return;
+    }
+    const words = m.split(/\s+/).filter(Boolean);
     const ol = $("printWordList");
     if (ol) {
       ol.innerHTML = "";
@@ -1695,12 +1774,32 @@
   }
 
   async function onGenerate() {
+    const cur = $("mnemonic") ? String($("mnemonic").value || "").trim() : "";
+    if (cur) {
+      if (!confirm("Generate will replace the current phrase in this tab. Continue?")) {
+        setStatus("Generate cancelled — current phrase kept.", "");
+        return;
+      }
+    }
     const n = parseInt($("wordCount").value, 10);
     const m = await BIP39Lab.generateMnemonic(n);
     $("mnemonic").value = m;
     await refreshMnemonicEntropy();
     refreshPassphraseEntropy();
     await deriveNow({ quiet: false });
+    try {
+      if (
+        window.BIP39Lab &&
+        BIP39Lab.validateMnemonic &&
+        BIP39Lab.validateMnemonic(m) &&
+        window.LearnLevels &&
+        LearnLevels.noteHour
+      ) {
+        LearnLevels.noteHour("h2Generated", true);
+      }
+    } catch (eGen) {
+      /* ignore */
+    }
     const path = getDeriveOptions();
     setStatus(
       "Generated offline · " + path.count + " receive addresses in the table below.",
@@ -1709,9 +1808,36 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    $("btnGenerate").addEventListener("click", () => onGenerate().catch(console.error));
-    $("btnDerive").addEventListener("click", () => deriveNow({ quiet: false }).catch(console.error));
-    $("btnClear").addEventListener("click", clearSecrets);
+    function hideLabOverlay(id) {
+      const el = $(id);
+      if (!el) return;
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
+    }
+    function showLabOverlay(id) {
+      ["overlayGenerate", "overlayDerive", "overlayClear"].forEach(hideLabOverlay);
+      const el = $(id);
+      if (!el) return;
+      if (id === "overlayGenerate") {
+        const n = $("wordCount") ? $("wordCount").value : "12";
+        const span = $("overlayGenerateWords");
+        if (span) span.textContent = String(n || "12");
+      }
+      el.hidden = false;
+      el.setAttribute("aria-hidden", "false");
+    }
+    $("btnGenerate").addEventListener("click", () => showLabOverlay("overlayGenerate"));
+    $("btnDerive").addEventListener("click", () => showLabOverlay("overlayDerive"));
+    $("btnClear").addEventListener("click", () => showLabOverlay("overlayClear"));
+    document.querySelectorAll("[data-overlay-ok]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-overlay-ok");
+        hideLabOverlay(id);
+        if (id === "overlayGenerate") onGenerate().catch(console.error);
+        else if (id === "overlayDerive") deriveNow({ quiet: false }).catch(console.error);
+        else if (id === "overlayClear") clearSecrets();
+      });
+    });
     $("hidePrivate").addEventListener("change", (e) => setPrivateVisible(!e.target.checked));
 
     $("mnemonic").addEventListener("input", () => {
@@ -1730,8 +1856,55 @@
       $(id).addEventListener("input", () => scheduleDerive());
     });
 
+    function noteH4FromControl(kind, el) {
+      if (!window.LearnLevels || !LearnLevels.noteHour) return;
+      var ev = {};
+      try {
+        ev = JSON.parse(sessionStorage.getItem("bip39lab.hourEvidence") || "{}") || {};
+      } catch (eE) {
+        ev = {};
+      }
+      if (!ev.h4Snap) return;
+      if (kind === "h4Coin" && el && el.value !== ev.h4Snap.network) LearnLevels.noteHour("h4Coin", true);
+      if (kind === "h4Account" && el && el.value !== ev.h4Snap.account) LearnLevels.noteHour("h4Account", true);
+      if (kind === "h4Change" && el && el.value !== ev.h4Snap.change) LearnLevels.noteHour("h4Change", true);
+      if (kind === "h4Index" && el && el.value !== ev.h4Snap.count) LearnLevels.noteHour("h4Index", true);
+    }
+    if ($("deriveNetwork")) {
+      $("deriveNetwork").addEventListener("change", function () {
+        noteH4FromControl("h4Coin", $("deriveNetwork"));
+      });
+    }
+    if ($("deriveAccount")) {
+      $("deriveAccount").addEventListener("input", function () {
+        noteH4FromControl("h4Account", $("deriveAccount"));
+      });
+      $("deriveAccount").addEventListener("change", function () {
+        noteH4FromControl("h4Account", $("deriveAccount"));
+      });
+    }
+    if ($("deriveChange")) {
+      $("deriveChange").addEventListener("change", function () {
+        noteH4FromControl("h4Change", $("deriveChange"));
+      });
+    }
+    if ($("deriveCount")) {
+      $("deriveCount").addEventListener("change", function () {
+        noteH4FromControl("h4Index", $("deriveCount"));
+      });
+    }
+
     document.querySelectorAll(".seg-tab[data-addr-type]").forEach((btn) => {
       btn.addEventListener("click", () => {
+        if (!btn.classList.contains("is-active") && window.LearnLevels && LearnLevels.noteHour) {
+          var evP = {};
+          try {
+            evP = JSON.parse(sessionStorage.getItem("bip39lab.hourEvidence") || "{}") || {};
+          } catch (eP) {
+            evP = {};
+          }
+          if (evP.h4Snap) LearnLevels.noteHour("h4Purpose", true);
+        }
         setSegActive(".seg-tab[data-addr-type]", "data-addr-type", btn.getAttribute("data-addr-type"));
         updateAddrTypeChrome();
         if (lastRows && lastRows.length) fillAddressTable({ rows: lastRows });
@@ -1784,7 +1957,9 @@
     });
 
     if ($("btnSeedQr")) $("btnSeedQr").addEventListener("click", () => seedQr().catch(console.error));
-    if ($("btnPrintBackup")) $("btnPrintBackup").addEventListener("click", printBackup);
+    if ($("btnPrintBackup")) {
+      $("btnPrintBackup").addEventListener("click", () => printBackup().catch(console.error));
+    }
     if ($("btnSendNetwork")) $("btnSendNetwork").addEventListener("click", sendToNetwork);
     if ($("btnDice")) {
       $("btnDice").addEventListener("click", () => {
@@ -1902,6 +2077,11 @@
         loadPsbtSample("story");
       });
     }
+    if ($("btnPsbtSamplePartial")) {
+      $("btnPsbtSamplePartial").addEventListener("click", function () {
+        loadPsbtSample("partial");
+      });
+    }
     if ($("btnDescExplain")) $("btnDescExplain").addEventListener("click", explainDescUi);
     if ($("btnDescExample")) {
       $("btnDescExample").addEventListener("click", () => {
@@ -1967,8 +2147,8 @@
     updateAirgapChip();
     initTheme();
 
-    const ver = typeof BIP39Lab !== "undefined" && BIP39Lab.VERSION ? BIP39Lab.VERSION : "?";
-    setStatus("Ready (offline lab v" + ver + "). Generate fills the address table automatically.", "");
+    const ver = labSiteVersionLabel();
+    setStatus("Ready (offline lab " + ver + "). Generate fills the address table automatically.", "");
     setPlainStatus(
       "Tip: Generate a phrase to fill the table. Tools panel has path playground, PSBT inspect, descriptors. Shortcuts: G / D / ?",
       ""

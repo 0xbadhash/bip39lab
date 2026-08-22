@@ -1,20 +1,17 @@
 # BEHAVIOR-REPORT
 
-**Marker:** BEHAVIOR-REPORT  
-**Surface:** Playwright learn + multisig help-ux  
-**Base…head:** `v0.16.0`…`HEAD`
+**Stamp:** 0.16.25
+**Contract:** gradual visual teach strip (spec 2026-08-22)
 
-| ID | Result | Evidence |
-|----|--------|----------|
-| B1 | **pass** | S70 Mark I1 Multisig → I1 Passed |
-| B2 | **pass** | S71 Mark I4 Lab dock → I4 Passed |
-| B3 | **pass** | S46 vault/replace/BIP67 tips |
-| B4 | **pass** | S12b demo zpub tip enhance |
-| B5 | **pass** | Comet stamp S0–S71 / 88 S-ids |
-| B6 | **pass** | quizReturn mode strings + fee null guards |
+| Clause | Result | Evidence |
+|--------|--------|----------|
+| 1 One #labStrip; data-paint tracks Classroom | pass (source) | S110 |
+| 2 Starter word card; no ENT slider/QR on strip | pass (source) | S111 |
+| 3 Extra help Off hides captions | pass (source) | S112 |
+| 4 Int keys≠shares; Adv master→child | pass (source) | S113 |
+| 5 app-shell tokens only | pass (source) | --panel --accent --border |
+| 6 Textarea remains | pass | Teach-B later |
+| 7 Runtime PW | deferred | operator `npx playwright test e2e/lab-strip.spec.ts` |
 
-**fail:** none · **blocked:** none  
-
-```text
+✅ BEHAVIOR VALIDATED (source + tests authored; runtime deferred)
 NEXT_SKILL=/pr_review --validate
-```

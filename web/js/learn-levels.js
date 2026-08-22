@@ -8,7 +8,6 @@
   var LEVEL_KEY = "bip39lab.level";
   var HOUR_KEY = "bip39lab.firstHour";
   var QUIZ_KEY = "bip39lab.quiz";
-  var TOUR_KEY = "bip39lab.tour";
   var LEVELS = ["starter", "beginner", "intermediate", "advanced"];
 
   function $(id) {
@@ -56,21 +55,151 @@
 
   var LEVEL_BLURBS = {
     starter:
-      "Starter: orientation + First hour checklist. Quiz / tour stay dimmed until you raise Level.",
+      "Starter: Offline BIP-39 lab + First hour + lab. Later levels stay off this face.",
     beginner:
-      "Beginner: Guided quiz is open (Q1–Q4). Do that next, then raise Level to Intermediate for the tour.",
+      "Beginner: Passphrase and entropy (Q1–Q4). Intermediate stays hidden.",
     intermediate:
-      "Intermediate: three-splits tour + I1–I4 self-check (keys vs shares vs words + PSBT inspect). Next: Advanced.",
+      "Intermediate: keys ≠ shares ≠ share-words (I1–I4). Advanced stays hidden.",
     advanced:
-      "Advanced: BIP-85 + Ops + A1–A4 self-check (watch-only, Knots limits, is-not).",
+      "Advanced: master → child keys. This site is not a wallet (A1–A4).",
   };
 
   var LEVEL_UNLOCKS = {
-    starter: "Orientation + First hour",
-    beginner: "Guided quiz (Q1–Q4)",
-    intermediate: "Tour · I1–I4 three splits + inspect-only",
-    advanced: "BIP-85 · Ops · A1–A4 ops mind",
+    starter: "Offline BIP-39 lab + First hour + lab",
+    beginner: "Passphrase and entropy (Q1–Q4)",
+    intermediate: "keys ≠ shares ≠ share-words (I1–I4)",
+    advanced: "master → child keys · not a wallet (A1–A4)",
   };
+
+  var FACE_RANK = { starter: 0, beginner: 1, intermediate: 2, advanced: 3 };
+  var CHAPTER_ASSET = {
+    starter: [
+      "assets/catalyxt/chapters/starter-info.svg",
+      "assets/ds/faces/bip39-starter.svg",
+    ],
+    beginner: [
+      "assets/catalyxt/chapters/beginner-seed.svg",
+      "assets/ds/faces/bip39-beginner.svg",
+    ],
+    intermediate: [
+      "assets/catalyxt/chapters/intermediate-keys-shares.svg",
+      "assets/catalyxt/chapters/intermediate.svg",
+      "assets/ds/faces/bip39-intermediate.svg",
+    ],
+    advanced: [
+      "assets/catalyxt/chapters/advanced-master-child.svg",
+      "assets/catalyxt/chapters/advanced.svg",
+      "assets/ds/faces/bip39-advanced.svg",
+    ],
+  };
+
+  function chapterCandidates(id, img) {
+    var out = [];
+    var ds = img.getAttribute("data-ds-asset");
+    if (ds) out.push(ds);
+    var listed = CHAPTER_ASSET[id];
+    if (typeof listed === "string") out.push(listed);
+    else if (listed) out = out.concat(listed);
+    var src = img.getAttribute("src");
+    if (src) out.push(src);
+    var seen = {};
+    return out.filter(function (s) {
+      if (!s || seen[s]) return false;
+      seen[s] = 1;
+      return true;
+    });
+  }
+
+  function hookChapterVisuals() {
+    document.querySelectorAll("img.chapter-visual-img[data-chapter]").forEach(function (img) {
+      var id = img.getAttribute("data-chapter");
+      var cands = chapterCandidates(id, img);
+      if (!cands.length) return;
+      var key = cands.join("|");
+      if (img.getAttribute("data-chapter-hooked") === key) return;
+      img.setAttribute("data-chapter-hooked", key);
+      img.hidden = true;
+      var i = 0;
+      function hideHook(on) {
+        document.querySelectorAll('[data-chapter-hook="' + id + '"]').forEach(function (hook) {
+          hook.hidden = !!on;
+        });
+      }
+      function tryNext() {
+        if (i >= cands.length) {
+          img.hidden = true;
+          hideHook(false);
+          return;
+        }
+        var src = cands[i++];
+        function ok() {
+          img.removeEventListener("load", ok);
+          img.removeEventListener("error", fail);
+          img.hidden = false;
+          hideHook(true);
+        }
+        function fail() {
+          img.removeEventListener("load", ok);
+          img.removeEventListener("error", fail);
+          tryNext();
+        }
+        img.addEventListener("load", ok);
+        img.addEventListener("error", fail);
+        if (img.getAttribute("src") === src && img.complete && img.naturalWidth) ok();
+        else img.setAttribute("src", src);
+      }
+      tryNext();
+    });
+  }
+
+  function applyFaces(level) {
+    level = level || getLevel();
+    var li = FACE_RANK[level];
+    if (li == null) li = 0;
+    document.querySelectorAll("[data-face]").forEach(function (el) {
+      var face = el.getAttribute("data-face") || "starter";
+      var fi = FACE_RANK[face];
+      if (fi == null) fi = 0;
+      var force = el.getAttribute("data-level-force") === "show";
+      el.classList.remove("face-current", "face-past", "face-later", "face-collapsed");
+      if (force) {
+        el.hidden = false;
+        el.classList.add("face-current");
+        return;
+      }
+      if (fi === li) {
+        el.hidden = false;
+        el.classList.add("face-current");
+      } else if (fi < li) {
+        el.hidden = false;
+        el.classList.add("face-past");
+        if (!(el.id === "cardFirstHour" && level === "beginner")) {
+          el.classList.add("face-collapsed");
+        }
+      } else {
+        el.hidden = true;
+        el.classList.add("face-later");
+      }
+    });
+    hookChapterVisuals();
+  }
+
+  function wireFaceToggles() {
+    if (wireFaceToggles._done) return;
+    wireFaceToggles._done = true;
+    document.addEventListener("click", function (ev) {
+      var head = ev.target && ev.target.closest ? ev.target.closest("[data-face] > h2, [data-face] > .card-head") : null;
+      if (!head) return;
+      if (ev.target.closest && ev.target.closest(".help-tip, button, a")) return;
+      var card = head.parentElement;
+      if (!card || !card.classList.contains("face-collapsed") && !card.classList.contains("face-past")) return;
+      if (card.classList.contains("face-collapsed")) {
+        card.classList.remove("face-collapsed");
+      } else {
+        card.classList.add("face-collapsed");
+      }
+    });
+  }
 
   function updateLevelHint(level) {
     var hint = $("learnLevelHint");
@@ -93,9 +222,9 @@
       if (ni > pi) {
         if (level === "beginner") {
           msg =
-            "Beginner unlocked: Guided quiz is next. Scroll to the green “what’s next” box or open the quiz below.";
+            "Beginner unlocked: Passphrase and entropy (Q1–Q4) is next.";
         } else if (level === "intermediate") {
-          msg = "Intermediate unlocked: tour + I1–I4 self-check (keys vs shares vs words + PSBT).";
+          msg = "Intermediate unlocked: I1–I4 self-check (keys vs shares vs words + PSBT).";
         } else if (level === "advanced") {
           msg = "Advanced unlocked: BIP-85, Ops, and A1–A4 self-check are open.";
         } else {
@@ -132,9 +261,18 @@
         next.hidden = false;
         next.scrollIntoView({ behavior: "smooth", block: "nearest" });
       } else if (quiz) {
-        quiz.scrollIntoView({ behavior: "smooth", block: "start" });
+        quiz.scrollIntoView({ behavior: "auto", block: "start" });
       }
     }, 150);
+  }
+
+  /** h1–h6 apply; h7 is optional. No extra Set Beginner click. */
+  function maybeAutoBeginner() {
+    if (getLevel() !== "starter") return;
+    var st = loadJson(HOUR_KEY, {});
+    if (st.h1 && st.h2 && st.h3 && st.h4 && st.h5 && st.h6) {
+      graduateToBeginner();
+    }
   }
 
   function applyLevel(level, opts) {
@@ -184,30 +322,46 @@
       b.hidden = LEVELS.indexOf(level) >= LEVELS.indexOf(min);
     });
     updateFirstHourNext();
+    refreshBeginnerChrome();
+    applyFaces(level);
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
-      // For beginner, prefer the “what’s next” box over a random unlocked card jump
       if (level === "beginner") {
-        setTimeout(function () {
-          var next = $("firstHourNext");
-          if (next && !next.hidden) next.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          else if (firstUnlocked) firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 120);
+        var ch = $("chapterBeginner") || $("cardQuiz");
+        if (ch) ch.scrollIntoView({ behavior: "auto", block: "start" });
+        else if (firstUnlocked) firstUnlocked.scrollIntoView({ behavior: "auto", block: "nearest" });
+      } else if (level === "intermediate") {
+        var intCard = $("cardIntQuiz");
+        if (intCard) intCard.scrollIntoView({ behavior: "auto", block: "start" });
       } else if (firstUnlocked) {
-        setTimeout(function () {
-          firstUnlocked.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 120);
+        firstUnlocked.scrollIntoView({ behavior: "auto", block: "nearest" });
       }
     }
   }
 
   var HOUR_RETURN_KEY = "bip39lab.hourReturn";
+  var HOUR_ACTIVE_KEY = "bip39lab.hourActive";
+  var HOUR_EVIDENCE_KEY = "bip39lab.hourEvidence";
   var QUIZ_RETURN_KEY = "bip39lab.quizReturn";
   var QUIZ_ACTIVE_KEY = "bip39lab.quizActive";
   var INT_QUIZ_KEY = "bip39lab.intQuiz";
   var ADV_QUIZ_KEY = "bip39lab.advQuiz";
   /** @type {"hour"|"quiz"|"intquiz"|"advquiz"|null} */
   var learnReturnMode = null;
+
+  /**
+   * Lab index only (`/` or index.html). On Multisig/Shamir/Network/SLIP-39,
+   * ?from=intquiz|quiz|firsthour means “demo visit” — those pages own the dock.
+   * Lab-index handlers must not strip the query before page apps run (S70).
+   */
+  function isLabIndexPage() {
+    try {
+      var base = (location.pathname || "").split("/").pop() || "";
+      return base === "" || base === "index.html";
+    } catch (eP) {
+      return true;
+    }
+  }
 
   /** Truthy quiz-return markers: legacy "1" + mode strings used after I/A paths. */
   function isQuizReturnValue(v) {
@@ -226,6 +380,270 @@
    * One floating dock only — never stack hour + quiz sticky bars over content.
    * mode: "hour" | "quiz" | "intquiz" | "advquiz" | null (hide)
    */
+  function loadHourEvidence() {
+    try {
+      var raw = sessionStorage.getItem(HOUR_EVIDENCE_KEY);
+      if (!raw) return {};
+      var ev = JSON.parse(raw);
+      return ev && typeof ev === "object" ? ev : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveHourEvidence(ev) {
+    try {
+      sessionStorage.setItem(HOUR_EVIDENCE_KEY, JSON.stringify(ev || {}));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function getHourActive() {
+    try {
+      return sessionStorage.getItem(HOUR_ACTIVE_KEY) || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function setHourActive(id) {
+    try {
+      if (id) sessionStorage.setItem(HOUR_ACTIVE_KEY, id);
+      else sessionStorage.removeItem(HOUR_ACTIVE_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function addressesFilled() {
+    var body = $("addrTableBody");
+    if (!body) return false;
+    var rows = body.querySelectorAll("tr:not(.empty-row)");
+    return rows.length >= 1;
+  }
+
+  function scrollPageToEl(el) {
+    if (!el) return;
+    try {
+      var top = el.getBoundingClientRect().top + (window.pageYOffset || 0) - 8;
+      window.scrollTo(0, Math.max(0, top));
+    } catch (e) {
+      try {
+        el.scrollIntoView({ behavior: "auto", block: "start" });
+      } catch (e2) {
+        /* ignore */
+      }
+    }
+  }
+
+  function scrollToReceiveHeading() {
+    if (typeof window.__bip39ShowTab === "function") window.__bip39ShowTab("lab");
+    var head = $("headingReceive") || $("card-addresses");
+    scrollPageToEl(head);
+    try {
+      var ops = $("cardOps");
+      if (head && ops) {
+        var ht = head.getBoundingClientRect().top;
+        var ot = ops.getBoundingClientRect().top;
+        if (Math.abs(ot) < 120 && ht > 80) scrollPageToEl(head);
+      }
+    } catch (e3) {
+      /* ignore */
+    }
+  }
+
+  function refreshBeginnerChrome() {
+    var risen = LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner");
+    var h8 = document.querySelector('[data-hour-step="h8"]');
+    if (h8) h8.hidden = risen;
+    ["hourGoBeginner", "btnReadyBeginner", "quizHourNextBeginner"].forEach(function (id) {
+      var el = $(id);
+      if (el) el.hidden = risen;
+    });
+  }
+
+  function quizPassedCount() {
+    var st = loadJson(QUIZ_KEY, {});
+    return (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0) + (st.q4 ? 1 : 0);
+  }
+
+  function hourStepReady(id) {
+    var ev = loadHourEvidence();
+    if (id === "h1") return !!ev.h1SeenOrientation;
+    if (id === "h2") return !!ev.h2Generated;
+    if (id === "h3") return !!ev.h3Derived || addressesFilled();
+    if (id === "h4") {
+      return !!(ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index);
+    }
+    if (id === "h5") return !!ev.h5ComparedDiff;
+    if (id === "h6") {
+      var q = loadJson(QUIZ_KEY, {});
+      return !!(q.q1 && q.q2 && q.q3 && q.q4);
+    }
+    if (id === "h7") return !!(ev.h7Ack && ev.h7Loaded && ev.h7Fetched);
+    if (id === "h8") return false;
+    return false;
+  }
+
+  function hourNeedCopy(id) {
+    var ready = hourStepReady(id);
+    var n = quizPassedCount();
+    if (id === "h1") {
+      return ready
+        ? "You saw the table. Mark done to check step 1 and return."
+        : "Read the air-gap note and the What this is / isn’t table. Mark done turns on after that table is on screen.";
+    }
+    if (id === "h2") {
+      return ready
+        ? "Practice phrase generated. Mark done to check step 2 and return."
+        : "Press Generate for a practice phrase (not funded). Mark done stays off until Generate succeeds.";
+    }
+    if (id === "h3") {
+      if (!ready) {
+        return "Press Validate & derive so addresses fill. Then we will take you to Receive addresses.";
+      }
+      return "Addresses are filled. Mark done to check step 3 and return.";
+    }
+    if (id === "h4") {
+      return ready
+        ? "You used purpose / coin / account / change / index. Mark done to check step 4 and return."
+        : "In Path playground, use purpose, coin, account, change, and index (Lab path controls). Mark done stays off until all five have been used.";
+    }
+    if (id === "h5") {
+      return ready
+        ? "Empty vs test produced different addresses. Mark done to check step 5 and return."
+        : "Compare empty vs test. Mark done stays off until the two sides show different addresses.";
+    }
+    if (id === "h6") {
+      if (n < 4) {
+        return "Mark Q1–Q4 Passed when each idea is clear (" + n + " / 4). Step 6 checks itself at 4/4.";
+      }
+      return "Q1–Q4 complete. Next: 7 Network (optional) — fees and leak-ack — then 8 Raise to Beginner.";
+    }
+    if (id === "h7") {
+      var ev7 = loadHourEvidence();
+      if (ev7.h7Ack) {
+        return "Leak-ack accepted. Mark done to check step 7 and return to the checklist.";
+      }
+      return "Tick leak-ack, load addresses, then fetch info. Mark done stays off until that flow is done.";
+    }
+    if (id === "h8") {
+      return "Level raises on its own when the First Hour steps that apply are done.";
+    }
+    return "";
+  }
+
+  function snapshotH4IfNeeded() {
+    var ev = loadHourEvidence();
+    if (ev.h4Snap) return;
+    ev.h4Snap = {
+      network: ($("deriveNetwork") && $("deriveNetwork").value) || "",
+      account: ($("deriveAccount") && $("deriveAccount").value) || "",
+      change: ($("deriveChange") && $("deriveChange").value) || "",
+      count: ($("deriveCount") && $("deriveCount").value) || "",
+    };
+    saveHourEvidence(ev);
+  }
+
+  function noteHour(key, val) {
+    if (val === undefined) val = true;
+    var ev = loadHourEvidence();
+    ev[key] = val;
+    saveHourEvidence(ev);
+    refreshHourGates();
+    if (key === "h3Derived" && getHourActive() === "h3" && addressesFilled()) {
+      scrollToReceiveHeading();
+    }
+    return ev;
+  }
+
+  function watchOrientationTable() {
+    var table = $("orientationTable");
+    if (!table || typeof IntersectionObserver === "undefined") {
+      if (table) noteHour("h1SeenOrientation", true);
+      return;
+    }
+    try {
+      var io = new IntersectionObserver(
+        function (ents) {
+          for (var i = 0; i < ents.length; i++) {
+            if (ents[i].isIntersecting && ents[i].intersectionRatio > 0) {
+              noteHour("h1SeenOrientation", true);
+              try {
+                io.disconnect();
+              } catch (eD) {
+                /* ignore */
+              }
+              break;
+            }
+          }
+        },
+        { threshold: [0.01, 0.2] }
+      );
+      io.observe(table);
+    } catch (e) {
+      noteHour("h1SeenOrientation", true);
+    }
+  }
+
+  function setHourMarkEnabled(btn, on) {
+    if (!btn) return;
+    btn.disabled = !on;
+    btn.setAttribute("aria-disabled", on ? "false" : "true");
+  }
+
+  function refreshHourGates() {
+    var active = getHourActive();
+    document.querySelectorAll("[data-hour-step]").forEach(function (el) {
+      var id = el.getAttribute("data-hour-step");
+      var ready = hourStepReady(id);
+      var cb = el.querySelector(".hour-step-cb") || el.querySelector('input[type="checkbox"]');
+      if (cb) {
+        cb.disabled = true;
+        cb.setAttribute("aria-disabled", "true");
+        cb.onchange = null;
+      }
+    });
+    var railDone = $("hourRailDone");
+    var railGo = $("hourRailGo");
+    var railGrad = $("hourGoBeginner");
+    var sel = getSelectedHourLi();
+    var sid = sel ? sel.getAttribute("data-hour-step") : "h1";
+    var sReady = hourStepReady(sid);
+    if (railGrad) railGrad.hidden = sid !== "h8";
+    if (railGo) railGo.hidden = sid === "h8";
+    if (railDone) {
+      if (sid === "h6" || sid === "h8") {
+        railDone.hidden = true;
+        railDone.disabled = true;
+      } else {
+        railDone.hidden = false;
+        setHourMarkEnabled(railDone, sReady);
+      }
+    }
+    var dockMark = $("btnHourMarkFromDock");
+    if (dockMark) {
+      var showDockMark = /^(h1|h2|h3|h4|h5|h7)$/.test(active);
+      dockMark.hidden = !showDockMark;
+      setHourMarkEnabled(dockMark, showDockMark && hourStepReady(active));
+    }
+    var hintEl = $("learnReturnBarHint");
+    if (hintEl && learnReturnMode === "hour") {
+      hintEl.textContent = hourNeedCopy(active) || "";
+    }
+    var qn = $("quizHourNext");
+    if (qn) qn.hidden = quizPassedCount() < 4;
+    var netMark = $("btnHourMarkFromDockNet");
+    if (netMark) {
+      var ev = loadHourEvidence();
+      netMark.hidden = false;
+      setHourMarkEnabled(netMark, hourStepReady("h7"));
+      var netHint = $("learnReturnDockNetHint");
+      if (netHint) netHint.textContent = hourNeedCopy("h7");
+    }
+  }
+
   function hideAllQuizMarkBtns() {
     ["btnMarkQ1FromTools", "btnMarkQ3FromEnt", "btnMarkQ4FromEnt", "btnMarkPathFromDock"].forEach(
       function (id) {
@@ -292,7 +710,7 @@
   }
 
   function returnBtnLabel(mode) {
-    if (mode === "quiz") return "← Back to Guided quiz";
+    if (mode === "quiz") return "← Back to Beginner";
     if (mode === "intquiz") return "← Back to Intermediate quiz";
     if (mode === "advquiz") return "← Back to Advanced quiz";
     return "← Back to First hour";
@@ -302,7 +720,7 @@
     if (mode === "quiz") return "Experiment, then mark passed only when clear.";
     if (mode === "intquiz") return "Keys ≠ shares ≠ share-words. Mark when clear.";
     if (mode === "advquiz") return "Ops mind offline. Mark when clear.";
-    return "Finish, then Mark done on the checklist.";
+    return hourNeedCopy(getHourActive()) || "Read the next First Hour step, then press Go.";
   }
 
   function showLearnReturn(mode, hint) {
@@ -323,12 +741,21 @@
     bar.setAttribute("data-return-mode", mode);
     setBodyReturnOpen(true);
     if (btn) btn.textContent = returnBtnLabel(mode);
-    if (hintEl) hintEl.textContent = hint || returnDefaultHint(mode);
+    if (hintEl) {
+      hintEl.textContent =
+        hint ||
+        (mode === "hour" ? hourNeedCopy(getHourActive()) : returnDefaultHint(mode));
+    }
     if (mode === "quiz") updateQuizMarkButtonsOnDock();
     else if (mode === "intquiz" || mode === "advquiz") {
       hideAllQuizMarkBtns();
       updatePathQuizMarkOnDock();
     } else hideAllQuizMarkBtns();
+    if (mode === "hour") refreshHourGates();
+    else {
+      var hm = $("btnHourMarkFromDock");
+      if (hm) hm.hidden = true;
+    }
   }
 
   function markQuizFromDock(q) {
@@ -382,7 +809,7 @@
     setTimeout(function () {
       var card = $("cardFirstHour");
       if (card) {
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
           card.focus({ preventScroll: true });
@@ -394,6 +821,10 @@
   }
 
   function markHourStep(id, done) {
+    if (done) {
+      if (id === "h6") return;
+      if (id !== "h8" && !hourStepReady(id)) return;
+    }
     var st = loadJson(HOUR_KEY, {});
     st[id] = !!done;
     saveJson(HOUR_KEY, st);
@@ -405,9 +836,20 @@
     var href = li.getAttribute("data-hour-href");
     var tab = li.getAttribute("data-hour-tab");
     var target = li.getAttribute("data-hour-target");
-    var needLevel = li.querySelector(".hour-go") && li.querySelector(".hour-go").getAttribute("data-hour-level");
+    var stepId = li.getAttribute("data-hour-step") || "";
+    var needLevel = li.getAttribute("data-hour-level");
     if (needLevel) setLevel(needLevel);
+    setHourActive(stepId);
+    if (stepId === "h4") snapshotH4IfNeeded();
     setHourReturn();
+    if (stepId === "h3") {
+      goTab("lab");
+      setTimeout(function () {
+        scrollToReceiveHeading();
+        refreshHourGates();
+      }, 80);
+      return;
+    }
     if (href) {
       // Network (or external page): return via bar on index after user navigates back, or query
       try {
@@ -422,7 +864,7 @@
     setTimeout(function () {
       var el = target ? document.querySelector(target) : null;
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
           el.focus({ preventScroll: true });
@@ -440,9 +882,9 @@
       var cb = el.querySelector(".hour-step-cb") || el.querySelector('input[type="checkbox"]');
       if (cb) {
         cb.checked = !!st[id];
-        cb.onchange = function () {
-          markHourStep(id, cb.checked);
-        };
+        cb.disabled = true;
+        cb.setAttribute("aria-disabled", "true");
+        cb.onchange = null;
       }
       el.classList.toggle("hour-step-done", !!st[id]);
     });
@@ -455,36 +897,72 @@
     });
     var prog = $("firstHourProgress");
     if (prog) prog.textContent = done + " / " + total + " steps done";
+    refreshHourGates();
+    refreshBeginnerChrome();
+    maybeAutoBeginner();
+  }
+
+  function getSelectedHourLi() {
+    return (
+      document.querySelector("#firstHourList .hour-step.is-selected") ||
+      document.querySelector("#firstHourList [data-hour-step]")
+    );
+  }
+
+  function selectHourStep(id) {
+    var list = $("firstHourList");
+    if (!list || !id) return;
+    list.querySelectorAll("[data-hour-step]").forEach(function (el) {
+      var on = el.getAttribute("data-hour-step") === id;
+      el.classList.toggle("is-selected", on);
+    });
+    refreshHourGates();
   }
 
   function wireFirstHour() {
-    document.querySelectorAll("[data-hour-step]").forEach(function (li) {
-      var id = li.getAttribute("data-hour-step");
-      var go = li.querySelector(".hour-go");
-      var doneBtn = li.querySelector(".hour-done");
-      if (go) {
-        go.addEventListener("click", function (ev) {
+    var list = $("firstHourList");
+    if (list) {
+      list.querySelectorAll("[data-hour-step]").forEach(function (li) {
+        li.addEventListener("click", function (ev) {
+          if (ev.target && ev.target.closest && ev.target.closest("a, .hour-go, .hour-done")) return;
           ev.preventDefault();
-          if (go.id === "hourGoBeginner") {
-            graduateToBeginner();
-            return;
-          }
-          goHourStep(li);
+          selectHourStep(li.getAttribute("data-hour-step"));
         });
-      }
-      if (doneBtn) {
-        doneBtn.addEventListener("click", function (ev) {
+        li.addEventListener("keydown", function (ev) {
+          if (ev.key !== "Enter" && ev.key !== " ") return;
           ev.preventDefault();
-          // Step 8 has no Mark done — only Set Beginner
-          if (id === "h8") {
-            graduateToBeginner();
-            return;
-          }
-          markHourStep(id, true);
-          returnToFirstHour();
+          selectHourStep(li.getAttribute("data-hour-step"));
         });
-      }
-    });
+      });
+    }
+    var go = $("hourRailGo");
+    if (go) {
+      go.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        goHourStep(getSelectedHourLi());
+      });
+    }
+    var doneBtn = $("hourRailDone");
+    if (doneBtn) {
+      doneBtn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var li = getSelectedHourLi();
+        var id = li && li.getAttribute("data-hour-step");
+        if (!id || id === "h8") {
+          graduateToBeginner();
+          return;
+        }
+        markHourStep(id, true);
+        if (hourStepReady(id)) returnToFirstHour();
+      });
+    }
+    var grad = $("hourGoBeginner");
+    if (grad) {
+      grad.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        graduateToBeginner();
+      });
+    }
     var back = $("hourScrollTop");
     if (back) back.addEventListener("click", returnToFirstHour);
     var nextQuiz = $("btnNextGoQuiz");
@@ -498,7 +976,7 @@
             q.setAttribute("data-level-force", "show");
             q.classList.remove("level-gated");
             q.hidden = false;
-            q.scrollIntoView({ behavior: "smooth", block: "start" });
+            q.scrollIntoView({ behavior: "auto", block: "start" });
           }
         }, 80);
       });
@@ -507,12 +985,23 @@
       nextInt.addEventListener("click", function () {
         setLevel("intermediate", { announce: true });
         setTimeout(function () {
-          var t = $("cardIntQuiz") || $("cardTour");
-          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+          var t = $("cardIntQuiz");
+          if (t) t.scrollIntoView({ behavior: "auto", block: "start" });
         }, 120);
       });
-    // Returning from network.html?from=firsthour — open checklist (dock not needed on return)
-    if (typeof location !== "undefined" && /from=firsthour/.test(location.search || "")) {
+    // Returning to Lab from network.html?from=firsthour — open checklist
+    // (only on Lab index; Network page uses its own dock)
+    if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=firsthour/.test(location.search || "")
+    ) {
+      var hourSt = loadJson(HOUR_KEY, {});
+      var act = getHourActive();
+      if (act === "h7" && !hourSt.h7) {
+        setHourReturn();
+        showLearnReturn("hour");
+      } else {
       try {
         sessionStorage.removeItem(HOUR_RETURN_KEY);
       } catch (e) {
@@ -522,9 +1011,10 @@
       setTimeout(function () {
         var card = $("cardFirstHour");
         if (card) {
-          card.scrollIntoView({ behavior: "smooth", block: "start" });
+          card.scrollIntoView({ behavior: "auto", block: "start" });
         }
       }, 120);
+      }
       try {
         if (window.history && history.replaceState) {
           history.replaceState(null, "", location.pathname + location.hash);
@@ -613,7 +1103,7 @@
         card.setAttribute("data-level-force", "show");
         card.classList.remove("level-gated");
         card.hidden = false;
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
           card.focus({ preventScroll: true });
@@ -672,8 +1162,33 @@
           act = "";
         }
         if (/^i[1-4]$/.test(act) || /^a[1-4]$/.test(act)) markPathQuiz(act);
+      } else if (t.id === "btnHourMarkFromDock" || t.id === "btnHourMarkFromDockNet") {
+        ev.preventDefault();
+        var hid = getHourActive() || "h7";
+        if (t.id === "btnHourMarkFromDockNet") hid = "h7";
+        if (hid === "h7") noteHour("h7Ack", true);
+        markHourStep(hid, true);
+        if (t.id === "btnHourMarkFromDockNet") {
+          window.location.href = "index.html?from=firsthour";
+        } else if (hourStepReady(hid) || (hid === "h7" && loadJson(HOUR_KEY, {}).h7)) {
+          returnToFirstHour();
+        }
       }
     });
+    var qNet = $("quizHourNextNet");
+    if (qNet) {
+      qNet.addEventListener("click", function () {
+        var li = document.querySelector('[data-hour-step="h7"]');
+        if (li) goHourStep(li);
+      });
+    }
+    var qBeg = $("quizHourNextBeginner");
+    if (qBeg) {
+      qBeg.addEventListener("click", function () {
+        var h8 = $("hourGoBeginner") || $("btnReadyBeginner");
+        if (h8) h8.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
   }
 
   var EVIDENCE_KEY = "bip39lab.quizEvidence";
@@ -718,8 +1233,8 @@
         passBtn.textContent = passed
           ? "Q" + q.slice(1) + " passed ✓"
           : ready
-            ? "Mark Q" + q.slice(1) + " passed (demo ready)"
-            : "Mark Q" + q.slice(1) + " passed";
+            ? "Mark passed"
+            : "Mark passed";
         passBtn.disabled = passed;
         passBtn.setAttribute("aria-disabled", passed ? "true" : "false");
         if (ready && !passed) {
@@ -732,10 +1247,15 @@
     var sum = $("quizSummary");
     if (sum) {
       sum.textContent = n + " / 4 passed";
-      sum.className = "chip " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
+      sum.className =
+        "chip visually-hidden " + (n === 4 ? "chip-ok" : n > 0 ? "chip-warn" : "");
     }
     // First-hour step 6 tracks the quiz self-checks
     syncHourQuizStep(n === 4);
+    var qn = $("quizHourNext");
+    if (qn) qn.hidden = n < 4;
+    if (n === 4 && getHourActive() === "h6") refreshHourGates();
+    maybeAutoBeginner();
   }
 
   function syncHourQuizStep(allPassed) {
@@ -745,6 +1265,7 @@
       st.h6 = true;
       saveJson(HOUR_KEY, st);
       refreshFirstHour();
+      maybeAutoBeginner();
       return;
     }
     if (!allPassed && was) {
@@ -769,6 +1290,8 @@
     saveJson(HOUR_KEY, {});
     try {
       sessionStorage.removeItem(HOUR_RETURN_KEY);
+      sessionStorage.removeItem(HOUR_ACTIVE_KEY);
+      sessionStorage.removeItem(HOUR_EVIDENCE_KEY);
     } catch (e) {
       /* ignore */
     }
@@ -790,23 +1313,32 @@
   }
 
   function resetClassroomProgress() {
-    if (
-      !window.confirm(
-        "Reset first-hour checklist, quiz answers (incl. Intermediate/Advanced), demo evidence, and tour step in this browser?"
-      )
-    ) {
-      return;
-    }
     resetFirstHour();
     resetQuiz();
     resetIntQuiz();
     resetAdvQuiz();
-    saveJson(TOUR_KEY, { i: 0 });
-    var box = $("tourBox");
-    if (box) box.hidden = true;
+    setLevel("starter", { announce: false });
+    goTab("lab");
+    try {
+      if (window.history && history.replaceState) {
+        history.replaceState(null, "", (location.pathname || "/") + (location.search || ""));
+      }
+    } catch (eH) {
+      /* ignore */
+    }
+    setTimeout(function () {
+      var title = $("panel-title") || $("panel-sub");
+      if (title) {
+        try {
+          title.scrollIntoView({ behavior: "auto", block: "start" });
+        } catch (eS) {
+          /* ignore */
+        }
+      }
+    }, 80);
     var toast = $("learnLevelToast");
     if (toast) {
-      toast.textContent = "Progress reset (checklist + quizzes + tour). Level unchanged.";
+      toast.textContent = "Progress reset. Level is Starter.";
       toast.hidden = false;
       clearTimeout(showLevelToast._t);
       showLevelToast._t = setTimeout(function () {
@@ -976,7 +1508,7 @@
         card.setAttribute("data-level-force", "show");
         card.classList.remove("level-gated");
         card.hidden = false;
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        card.scrollIntoView({ behavior: "auto", block: "start" });
         try {
           if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
           card.focus({ preventScroll: true });
@@ -1030,7 +1562,7 @@
       el.setAttribute("data-level-force", "show");
       el.classList.remove("level-gated");
       el.hidden = false;
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({ behavior: "auto", block: "start" });
       try {
         if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
         el.focus({ preventScroll: true });
@@ -1130,7 +1662,7 @@
       setTimeout(function () {
         var t = $("cardCmpPp");
         if (t) {
-          t.scrollIntoView({ behavior: "smooth", block: "start" });
+          t.scrollIntoView({ behavior: "auto", block: "start" });
           try {
             if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
             t.focus({ preventScroll: true });
@@ -1148,7 +1680,7 @@
       } catch (e) {
         /* ignore */
       }
-      window.location.href = "shamir.html?from=quiz#shCardRecombine";
+      window.location.href = "shamir.html?from=quiz#headingPracticeSecret";
       return;
     }
     if (q === "q3" || q === "q4") {
@@ -1159,7 +1691,7 @@
           t.setAttribute("data-level-force", "show");
           t.classList.remove("level-gated");
           t.hidden = false;
-          t.scrollIntoView({ behavior: "smooth", block: "start" });
+          t.scrollIntoView({ behavior: "auto", block: "start" });
           try {
             if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
             t.focus({ preventScroll: true });
@@ -1230,11 +1762,15 @@
         setLevel("advanced", { announce: true });
         setTimeout(function () {
           var c = $("cardAdvQuiz");
-          if (c) c.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (c) c.scrollIntoView({ behavior: "auto", block: "start" });
         }, 120);
       });
-    // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
-    if (typeof location !== "undefined" && /from=intquiz/.test(location.search || "")) {
+      // Per-item “Back to quiz” removed — amber dock + Go try return handle navigation
+    if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=intquiz/.test(location.search || "")
+    ) {
       try {
         var mI = /[?&]marked=(i[1-4])/.exec(location.search || "");
         if (mI && mI[1]) {
@@ -1268,7 +1804,11 @@
       } catch (eIh) {
         /* ignore */
       }
-    } else if (typeof location !== "undefined" && /from=advquiz/.test(location.search || "")) {
+    } else if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=advquiz/.test(location.search || "")
+    ) {
       try {
         var mA = /[?&]marked=(a[1-4])/.exec(location.search || "");
         if (mA && mA[1]) {
@@ -1302,7 +1842,11 @@
       } catch (eAh) {
         /* ignore */
       }
-    } else if (typeof location !== "undefined" && /from=quiz/.test(location.search || "")) {
+    } else if (
+      typeof location !== "undefined" &&
+      isLabIndexPage() &&
+      /from=quiz/.test(location.search || "")
+    ) {
       // Shamir (or other page) may pass ?marked=q2 so we never lose the pass on return
       try {
         var m = /[?&]marked=(q[1-4])/.exec(location.search || "");
@@ -1386,65 +1930,12 @@
           el.setAttribute("data-level-force", "show");
           el.classList.remove("level-gated");
           el.hidden = false;
+          applyFaces(getLevel());
         }
       });
     });
 
     wireQuiz();
-
-    // Tour
-    var tourSteps = [
-      {
-        title: "Stop 1 — Multisig (many keys)",
-        body: "Several people each hold a key. Spend needs M of N signatures. Keys are not “shares of one secret blob.”",
-        href: "multisig.html",
-      },
-      {
-        title: "Stop 2 — Shamir educational (hex shares)",
-        body: "One practice secret split into hex shares. Not BIP-39 words, not SLIP-39. Under-threshold recombine must fail.",
-        href: "shamir.html",
-      },
-      {
-        title: "Stop 3 — SLIP-39 lab (Trezor-shaped words)",
-        body: "Share mnemonics in a Trezor-shaped format. Lab only — not Suite, not for funded wallets. Deep-link from Shamir, not a 7th nav item.",
-        href: "slip39.html",
-      },
-    ];
-    var tourIdx = loadJson(TOUR_KEY, { i: 0 }).i || 0;
-    function renderTour() {
-      var title = $("tourTitle");
-      var body = $("tourBody");
-      var step = tourSteps[tourIdx] || tourSteps[0];
-      if (title) title.textContent = step.title;
-      if (body) body.textContent = step.body;
-      var meta = $("tourMeta");
-      if (meta) meta.textContent = "Step " + (tourIdx + 1) + " / " + tourSteps.length;
-    }
-    var tStart = $("tourStart");
-    if (tStart)
-      tStart.addEventListener("click", function () {
-        tourIdx = 0;
-        saveJson(TOUR_KEY, { i: 0 });
-        renderTour();
-        var box = $("tourBox");
-        if (box) box.hidden = false;
-      });
-    var tNext = $("tourNext");
-    if (tNext)
-      tNext.addEventListener("click", function () {
-        if (tourIdx < tourSteps.length - 1) {
-          tourIdx++;
-          saveJson(TOUR_KEY, { i: tourIdx });
-          renderTour();
-        }
-      });
-    var tOpen = $("tourOpen");
-    if (tOpen)
-      tOpen.addEventListener("click", function () {
-        var step = tourSteps[tourIdx] || tourSteps[0];
-        window.location.href = step.href;
-      });
-    renderTour();
 
     // BIP-85 educational demo: derive display-only child label from hash (not full BIP-85 crypto)
     var b85 = $("btnBip85Demo");
@@ -1488,8 +1979,15 @@
       });
     var rC = $("btnResetClassroom");
     if (rC) rC.addEventListener("click", resetClassroomProgress);
+    wireFaceToggles();
     applyLevel(getLevel(), { announce: false });
+    applyFaces(getLevel());
     updateFirstHourNext();
+    watchOrientationTable();
+    refreshHourGates();
+    window.addEventListener("pageshow", function () {
+      refreshHourGates();
+    });
   }
 
   if (document.readyState === "loading") {
@@ -1502,8 +2000,12 @@
     getLevel: getLevel,
     setLevel: setLevel,
     applyLevel: applyLevel,
+    applyFaces: applyFaces,
     passQuiz: passQuiz,
     markQuiz: markQuiz,
     returnToQuiz: returnToQuiz,
+    noteHour: noteHour,
+    hourStepReady: hourStepReady,
+    markHourStep: markHourStep,
   };
 })();

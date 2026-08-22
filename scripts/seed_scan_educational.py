@@ -18,8 +18,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from bip39lab.balance import make_json_rpc_call  # noqa: E402
-from bip39lab.seed_scan import (  # noqa: E402
+from bip39lab.balance import make_json_rpc_call
+from bip39lab.seed_scan import (
     SeedScanError,
     public_report_json,
     run_campaign,

@@ -31,7 +31,7 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from web_e2e_contract import (  # noqa: E402
+from web_e2e_contract import (
     DEFAULT_COMET,
     DEFAULT_E2E_DIR,
     extract_playwright_scenario_ids,
@@ -129,6 +129,9 @@ def stamp_comet_doc(
         text,
         count=1,
     )
+    # Leftover range pins in prompts / history — must match Product line
+    text = text.replace("S0–S71", rng)
+    text = text.replace("S0–S56", rng)
 
     if text == orig:
         return f"{comet_path.relative_to(root)}: already stamped ({ver}, {rng}, n={n})"

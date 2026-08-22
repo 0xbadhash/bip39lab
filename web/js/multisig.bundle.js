@@ -7104,12 +7104,19 @@ zoo`.split("\n"));
     const scriptHex = bytesToHex3(script);
     const p2sh = p2shAddress(script);
     const p2wsh = p2wshAddress(script);
+    const pubkeysHex = pubs.map(bytesToHex3);
+    const fn = bip67 ? "sortedmulti" : "multi";
+    const descriptor = "wsh(" + fn + "(" + mNum + "," + pubkeysHex.join(",") + "))";
+    const keyIds = pubkeysHex.map((h) => h.slice(0, 8));
     return {
       m: mNum,
       n,
       bip67,
       orderNote,
-      pubkeysHex: pubs.map(bytesToHex3),
+      pubkeysHex,
+      descriptor,
+      keyIds,
+      vaultMapNote: "Public vault map — not a seed. Back up this string with each key. Lose the map AND one key and you may not rebuild the vault.",
       scriptHex,
       p2sh,
       p2wsh,
@@ -7227,10 +7234,28 @@ zoo`.split("\n"));
       warning: "DEMO ONLY \u2014 BIP84 throwaway seeds generated in this browser. Do not send real bitcoin. Each card shows BIP39 words, ENT bits, BIP84 zpub (account m/84'/0'/0'), and the compressed pubkey at m/84'/0'/0'/0/0 used to build this page\u2019s simple M-of-N address."
     };
   }
+  function parseWshMultiDescriptor(text) {
+    const t = String(text || "").trim();
+    const m = t.match(/^wsh\((sortedmulti|multi)\((\d+),([0-9a-fA-F,]+)\)\)$/);
+    if (!m) throw new Error("not a lab vault map (expected wsh(sortedmulti|multi(M,hex,…)))");
+    const pubs = m[3].split(",").filter(Boolean);
+    if (pubs.length < 2) throw new Error("vault map needs at least two public keys");
+    return { bip67: m[1] === "sortedmulti", m: Number(m[2]), pubs };
+  }
+  function rebuildFromVaultMap(text) {
+    const p = parseWshMultiDescriptor(text);
+    return buildMultisigFromText(p.pubs.join("\n"), p.m, { bip67: p.bip67 });
+  }
+  function tryWithoutMap() {
+    throw new Error("Without the vault map you cannot uniquely rebuild this vault. Keys alone omit M, N, and sort policy.");
+  }
   var MultisigLab = {
     buildMultisigFromText,
     generateDemoCosigners,
     looksPrivate,
+    parseWshMultiDescriptor,
+    rebuildFromVaultMap,
+    tryWithoutMap,
     WORD_STRENGTH,
     VERSION: "0.9.2-ms"
   };

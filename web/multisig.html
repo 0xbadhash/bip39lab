@@ -7,7 +7,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Educational Bitcoin multisig lab — M-of-N from public keys only, offline." />
   <title>Multisig lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.1" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.25" />
 </head>
 <body>
   <div class="app">
@@ -86,7 +86,7 @@
 
             <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.25">v0.16.25</span>
           <br />
           Multisig explainer: public keys only, offline.
         </p>
@@ -126,11 +126,13 @@
             </header>
 
       <main class="content">
-        <div class="warn" role="note">
-          <strong>Address calculator only.</strong>
+        <div class="warn" role="note" id="msCoordNote">
+          <strong>Address calculator only — this pane is a coordinator.</strong>
+          It cannot spend. You can receive / watch the vault address without the keys present.
           This page builds a multisig <em>address/script</em> from public keys. It does
           <strong>not</strong> create a spendable wallet, hold keys, or sign spends.
           To actually spend later you need a real wallet that imports the same policy plus each cosigner’s private material.
+          Device PIN ≠ coordinator file password (hides balance only) ≠ BIP-39 passphrase (changes the seed).
         </div>
 <div class="card" id="msCardIntro">
           <div class="card-head">
@@ -166,11 +168,13 @@
             <p id="msPolicy" class="status-plain" aria-live="polite">
               Set M and N (or generate demo cosigners) — policy text updates after build.
             </p>
+            <p id="msM1Warn" class="control-help" hidden role="status"></p>
           </div>
           <details class="help-fold teach-only" style="margin-top:1rem">
             <summary>Cosigner checklist</summary>
             <ul class="help-list">
               <li>☐ Each cosigner generated their own seed offline / on hardware</li>
+              <li id="msVendorDiversity">☐ Independent <strong>vendor / firmware class</strong> as well as independent entropy (same-vendor boxes can share a bug)</li>
               <li>☐ Only <strong>public</strong> keys (or account xpubs/zpubs) are shared to build the vault</li>
               <li>☐ M and N written down for recovery (e.g. 2-of-3)</li>
               <li>
@@ -320,6 +324,7 @@
 
           <div id="msDemoList" class="watch-list" hidden></div>
           <p id="msDemoWarn" class="control-help" style="color:#f0d78c" hidden></p>
+          <p id="msDemoVendorNote" class="control-help" hidden></p>
         </div>
 
         <div class="card card-wide" id="msCardBuild">
@@ -426,6 +431,27 @@
               </div>
               <p class="control-help teach-only" style="margin-top:0.75rem"><strong>Keys in final order</strong></p>
               <pre class="out" id="msKeys" style="margin-top:0.35rem"></pre>
+              <div id="msVaultMap" class="ms-vault-map" hidden>
+                <h3 class="label-row">Vault map
+                  <span class="help-tip" data-term="VAULTMAP">
+                    <button type="button" class="help-tip-btn" aria-label="About the vault map">i</button>
+                    <span class="help-tip-panel" hidden></span>
+                  </span>
+                </h3>
+                <p class="control-help" id="msMapNote"></p>
+                <p class="control-help teach-only">
+                  This string is the <strong>map</strong> to the vault (public policy). It is not a seed.
+                  Store a copy with each key. If you lose the map <em>and</em> one key, you may not rebuild the address.
+                </p>
+                <pre class="out" id="msMapDesc" aria-label="Public vault map descriptor"></pre>
+                <p class="control-help" id="msMapIds"></p>
+                <div class="row">
+                  <button type="button" class="btn-copy" id="msCopyMap" data-copy-idle="Copy map">Copy map</button>
+                  <button type="button" class="btn secondary btn-sm" id="msRebuildMap">Rebuild from map</button>
+                  <button type="button" class="btn secondary btn-sm" id="msTryNoMap">Try without map</button>
+                </div>
+                <p class="control-help" id="msRecoverStatus" role="status" aria-live="polite"></p>
+              </div>
             </div>
             <p id="msCopyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
           </div>
@@ -453,11 +479,11 @@
     </button>
     <button type="button" class="learn-return-dismiss" id="learnReturnDockMsDismiss" title="Hide" aria-label="Hide return bar">×</button>
   </div>
-  <script src="js/site-version.js?v=0.16.1"></script>
-  <script src="js/glossary.js?v=0.16.1"></script>
-  <script src="js/help-ui.js?v=0.16.1"></script>
-  <script src="js/learn-levels.js?v=0.16.1"></script>
-  <script src="js/multisig.bundle.js?v=0.16.1"></script>
-  <script src="js/multisig-app.js?v=0.16.1"></script>
+  <script src="js/site-version.js?v=0.16.25"></script>
+  <script src="js/glossary.js?v=0.16.25"></script>
+  <script src="js/help-ui.js?v=0.16.25"></script>
+  <script src="js/learn-levels.js?v=0.16.25"></script>
+  <script src="js/multisig.bundle.js?v=0.16.25"></script>
+  <script src="js/multisig-app.js?v=0.16.25"></script>
 </body>
 </html>

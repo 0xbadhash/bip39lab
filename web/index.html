@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.1" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.25" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Release tag">…</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.25">v0.16.25</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -106,7 +106,7 @@
       <header class="topbar">
         <div>
           <h1 id="panel-title">Offline BIP-39 lab</h1>
-          <p class="sub" id="panel-sub">Generate, validate, and derive first addresses — English wordlist only.</p>
+          <p class="sub" id="panel-sub">Generate, validate, and derive receive addresses — English wordlist only.</p>
         </div>
         <div class="topbar-actions" id="topbarStatusChips">
           <p class="level-change-toast" id="learnLevelToast" hidden role="status" aria-live="polite"></p>
@@ -128,17 +128,26 @@
       </header>
 
       <main class="content">
-        <div class="warn" role="note">
+        <div class="warn" role="note" id="labSafetyBanner">
           <strong>Air-gap recommended.</strong>
-          All cryptography runs in this page. Nothing is written to disk or sent to a server from here.
-          Do not paste a real recovery phrase on a machine you do not trust.
+          Crypto stays in this tab. Progress/theme may be saved in the browser.
+          Derived addresses go to Network only after explicit opt-in.
+          Do not use a funded phrase here.
         </div>
 
         <!-- Panel: Lab -->
         <section id="panel-lab" class="panel active" role="tabpanel">
           <!-- E0 orientation + first hour -->
-          <div class="card card-wide" id="cardOrientation">
-            <h2>What this is / isn’t</h2>
+          <div class="card card-wide" id="cardOrientation" data-face="starter">
+            <h2>What this is / isn’t
+              <span class="help-tip help-tip-safety" data-chapter="starter">
+                <button type="button" class="help-tip-btn" aria-label="Starter chapter visual">i</button>
+                <span class="help-tip-panel" hidden>
+                  Offline BIP-39 lab + First hour + lab. Later levels stay off this face.
+                  <img class="chapter-visual-img" data-chapter="starter" data-ds-asset="assets/ds/faces/bip39-starter.svg" alt="Starter chapter" hidden src="assets/catalyxt/chapters/starter-info.svg" />
+                </span>
+              </span>
+            </h2>
             <table class="compare-table" id="orientationTable">
               <thead>
                 <tr><th scope="col">This lab is</th><th scope="col">This lab is not</th></tr>
@@ -164,123 +173,70 @@
             </table>
             <p class="control-help">
               Prefer an air-gapped machine for anything that looks like a real seed.
-              Full human guide: <a href="docs/FIRST_HOUR.md">docs/FIRST_HOUR.md</a> (when served from repo) or the checklist below.
+              Use the First hour checklist below — that is the in-lab guide.
             </p>
           </div>
 
-          <div class="card card-wide" id="cardFirstHour">
-            <h2>First hour checklist <span id="firstHourProgress" class="chip">0 / 0</span></h2>
-            <p class="control-help">
-              Starter path (~15–30 min). Per step:
-              <strong>Go</strong> jumps there (sticky <strong>← Back</strong> bar appears),
-              <strong>Mark done</strong> checks the box and returns here,
-              or tick the <strong>checkbox</strong> yourself. Progress is this browser only.
-              Full write-up: <a href="docs/FIRST_HOUR.md" id="linkFirstHourDoc">docs/FIRST_HOUR.md</a>
-              (also under repo <code>docs/</code> if this host has no <code>/docs</code>).
-            </p>
-            <ol class="hour-list" id="firstHourList">
-              <li class="hour-step" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#cardOrientation">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>1.</strong> Read air-gap warn + “What this is / isn’t”</span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+          <div class="starter-split" id="starterSplit">
+          <div class="card card-wide hour-rail" id="cardFirstHour" data-face="starter">
+            <h2>First hour <span id="firstHourProgress" class="chip">0 / 0</span></h2>
+            <ol class="hour-list hour-list-slim" id="firstHourList">
+              <li class="hour-step is-selected" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#cardOrientation">
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">1</span> Air-gap warn
                 </div>
               </li>
               <li class="hour-step" data-hour-step="h2" data-hour-tab="lab" data-hour-target="#card-mnemonic">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>2.</strong> Lab: Generate a <em>practice</em> 12-word phrase (not funded)</span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">2</span> Generate 12-word
                 </div>
               </li>
-              <li class="hour-step" data-hour-step="h3" data-hour-tab="lab" data-hour-target="#addrTable">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>3.</strong> See addresses fill (same phrase → same addresses)</span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+              <li class="hour-step" data-hour-step="h3" data-hour-tab="lab" data-hour-target="#headingReceive">
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">3</span> Addresses fill
                 </div>
               </li>
               <li class="hour-step" data-hour-step="h4" data-hour-tab="tools" data-hour-target="#cardPathPlay">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>4.</strong> Tools: Path playground — purpose / coin / account / change / index</span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">4</span> Path playground
                 </div>
               </li>
               <li class="hour-step" data-hour-step="h5" data-hour-tab="tools" data-hour-target="#cardCmpPp">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>5.</strong> Tools: Passphrase compare — empty vs <code>test</code> → different addresses</span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">5</span> Passphrase compare
                 </div>
               </li>
-              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#cardQuiz">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>6.</strong> Quiz: mark the four self-checks when you understand them
-                      <span class="control-help" style="font-weight:500"> (auto-done when all four are Passed)</span>
-                    </span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go" data-hour-level="beginner">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#cardQuiz" data-hour-level="beginner">
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">6</span> Four self-checks
                 </div>
               </li>
               <li class="hour-step" data-hour-step="h7" data-hour-href="network.html">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>7.</strong> Optional: Network — fees only; understand address leak ack</span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn secondary btn-sm hour-go">Go</button>
-                    <button type="button" class="btn secondary btn-sm hour-done">Mark done</button>
-                  </div>
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">7</span> Network leak ack (optional)
                 </div>
               </li>
               <li class="hour-step" data-hour-step="h8" data-hour-tab="lab" data-hour-target="#cardFirstHour">
-                <div class="hour-step-main">
-                  <label class="hour-step-label">
-                    <input type="checkbox" class="hour-step-cb" />
-                    <span><strong>8.</strong> Raise Level to Beginner when ready
-                      <span class="control-help" style="font-weight:500"> (one click — no separate Mark done)</span>
-                    </span>
-                  </label>
-                  <div class="hour-step-actions">
-                    <button type="button" class="btn btn-sm" id="hourGoBeginner" title="Sets Level to Beginner and marks this step done">
-                      Set Beginner
-                    </button>
-                  </div>
+                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
+                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
+                  <span class="hour-num">8</span> Set Beginner
                 </div>
               </li>
             </ol>
+            <div class="hour-rail-actions" id="hourRailActions">
+              <button type="button" class="btn secondary btn-sm hour-go" id="hourRailGo">Go</button>
+              <button type="button" class="btn secondary btn-sm hour-done" id="hourRailDone">Mark done</button>
+              <button type="button" class="btn btn-sm" id="hourGoBeginner" hidden title="Sets Level to Beginner and marks this step done">
+                Set Beginner
+              </button>
+            </div>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
               <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner">I’m ready for Beginner</button>
               <button type="button" class="btn secondary btn-sm" id="hourScrollTop" title="Jump back to this checklist">
@@ -291,157 +247,295 @@
               </button>
             </div>
             <!-- Shown after Level is Beginner (and ideally first hour finished) -->
-            <div id="firstHourNext" class="first-hour-next" hidden role="region" aria-label="What to do next">
+            <div id="firstHourNext" class="first-hour-next face-keep" hidden role="region" aria-label="What to do next">
               <h3 class="first-hour-next-title">You’re a Beginner — what’s next?</h3>
               <p class="control-help" style="margin:0.35rem 0 0.65rem">
-                Level is a <strong>curriculum soft gate</strong>, not a wallet. Raising it unlocks the next Lab cards
-                so you know what to study. You can always raise Level further in the left pane anytime.
+                Starter lab is collapsed. This face is <strong>Passphrase and entropy</strong> — Q1–Q4
+                (wrong passphrase, under-threshold Shamir, TOO LOW, ~128 bits).
+                Intermediate stays off this face. Raise Level when this chapter is done.
               </p>
-              <ol class="first-hour-next-list">
-                <li>
-                  <strong>Now (Beginner):</strong> complete the <em>Guided quiz</em> (Q1–Q4) below —
-                  passphrase, Shamir, entropy too-low, then ~128 bits.
-                </li>
-                <li>
-                  <strong>Next (Intermediate):</strong> Level → Intermediate unlocks the
-                  <em>three-splits tour</em> and <em>I1–I4</em> self-check (keys vs shares vs words + PSBT inspect-only).
-                </li>
-                <li>
-                  <strong>Later (Advanced):</strong> BIP-85, Ops, and <em>A1–A4</em> (watch-only, Knots limits, is-not).
-                </li>
-              </ol>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.65rem">
-                <button type="button" class="btn" id="btnNextGoQuiz">Go to Guided quiz</button>
+                <button type="button" class="btn" id="btnNextGoQuiz" hidden>Go to Q1–Q4</button>
                 <button type="button" class="btn secondary" id="btnNextGoIntermediate">Raise Level to Intermediate</button>
               </div>
             </div>
           </div>
 
-          <div class="card card-wide" id="cardQuiz" data-level-min="beginner">
-            <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
-            <h2>Guided quiz (self-check) <span id="quizSummary" class="chip">0 / 4</span></h2>
-            <p class="control-help">
-              Self-graded only — nothing auto-passes. <strong>Go try</strong> opens the demo;
-              the amber dock has <strong>← Back to Guided quiz</strong> while you are away.
-              When the idea clicks, press <strong>Mark passed</strong>. Leave <em>Not yet</em> if unsure.
+          <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
+<div class="card" id="card-mnemonic" data-face="starter">
+            <div class="card-head">
+              <h2>Mnemonic</h2>
+            </div>
+            <p class="card-lede">English BIP-39 only. Optional passphrase is a BIP-39 extension (not a PIN).</p>
+
+            <label class="field" for="wordCount"><span class="label-row">Word count</span>
+              <select id="wordCount">
+                <option value="12" selected>12</option>
+                <option value="15">15</option>
+                <option value="18">18</option>
+                <option value="21">21</option>
+                <option value="24">24</option>
+              </select>
+            </label>
+
+            <div class="row">
+              <button type="button" class="btn" id="btnGenerate">Generate</button>
+              <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
+              <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
+            </div>
+            <p class="control-help teach-only" style="margin:0.35rem 0 0">
+              Shortcuts (when not typing): <kbd>G</kbd> generate · <kbd>D</kbd> derive · <kbd>?</kbd> Tools shortcuts · <kbd>Esc</kbd> close QR.
+              Clear secrets empties Lab memory only; Tools cards that need a phrase will auto-generate <strong>TEST DATA</strong> next time.
             </p>
-            <ul class="quiz-status-board" id="quizStatusBoard" aria-label="Quiz pass status">
+
+            <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
+
+            <label class="field" data-private for="mnemonic">
+              <span class="label-row">BIP-39 mnemonic
+                <span class="help-tip help-tip-safety" data-term="MNEMONIC">
+                  <button type="button" class="help-tip-btn" aria-label="About the mnemonic">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
+              <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
+            </label>
+            <div class="row" data-private>
+              <button type="button" class="btn secondary" id="btnSeedQr">Seed QR (offline, careful)</button>
+              <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
+              <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
+            </div>
+            <details class="help-fold teach-only" data-private>
+              <summary>About Seed QR, print, Network handoff</summary>
+              <p class="control-help">
+                Seed QR and Print only work after the live phrase validates. Each asks you to confirm that you are showing or printing the full recovery phrase.
+                Network handoff stores <em>addresses only</em> in sessionStorage, and only when you click Send addresses.
+              </p>
+            </details>
+            <div class="field-ro" data-private>
+              <span class="field-ro-label label-row">Mnemonic entropy
+                <span class="help-tip" data-term="ENTROPY">
+                  <button type="button" class="help-tip-btn" aria-label="About mnemonic entropy">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
+              <output id="entropyMnemonic" class="field-ro-value" for="mnemonic" aria-live="polite">—</output>
+            </div>
+
+            <label class="field" data-private for="passphrase">
+              <span class="label-row">Optional passphrase
+                <span class="help-tip" data-term="PASSPHRASE">
+                  <button type="button" class="help-tip-btn" aria-label="About passphrase">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
+              <input id="passphrase" type="password" autocomplete="off" />
+            </label>
+            <div class="field-ro pp-strength-block" data-private id="ppStrengthBlock">
+              <span class="field-ro-label label-row">
+                Passphrase strength (estimate)
+                <span class="help-tip" data-term="PPSTRENGTH">
+                  <button type="button" class="help-tip-btn" aria-label="About passphrase strength">i</button>
+                  <span class="help-tip-panel" hidden></span>
+                </span>
+              </span>
+              <div class="pp-strength-bar" aria-hidden="true">
+                <div
+                  id="ppStrengthBar"
+                  class="pp-strength-bar-fill pp-tier-empty"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="128"
+                  aria-valuenow="0"
+                  style="width:0%"
+                ></div>
+              </div>
+              <output
+                id="entropyPassphrase"
+                class="field-ro-value pp-tier-empty"
+                for="passphrase"
+                data-pp-tier="empty"
+                aria-live="polite"
+              >Empty — no extra secret (not the 512-bit PBKDF2 seed size)</output>
+              <p class="hint-tiny teach-only" style="margin:0.35rem 0 0">
+                Updates as you type. Longer + mixed characters raise the estimate.
+                This is <strong>not</strong> the BIP-39 seed’s fixed 512-bit PBKDF2 output size.
+              </p>
+            </div>
+            <details class="help-fold teach-only" data-private>
+              <summary>Why “512 bits” is not the passphrase strength</summary>
+              <p class="control-help">
+                The BIP-39 seed is always 64 bytes from PBKDF2 — that is <em>output size</em>, not “512 bits of entropy.”
+                Mnemonic entropy (e.g. 128 bits for 12 words) is BIP-39 ENT.
+                Passphrase strength here is a <strong>local estimate only</strong> (Shannon + charset × length, capped) so you see empty vs weak vs longer secrets — not a guarantee against attack.
+              </p>
+            </details>
+
+            <p id="status" class="status" aria-live="polite"></p>
+          </div>
+
+          </div><!-- /starter-split -->
+
+          <div class="card card-wide" id="cardQuiz" data-face="beginner" data-level-min="beginner" data-level-hide="1">
+            <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
+            <header class="chapter-head beginner-chapter" id="chapterBeginner">
+              <p class="chapter-kicker">Chapter 1</p>
+              <div class="beginner-chapter-row">
+                <div class="beginner-chapter-copy">
+                  <h2 class="chapter-title">Passphrase and entropy</h2>
+                  <p class="control-help beginner-lede">
+                    Stronger passphrases come from more entropy.
+                    More entropy = stronger seed = stronger security.
+                  </p>
+                </div>
+                <figure class="beginner-eq" id="beginnerEntropyEq">
+                  <div class="beginner-eq-row">
+                    <div class="beginner-eq-col">
+                      <img id="beginnerStillKey" src="assets/ds/faces/beginner-key.png" alt="Something you know" width="640" height="640" />
+                      <span>Something you know</span>
+                    </div>
+                    <span class="beginner-eq-op" aria-hidden="true">+</span>
+                    <div class="beginner-eq-col">
+                      <img id="beginnerStillDice" src="assets/ds/faces/beginner-dice.png" alt="Randomness (entropy)" width="640" height="640" />
+                      <span>Randomness (entropy)</span>
+                    </div>
+                    <span class="beginner-eq-op" aria-hidden="true">=</span>
+                    <div class="beginner-eq-col">
+                      <img id="beginnerStillLock" src="assets/ds/faces/beginner-lock.png" alt="Stronger seed" width="640" height="640" />
+                      <span>Stronger seed</span>
+                    </div>
+                  </div>
+                </figure>
+              </div>
+              <div class="entropy-bar" aria-label="Too few dice versus 128 bits">
+                <span class="entropy-bar-low">Too few dice</span>
+                <span class="entropy-bar-ok">128 bits</span>
+              </div>
+            </header>
+            <span id="quizSummary" class="chip visually-hidden">0 / 4</span>
+            <div id="quizHourNext" class="first-hour-next" hidden role="region" aria-label="Next First hour steps">
+              <h3 class="first-hour-next-title">Q1–Q4 complete</h3>
+              <p class="control-help" style="margin:0.35rem 0 0.65rem">
+                Next First Hour: <strong>7 Network (optional)</strong> — fees only; understand the leak-ack.
+                Then <strong>8 Raise to Beginner</strong>.
+              </p>
+              <div class="row" style="flex-wrap:wrap;gap:0.5rem">
+                <button type="button" class="btn btn-sm" id="quizHourNextNet">Go to Network</button>
+                <button type="button" class="btn secondary btn-sm" id="quizHourNextBeginner">Jump to Set Beginner</button>
+              </div>
+            </div>
+            <ul class="quiz-status-board visually-hidden" id="quizStatusBoard" aria-label="Quiz pass status">
               <li><span class="quiz-status-label">Q1 passphrase</span> <span id="quizBoard-q1" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q2 Shamir</span> <span id="quizBoard-q2" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q3 too low</span> <span id="quizBoard-q3" class="chip chip-warn">Not yet</span></li>
               <li><span class="quiz-status-label">Q4 enough bits</span> <span id="quizBoard-q4" class="chip chip-warn">Not yet</span></li>
             </ul>
-            <div class="quiz-item hour-step" data-quiz="q1">
+            <div class="quiz-tile-grid" id="quizTileGrid">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q1">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q1 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q1 — Wrong passphrase → different vault
-                    <span id="quizBadge-q1" class="chip chip-warn">Not yet</span>
+                    Wrong passphrase → different vault
+                    <span id="quizBadge-q1" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    Empty passphrase vs <code>test</code> on the same mnemonic must change the first address.
+                    Test that a small change creates a completely different vault.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q1">
                     <strong>Not yet.</strong> Open compare, leave A empty and set B to <code>test</code>,
-                    run derive — addresses must differ. Keep experimenting until that is obvious; only then mark passed.
+                    run derive — addresses must differ.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q1" hidden>
                     <strong>Passed (self-check).</strong> You confirmed wrong passphrase = different vault.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenPp" data-quiz-go="q1">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q1">Mark Q1 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenPp" data-quiz-go="q1">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q1">Mark passed</button>
                 </div>
               </div>
             </div>
-            <div class="quiz-item hour-step" data-quiz="q2">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q2">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q2 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q2 — Under-threshold Shamir fails
-                    <span id="quizBadge-q2" class="chip chip-warn">Not yet</span>
+                    Under-threshold Shamir fails
+                    <span id="quizBadge-q2" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    With 2-of-3 educational shares, one share alone must not recombine successfully.
+                    See what happens when you don’t have enough shares.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q2">
-                    <strong>Not yet (self-check).</strong> On Shamir: split 2-of-3, recombine with
-                    <em>only one</em> share (must fail), then with M shares (must succeed).
-                    That does <em>not</em> auto-pass — after both, use <strong>Mark Q2 passed</strong> here
-                    or <strong>Mark Q2 passed &amp; return</strong> on the Shamir dock.
+                    <strong>Not yet.</strong> Split 2-of-3, recombine with one share (fail), then M shares (succeed).
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q2" hidden>
                     <strong>Passed (self-check).</strong> Under-threshold recombine fails; threshold works.
                   </p>
                   <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q2" hidden>
-                    <strong>Demo evidence ready.</strong> You already saw fail + success on Shamir.
-                    Click <strong>Mark Q2 passed</strong> to record the self-check.
+                    <strong>Demo evidence ready.</strong> Mark passed to record the self-check.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenShamir" data-quiz-go="q2">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q2">Mark Q2 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenShamir" data-quiz-go="q2">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q2">Mark passed</button>
                 </div>
               </div>
             </div>
-            <div class="quiz-item hour-step" data-quiz="q3">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q3">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q3 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q3 — A few rolls = TOO LOW
-                    <span id="quizBadge-q3" class="chip chip-warn">Not yet</span>
+                    A few rolls = TOO LOW
+                    <span id="quizBadge-q3" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    Roll dice only a few times (~3). The pad must show <strong>TOO LOW</strong> vs 128 bits.
-                    Practice only — never fund. Then mark passed on the pad or here.
+                    Measure entropy with just a few dice rolls.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q3">
-                    <strong>Not yet.</strong> <strong>Go try</strong> → roll d6 about 3 times → read the live verdict
-                    (TOO LOW). Optional: Build practice seed to see the same in Step 3. Then
-                    <strong>Mark Q3 passed</strong> (also appears on the entropy pad when ready).
+                    <strong>Not yet.</strong> Go try → roll d6 about 3 times → read TOO LOW.
                   </p>
                   <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q3" hidden>
-                    <strong>Demo ready.</strong> You saw TOO LOW with a short pad. Mark Q3 passed.
+                    <strong>Demo ready.</strong> You saw TOO LOW with a short pad.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q3" hidden>
                     <strong>Passed.</strong> Few rolls are not enough for a real 12-word wallet.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt" data-quiz-go="q3">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q3">Mark Q3 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenEnt" data-quiz-go="q3">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q3">Mark passed</button>
                 </div>
               </div>
             </div>
-            <div class="quiz-item hour-step" data-quiz="q4">
+            <div class="quiz-item hour-step quiz-tile" data-quiz="q4">
               <div class="hour-step-main">
                 <div class="hour-step-label">
+                  <p class="quiz-tile-kicker">Q4 <span class="quiz-tile-meta">Self-graded</span></p>
                   <h3 class="quiz-item-title">
-                    Q4 — Need ~128 bits (≈50 d6 rolls), not fewer
-                    <span id="quizBadge-q4" class="chip chip-warn">Not yet</span>
+                    Need ~128 bits (~50 d6)
+                    <span id="quizBadge-q4" class="chip chip-warn visually-hidden">Not yet</span>
                   </h3>
                   <p class="control-help">
-                    <strong>Less is not better.</strong> BIP-39 12-word needs <strong>128 bits</strong> of real entropy.
-                    With dice (~2.58 bits each) that is about <strong>50 d6 rolls</strong> (or 128 coin flips) —
-                    keep rolling until the pad estimate is no longer TOO LOW. Never fund pad words.
+                    Hit the target: generate ~128 bits with about 50 rolls.
                   </p>
                   <p class="quiz-hint quiz-hint-pending" id="quizHint-q4">
-                    <strong>Not yet.</strong> On the entropy pad, keep rolling (aim for ~50 d6). Watch the estimate
-                    climb toward 128 bits. When the pad says estimate ≥ 128 bits, mark Q4 passed there or here.
+                    <strong>Not yet.</strong> Keep rolling toward 128 bits, then mark passed.
                   </p>
                   <p class="quiz-hint quiz-hint-ready" id="quizHintReady-q4" hidden>
-                    <strong>Demo ready.</strong> Pad estimate reached the 128-bit target (still practice-only). Mark Q4.
+                    <strong>Demo ready.</strong> Pad estimate reached the 128-bit target.
                   </p>
                   <p class="quiz-hint quiz-hint-passed" id="quizHintPass-q4" hidden>
-                    <strong>Passed.</strong> You saw that “enough” needs many rolls — fewer rolls is worse, not safer.
+                    <strong>Passed.</strong> You saw that “enough” needs many rolls.
                   </p>
                 </div>
-                <div class="hour-step-actions">
-                  <button type="button" class="btn secondary btn-sm hour-go" id="quizOpenEnt4" data-quiz-go="q4">Go try</button>
-                  <button type="button" class="btn secondary btn-sm" id="quizPass-q4">Mark Q4 passed</button>
+                <div class="hour-step-actions quiz-tile-actions">
+                  <button type="button" class="btn btn-sm hour-go" id="quizOpenEnt4" data-quiz-go="q4">Go try</button>
+                  <button type="button" class="btn secondary btn-sm" id="quizPass-q4">Mark passed</button>
                 </div>
               </div>
+            </div>
             </div>
             <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
               <button type="button" class="btn secondary btn-sm" id="btnResetQuiz" title="Clear all quiz pass marks in this browser">
@@ -450,32 +544,32 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardTour" data-level-min="intermediate">
-            <h2>Tour: three ways to split trust</h2>
-            <p class="control-help">Multisig (keys) ≠ Shamir (hex shares) ≠ SLIP-39 (lab share words).</p>
-            <div class="row">
-              <button type="button" class="btn" id="tourStart">Start / reset tour</button>
-            </div>
-            <div id="tourBox" class="card-sub" style="margin-top:0.75rem" hidden>
-              <p id="tourMeta" class="control-help">Step 1 / 3</p>
-              <h3 id="tourTitle">—</h3>
-              <p id="tourBody" class="control-help">—</p>
-              <div class="row">
-                <button type="button" class="btn secondary" id="tourOpen">Open this stop</button>
-                <button type="button" class="btn secondary" id="tourNext">Next stop</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card card-wide" id="cardIntQuiz" data-level-min="intermediate">
+          <div class="card card-wide" id="cardIntQuiz" data-face="intermediate" data-level-min="intermediate" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="intermediate" hidden></div>
-            <h2>
+            <h2 id="headingIntQuiz">
               Intermediate self-check
               <span class="chip">Three splits + Tools depth</span>
               <span id="intQuizSummary" class="chip">0 / 4</span>
             </h2>
+            <header class="chapter-head" id="chapterIntermediate">
+              <h2 class="chapter-title">keys ≠ shares ≠ share-words</h2>
+              <div class="int-stills" id="intStills">
+                <figure class="int-still">
+                  <img id="intStillKeys" src="assets/ds/faces/intermediate-keys.png" alt="Multisig (keys)" width="1248" height="832" />
+                  <figcaption>Multisig (keys)</figcaption>
+                </figure>
+                <figure class="int-still">
+                  <img id="intStillShares" src="assets/ds/faces/intermediate-hex-shares.png" alt="Shamir (edu)" width="1248" height="832" />
+                  <figcaption>Shamir (edu)</figcaption>
+                </figure>
+                <figure class="int-still">
+                  <img id="intStillWords" src="assets/ds/faces/intermediate-share-words.png" alt="SLIP-39 (lab)" width="1248" height="832" />
+                  <figcaption>SLIP-39 (lab)</figcaption>
+                </figure>
+              </div>
+            </header>
             <p class="control-help">
-              Keys ≠ shares ≠ share-words, plus PSBT inspect-only.
+              Keys ≠ shares ≠ share-words, plus PSBT inspect-only. Advanced stays off this face.
               Self-graded — <strong>Go try</strong>, then <strong>Mark passed</strong> when the idea is clear.
             </p>
             <ul class="quiz-status-board" id="intQuizStatusBoard" aria-label="Intermediate quiz status">
@@ -581,7 +675,7 @@
             <div id="intQuizNext" class="first-hour-next" hidden role="region" aria-label="After Intermediate">
               <h3 class="first-hour-next-title">Intermediate self-checks done — what’s next?</h3>
               <p class="control-help" style="margin:0.35rem 0 0.65rem">
-                Raise Level to <strong>Advanced</strong> for BIP-85 idea, watch-only discipline, Knots limits, and “what this lab isn’t.”
+                Advanced stays off this face until you raise Level.
               </p>
               <button type="button" class="btn" id="btnIntGoAdvanced">Raise Level to Advanced</button>
             </div>
@@ -592,7 +686,7 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardBip85" data-level-min="advanced">
+          <div class="card card-wide" id="cardBip85" data-face="advanced" data-level-min="advanced" data-level-hide="1">
             <h2>BIP-85 — child seeds (advanced, educational)</h2>
             <p class="control-help">
               Idea: one master mnemonic can derive many <em>application</em> child mnemonics (different index → different app).
@@ -604,7 +698,7 @@
             <pre class="out" id="bip85Out">Raise Level to Advanced, put a practice phrase on Lab, then click Explain.</pre>
           </div>
 
-          <div class="card card-wide" id="cardOps" data-level-min="advanced">
+          <div class="card card-wide" id="cardOps" data-face="advanced" data-level-min="advanced" data-level-hide="1">
             <h2>Ops — private Knots / seed-scan</h2>
             <p class="control-help">
               Private balances and educational hash-only seed scans use a <strong>local Bitcoin Knots/Core</strong> node (Pi checklist),
@@ -617,14 +711,22 @@
             </ul>
           </div>
 
-          <div class="card card-wide" id="cardAdvQuiz" data-level-min="advanced">
+          <div class="card card-wide" id="cardAdvQuiz" data-face="advanced" data-level-min="advanced" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="advanced" hidden></div>
+            <header class="chapter-head" id="chapterAdvanced">
+              <h2 class="chapter-title">master → child keys</h2>
+              <p class="control-help face-keep" id="chapterAdvancedIsNot">This site is not a wallet.</p>
+              <figure class="adv-still" id="advStillFigure">
+                <img id="advStillImg" src="assets/ds/faces/advanced-master-child.png" alt="master key to three child keys. This site is not a wallet." width="1248" height="832" />
+              </figure>
+            </header>
             <h2>
               Advanced self-check
               <span class="chip">Ops mind offline</span>
               <span id="advQuizSummary" class="chip">0 / 4</span>
             </h2>
             <p class="control-help">
+              Master → child keys. This site is not a wallet.
               BIP-85 idea, watch-only handoff, Knots limits, and what this lab is <em>not</em>.
               Self-graded — experiment, then mark passed.
             </p>
@@ -735,124 +837,13 @@
             </div>
           </div>
 
-          <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
-<div class="card" id="card-mnemonic">
+          <div class="card card-wide" id="card-addresses" data-face="starter">
             <div class="card-head">
-              <h2>Mnemonic</h2>
-            </div>
-            <p class="card-lede">English BIP-39 only. Optional passphrase is a BIP-39 extension (not a PIN).</p>
-
-            <label class="field" for="wordCount"><span class="label-row">Word count</span>
-              <select id="wordCount">
-                <option value="12" selected>12</option>
-                <option value="15">15</option>
-                <option value="18">18</option>
-                <option value="21">21</option>
-                <option value="24">24</option>
-              </select>
-            </label>
-
-            <div class="row">
-              <button type="button" class="btn" id="btnGenerate">Generate</button>
-              <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
-              <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
-            </div>
-            <p class="control-help teach-only" style="margin:0.35rem 0 0">
-              Shortcuts (when not typing): <kbd>G</kbd> generate · <kbd>D</kbd> derive · <kbd>?</kbd> Tools shortcuts · <kbd>Esc</kbd> close QR.
-              Clear secrets empties Lab memory only; Tools cards that need a phrase will auto-generate <strong>TEST DATA</strong> next time.
-            </p>
-
-            <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
-
-            <label class="field" data-private for="mnemonic">
-              <span class="label-row">BIP-39 mnemonic
-                <span class="help-tip help-tip-safety" data-term="MNEMONIC">
-                  <button type="button" class="help-tip-btn" aria-label="About the mnemonic">i</button>
-                  <span class="help-tip-panel" hidden></span>
-                </span>
-              </span>
-              <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
-            </label>
-            <div class="row" data-private>
-              <button type="button" class="btn secondary" id="btnSeedQr">Seed QR (offline, careful)</button>
-              <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
-              <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
-            </div>
-            <details class="help-fold teach-only" data-private>
-              <summary>About Seed QR, print, Network handoff</summary>
-              <p class="control-help">
-                Seed QR shows the recovery phrase as a scannable code — only on an air-gapped machine you trust.
-                Print backup never uploads data. Network handoff stores <em>addresses only</em> in sessionStorage.
-              </p>
-            </details>
-            <div class="field-ro" data-private>
-              <span class="field-ro-label label-row">Mnemonic entropy
-                <span class="help-tip" data-term="ENTROPY">
-                  <button type="button" class="help-tip-btn" aria-label="About mnemonic entropy">i</button>
-                  <span class="help-tip-panel" hidden></span>
-                </span>
-              </span>
-              <output id="entropyMnemonic" class="field-ro-value" for="mnemonic" aria-live="polite">—</output>
-            </div>
-
-            <label class="field" data-private for="passphrase">
-              <span class="label-row">Optional passphrase
-                <span class="help-tip" data-term="PASSPHRASE">
-                  <button type="button" class="help-tip-btn" aria-label="About passphrase">i</button>
-                  <span class="help-tip-panel" hidden></span>
-                </span>
-              </span>
-              <input id="passphrase" type="password" autocomplete="off" />
-            </label>
-            <div class="field-ro pp-strength-block" data-private id="ppStrengthBlock">
-              <span class="field-ro-label label-row">
-                Passphrase strength (estimate)
-                <span class="help-tip" data-term="PPSTRENGTH">
-                  <button type="button" class="help-tip-btn" aria-label="About passphrase strength">i</button>
-                  <span class="help-tip-panel" hidden></span>
-                </span>
-              </span>
-              <div class="pp-strength-bar" aria-hidden="true">
-                <div
-                  id="ppStrengthBar"
-                  class="pp-strength-bar-fill pp-tier-empty"
-                  role="progressbar"
-                  aria-valuemin="0"
-                  aria-valuemax="128"
-                  aria-valuenow="0"
-                  style="width:0%"
-                ></div>
-              </div>
-              <output
-                id="entropyPassphrase"
-                class="field-ro-value pp-tier-empty"
-                for="passphrase"
-                data-pp-tier="empty"
-                aria-live="polite"
-              >Empty — no extra secret (not the 512-bit PBKDF2 seed size)</output>
-              <p class="hint-tiny teach-only" style="margin:0.35rem 0 0">
-                Updates as you type. Longer + mixed characters raise the estimate.
-                This is <strong>not</strong> the BIP-39 seed’s fixed 512-bit PBKDF2 output size.
-              </p>
-            </div>
-            <details class="help-fold teach-only" data-private>
-              <summary>Why “512 bits” is not the passphrase strength</summary>
-              <p class="control-help">
-                The BIP-39 seed is always 64 bytes from PBKDF2 — that is <em>output size</em>, not “512 bits of entropy.”
-                Mnemonic entropy (e.g. 128 bits for 12 words) is BIP-39 ENT.
-                Passphrase strength here is a <strong>local estimate only</strong> (Shannon + charset × length, capped) so you see empty vs weak vs longer secrets — not a guarantee against attack.
-              </p>
-            </details>
-
-            <p id="status" class="status" aria-live="polite"></p>
-          </div>
-
-          <div class="card card-wide" id="card-addresses">
-            <div class="card-head">
-              <h2>Receive addresses</h2>
+              <h2 id="headingReceive">Receive addresses</h2>
             </div>
             <p class="card-lede">
-              Offline “account numbers” from your phrase — nothing is sent to the internet from this page.
+              Offline “account numbers” from your phrase. Crypto stays in this tab.
+              Progress/theme may be saved in the browser. Addresses go to Network only after explicit opt-in.
             </p>
             <details class="help-fold teach-only">
               <summary>Bank vault metaphor</summary>
@@ -873,8 +864,8 @@
                     </span>
                   </span>
                   <select id="deriveNetwork">
-                    <option value="main" selected>Mainnet</option>
-                    <option value="test">Testnet / Signet paths (tb1…)</option>
+                    <option value="test" selected>Testnet / Signet paths (tb1…)</option>
+                    <option value="main">Mainnet</option>
                   </select>
                 </label>
               </div>
@@ -1036,7 +1027,7 @@
             <span class="chip chip-warn" style="vertical-align:middle">TEST DATA</span>
             — never assume results still use a phrase you cleared.
           </p>
-<p class="control-help teach-only" style="margin:0 0 0.75rem">
+          <p class="control-help teach-only" id="toolsTeachLine">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
           <div class="card card-wide" id="cardPathPlay">
@@ -1182,7 +1173,7 @@
                 </label>
                 <button type="button" class="btn" id="btnEntToSeed" title="Turn pad log into practice words — never for real funds">
                   Build practice seed from pad
-                </button>
+                </div>
               </div>
             </div>
 
@@ -1218,7 +1209,7 @@
               <div class="row" style="flex-wrap:wrap;gap:0.5rem">
                 <button type="button" class="btn secondary" id="btnEntToLab" title="Optional: paste practice words into Lab for more demos">
                   Optional: put practice words on Lab tab
-                </button>
+                </div>
               </div>
               <p class="control-help teach-only" style="margin:0.5rem 0 0">
                 For a <em>proper</em> random demo phrase, use Lab → <strong>Generate</strong> (OS CSPRNG) instead of this pad.
@@ -1233,25 +1224,28 @@
                 <span class="help-tip-panel" hidden></span>
               </span>
             </h2>
-            <p class="control-help">
+            <p class="control-help" id="cmpHonestyIntro">
               <strong>Same BIP-39 mnemonic + different optional passphrases = different wallets (addresses).</strong>
-              This demo is offline and step-by-step. It uses the Lab phrase when you have one, or a throwaway test phrase.
+              This demo runs in this tab (crypto stays here). Progress/theme may be saved in the browser.
+              Addresses leave only if you opt in on Network.
+              It uses the Lab phrase when you have one, or a throwaway test phrase.
             </p>
 
             <div class="cmp-step" data-cmp-step="1">
               <h3 class="cmp-step-title">Step 1 — Mnemonic (the seed words)</h3>
               <p class="control-help teach-only" style="margin-top:0">
-                Source is the same field as Lab tab (<code>#mnemonic</code>). Nothing is sent to a server.
+                Source is the same field as Lab tab (<code>#mnemonic</code>). Crypto stays in this tab.
+                Progress/theme may be saved. Addresses leave only if you opt in on Network.
               </p>
               <p id="cmpMnSource" class="control-help" style="margin:0.35rem 0">Source: —</p>
               <pre class="out" id="cmpMnPreview" style="white-space:pre-wrap;word-break:break-word">—</pre>
               <div class="row" style="flex-wrap:wrap;gap:0.5rem">
                 <button type="button" class="btn secondary" id="btnCmpUseLab" title="Refresh preview from Lab mnemonic field">
                   Use / refresh Lab phrase
-                </button>
+                </div>
                 <button type="button" class="btn secondary" id="btnCmpGen" title="Write a new throwaway phrase into Lab, then show it here">
                   Generate throwaway test phrase
-                </button>
+                </div>
               </div>
             </div>
 
@@ -1387,6 +1381,9 @@
               <button type="button" class="btn secondary" id="btnPsbtSampleStory" title="Fills a sample + multisig/HWW story and inspects">
                 2 · Load &amp; inspect: multisig / HWW story
               </button>
+              <button type="button" class="btn secondary" id="btnPsbtSamplePartial" title="Educational PSBT with one partial signature key">
+                1-of-2 partial
+              </button>
               <button type="button" class="btn" id="btnPsbt" title="Re-run inspect on whatever is in the box">
                 3 · Inspect again
               </button>
@@ -1490,6 +1487,47 @@
     </div>
   </div>
 
+  <div id="overlayGenerate" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayGenerateTitle">
+    <div class="lab-overlay-card">
+      <h3 id="overlayGenerateTitle">Generate a practice phrase</h3>
+      <p class="control-help" id="overlayGenerateBody">
+        This makes a new practice recovery phrase — English words only
+        (<span id="overlayGenerateWords">12</span>-word, or the word count you picked).
+        Use it to learn. Do not put these words in a real wallet and do not send money to addresses from this phrase.
+        Nothing leaves this browser tab. This is not a funded seed.
+      </p>
+      <div class="row" style="justify-content:flex-end;gap:0.5rem">
+        <button type="button" class="btn lab-overlay-ok" id="overlayGenerateGo" data-overlay-ok="overlayGenerate">OK</button>
+      </div>
+    </div>
+  </div>
+  <div id="overlayDerive" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayDeriveTitle">
+    <div class="lab-overlay-card">
+      <h3 id="overlayDeriveTitle">Validate &amp; derive</h3>
+      <p class="control-help" id="overlayDeriveBody">
+        This checks the words you typed or generated are a valid BIP-39 phrase, then shows the receive addresses that come from it.
+        Checking and address math stay in this tab. It does not send bitcoin, does not look up a balance, and does not talk to the network.
+        Addresses go to Network only if you later opt in.
+      </p>
+      <div class="row" style="justify-content:flex-end;gap:0.5rem">
+        <button type="button" class="btn lab-overlay-ok" id="overlayDeriveGo" data-overlay-ok="overlayDerive">OK</button>
+      </div>
+    </div>
+  </div>
+  <div id="overlayClear" class="lab-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="overlayClearTitle">
+    <div class="lab-overlay-card">
+      <h3 id="overlayClearTitle">Clear secrets</h3>
+      <p class="control-help" id="overlayClearBody">
+        This wipes the phrase and derived data from this lab tab’s memory.
+        It is not deleting a real wallet and it cannot reach coins.
+        Next time a Tools card needs a phrase, it may fill TEST DATA so the demo still runs.
+        Paper you already wrote down is unchanged.
+      </p>
+      <div class="row" style="justify-content:flex-end;gap:0.5rem">
+        <button type="button" class="btn danger lab-overlay-ok" id="overlayClearGo" data-overlay-ok="overlayClear">OK</button>
+      </div>
+    </div>
+  </div>
   <!-- Offline QR modal -->
   <div id="qrModal" class="qr-modal" hidden role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
     <div class="qr-modal-card">
@@ -1507,8 +1545,9 @@
 
   <!-- Viewport-fixed bottom dock (must be outside .app/.content so position:fixed sticks to screen bottom) -->
   <div id="learnReturnBar" class="learn-return-dock" hidden role="navigation" aria-label="Return to learning step">
-    <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Guided quiz</button>
-    <span class="learn-return-hint" id="learnReturnBarHint"></span>
+    <button type="button" class="btn secondary btn-sm" id="learnReturnBarBtn">← Back to Beginner</button>
+    <span class="learn-return-hint" id="learnReturnBarHint" aria-live="polite"></span>
+    <button type="button" class="btn btn-sm" id="btnHourMarkFromDock" hidden disabled>Mark done</button>
     <button type="button" class="btn btn-sm" id="btnMarkQ1FromTools" hidden>
       Mark Q1 passed &amp; return to quiz
     </button>
@@ -1524,11 +1563,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.1"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.1"></script>
-  <script src="js/glossary.js?v=0.16.1"></script>
-  <script src="js/help-ui.js?v=0.16.1"></script>
-  <script src="js/learn-levels.js?v=0.16.1"></script>
-  <script src="js/app.js?v=0.16.1"></script>
+  <script src="js/site-version.js?v=0.16.25"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.25"></script>
+  <script src="js/glossary.js?v=0.16.25"></script>
+  <script src="js/help-ui.js?v=0.16.25"></script>
+  <script src="js/learn-levels.js?v=0.16.25"></script>
+  <script src="js/app.js?v=0.16.25"></script>
 </body>
 </html>

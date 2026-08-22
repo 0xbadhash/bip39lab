@@ -134,3 +134,19 @@ ship_policy:
   allow_spec_waiver_only_for: [hotfix, chore, docs-only, prose-only]
 
 product_skills: []
+
+# J14 — BIP-39 mnemonic parse/validate (crypto messy input)
+property_tests:
+  enabled: true
+  modules:
+    - bip39lab/bip39
+    - bip39lab/wordlist
+
+smoke_ci:
+  - name: hardcodes
+    cmd: ["python", "scripts/check_hardcodes.py"]
+    cwd: .
+  - name: unit-property
+    cmd: ["python", "-m", "pytest", "tests/test_property_bip39.py", "tests/test_bip39_vectors.py", "-q", "--tb=line"]
+    cwd: .
+

@@ -72,6 +72,161 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] Slim Starter First-hour rail
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-21-slim-rail.md`
+- **Plan:** `.agents/specs/2026-08-21-slim-rail-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Slim 1–8 labels; one Go/Mark done for selected step
+  - [ ] Clear secrets filled red; Mnemonic title
+  - [ ] Stamp 0.16.24; leftovers hold
+- **Smoke:** e2e/faces.spec.ts S102 + learn first-hour
+- **Notes:** grill-me complete (locked brief)
+
+### [OPEN] Gradual visual teach (Catalyxt skin)
+- **Status:** open (draft — paint states await CEO lock)
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-22-gradual-visual-teach.md`
+- **Depends:** Slim Starter First-hour rail
+- **Next:** after slim-rail + paint-state yes
+- **Acceptance:**
+  - [ ] One `#labStrip`; `data-paint` Starter → Advanced
+  - [ ] Unlit stages are hairline ghosts; lit stages use app-shell tokens only
+  - [ ] Extra help Off hides captions, not the strip
+  - [ ] No new `--cx-*`; no marketing/desk fork
+- **Notes:** Teaching grows by lighting the same composition. A/B/C below are content, not skins.
+
+### [OPEN] Teach-A — Pipeline interactivity
+- **Status:** open
+- **Priority:** P2
+- **Depends:** Gradual visual teach
+- **Acceptance:**
+  - [ ] ENT slider paints entropy bar; checksum bits `--cx-ok`
+  - [ ] LearnMeABitcoin *content* (bits → 11-bit → words → PBKDF2), Catalyxt *skin*
+- **Notes:** Not a white textbook page.
+
+### [OPEN] Teach-B — Numbered card specimen
+- **Status:** open
+- **Priority:** P2
+- **Depends:** Gradual visual teach
+- **Acceptance:**
+  - [ ] Mnemonic is 3×4 / 4×6 numbered cells, not a textarea
+  - [ ] Index badge; Intermediate bolds first-4 prefix
+- **Notes:** Hardware-backup *object*, not wallet onboarding chrome.
+
+### [OPEN] Teach-C — Air-gap actions on the card
+- **Status:** open
+- **Priority:** P2
+- **Depends:** Teach-B + P0 lab-safety QR/print walls
+- **Acceptance:**
+  - [ ] Seed QR + print sit on the card object
+  - [ ] Same `#3d8bfd` accent; no SeedSigner orange
+- **Notes:** Instrument behavior, Catalyxt look.
+
+### [DONE] Starter rail + Beginner/Advanced stills
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-sba-stills.md`
+- **Plan:** `.agents/specs/2026-08-20-sba-stills-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Starter 8-step rail beside live lab
+  - [ ] Beginner three stills; Advanced PNG
+  - [ ] Intermediate stills untouched; stamp 0.16.23
+- **Smoke:** e2e/faces.spec.ts S102 S103 S104 S105
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Intermediate app-shell stills
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-int-stills.md`
+- **Plan:** `.agents/specs/2026-08-20-int-stills-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Three locked PNGs visible on Intermediate
+  - [ ] I1–I4 kept; 0.16.16–0.16.21 leftovers held
+  - [ ] Stamp 0.16.22 + PW + comet
+- **Smoke:** e2e/faces.spec.ts S104
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Overlay OK-only
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-overlay-ok-only.md`
+- **Plan:** `.agents/specs/2026-08-20-overlay-ok-only-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] One OK per overlay; no Cancel/Continue; OK runs action
+  - [ ] 0.16.17 copy; Beginner 0.16.20 intact
+  - [ ] Stamp 0.16.21 + PW + comet
+- **Smoke:** e2e/faces.spec.ts S106 + lab overlay tests
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Beginner visual (locked mock)
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-beginner-visual.md`
+- **Plan:** `.agents/specs/2026-08-20-beginner-visual-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Tiles Q1–Q4 + visible key/dice/seed visual
+  - [ ] No Guided quiz heading novel
+  - [ ] Stamp 0.16.20 + PW + comet
+- **Smoke:** e2e/faces.spec.ts S103 S108
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Level faces (four gates)
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-level-faces.md`
+- **Plan:** `.agents/specs/2026-08-20-level-faces-plan.md`
+- **Acceptance:**
+  - [ ] Four faces live at 0.16.19; later hidden until gate
+  - [ ] 12-check not a fifth nav; 6 nav items
+  - [ ] Local DS SVGs; PW + comet same ship
+- **Smoke:** product smoke + e2e/faces.spec.ts F1–F7
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Hover-(i) tips
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-hover-info-tips.md`
+- **Plan:** `.agents/specs/2026-08-20-hover-info-tips-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] All (i) hover/focus, click not required
+  - [ ] S42 Extra help Off; overlays still click/Continue
+  - [ ] Stamp 0.16.18 + Playwright + comet
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Overlay copy density
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-overlay-copy-density.md`
+- **Plan:** `.agents/specs/2026-08-20-overlay-copy-density-plan.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] Three overlay bodies dense, distinct, locked intent
+  - [ ] S100 + comet updated; S80 still after Generate overlay
+  - [ ] Stamp 0.16.17 lockstep
+- **Notes:** grill-me complete (locked brief)
+
+### [DONE] Reset to Starter intro + three Lab action overlays
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-20-reset-starter-lab-overlays.md`
+- **Plan:** none
+- **Next:** true
+- **Acceptance:**
+  - [ ] Reset sets Starter and lands on Offline BIP-39 lab intro with exact `#panel-sub` receive-addresses sentence
+  - [ ] Three distinct overlays for Generate / Validate & derive / Clear secrets; Continue vs Cancel
+  - [ ] S80 native replace confirm after Generate overlay; S81 missing-data after Derive overlay Continue
+  - [ ] Playwright + comet + stamp 0.16.16 lockstep
+- **Smoke:** product smoke + S99–S102 (Reset/overlays) + existing S80/S81/S85/S89
+- **Notes:** grill-me complete (operator brief; no live interview)
+
 ### [DONE] Shamir recombine (educational, non-SLIP-39)
 - **Status:** done
 - **Priority:** P1
@@ -362,9 +517,70 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Specs:** `.agents/specs/2026-08-11-e0-orientation-first-hour.md` … `e6-private-knots-ops.md`
 - **Notes:** Orientation, level chip, quiz, mobile CSS, three-splits tour, BIP-85 idea, ops card
 
+### [OPEN] P0 lab-safety
+- **Status:** open
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-08-18-p0-lab-safety.md`
+- **Acceptance:**
+  - [ ] Honest Lab banner
+  - [ ] Seed QR / print walls + live mnemonic
+  - [ ] Testnet default; session only on handoff
+  - [ ] Leak-ack proxy + contrast
+
+### [OPEN] A — Vault map object
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-13-a-vault-map.md`
+- **Next:** true
+- **Acceptance:**
+  - [ ] `#msVaultMap` after Build
+  - [ ] S72 Playwright + Comet
+
+### [OPEN] B — Recovery drill
+- **Status:** open
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-13-b-recovery-drill.md`
+- **Depends:** A
+- **Acceptance:**
+  - [ ] Rebuild from map matches P2WSH
+  - [ ] Without-map errors
+  - [ ] S73
+
+### [OPEN] C — Vendor-diversity Extra help
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-c-vendor-diversity.md`
+
+### [OPEN] D — Demo ≠ multi-vendor
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-d-demo-not-vendor.md`
+
+### [OPEN] E — M=1 policy warning
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-e-m1-policy.md`
+
+### [OPEN] F — PIN / file password / BIP39 PP
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-f-password-words.md`
+
+### [OPEN] G — Coordinator vs signer
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-g-coordinator.md`
+
+### [OPEN] H — PSBT 1-of-2 partial sample
+- **Status:** open
+- **Priority:** P2
+- **Spec:** `.agents/specs/2026-08-13-h-psbt-partial.md`
+
 ## Current focus
 
-**Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`).  
-**Next:** Pruned Knots on Pi/SSD until IBD complete → finish **2000-seed** hash campaign (CLI tooling already shipped).  
-**Later (optional):** private Knots balance proxy for Network; private operator scan console — not public Network.  
-**Out of scope:** 7th sidebar nav item for SLIP-39 (deep-link from Shamir only — keeps 6-nav mental model).
+**Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`). Live web stamp lineage **0.16.23**.  
+**Next (UI):** Slim Starter rail **0.16.24**, then **Gradual visual teach** if paint states lock.  
+**Next (ops):** Pruned Knots on Pi/SSD until IBD complete → finish **2000-seed** hash campaign.  
+**Later:** Teach-A/B/C content modules inside app-shell; private Knots balance proxy — not public Network.  
+**Out of scope:** 7th sidebar nav for SLIP-39; new visual skins (SeedSigner / Ian / marketing variant).

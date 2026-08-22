@@ -1,63 +1,62 @@
-# PR Draft: v0.16.1 Multisig teach + quiz dock Mark parity + Comet stamp
+# PR Draft: v0.16.24 slim Starter First-hour rail
 
-**Spec:** `.agents/specs/2026-08-11-intermediate-advanced-paths.md`  
-**Spec waiver:** chore  
+**Spec:** `.agents/specs/2026-08-21-slim-rail.md`
+**Plan:** `.agents/specs/2026-08-21-slim-rail-plan.md`
 
 ## What Problem This Solves
-After v0.16.0 Intermediate/Advanced paths: Comet header lagged S-ids; Multisig teach copy was jargon-heavy; I1–I3 only had Back without Mark-on-dock; QA found quizReturn key drift and fee edge cases.
+
+Starter First hour was a fat 8-card rail with Go/Mark done on every step. CEO locked slim numbered labels plus one action pair for the selected step.
 
 ## Why This Change Was Made
-Patch release bundling post-ship QA fixes + Multisig classroom clarity + site-wide Mark passed & return on Intermediate docks + auto-stamp Comet blurb.
+
+Hold lifted. Slim still is composition lock only — not a screenshot. Stamp 0.16.24. Do not Imagine. Do not copy CATALYSTS.
 
 ## User Impact
-- Multisig checklist: vault-verify + cosigner-replace ⓘ; zpub vs compressed pubkey teach  
-- Dock: **Mark I1/I2/I3** on Multisig/Shamir/SLIP-39; **Mark I4/A*** on Lab dock  
-- Comet header auto-stamped S0–S71 from VERSION + Playwright  
-- quizReturn accepts `1|quiz|intquiz|advquiz`; safer fee math; entropy dock less noisy  
 
-## Evidence pack
-- hard_gates / product_smoke / check_web_e2e / pytest  
-- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT  
-
-## Evidence
-| Check | Result |
-|-------|--------|
-| secrets v0.16.0…HEAD | clean |
-| hard_gates | (at pr_review) |
-| pytest + e2e | S70/S71 + suite |
+Eight short numbered labels beside the live Mnemonic lab. Click a step, then Go / Mark done for that step. Clear secrets stays filled red.
 
 ## Traceability
-| AC | Test |
-|----|------|
-| Multisig teach BIP67/vault/replace/zpub | e2e S46, S12b · test_multisig |
-| Mark I1 dock | e2e S70 |
-| Mark I4 Lab dock | e2e S71 |
-| Comet stamp S0–Smax | stamp_comet_header · test_stamp_comet_header |
-| quizReturn keys | test_quiz_return_keys |
-| Fee guards | test_network_api |
 
-## Red-proof / TDD
-| Phase | Command |
-|-------|---------|
-| red_cmd | pytest tests/test_stamp_comet_header.py tests/test_quiz_return_keys.py (added first, then green) |
-| green_cmd | `.venv/bin/python -m pytest -q` + `npx playwright test e2e/learn.spec.ts -g "S70\|S71"` |
+| AC | Test / smoke |
+|----|----------------|
+| AC slim labels no per-step Go | Playwright S102 |
+| AC selected-step Go/Mark done loop | Playwright learn first-hour / S102 |
+| AC Mnemonic title | Playwright S102 |
+| AC Clear secrets filled danger | Playwright S102 |
+| AC Intermediate stills | Playwright S104 |
+| AC Beginner stills | Playwright S103 |
+| AC Advanced PNG | Playwright S105 |
+| AC Overlay OK | Playwright S106 S100 |
+| AC Hover | Playwright S107 |
+| AC rec-flow | Playwright S108 |
+| AC stamp 0.16.24 | Playwright S0 |
 
-## Untested paths
-| Path | Reason |
-|------|--------|
-| Live Multisig after deploy | needs push/deploy |
-| web/js/glossary.js | covered by e2e S46/S12b tip panels + terms present in HTML data-term; static TERMS load only |
+## Red-proof
+
+- red_cmd: `false`
+- green_cmd: `npx playwright test e2e/faces.spec.ts -g S102`
 
 ## Threat notes
-- **secrets** — progress localStorage only  
-- **xss** — glossary escapeHtml on tips  
-- **integrity** — educational self-check  
+
+- secrets: none
+- xss: none
+- csrf: none
+
+## Evidence pack
+
+- hard_gates / pr_validator (this ship)
+- Playwright S0 S100 S102–S108 + learn first-hour
+- pytest via compliance_engine on /pr_review --validate
 
 ## Things that look bad but are actually fine
-1. Self-graded Intermediate marks (no auto crypto pass).  
-2. Cosigner replace = new vault + move, not edit-in-place (Bitcoin).  
-3. zpub shown but not used in M-of-N script (intentional teach).  
-4. Soft level gates.  
+
+1. Live lab is not the PNG screenshot.
+2. Do not copy CATALYSTS from the still.
+3. Dirty harness scripts not in this ship.
 
 ## Cross-review
-See `.agents/artifacts/CROSS_REVIEW.md`.
+
+blockers=0.
+
+### Obsolete / cleanup (scoped)
+Tier A: 0.

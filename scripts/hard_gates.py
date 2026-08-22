@@ -485,8 +485,22 @@ def evaluate(
                 skipped.append("security_paths (" + (sp_msgs[0] if sp_msgs else "ok") + ")")
         except Exception as e:  # pragma: no cover
             violations.append(f"hard_gates: security_paths error: {e}")
+
+        # J14 property_tests modules from product_plugin
+        try:
+            from check_property_tests import check as _prop  # type: ignore
+
+            pr_ok, pr_msgs = _prop(root)
+            if not pr_ok:
+                for msg in pr_msgs:
+                    violations.append(f"hard_gates: property_tests — {msg}")
+            else:
+                skipped.append("property_tests (" + (pr_msgs[0] if pr_msgs else "ok") + ")")
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: property_tests error: {e}")
     else:
         skipped.append("security_paths (prose-only)")
+        skipped.append("property_tests (prose-only)")
 
     # Web E2E + Comet contract when product has a website (fail closed)
     if not prose_only:
@@ -504,8 +518,44 @@ def evaluate(
                 skipped.append("web_e2e (no website)")
         except Exception as e:  # pragma: no cover
             violations.append(f"hard_gates: web_e2e check error: {e}")
+
+        # Product traits → required test categories (web3 isolation, client_secrets, …)
+        try:
+            from check_product_traits import check as _traits  # type: ignore
+
+            tr_ok, tr_msgs = _traits(root)
+            if not tr_ok:
+                for msg in tr_msgs:
+                    if msg.startswith("fail:"):
+                        violations.append(f"hard_gates: product_traits — {msg}")
+            else:
+                skipped.append(
+                    "product_traits (" + (tr_msgs[0] if tr_msgs else "ok") + ")"
+                )
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: product_traits error: {e}")
     else:
         skipped.append("web_e2e (prose-only)")
+        skipped.append("product_traits (prose-only)")
+
+    # Outer loop: plan / tickets / PLAN_REVIEW for large non-waiver ships
+    if not prose_only:
+        try:
+            from check_outer_loop import check as _outer  # type: ignore
+
+            o_ok, o_msgs = _outer(root, pr_draft, base=base_g, head=head_g)
+            if not o_ok:
+                for msg in o_msgs:
+                    if msg.startswith("fail:"):
+                        violations.append(f"hard_gates: outer_loop — {msg}")
+            else:
+                skipped.append(
+                    "outer_loop (" + (o_msgs[0] if o_msgs else "ok") + ")"
+                )
+        except Exception as e:  # pragma: no cover
+            violations.append(f"hard_gates: outer_loop error: {e}")
+    else:
+        skipped.append("outer_loop (prose-only)")
 
     return HardGatesResult(
         ok=len(violations) == 0,
