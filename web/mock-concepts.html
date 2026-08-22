@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Concept SVGs · every tab × level</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--wn:#e6b84d;--r:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Segoe UI,system-ui,sans-serif;font-size:14px}
+.wrap{max-width:880px;margin:0 auto;padding:1rem}
+.warn{background:rgba(230,184,77,.1);border:1px solid rgba(230,184,77,.35);color:#f0d78a;border-radius:8px;padding:.6rem .75rem;font-size:.8rem}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;margin:.75rem 0}
+.btn{border:1px solid var(--bd);background:transparent;color:var(--tx);border-radius:8px;padding:.35rem .65rem;font:inherit;cursor:pointer}
+.btn.on{border-color:var(--ac);color:var(--ac)}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem 1rem;margin:.6rem 0}
+.card h2{margin:0 0 .45rem;font-size:.95rem}
+.grid{display:grid;grid-template-columns:220px 1fr;gap:.75rem;align-items:center}
+.grid p{margin:0;color:var(--mu);font-size:.82rem;line-height:1.45}
+svg{width:220px;height:92px;display:block}
+.chip{font-size:.7rem;color:var(--mu);border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem}
+</style></head><body><div class="wrap">
+<p class="warn"><strong>20 concept SVGs.</strong> Same Catalyxt tokens. Production only has Lab stills today — this is the missing matrix. Hard-refresh.</p>
+<div class="row" id="tabs"></div><div class="row" id="lvls"></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="t">—</h2><span class="chip" id="c">—</span></div>
+<div class="grid"><div id="s"></div><p id="p"></p></div></div>
+<p class="chip">Inline SVG mock · not the locked Lab PNG faces</p>
+</div>
+<script>
+(function(){
+var tab="lab",lvl="starter";
+function bx(x,y,w,h,t,on){var f=on?"#161d27":"transparent",s=on?"#3d8bfd":"#243044",c=on?"#e8eef7":"#8b9bb4";return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6" fill="'+f+'" stroke="'+s+'"/><text x="'+(x+w/2)+'" y="'+(y+h/2+4)+'" text-anchor="middle" font-size="9" fill="'+c+'" font-family="Segoe UI,sans-serif">'+t+'</text>';}
+function ar(x1,y,x2){return '<path d="M'+x1+' '+y+' H'+(x2-6)+'" stroke="#8b9bb4" fill="none"/><path d="M'+(x2-6)+' '+(y-3)+' L'+x2+' '+y+' L'+(x2-6)+' '+(y+3)+'" fill="#8b9bb4"/>';}
+function svg(i){return '<svg viewBox="0 0 220 92" xmlns="http://www.w3.org/2000/svg">'+i+'</svg>';}
+var M={
+lab:{starter:["Lab · backup card","The 3×4 numbered card IS the mnemonic. Other stages stay ghost.",function(){return svg(bx(70,26,80,40,"12 words",1));}],
+beginner:["Lab · entropy → words","Random bits + checksum become 12/24 words. One address appears.",function(){return svg(bx(8,28,52,36,"ENT",1)+ar(62,46,78)+bx(78,28,52,36,"CS",1)+ar(132,46,148)+bx(148,28,64,36,"words",1));}],
+intermediate:["Lab · keys ≠ shares","Same words + different passphrase = different wallet. HD key ≠ Shamir share.",function(){return svg(bx(8,18,70,28,"words",1)+ar(80,32,96)+bx(96,8,56,24,"key A",1)+bx(96,40,56,24,"key B",1)+bx(164,24,48,28,"share?",0));}],
+advanced:["Lab · master → child","One seed grows a tree. Child addresses derive. This site is not a wallet.",function(){return svg(bx(12,32,56,28,"master",1)+ar(70,46,90)+bx(90,8,52,22,"/0",1)+bx(90,35,52,22,"/1",1)+bx(90,62,52,22,"/2",1));}]},
+multisig:{starter:["Multisig · public keys","Collect public keys only. No seed is typed. Cosigners, not a phrase.",function(){return svg(bx(12,12,56,22,"pub 1",1)+bx(12,36,56,22,"pub 2",1)+bx(12,60,56,22,"pub 3",1)+ar(72,46,120)+bx(124,32,80,28,"vault?",0));}],
+beginner:["Multisig · M-of-N","Any 2 of 3 keys spend. One lost still works; one stolen is not enough.",function(){return svg(bx(10,32,40,24,"K1",1)+bx(56,32,40,24,"K2",1)+bx(102,32,40,24,"K3",1)+ar(146,44,164)+bx(166,30,46,28,"2-of-3",1));}],
+intermediate:["Multisig · script","Keys sorted (BIP67) into P2WSH. Script ≠ Shamir shares.",function(){return svg(bx(8,30,50,28,"keys",1)+ar(60,44,78)+bx(80,30,56,28,"P2WSH",1)+ar(138,44,156)+bx(158,30,52,28,"script",1));}],
+advanced:["Multisig · joint address","Script hashes to one address. Vault map shows who signs. zpub is watch-only.",function(){return svg(bx(8,30,52,28,"script",1)+ar(62,44,80)+bx(82,30,70,28,"bc1q…",1)+ar(154,44,170)+bx(172,30,40,28,"map",1));}]},
+shamir:{starter:["Shamir · one secret","One practice secret (hex). Not a BIP-39 phrase. Not SLIP-39 words.",function(){return svg(bx(70,28,80,36,"secret",1));}],
+beginner:["Shamir · split to N","Secret is cut into N share cards. One card is useless by design.",function(){return svg(bx(8,32,52,28,"secret",1)+ar(62,46,80)+bx(82,8,40,22,"s1",1)+bx(82,35,40,22,"s2",1)+bx(82,62,40,22,"s3",1));}],
+intermediate:["Shamir · threshold M","Any M rebuilds. M-1 reveals nothing useful. Threshold ≠ multisig policy.",function(){return svg(bx(10,12,40,22,"s1",1)+bx(10,38,40,22,"s2",1)+bx(10,64,40,22,"s3",0)+ar(54,48,78)+bx(80,32,56,28,"M=2",1)+ar(138,46,158)+bx(160,32,50,28,"secret",1));}],
+advanced:["Shamir · recombine","Verify any 2 of 3 match. SLIP-39 share-words live on another page.",function(){return svg(bx(8,20,40,22,"s1",1)+bx(8,50,40,22,"s2",1)+ar(52,46,74)+bx(76,32,60,28,"match",1)+bx(150,32,62,28,"SLIP-39",0));}]},
+network:{starter:["Network · leak exists","First page that may hit the internet. A lookup leaks interest + IP.",function(){return svg(bx(16,30,70,32,"you",1)+ar(90,46,118)+bx(122,22,84,48,"public API",0));}],
+beginner:["Network · fees only","Fee + mempool snapshot sends no addresses. Host still sees your IP.",function(){return svg(bx(10,30,70,32,"no addrs",1)+ar(84,46,108)+bx(110,30,96,32,"sat/vB",1));}],
+intermediate:["Network · sat/vB","Economy / normal / priority are fee rates, not a balance.",function(){return svg(bx(8,30,44,32,"8",1)+bx(62,30,44,32,"12",1)+bx(116,30,44,32,"20",1)+bx(170,30,40,32,"vb",0));}],
+advanced:["Network · address-only","After leak-ack, look up Lab addresses. unknown is not a fake 0.",function(){return svg(bx(8,28,84,36,"bc1q…",1)+ar(96,46,116)+bx(118,14,90,28,"0 · ok",1)+bx(118,50,90,28,"unknown ≠ 0",1));}]},
+tools:{starter:["Tools · TEST DATA","Not a second wallet. If Lab was cleared, Tools mints a throwaway.",function(){return svg(bx(20,28,80,36,"Lab empty",0)+ar(104,46,124)+bx(126,28,80,36,"TEST DATA",1));}],
+beginner:["Tools · path folders","m/84h/0h/0h/0/0 is a folder in the seed tree. A vs B passphrase = two trees.",function(){return svg(bx(6,32,34,26,"m",1)+ar(42,45,54)+bx(56,32,40,26,"84h",1)+ar(98,45,110)+bx(112,32,40,26,"0h",1)+ar(154,45,166)+bx(168,32,44,26,"/0/0",1));}],
+intermediate:["Tools · inspect only","Descriptor = watch-only string. PSBT = unsigned package. Lab never signs.",function(){return svg(bx(8,30,84,32,"descriptor",1)+bx(112,30,96,32,"PSBT inspect",1));}],
+advanced:["Tools · QR on the card","Print and Seed QR attach to the Lab card. No new skin. Walls apply.",function(){return svg(bx(16,22,92,48,"word card",1)+bx(128,22,76,48,"QR + print",1));}]}
+};
+function render(){
+var d=M[tab][lvl];
+document.getElementById("t").textContent=d[0];
+document.getElementById("c").textContent=tab+" · "+lvl;
+document.getElementById("p").textContent=d[1];
+document.getElementById("s").innerHTML=d[2]();
+document.querySelectorAll("[data-tab]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-tab")===tab);});
+document.querySelectorAll("[data-lvl]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-lvl")===lvl);});
+}
+["lab","multisig","shamir","network","tools"].forEach(function(k){var b=document.createElement("button");b.className="btn";b.textContent=k;b.setAttribute("data-tab",k);b.onclick=function(){tab=k;render();};document.getElementById("tabs").appendChild(b);});
+["starter","beginner","intermediate","advanced"].forEach(function(k){var b=document.createElement("button");b.className="btn";b.textContent=k;b.setAttribute("data-lvl",k);b.onclick=function(){lvl=k;render();};document.getElementById("lvls").appendChild(b);});
+render();
+})();
+</script></body></html>
