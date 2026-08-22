@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>UC1 mock · First wallet (safe &amp; easy)</title>
+<style>
+:root{
+  --bg:#0b0f14;--el:#121821;--panel:#161d27;--p2:#1a2330;
+  --bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;
+  --ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;
+  --r:12px;--rs:8px;
+  --f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px;line-height:1.45}
+.app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}
+.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.85rem .65rem;display:flex;flex-direction:column;gap:.2rem}
+.brand{font-weight:700;padding:.15rem .4rem .55rem}.brand span{color:var(--ac)}
+.nav{display:block;width:100%;text-align:left;border:0;background:0;color:var(--mu);padding:.38rem .48rem;border-radius:var(--rs);font:inherit;cursor:default}
+.nav.active{background:var(--panel);color:var(--tx);border-left:3px solid var(--ac)}
+.nav small{display:block;font-size:.66rem;color:var(--mu)}
+.main{padding:.85rem 1.1rem 2.5rem;max-width:920px}
+.mission{font-size:.78rem;color:var(--mu);margin:0 0 .65rem}
+.mission strong{color:var(--tx)}
+.warn{background:rgba(230,184,77,.1);border:1px solid rgba(230,184,77,.35);color:#f0d78a;border-radius:var(--rs);padding:.55rem .75rem;margin:0 0 .75rem;font-size:.8rem}
+.banner{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.08);color:#f0d78a;border-radius:var(--r);padding:.55rem .75rem;margin:0 0 .75rem;font-size:.8rem}
+.work{width:100%}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem .95rem;margin:0 0 .75rem}
+.card h2{margin:0 0 .35rem;font-size:1rem}
+.muted{color:var(--mu);font-size:.8rem}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.45rem 0}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.4rem .75rem;font:inherit;cursor:pointer;font-size:.85rem}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.secondary{background:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.chip{display:inline-flex;border:1px solid var(--bd);border-radius:999px;padding:.12rem .5rem;font-size:.7rem;color:var(--mu)}
+.chip.ok{color:var(--ok);border-color:rgba(62,207,142,.45)}
+.chip.wn{color:var(--wn);border-color:rgba(230,184,77,.45)}
+.select{background:var(--panel);border:1px solid var(--bd);color:var(--tx);border-radius:var(--rs);padding:.35rem .5rem;font:inherit}
+.rail{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin:.2rem 0 .15rem}
+.circ{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--mu);flex:0 0 auto}
+.circ.on{border-color:var(--ac);color:var(--ac)}
+.circ.done{border-color:rgba(62,207,142,.6);color:var(--ok)}
+.name{border:1px solid var(--bd);border-radius:999px;padding:.2rem .55rem;font-size:.8rem;color:var(--mu)}
+.name.on{border-color:var(--ac);color:var(--tx);background:var(--panel);font-weight:600}
+.name.done{color:var(--ok);border-color:rgba(62,207,142,.35)}
+.arr{color:var(--mu);opacity:.7}
+.words{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem;margin:.55rem 0}
+.pair{display:flex;align-items:stretch;gap:.3rem;min-width:0}
+.idx{flex:0 0 30px;width:30px;height:30px;border-radius:7px;border:1px solid var(--bd);background:var(--p2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.wd{flex:1;min-width:0;border:1px solid var(--bd);border-radius:8px;background:var(--panel);padding:.35rem .5rem;font-family:var(--m);font-size:1.05rem;color:var(--tx)}
+.stamp{display:inline-block;margin-top:.35rem;font-size:.72rem;color:var(--wn);border:1px dashed rgba(230,184,77,.4);border-radius:6px;padding:.25rem .45rem}
+.table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:.5rem}
+.table th,.table td{border:1px solid var(--bd);padding:.4rem .5rem;text-align:left}
+.table th{color:var(--mu);font-weight:600;background:var(--panel)}
+.table code{font-family:var(--m);font-size:.78rem}
+.hidden{display:none!important}
+.overlay{position:fixed;inset:0;background:rgba(11,15,20,.78);display:flex;align-items:center;justify-content:center;z-index:40;padding:1rem}
+.panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1.1rem 1.2rem;width:min(720px,94vw);max-height:90vh;overflow:auto}
+.panel h1{margin:0 0 .65rem;font-size:1.2rem}
+.isgrid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin:.5rem 0 .75rem}
+@media(max-width:640px){.isgrid{grid-template-columns:1fr}.app{grid-template-columns:1fr}}
+.iscol{border:1px solid var(--bd);border-radius:var(--rs);padding:.55rem}
+.iscol h3{margin:0 0 .4rem;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.iscol.is h3{color:var(--ac)}.iscol.not h3{color:var(--wn)}
+.iscol p{margin:0 0 .35rem;font-size:.8rem;color:var(--mu)}
+.story{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 0 .75rem}
+.story button{font-size:.75rem}
+.story button.on{border-color:var(--ac);color:var(--ac)}
+.exit{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.07);border-radius:var(--r);padding:.85rem}
+.exit label{display:flex;gap:.5rem;align-items:flex-start;font-size:.85rem;margin:.5rem 0}
+.foot{font-size:.72rem;color:var(--mu);margin-top:.75rem}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">bip39<span>·lab</span></div>
+    <div class="nav active"><strong>Lab</strong><small>UC1 First wallet</small></div>
+    <div class="nav"><strong>Multisig</strong><small>room · later track</small></div>
+    <div class="nav"><strong>Shamir</strong><small>room · later track</small></div>
+    <div class="nav"><strong>Network</strong><small>room · later track</small></div>
+    <div class="nav"><strong>Tools</strong><small>opened by tracks</small></div>
+    <div class="nav"><strong>Glossary</strong><small>names</small></div>
+    <div style="flex:1"></div>
+    <span class="chip wn">MOCK · UC1 only</span>
+  </aside>
+  <main class="main work">
+    <p class="mission"><strong>Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+    <p class="warn"><strong>UC1 mock only.</strong> Existing elements. No Path / Multisig / Network in this track.</p>
+    <div class="story" id="storyNav">
+      <span class="chip">Storyboard</span>
+      <button type="button" class="btn secondary on" data-story="0">0 Gate</button>
+      <button type="button" class="btn secondary" data-story="1">1 Generate</button>
+      <button type="button" class="btn secondary" data-story="2">2 Words filled</button>
+      <button type="button" class="btn secondary" data-story="3">3 Addresses</button>
+      <button type="button" class="btn secondary" data-story="4">4 Force exit</button>
+    </div>
+    <div class="banner">Air-gap recommended. Crypto stays in this tab. Progress/theme may be saved in the browser. Derived addresses go to Network only after explicit opt-in. Do not use a funded phrase here.</div>
+    <div class="card" id="railCard">
+      <div class="row" style="justify-content:space-between;margin:0 0 .35rem">
+        <div><strong>First wallet</strong> <span class="chip" id="progressChip">0 / 3</span></div>
+        <button type="button" class="btn secondary" id="btnReset" style="font-size:.75rem">Reset UC1</button>
+      </div>
+      <p class="muted">Create a practice 12-word card — not a funded wallet.</p>
+      <div class="rail" id="rail">
+        <span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Generate practice phrase</span>
+        <span class="arr">→</span>
+        <span class="circ" data-s="2">2</span><span class="name" data-s="2">See backup card</span>
+        <span class="arr">→</span>
+        <span class="circ" data-s="3">3</span><span class="name" data-s="3">One receive address</span>
+        <span class="arr">→</span>
+        <span class="circ" data-s="4">4</span><span class="name" data-s="4">Exit · do not fund</span>
+      </div>
+    </div>
+    <div class="card" id="padMnemonic">
+      <h2>Mnemonic</h2>
+      <p class="muted">English BIP-39 only. Passphrase is UC3 — not UC1.</p>
+      <div class="row"><label class="muted">Word count <select class="select" id="wc"><option>12</option><option>24</option></select></label></div>
+      <div class="row">
+        <button type="button" class="btn primary" id="btnGen">Generate</button>
+        <button type="button" class="btn secondary" id="btnVal" disabled>Validate &amp; derive</button>
+        <button type="button" class="btn danger" id="btnClr">Clear secrets</button>
+      </div>
+      <div id="strip">
+        <div class="muted" style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;margin-top:.35rem">Words · practice backup</div>
+        <div class="words" id="wordGrid"></div>
+        <span class="stamp">This card is a practice backup. Not a wallet.</span>
+      </div>
+      <div id="addrBlock" class="hidden" style="margin-top:.85rem">
+        <div class="row" style="justify-content:space-between"><strong>Receive addresses</strong><span class="chip ok">BIP84</span></div>
+        <p class="muted">Generated offline · practice only · do not send funds</p>
+        <table class="table"><thead><tr><th>#</th><th>Address</th><th>Path</th></tr></thead><tbody id="addrBody"></tbody></table>
+      </div>
+    </div>
+    <div class="card exit hidden" id="padExit">
+      <h2>You are done in this lab</h2>
+      <p class="muted">Force ack. Real wallet setup is outside this site.</p>
+      <label><input type="checkbox" id="exitAck"/> <span>I will <strong>not</strong> send bitcoin to these practice addresses and I will <strong>not</strong> import this practice phrase into a funded wallet.</span></label>
+      <div class="row">
+        <button type="button" class="btn primary" id="btnExit" disabled>Finish UC1</button>
+        <button type="button" class="btn secondary" id="btnUC3" disabled>Later: Passphrase (UC3)</button>
+      </div>
+      <p class="muted hidden" id="exitDone"></p>
+    </div>
+    <p class="foot">Sidebar rooms kept; UC1 does not open them.</p>
+  </main>
+</div>
+<div class="overlay" id="gate">
+  <div class="panel">
+    <h1>What this is / isn’t</h1>
+    <div class="isgrid">
+      <div class="iscol is"><h3>This lab is</h3><p>An offline classroom for BIP-39 ideas</p><p>Safe for <strong>practice</strong> phrases</p><p>Educational demos (other tracks)</p></div>
+      <div class="iscol not"><h3>This lab is not</h3><p>A Bitcoin wallet</p><p>A place for a funded recovery phrase</p><p>A signer or broadcaster</p></div>
+    </div>
+    <p class="muted">Air-gap recommended. Do not type a funded phrase.</p>
+    <button type="button" class="btn primary" id="btnAck">I understand — start the lab</button>
+  </div>
+</div>
+<script>
+(function(){
+var WORDS12=["control","catch","mixture","gift","size","glimpse","hamster","pizza","income","ignore","fall","aerobic"];
+var WORDS24=WORDS12.concat(["river","open","focus","usual","verify","simple","cloth","eagle","frame","journey","ocean","pattern"]);
+var sampleAddr=[{i:0,a:"bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2",p:"m/84h/0h/0h/0/0"},{i:1,a:"bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",p:"m/84h/0h/0h/0/1"},{i:2,a:"bc1qar0srrr7xfkvy5l643lydnw9re59gj4ad0m4n8",p:"m/84h/0h/0h/0/2"}];
+var step=0,hasWords=false,hasAddr=false,finished=false;
+function $(id){return document.getElementById(id);}
+function emptyGrid(n){var g=$("wordGrid");g.innerHTML="";for(var i=0;i<n;i++)g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">—</div></div>';}
+function fillGrid(words){var g=$("wordGrid");g.innerHTML="";words.forEach(function(w,i){g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">'+w+'</div></div>';});}
+function paintRail(){document.querySelectorAll("#rail .circ, #rail .name").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on");if(s===4&&finished)el.classList.add("done");});var p=(hasWords?1:0)+(hasAddr?1:0)+(finished?1:0);$("progressChip").textContent=p+" / 3";$("btnVal").disabled=!hasWords;}
+function showExit(show){$("padExit").classList.toggle("hidden",!show);}
+function setStory(n){document.querySelectorAll("[data-story]").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-story")===String(n));});
+if(n===0){$("gate").classList.remove("hidden");step=0;hasWords=false;hasAddr=false;finished=false;emptyGrid(12);$("addrBlock").classList.add("hidden");showExit(false);$("exitAck").checked=false;$("btnExit").disabled=true;$("btnUC3").disabled=true;$("exitDone").classList.add("hidden");}
+else{$("gate").classList.add("hidden");
+if(n===1){step=1;hasWords=false;hasAddr=false;finished=false;emptyGrid(+$("wc").value||12);$("addrBlock").classList.add("hidden");showExit(false);}
+if(n===2){step=2;hasWords=true;hasAddr=false;finished=false;fillGrid((+$("wc").value===24)?WORDS24:WORDS12);$("addrBlock").classList.add("hidden");showExit(false);}
+if(n===3){step=3;hasWords=true;hasAddr=true;finished=false;fillGrid(WORDS12);$("addrBody").innerHTML=sampleAddr.map(function(r){return "<tr><td>"+r.i+"</td><td><code>"+r.a+"</code></td><td><code>"+r.p+"</code></td></tr>";}).join("");$("addrBlock").classList.remove("hidden");showExit(false);}
+if(n===4){step=4;hasWords=true;hasAddr=true;finished=false;fillGrid(WORDS12);$("addrBody").innerHTML=sampleAddr.map(function(r){return "<tr><td>"+r.i+"</td><td><code>"+r.a+"</code></td><td><code>"+r.p+"</code></td></tr>";}).join("");$("addrBlock").classList.remove("hidden");showExit(true);}}
+paintRail();}
+$("btnAck").onclick=function(){$("gate").classList.add("hidden");step=1;paintRail();};
+$("btnGen").onclick=function(){hasWords=true;hasAddr=false;finished=false;fillGrid((+$("wc").value===24)?WORDS24:WORDS12);$("addrBlock").classList.add("hidden");step=2;showExit(false);paintRail();};
+$("btnVal").onclick=function(){if(!hasWords)return;hasAddr=true;$("addrBody").innerHTML=sampleAddr.map(function(r){return "<tr><td>"+r.i+"</td><td><code>"+r.a+"</code></td><td><code>"+r.p+"</code></td></tr>";}).join("");$("addrBlock").classList.remove("hidden");step=3;paintRail();setTimeout(function(){step=4;showExit(true);paintRail();},400);};
+$("btnClr").onclick=function(){hasWords=false;hasAddr=false;finished=false;emptyGrid(+$("wc").value||12);$("addrBlock").classList.add("hidden");step=1;showExit(false);paintRail();};
+$("exitAck").onchange=function(){$("btnExit").disabled=!this.checked;};
+$("btnExit").onclick=function(){finished=true;$("btnUC3").disabled=false;$("exitDone").classList.remove("hidden");$("exitDone").textContent="UC1 complete. Next optional: UC3 Passphrase.";paintRail();};
+$("btnReset").onclick=function(){setStory(0);};
+document.querySelectorAll("[data-story]").forEach(function(b){b.onclick=function(){setStory(+b.getAttribute("data-story"));};});
+emptyGrid(12);paintRail();
+})();
+</script>
+</body>
+</html>
