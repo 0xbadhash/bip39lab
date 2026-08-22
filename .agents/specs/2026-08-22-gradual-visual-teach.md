@@ -2,12 +2,14 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-22
-- **Status:** draft — awaiting CEO paint-state lock
+- **Status:** locked brief — paint states accepted (CEO continue 2026-08-22)
 - **Priority:** P1
 - **Depends:** Slim Starter First-hour rail (0.16.24)
+- **Stamp (this ship):** after 0.16.24 — do not steal slim-rail stamp
 - **Roadmap:** ROADMAP.md → Open work
+- **Plan:** `.agents/specs/2026-08-22-gradual-visual-teach-plan.md`
 - **Skin:** `app-shell` only. No new `--cx-*`. No new variant.
-- **Grill-me:** incomplete
+- **Grill-me:** locked by continue (paint states as drafted)
 
 ## Problem
 
@@ -27,7 +29,9 @@ Unlit stages stay as `--cx-border` hairline ghosts. Lit stages use `--cx-panel` 
 
 Extra help Off = strip with no captions. Extra help On = one caption under the lit stage.
 
-## Paint states
+Level change only changes `data-paint` + which controls are enabled. No new page chrome.
+
+## Paint states (locked 2026-08-22)
 
 ### Starter
 - Lit: numbered word card only (12 tiles, index badge, first-4 not bold yet).
@@ -56,9 +60,11 @@ Extra help Off = strip with no captions. Extra help On = one caption under the l
 
 ## Content modules (later ships, same skin)
 
-- **A — Pipeline interactivity:** ENT slider paints the entropy bar; checksum bits use `--cx-ok`.
-- **B — Numbered card specimen:** textarea dies; 3×4 / 4×6 cells are the mnemonic.
-- **C — Air-gap actions on the card:** Seed QR + print sit on the card; no SeedSigner orange; no new palette.
+- **Teach-A — Pipeline interactivity:** ENT slider paints the entropy bar; checksum bits use `--cx-ok`.
+- **Teach-B — Numbered card specimen:** textarea dies; 3×4 / 4×6 cells are the mnemonic.
+- **Teach-C — Air-gap actions on the card:** Seed QR + print sit on the card; no SeedSigner orange; no new palette.
+
+This ship is the **strip + paint states only**. A/B/C stay separate roadmap rows.
 
 ## Out of scope
 
@@ -67,6 +73,7 @@ Extra help Off = strip with no captions. Extra help On = one caption under the l
 - Imagine / photo stills as the page
 - replacing Intermediate/Beginner locked stills in the same stamp as the strip (hold or migrate in a named ship)
 - Ian Coleman / SeedSigner / bitcoin.design chrome
+- stealing 0.16.24 slim-rail stamp
 
 ## Acceptance (this spec, not A/B/C ships)
 
@@ -74,8 +81,9 @@ Extra help Off = strip with no captions. Extra help On = one caption under the l
 - [ ] Level change only changes paint + enabled controls
 - [ ] Tokens from catalyxt-ds `app-shell` only
 - [ ] Extra help Off hides captions, not the strip
-- [ ] Grill-me lock before `/execute_dev`
+- [ ] Starter has no ENT / path / QR on the strip
+- [ ] Slim-rail 0.16.24 already live before this stamp
 
 ## Handoff
 
-Wait CEO yes/no on the four paint states. Then grill-me. Then `/spec` close → slim-rail must be green first.
+Slim-rail ships first. Then this spec → `/execute_dev` for the strip only.
