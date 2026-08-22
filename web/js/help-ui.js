@@ -93,7 +93,6 @@
     document.querySelectorAll(".help-tip").forEach(function (tip, idx) {
       decorateTip(tip, idx);
     });
-
     document.addEventListener(
       "pointerenter",
       function (ev) {
@@ -133,7 +132,6 @@
       },
       true
     );
-
     document.addEventListener("click", function (ev) {
       const btn = ev.target && ev.target.closest ? ev.target.closest(".help-tip-btn") : null;
       if (btn) {
@@ -144,7 +142,6 @@
       if (ev.target.closest && ev.target.closest(".help-tip")) return;
       closeAllTips();
     });
-
     document.addEventListener("keydown", function (ev) {
       if (ev.key !== "Escape") return;
       document.querySelectorAll(".help-tip").forEach(function (tip) {
@@ -166,7 +163,6 @@
 
   function focusStepTarget(el) {
     if (!el) return;
-    // Make section focusable without permanent tab stop, then move focus for a11y + :focus-visible ring
     if (!el.hasAttribute("tabindex")) {
       el.setAttribute("tabindex", "-1");
     }
@@ -175,22 +171,18 @@
     } catch (e) {
       try {
         el.focus();
-      } catch (e2) {
-        /* ignore */
-      }
+      } catch (e2) {}
     }
   }
 
   function flashStepTarget(el) {
     if (!el) return;
     el.classList.remove("step-flash");
-    // reflow so re-click restarts animation
     void el.offsetWidth;
     el.classList.add("step-flash");
     el.setAttribute("data-step-focused", "true");
     window.setTimeout(function () {
       el.classList.remove("step-flash");
-      // keep data-step-focused until next jump so tests can assert focus target
     }, 1600);
   }
 
@@ -237,25 +229,19 @@
           if (!sel) return;
           const el = document.querySelector(sel);
           if (!el) return;
-
-          // Lab tab switch first if needed (so target is visible)
           if (sel.indexOf("#panel-") === 0 && typeof window.__bip39ShowTab === "function") {
             const name = sel.replace("#panel-", "");
             window.__bip39ShowTab(name);
           }
-
           steps.forEach(function (s) {
             s.classList.remove("is-active");
             s.setAttribute("aria-current", "false");
           });
           btn.classList.add("is-active");
           btn.setAttribute("aria-current", "step");
-
-          // Clear prior jump markers on this page
           document.querySelectorAll("[data-step-focused]").forEach(function (prev) {
             if (prev !== el) prev.removeAttribute("data-step-focused");
           });
-
           scrollStepTargetIntoView(el);
           flashStepTarget(el);
           window.requestAnimationFrame(function () {
@@ -271,7 +257,16 @@
     });
   }
 
+  function loadLabStrip() {
+    if (document.getElementById("labStripSrc")) return;
+    var s = document.createElement("script");
+    s.id = "labStripSrc";
+    s.src = "js/lab-strip.js";
+    document.head.appendChild(s);
+  }
+
   function init() {
+    loadLabStrip();
     initTips();
     initTeachToggles();
     initStepRails();
