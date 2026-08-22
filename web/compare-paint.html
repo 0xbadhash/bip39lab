@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-paint="starter" data-teach="on">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COMPARE · paint strip · zoo vector (not live Lab)</title>
+  <link rel="stylesheet" href="css/app.css" />
+  <style>
+    .cmp-banner {
+      margin: 0 0 1rem;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--warn);
+      background: var(--warn-soft);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+    }
+    .cmp-addrs { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.82rem; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="content" style="max-width:52rem;margin:0 auto;padding:1.25rem">
+    <p class="cmp-banner">
+      <strong>Compare build — different addresses than live Lab.</strong>
+      Live golden (<code>abandon … about</code>) BIP84/0 is
+      <span class="cmp-addrs">bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu</span>.
+      This page uses the <code>zoo … wrong</code> vector so you can tell the two URLs apart.
+      Production stays at <a href="index.html">index.html</a> / https://bip39.catalyxt.xyz/
+    </p>
+    <div class="tabs">
+      <button type="button" class="btn secondary" data-paint-set="starter">Starter</button>
+      <button type="button" class="btn secondary" data-paint-set="beginner">Beginner</button>
+      <button type="button" class="btn secondary" data-paint-set="intermediate">Intermediate</button>
+      <button type="button" class="btn secondary" data-paint-set="advanced">Advanced</button>
+      <button type="button" class="btn secondary" id="btnTeachToggle">Extra help Off</button>
+    </div>
+    <div class="card" id="card-mnemonic">
+      <div class="card-head"><h2>Mnemonic · compare specimen</h2></div>
+      <div id="labStrip" class="lab-strip" data-paint="starter">
+        <div class="lab-strip-stages">
+          <div class="lab-stage stage-entropy"><span class="stage-label">entropy</span><span class="stage-detail">128 bits</span><span class="stage-caption">Entropy</span></div>
+          <span class="lab-strip-arrow">→</span>
+          <div class="lab-stage stage-checksum"><span class="stage-label">checksum</span><span class="stage-detail">4 bits</span><span class="stage-caption">Checksum</span></div>
+          <span class="lab-strip-arrow">→</span>
+          <div class="lab-stage stage-words lit"><span class="stage-label">words</span>
+            <ol class="word-grid" id="stripWordGrid"></ol>
+            <span class="stage-caption">This card is a practice backup. Not a wallet.</span>
+          </div>
+          <span class="lab-strip-arrow">→</span>
+          <div class="lab-stage stage-seed"><span class="stage-label">seed</span><span class="stage-detail">PBKDF2</span><span class="stage-caption">Seed</span></div>
+          <span class="lab-strip-arrow">→</span>
+          <div class="lab-stage stage-address"><span class="stage-label">address</span><span class="stage-detail" id="stripAddr">bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</span><span class="stage-caption">Address</span></div>
+        </div>
+        <div class="lab-strip-extra int-only">
+          <div class="ks-row">
+            <div class="ks-box"><strong>Passphrase A / B</strong>
+              <span class="stage-detail">A empty · bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</span>
+              <span class="stage-detail">B TREZOR · bc1qeruu9tjx0ux75w98mhwsz867w5hp5259630tt4</span>
+            </div>
+            <div class="ks-box"><strong>Keys ≠ shares</strong><span class="stage-detail">HD key is not a Shamir share</span></div>
+          </div>
+        </div>
+        <div class="lab-strip-extra adv-only">
+          <div class="ks-box"><strong>master → child</strong>
+            <span class="stage-detail">m/84h/0h/0h/0/0 · bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2</span>
+            <span class="stage-detail">m/84h/0h/0h/0/1 · bc1qkd33yck74lg0kaq4tdcmu3hk4yruhjayxpe9ug</span>
+          </div>
+        </div>
+      </div>
+      <p class="control-help">Phrase on this compare page (not the live Lab textarea): <code>zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong</code></p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var words = "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong".split(" ");
+      var grid = document.getElementById("stripWordGrid");
+      grid.innerHTML = words.map(function (w, i) {
+        return "<li><span class=\"wi\">" + (i + 1) + "</span><span class=\"ww\">" + w + "</span></li>";
+      }).join("");
+      document.querySelectorAll("[data-paint-set]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var lvl = btn.getAttribute("data-paint-set");
+          document.documentElement.setAttribute("data-paint", lvl);
+          document.getElementById("labStrip").setAttribute("data-paint", lvl);
+        });
+      });
+      document.getElementById("btnTeachToggle").addEventListener("click", function () {
+        var on = document.documentElement.getAttribute("data-teach") !== "off";
+        document.documentElement.setAttribute("data-teach", on ? "off" : "on");
+        this.textContent = on ? "Extra help On" : "Extra help Off";
+      });
+    })();
+  </script>
+</body>
+</html>
