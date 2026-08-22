@@ -261,7 +261,9 @@
     if (document.getElementById("labStripSrc")) return;
     var s = document.createElement("script");
     s.id = "labStripSrc";
-    s.src = "js/lab-strip.js";
+    var v =
+      (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) || "0.16.25";
+    s.src = "js/lab-strip.js?v=" + v;
     document.head.appendChild(s);
   }
 
