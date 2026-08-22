@@ -142,7 +142,10 @@ URL_HOST_ALLOW = re.compile(
     r"lobste\.rs|"
     r"([\w-]+\.)?substack\.com|"
     r"substackcdn\.com|"
-    r"([\w.-]+\.)?amazonaws\.com"
+    r"([\w.-]+\.)?amazonaws\.com|"
+    r"mempool\.space|"
+    r"blockstream\.info|"
+    r"artauthenticity\.xyz"
     r")([/:?]|$)",
     re.IGNORECASE,
 )
