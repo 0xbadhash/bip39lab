@@ -1,1 +1,106 @@
-<placeholder>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MOCK ALL</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;--r:12px;--rs:8px;--f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px}
+.app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.9rem .65rem;display:flex;flex-direction:column;gap:.25rem}
+.brand{font-weight:700;padding:.2rem .45rem .65rem}.brand span{color:var(--ac)}
+.nav-item{display:block;width:100%;text-align:left;border:0;background:0;color:var(--mu);padding:.4rem .5rem;border-radius:var(--rs);font:inherit;cursor:pointer}.nav-item.active,.nav-item:hover{background:var(--panel);color:var(--tx)}.nav-item.active{border-left:3px solid var(--ac)}.nav-item small{display:block;font-size:.66rem;color:var(--mu)}
+.main{padding:.9rem 1.1rem 2rem;max-width:980px}
+.warn{background:rgba(230,184,77,.1);border:1px solid rgba(230,184,77,.35);color:#f0d78a;border-radius:var(--rs);padding:.55rem .7rem;margin:0 0 .7rem;font-size:.78rem}
+.row{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 0 .65rem;align-items:center}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.34rem .65rem;font:inherit;cursor:pointer;font-size:.82rem}.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff}.btn.secondary{background:transparent}.btn.danger{background:transparent;border-color:rgba(232,93,93,.65);color:var(--bad)}.btn.active{border-color:var(--ac);color:var(--ac)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.chip{display:inline-flex;border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem;font-size:.68rem;color:var(--mu)}.chip.ok{color:var(--ok)}.chip.warn{color:var(--wn)}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.7rem .8rem;margin-bottom:.65rem}.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem}.card-head h2{margin:0;font-size:.92rem}.muted{color:var(--mu);font-size:.78rem}
+.rail{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.65rem}.rail span{border:1px solid var(--bd);border-radius:999px;padding:.12rem .45rem;font-size:.68rem;color:var(--mu)}
+.concept{display:grid;grid-template-columns:210px 1fr;gap:.65rem;align-items:center}.concept p{margin:0;color:var(--mu);font-size:.8rem}svg{width:210px;height:88px;display:block}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.4rem}.tile{border:1px solid var(--bd);border-radius:var(--rs);padding:.45rem .5rem;background:var(--panel)}.tile h3{margin:0 0 .2rem;font-size:.8rem}.tile p{margin:0 0 .35rem;font-size:.72rem;color:var(--mu)}.tile.pass{border-color:rgba(62,207,142,.5)}
+.strip{border:1px solid var(--bd);border-radius:var(--r);padding:.55rem;background:var(--bg);margin:.45rem 0}.stages{display:flex;flex-wrap:wrap;gap:.28rem}.stage{flex:1 1 5.2rem;min-width:4.4rem;border:1px solid var(--bd);border-radius:var(--rs);padding:.35rem .4rem;opacity:.36}.stage.lit{opacity:1;background:var(--panel);border-color:var(--ac)}.stage .lb{display:block;font-size:.6rem;text-transform:uppercase;color:var(--mu);font-weight:700}.stage .dt{display:block;font-family:var(--m);font-size:.68rem;color:var(--mu)}.arrow{align-self:center;color:var(--mu)}
+.box{border:1px solid var(--bd);border-radius:var(--rs);padding:.4rem .45rem;background:var(--panel);font-size:.74rem}.controls{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.45rem}.tab{display:none}.tab.on{display:block}
+@media(max-width:720px){.app,.concept{grid-template-columns:1fr}}
+</style></head><body>
+<div class="app"><aside class="sidebar"><div class="brand">bip39<span>·lab</span></div>
+<button class="nav-item active" data-tab="lab"><strong>Lab</strong><small>quizzes live here</small></button>
+<button class="nav-item" data-tab="multisig"><strong>Multisig</strong><small>M-of-N room</small></button>
+<button class="nav-item" data-tab="shamir"><strong>Shamir</strong><small>shares room</small></button>
+<button class="nav-item" data-tab="network"><strong>Network</strong><small>fees · balances</small></button>
+<button class="nav-item" data-tab="tools"><strong>Tools</strong><small>path · inspect</small></button>
+<button class="nav-item" data-tab="glossary"><strong>Glossary</strong><small>names</small></button>
+<div style="flex:1"></div><span class="chip warn">MOCK · all layers</span></aside>
+<main class="main"><p class="warn"><strong>Full mock.</strong> Concept SVG + exercise tiles + strip. Quizzes on Lab jump into rooms. Hard-refresh.</p>
+<div class="rail" id="rail"></div>
+<div class="row"><button class="btn secondary active" data-lvl="starter">Starter</button><button class="btn secondary" data-lvl="beginner">Beginner</button><button class="btn secondary" data-lvl="intermediate">Intermediate</button><button class="btn secondary" data-lvl="advanced">Advanced</button><span class="chip ok" id="chip">lab · starter</span><span class="chip" id="score">passed 0</span></div>
+<div class="card"><div class="card-head"><h2 id="ct">Concept</h2><span class="chip">explain</span></div><div class="concept"><div id="csvg"></div><p id="ccopy"></p></div></div>
+<div class="card"><div class="card-head"><h2 id="et">Exercise</h2><span class="chip warn">do · then mark</span></div><p class="muted" id="elead"></p><div class="tiles" id="tiles"></div></div>
+<section class="tab on" id="tab-lab"><div class="card"><div class="card-head"><h2>Lab strip</h2><span class="chip warn">Not a wallet</span></div><div class="strip"><div class="stages" id="labStages"></div></div><div class="controls"><button class="btn primary" data-act="gen">Generate</button><button class="btn secondary" data-act="val">Validate</button><button class="btn danger" data-act="clr">Clear secrets</button></div></div></section>
+<section class="tab" id="tab-multisig"><div class="card"><div class="card-head"><h2>Multisig strip</h2></div><div class="strip"><div class="stages" id="msStages"></div></div><div class="controls"><button class="btn primary" data-act="build">Build vault</button><button class="btn secondary" data-act="map">Vault map</button></div></div></section>
+<section class="tab" id="tab-shamir"><div class="card"><div class="card-head"><h2>Shamir strip</h2></div><div class="strip"><div class="stages" id="shStages"></div></div><div class="controls"><button class="btn primary" data-act="split">Split</button><button class="btn secondary" data-act="recomb">Recombine</button></div></div></section>
+<section class="tab" id="tab-network"><div class="card"><div class="card-head"><h2>Network strip</h2></div><div class="strip"><div class="stages" id="nwStages"></div></div><label class="box" style="display:flex;gap:.45rem;margin:.4rem 0"><input type="checkbox" id="nwAck"/> Leak-ack</label><div class="controls"><button class="btn primary" data-act="fees">Fetch fees</button><button class="btn secondary" data-act="bal" id="nwBal">Fetch balances</button></div></div></section>
+<section class="tab" id="tab-tools"><div class="card"><div class="card-head"><h2>Tools strip</h2><span class="chip">TEST DATA</span></div><div class="strip"><div class="stages" id="tlStages"></div></div><div class="controls"><button class="btn primary" data-act="path">Path</button><button class="btn secondary" data-act="cmp">Compare A/B</button><button class="btn secondary" data-act="psbt">PSBT</button></div></div></section>
+<section class="tab" id="tab-glossary"><div class="card"><p class="muted" id="glCopy"></p></div></section>
+</main></div>
+<script>
+(function(){
+var tab="lab",lvl="starter",ack=false,passed={};
+var A="bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2";
+function bx(x,y,w,h,t,on){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6" fill="'+(on?"#161d27":"transparent")+'" stroke="'+(on?"#3d8bfd":"#243044")+'"/><text x="'+(x+w/2)+'" y="'+(y+h/2+4)+'" text-anchor="middle" font-size="9" fill="'+(on?"#e8eef7":"#8b9bb4")+'" font-family="Segoe UI,sans-serif">'+t+'</text>';}
+function ar(x1,y,x2){return '<path d="M'+x1+' '+y+' H'+(x2-6)+'" stroke="#8b9bb4" fill="none"/><path d="M'+(x2-6)+' '+(y-3)+' L'+x2+' '+y+' L'+(x2-6)+' '+(y+3)+'" fill="#8b9bb4"/>';}
+function svg(i){return '<svg viewBox="0 0 220 92" xmlns="http://www.w3.org/2000/svg">'+i+'</svg>';}
+var C={lab:{starter:["Lab · card","3×4 card IS the mnemonic.",function(){return svg(bx(70,26,80,40,"12 words",1));}],beginner:["Lab · ENT→words","Bits + checksum become words.",function(){return svg(bx(8,28,50,36,"ENT",1)+ar(60,46,76)+bx(76,28,50,36,"CS",1)+ar(128,46,144)+bx(144,28,66,36,"words",1));}],intermediate:["Lab · keys≠shares","A/B passphrase. HD key ≠ share.",function(){return svg(bx(8,18,70,28,"words",1)+ar(80,32,96)+bx(96,8,56,24,"key A",1)+bx(96,40,56,24,"key B",1)+bx(164,24,48,28,"share?",0));}],advanced:["Lab · master→child","One seed, a tree. Not a wallet.",function(){return svg(bx(12,32,56,28,"master",1)+ar(70,46,90)+bx(90,8,52,22,"/0",1)+bx(90,35,52,22,"/1",1)+bx(90,62,52,22,"/2",1));}]},
+multisig:{starter:["MS · pubkeys","Public keys only. No seed.",function(){return svg(bx(12,12,56,22,"pub1",1)+bx(12,36,56,22,"pub2",1)+bx(12,60,56,22,"pub3",1));}],beginner:["MS · 2-of-3","Any 2 of 3 spend.",function(){return svg(bx(10,32,40,24,"K1",1)+bx(56,32,40,24,"K2",1)+bx(102,32,40,24,"K3",1)+ar(146,44,164)+bx(166,30,46,28,"2-of-3",1));}],intermediate:["MS · script","Keys → P2WSH. Not shares.",function(){return svg(bx(8,30,50,28,"keys",1)+ar(60,44,78)+bx(80,30,56,28,"P2WSH",1));}],advanced:["MS · address","Script → joint addr + map.",function(){return svg(bx(8,30,52,28,"script",1)+ar(62,44,80)+bx(82,30,70,28,"bc1q…",1));}]},
+shamir:{starter:["SH · secret","Hex. Not BIP-39. Not SLIP-39.",function(){return svg(bx(70,28,80,36,"secret",1));}],beginner:["SH · split N","One card is useless.",function(){return svg(bx(8,32,52,28,"secret",1)+ar(62,46,80)+bx(82,8,40,22,"s1",1)+bx(82,35,40,22,"s2",1)+bx(82,62,40,22,"s3",1));}],intermediate:["SH · M of N","Any M rebuilds.",function(){return svg(bx(10,12,40,22,"s1",1)+bx(10,38,40,22,"s2",1)+bx(10,64,40,22,"s3",0)+ar(54,48,78)+bx(80,32,56,28,"M=2",1));}],advanced:["SH · recombine","Match. SLIP-39 elsewhere.",function(){return svg(bx(8,20,40,22,"s1",1)+bx(8,50,40,22,"s2",1)+ar(52,46,74)+bx(76,32,60,28,"match",1));}]},
+network:{starter:["NW · leak","May talk to the internet.",function(){return svg(bx(16,30,70,32,"you",1)+ar(90,46,118)+bx(122,22,84,48,"API",0));}],beginner:["NW · fees","No addresses. IP leaks.",function(){return svg(bx(10,30,70,32,"no addrs",1)+ar(84,46,108)+bx(110,30,96,32,"sat/vB",1));}],intermediate:["NW · bands","8 / 12 / 20 sat/vB.",function(){return svg(bx(8,30,44,32,"8",1)+bx(62,30,44,32,"12",1)+bx(116,30,44,32,"20",1));}],advanced:["NW · lookup","unknown ≠ fake 0.",function(){return svg(bx(8,28,84,36,"bc1q…",1)+ar(96,46,116)+bx(118,14,90,28,"0 ok",1)+bx(118,50,90,28,"unknown",1));}]},
+tools:{starter:["Tools · TEST DATA","Throwaway if Lab cleared.",function(){return svg(bx(20,28,80,36,"Lab empty",0)+ar(104,46,124)+bx(126,28,80,36,"TEST DATA",1));}],beginner:["Tools · path","Folders + A/B passphrase.",function(){return svg(bx(6,32,34,26,"m",1)+ar(42,45,54)+bx(56,32,40,26,"84h",1)+ar(98,45,110)+bx(112,32,40,26,"0h",1));}],intermediate:["Tools · inspect","Descriptor + PSBT, no sign.",function(){return svg(bx(8,30,84,32,"descriptor",1)+bx(112,30,96,32,"PSBT",1));}],advanced:["Tools · QR","QR+print on Lab card.",function(){return svg(bx(16,22,92,48,"word card",1)+bx(128,22,76,48,"QR+print",1));}]},
+glossary:{starter:["Gloss · names","entropy, mnemonic, address.",function(){return svg(bx(50,28,120,36,"terms",1));}],beginner:["Gloss · PP","+ passphrase / seed.",function(){return svg(bx(40,28,140,36,"+ PP",1));}],intermediate:["Gloss · splits","keys vs shares vs words.",function(){return svg(bx(8,30,60,32,"keys",1)+bx(80,30,60,32,"shares",1)+bx(152,30,60,32,"words",1));}],advanced:["Gloss · threat","Never sign / broadcast.",function(){return svg(bx(30,28,160,36,"threat",1));}]}};
+var EX={lab:{starter:{lead:"First hour on Lab.",items:[{id:"h1",k:"h1",t:"Orient",d:"Read orientation"},{id:"h2",k:"h2",t:"Generate",d:"Fill the card",go:"gen"},{id:"h3",k:"h3",t:"Address",d:"Validate one receive",go:"val"}]},
+beginner:{lead:"Q1–Q4 live on Lab. Go try jumps to the room.",items:[{id:"q1",k:"Q1",t:"Passphrase A/B",d:"Two passphrases, two addresses",jump:"tools"},{id:"q2",k:"Q2",t:"Shamir threshold",d:"Fail with 1, succeed with M",jump:"shamir"},{id:"q3",k:"Q3",t:"Too few bits",d:"Reject short entropy",jump:"tools"},{id:"q4",k:"Q4",t:"Enough bits",d:"128→12 words",jump:"tools"}]},
+intermediate:{lead:"I1–I4 board.",items:[{id:"i1",k:"I1",t:"Keys ≠ shares",d:"Open Multisig",jump:"multisig"},{id:"i2",k:"I2",t:"Shares ≠ SLIP-39",d:"Open Shamir",jump:"shamir"},{id:"i3",k:"I3",t:"PSBT inspect",d:"No sign",jump:"tools"},{id:"i4",k:"I4",t:"Descriptor",d:"Watch-only",jump:"tools"}]},
+advanced:{lead:"A1–A4 board.",items:[{id:"a1",k:"A1",t:"master → child",d:"Compare /0 and /1",go:"val"},{id:"a2",k:"A2",t:"Not a wallet",d:"PSBT cannot sign",jump:"tools"},{id:"a3",k:"A3",t:"unknown ≠ 0",d:"Address-only lookup",jump:"network"},{id:"a4",k:"A4",t:"QR walls",d:"Print stays on the card",jump:"tools"}]}},
+multisig:{starter:{lead:"Collect keys only.",items:[{id:"msS",k:"MS-S",t:"Add 3 pubkeys",d:"No seed field",go:"build"}]},
+beginner:{lead:"See 2-of-3.",items:[{id:"msB",k:"MS-B",t:"Set 2-of-3",d:"One lost key still works",go:"build"}]},
+intermediate:{lead:"I1 is marked on Lab after this room.",items:[{id:"i1",k:"I1",t:"Name the objects",d:"Keys, not shares",go:"build"}]},
+advanced:{lead:"Vault map.",items:[{id:"msA",k:"MS-A",t:"Show map",d:"Who must sign",go:"map"}]}},
+shamir:{starter:{lead:"One practice secret.",items:[{id:"shS",k:"SH-S",t:"Show secret",d:"Hex only",go:"split"}]},
+beginner:{lead:"Q2 is done here, marked on Lab.",items:[{id:"q2",k:"Q2",t:"1 share fails",d:"Then M=2 succeeds",go:"recomb"}]},
+intermediate:{lead:"I2 format check.",items:[{id:"i2",k:"I2",t:"Not SLIP-39",d:"Educational GF(256)",go:"split"}]},
+advanced:{lead:"Verify then return.",items:[{id:"shA",k:"SH-A",t:"Recombine",d:"Any 2 of 3 match",go:"recomb"}]}},
+network:{starter:{lead:"h7: understand the leak first.",items:[{id:"h7",k:"h7",t:"Tick leak-ack",d:"Mark-done waits on the box",go:"ack"}]},
+beginner:{lead:"Fees only.",items:[{id:"nwB",k:"NW-B",t:"Fetch fees",d:"No addresses sent",go:"fees"}]},
+intermediate:{lead:"Read bands.",items:[{id:"nwI",k:"NW-I",t:"Name sat/vB",d:"Economy / normal / priority",go:"fees"}]},
+advanced:{lead:"A3 after a fail-closed row.",items:[{id:"a3",k:"A3",t:"Fetch balances",d:"Need ack. unknown ≠ 0",go:"bal"}]}},
+tools:{starter:{lead:"h4. TEST DATA if Lab empty.",items:[{id:"h4",k:"h4",t:"Open path",d:"Banner if Lab cleared",go:"path"}]},
+beginner:{lead:"h5 + Q1 + Q4.",items:[{id:"q1",k:"Q1",t:"Compare A/B",d:"Empty vs TREZOR",go:"cmp"},{id:"q4",k:"Q4",t:"Enough bits",d:"128 → 12 words",go:"path"}]},
+intermediate:{lead:"I3 / I4 inspect-only.",items:[{id:"i3",k:"I3",t:"Inspect PSBT",d:"No sign",go:"psbt"},{id:"i4",k:"I4",t:"Descriptor",d:"Watch-only",go:"path"}]},
+advanced:{lead:"A2 / A4.",items:[{id:"a2",k:"A2",t:"Refuse sign",d:"No Sign button",go:"psbt"},{id:"a4",k:"A4",t:"QR + print",d:"On Lab card",jump:"lab"}]}},
+glossary:{starter:{lead:"Name the pipeline.",items:[{id:"gS",k:"G-S",t:"4 terms",d:"entropy, mnemonic, checksum, address"}]},
+beginner:{lead:"Add entropy language.",items:[{id:"gB",k:"G-B",t:"Find passphrase",d:"13th/25th factor"}]},
+intermediate:{lead:"Split objects.",items:[{id:"gI",k:"G-I",t:"keys vs shares",d:"Three backups"}]},
+advanced:{lead:"Threat model.",items:[{id:"gA",k:"G-A",t:"Never do",d:"No sign / broadcast / seed upload"}]}}};
+function st(l,d,lit){return '<div class="stage'+(lit?" lit":"")+'"><span class="lb">'+l+'</span><span class="dt">'+d+'</span></div>';}
+function arrow(){return '<span class="arrow">→</span>';}
+function paintStrip(){var L=lvl;
+document.getElementById("labStages").innerHTML=st("entropy","128",L!=="starter")+arrow()+st("checksum","4b",L!=="starter")+arrow()+st("words","zoo…wrong",true)+arrow()+st("seed","PBKDF2",L==="advanced")+arrow()+st("address",L==="starter"?"—":A,L!=="starter");
+document.getElementById("msStages").innerHTML=st("keys","3 pub",true)+arrow()+st("policy","2-of-3",L!=="starter")+arrow()+st("script","P2WSH",L==="intermediate"||L==="advanced")+arrow()+st("address",L==="advanced"?"bc1q…":"—",L==="advanced");
+document.getElementById("shStages").innerHTML=st("secret","hex",true)+arrow()+st("N","3",L!=="starter")+arrow()+st("M","2",L==="intermediate"||L==="advanced")+arrow()+st("recombine",L==="advanced"?"match":"—",L==="advanced");
+document.getElementById("nwStages").innerHTML=st("ack",ack?"ticked":"required",true)+arrow()+st("fees",L==="starter"?"—":"8/12/20",L!=="starter")+arrow()+st("balance",L==="advanced"?"fail-closed":"—",L==="advanced");
+document.getElementById("tlStages").innerHTML=st("source","TEST DATA",true)+arrow()+st("path","m/84h",L!=="starter")+arrow()+st("PSBT",(L==="intermediate"||L==="advanced")?"inspect":"—",L==="intermediate"||L==="advanced")+arrow()+st("QR",L==="advanced"?"on card":"—",L==="advanced");
+document.getElementById("glCopy").textContent={starter:"BIP-39 terms.",beginner:"+ entropy / PP.",intermediate:"+ MS / Shamir.",advanced:"+ xpub / threat."}[L];
+document.getElementById("nwBal").disabled=!(ack&&L==="advanced");}
+function paintConcept(){var d=C[tab][lvl];document.getElementById("ct").textContent=d[0];document.getElementById("ccopy").textContent=d[1];document.getElementById("csvg").innerHTML=d[2]();}
+function paintEx(){var pack=EX[tab][lvl];document.getElementById("et").textContent="Exercise · "+tab+" · "+lvl;document.getElementById("elead").textContent=pack.lead;
+document.getElementById("tiles").innerHTML=pack.items.map(function(it){var ok=!!passed[it.id];return '<div class="tile'+(ok?" pass":"")+'"><h3>'+it.k+' · '+it.t+' '+(ok?'<span class="chip ok">passed</span>':'<span class="chip warn">not yet</span>')+'</h3><p>'+it.d+'</p>'+(it.jump?'<button class="btn secondary" data-jump="'+it.jump+'">Go try</button> ':'')+(it.go?'<button class="btn secondary" data-act="'+it.go+'">Do it</button> ':'')+'<button class="btn primary" data-pass="'+it.id+'">Mark passed</button></div>';}).join("");}
+function paintRail(){var steps={lab:["Orient","Generate","Quiz","Clear"],multisig:["Keys","Policy","Build"],shamir:["Secret","Split","Recombine"],network:["Ack","Fees","Balances"],tools:["Source","Path","Inspect"],glossary:["Terms"]};
+document.getElementById("rail").innerHTML=steps[tab].map(function(x,i){return "<span"+(i===0?" style='color:#3d8bfd;border-color:#3d8bfd'":"")+">"+x+"</span>";}).join("");}
+function render(){document.getElementById("chip").textContent=tab+" · "+lvl;document.getElementById("score").textContent="passed "+Object.keys(passed).length;
+document.querySelectorAll("[data-tab]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-tab")===tab);});
+document.querySelectorAll("[data-lvl]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-lvl")===lvl);});
+document.querySelectorAll(".tab").forEach(function(s){s.classList.toggle("on",s.id==="tab-"+tab);});
+paintConcept();paintEx();paintStrip();paintRail();}
+document.querySelectorAll("[data-tab]").forEach(function(b){b.onclick=function(){tab=b.getAttribute("data-tab");render();};});
+document.querySelectorAll("[data-lvl]").forEach(function(b){b.onclick=function(){lvl=b.getAttribute("data-lvl");render();};});
+document.addEventListener("click",function(e){var j=e.target.getAttribute&&e.target.getAttribute("data-jump");if(j){tab=j;render();return;}var p=e.target.getAttribute&&e.target.getAttribute("data-pass");if(p){passed[p]=true;render();return;}var a=e.target.getAttribute&&e.target.getAttribute("data-act");if(!a)return;if(a==="ack"){ack=true;document.getElementById("nwAck").checked=true;}if(a==="fees"&&lvl==="starter")lvl="beginner";if(a==="bal"&&!(ack&&lvl==="advanced"))return;render();});
+document.getElementById("nwAck").onchange=function(){ack=this.checked;render();};
+render();
+})();
+</script></body></html>
