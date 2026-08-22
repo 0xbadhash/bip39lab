@@ -459,7 +459,14 @@
     if (h8) h8.hidden = risen;
     ["hourGoBeginner", "btnReadyBeginner", "quizHourNextBeginner"].forEach(function (id) {
       var el = $(id);
-      if (el) el.hidden = risen;
+      if (!el) return;
+      if (id === "btnReadyBeginner") {
+        var selH = getSelectedHourLi();
+        var sidH = selH ? selH.getAttribute("data-hour-step") : "";
+        el.hidden = risen || sidH !== "h8";
+      } else {
+        el.hidden = risen;
+      }
     });
   }
 
@@ -612,6 +619,11 @@
     var sid = sel ? sel.getAttribute("data-hour-step") : "h1";
     var sReady = hourStepReady(sid);
     if (railGrad) railGrad.hidden = sid !== "h8";
+    var readyBeg = $("btnReadyBeginner");
+    if (readyBeg) {
+      var risenNow = LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner");
+      readyBeg.hidden = risenNow || sid !== "h8";
+    }
     if (railGo) railGo.hidden = sid === "h8";
     if (railDone) {
       if (sid === "h6" || sid === "h8") {
@@ -845,7 +857,29 @@
     if (stepId === "h3") {
       goTab("lab");
       setTimeout(function () {
+        var ta = $("mnemonic");
+        var filled = ta && String(ta.value || "").trim().split(/\s+/).filter(Boolean).length >= 12;
+        var der = $("btnDerive");
+        if (filled && der) der.click();
         scrollToReceiveHeading();
+        refreshHourGates();
+      }, 80);
+      return;
+    }
+    if (stepId === "h2") {
+      goTab("lab");
+      setTimeout(function () {
+        var card = $("card-mnemonic");
+        if (card) card.scrollIntoView({ behavior: "auto", block: "start" });
+        var gen = $("btnGenerate");
+        if (gen) {
+          try {
+            gen.focus();
+          } catch (eF) {
+            /* ignore */
+          }
+          gen.click();
+        }
         refreshHourGates();
       }, 80);
       return;

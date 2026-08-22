@@ -1,12 +1,12 @@
 /**
  * Gradual visual teach strip — injects #labStrip and paints by Classroom level.
  * Spec: .agents/specs/2026-08-22-gradual-visual-teach.md
- * Stamp: 0.16.26 (strip inside #card-mnemonic). Teach-A/B/C are later ships.
+ * Stamp: 0.16.27 (Starter frame + compact strip). Teach-A/B/C are later ships.
  */
 (function () {
   "use strict";
 
-  var STRIP_CSS_V = "0.16.26";
+  var STRIP_CSS_V = "0.16.27";
 
   function $(id) {
     return document.getElementById(id);

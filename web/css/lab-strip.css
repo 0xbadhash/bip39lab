@@ -1,4 +1,4 @@
-/* Gradual visual teach strip — Catalyxt app-shell tokens only. Stamp 0.16.26 */
+/* Gradual visual teach strip — Catalyxt app-shell tokens only. Stamp 0.16.27 */
 .lab-strip {
   margin: 0.5rem 0 0.85rem;
   padding: 0.7rem 0.75rem;
@@ -60,27 +60,30 @@ html[data-teach="off"] .lab-strip .stage-caption {
 #labStrip[data-paint="intermediate"] .stage-seed .stage-caption {
   display: none !important;
 }
-#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) {
-  flex: 0 0 40px;
-  width: 40px;
-  min-width: 40px;
-  max-width: 40px;
-  padding: 0.2rem 0.1rem;
-  overflow: hidden;
-}
-#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stage-detail,
-#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stamp-warn {
+#labStrip[data-paint="starter"] .lab-strip-arrow {
   display: none;
 }
-#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stage-label {
-  font-size: 0.5rem;
-  letter-spacing: 0;
-  text-align: center;
+#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) {
+  flex: 0 0 28px;
+  width: 28px;
+  min-width: 28px;
+  max-width: 28px;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0.35;
+  background: transparent;
+  border: 1px solid var(--border);
+}
+#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stage-detail,
+#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stage-caption,
+#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stage-label,
+#labStrip[data-paint="starter"] .lab-stage:not(.stage-words) .stamp-warn {
+  display: none !important;
 }
 #labStrip[data-paint="starter"] .stage-words {
-  flex: 1 1 50%;
-  min-width: 48%;
-  max-width: 58%;
+  flex: 1 1 18rem;
+  min-width: 12rem;
+  max-width: none;
 }
 .word-grid .strip-empty {
   grid-column: 1 / -1;

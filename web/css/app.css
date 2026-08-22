@@ -1168,6 +1168,16 @@ a.nav-item:hover {
 @media (max-width: 800px) {
   .starter-split { grid-template-columns: 1fr; }
 }
+html[data-level="starter"] #mnemonic {
+  max-height: 3.2rem;
+  opacity: 0.7;
+}
+html[data-level="starter"] #rowSeedAirgap,
+html[data-level="starter"] #btnSeedQr,
+html[data-level="starter"] #btnPrintBackup,
+html[data-level="starter"] #btnSendNetwork {
+  display: none !important;
+}
 .hour-rail {
   border: 1px solid #3a4a60;
   background: #121821;

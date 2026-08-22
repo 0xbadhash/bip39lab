@@ -57,6 +57,8 @@ test.describe("Help UX hybrid", () => {
     await forceTeach(page, "on");
     await page.goto("/");
     await hourRailGo(page, "h2");
+    const ov = page.locator("#overlayGenerate");
+    if (await ov.isVisible()) await ov.locator(".lab-overlay-ok").click();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#learnReturnBar")).toBeVisible();
     await page.locator("#learnReturnBarBtn").click();

@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.26" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.27" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.26">v0.16.26</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.27">v0.16.27</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -268,7 +268,15 @@
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
 <div class="card" id="card-mnemonic" data-face="starter">
             <div class="card-head">
-              <h2>Mnemonic</h2>
+              <h2>Mnemonic
+                <span class="help-tip" data-term="SHORTCUTS">
+                  <button type="button" class="help-tip-btn" aria-label="About mnemonic shortcuts">i</button>
+                  <span class="help-tip-panel" hidden>
+                    Shortcuts (when not typing): <kbd>G</kbd> generate · <kbd>D</kbd> derive · <kbd>?</kbd> Tools shortcuts · <kbd>Esc</kbd> close QR.
+                    Clear secrets empties Lab memory only; Tools cards that need a phrase will auto-generate TEST DATA next time.
+                  </span>
+                </span>
+              </h2>
             </div>
             <p class="card-lede">English BIP-39 only. Optional passphrase is a BIP-39 extension (not a PIN).</p>
 
@@ -282,20 +290,14 @@
               </select>
             </label>
 
-            <div class="row">
+            <div class="row" id="mnemonicActionRow">
               <button type="button" class="btn" id="btnGenerate">Generate</button>
               <button type="button" class="btn secondary" id="btnDerive">Validate &amp; derive</button>
               <button type="button" class="btn danger" id="btnClear">Clear secrets</button>
             </div>
-            <p class="control-help teach-only" style="margin:0.35rem 0 0">
-              Shortcuts (when not typing): <kbd>G</kbd> generate · <kbd>D</kbd> derive · <kbd>?</kbd> Tools shortcuts · <kbd>Esc</kbd> close QR.
-              Clear secrets empties Lab memory only; Tools cards that need a phrase will auto-generate <strong>TEST DATA</strong> next time.
-            </p>
 
-            <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
-
-            <label class="field" data-private for="mnemonic">
-              <span class="label-row">BIP-39 mnemonic
+            <label class="field mnemonic-raw" data-private for="mnemonic">
+              <span class="label-row">Raw phrase (advanced)
                 <span class="help-tip help-tip-safety" data-term="MNEMONIC">
                   <button type="button" class="help-tip-btn" aria-label="About the mnemonic">i</button>
                   <span class="help-tip-panel" hidden></span>
@@ -303,7 +305,8 @@
               </span>
               <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
             </label>
-            <div class="row" data-private>
+            <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
+            <div class="row starter-hide" data-private data-level-min="beginner" data-level-hide="1" id="rowSeedAirgap">
               <button type="button" class="btn secondary" id="btnSeedQr">Seed QR (offline, careful)</button>
               <button type="button" class="btn secondary" id="btnPrintBackup">Print backup sheet</button>
               <button type="button" class="btn secondary" id="btnSendNetwork">Send addresses → Network</button>
@@ -1567,11 +1570,11 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.26"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.26"></script>
-  <script src="js/glossary.js?v=0.16.26"></script>
-  <script src="js/help-ui.js?v=0.16.26"></script>
-  <script src="js/learn-levels.js?v=0.16.26"></script>
-  <script src="js/app.js?v=0.16.26"></script>
+  <script src="js/site-version.js?v=0.16.27"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.27"></script>
+  <script src="js/glossary.js?v=0.16.27"></script>
+  <script src="js/help-ui.js?v=0.16.27"></script>
+  <script src="js/learn-levels.js?v=0.16.27"></script>
+  <script src="js/app.js?v=0.16.27"></script>
 </body>
 </html>

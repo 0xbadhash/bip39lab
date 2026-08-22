@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("gradual visual teach strip (0.16.25–0.16.26)", () => {
+test.describe("gradual visual teach strip (0.16.25–0.16.27)", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => localStorage.clear());
     await page.goto("/index.html");
@@ -49,7 +49,7 @@ test.describe("gradual visual teach strip (0.16.25–0.16.26)", () => {
     await expect(strip.locator(".lab-strip-extra.adv-only")).toContainText(/master/i);
   });
 
-  test("S115 strip is inside #card-mnemonic under Generate", async ({ page }) => {
+  test("S114 Starter: #labStrip is inside #card-mnemonic and below #btnGenerate", async ({ page }) => {
     const strip = page.locator("#card-mnemonic #labStrip");
     await expect(strip).toBeVisible({ timeout: 8000 });
     await expect(page.locator("#panel-lab > #labStrip")).toHaveCount(0);
@@ -59,22 +59,30 @@ test.describe("gradual visual teach strip (0.16.25–0.16.26)", () => {
     expect(box!.y).toBeGreaterThan(gen!.y);
   });
 
-  test("S116 starter ghosts are ticks; empty card one line", async ({ page }) => {
-    const strip = page.locator("#labStrip");
-    await expect(strip).toBeVisible({ timeout: 8000 });
-    await expect(strip.locator("#stripEmptyHint")).toHaveText(/Generate to fill this backup/);
-    await expect(strip.locator(".ww")).toHaveCount(0);
-    const words = await strip.locator(".stage-words").boundingBox();
-    const ent = await strip.locator(".stage-entropy").boundingBox();
-    expect(words && ent).toBeTruthy();
-    expect(ent!.width).toBeLessThan(48);
-    expect(words!.width).toBeGreaterThan(ent!.width * 2);
-    await expect(strip.locator(".stage-entropy .stage-caption")).toBeHidden();
+  test("S115 Starter: Seed QR / Print / Network buttons not visible", async ({ page }) => {
+    await expect(page.locator("#labStrip")).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("#btnSeedQr")).toBeHidden();
+    await expect(page.locator("#btnPrintBackup")).toBeHidden();
+    await expect(page.locator("#btnSendNetwork")).toBeHidden();
   });
 
-  test("S117 Starter is/isn’t collapsed; air-gap banner stays", async ({ page }) => {
-    await expect(page.locator("#labSafetyBanner")).toBeVisible();
-    await expect(page.locator("#orientationFold")).not.toHaveAttribute("open");
-    await expect(page.locator("#cardOrientation")).toBeVisible();
+  test("S116 Starter: ghost stages have no visible caption text", async ({ page }) => {
+    const strip = page.locator("#labStrip");
+    await expect(strip).toBeVisible({ timeout: 8000 });
+    await expect(strip.locator(".stage-entropy .stage-caption")).toBeHidden();
+    await expect(strip.locator(".stage-checksum .stage-caption")).toBeHidden();
+    await expect(strip.locator(".stage-seed .stage-caption")).toBeHidden();
+    await expect(strip.locator(".stage-address .stage-caption")).toBeHidden();
+    const ent = await strip.locator(".stage-entropy").boundingBox();
+    expect(ent).toBeTruthy();
+    expect(ent!.width).toBeLessThanOrEqual(32);
+  });
+
+  test("S117 #btnReadyBeginner hidden until first-hour step h8 selected", async ({ page }) => {
+    await expect(page.locator("#btnReadyBeginner")).toBeHidden();
+    await page.locator('#firstHourList [data-hour-step="h2"]').click();
+    await expect(page.locator("#btnReadyBeginner")).toBeHidden();
+    await page.locator('#firstHourList [data-hour-step="h8"]').click();
+    await expect(page.locator("#btnReadyBeginner")).toBeVisible();
   });
 });
