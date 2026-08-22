@@ -1107,6 +1107,23 @@ a.nav-item:hover {
   cursor: pointer;
   margin-bottom: 0;
 }
+.orientation-fold > summary {
+  cursor: pointer;
+  list-style: none;
+}
+.orientation-fold > summary::-webkit-details-marker {
+  display: none;
+}
+.orientation-fold > summary h2 {
+  display: inline;
+}
+.orientation-fold:not([open]) > summary h2::after {
+  content: " · collapsed";
+  font-weight: 550;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
 .card.face-collapsed > h2::after,
 .card.face-collapsed > .card-head h2::after {
   content: " · collapsed";

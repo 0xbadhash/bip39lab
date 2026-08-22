@@ -863,6 +863,10 @@
     if (tab) goTab(tab);
     setTimeout(function () {
       var el = target ? document.querySelector(target) : null;
+      if (el && el.id === "cardOrientation") {
+        var fold = document.getElementById("orientationFold");
+        if (fold) fold.open = true;
+      }
       if (el) {
         el.scrollIntoView({ behavior: "auto", block: "start" });
         try {

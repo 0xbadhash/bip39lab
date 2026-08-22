@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("gradual visual teach strip (0.16.25)", () => {
+test.describe("gradual visual teach strip (0.16.25–0.16.26)", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => localStorage.clear());
     await page.goto("/index.html");
@@ -47,5 +47,34 @@ test.describe("gradual visual teach strip (0.16.25)", () => {
     await expect(strip).toHaveAttribute("data-paint", "advanced");
     await expect(strip.locator(".lab-strip-extra.adv-only")).toBeVisible();
     await expect(strip.locator(".lab-strip-extra.adv-only")).toContainText(/master/i);
+  });
+
+  test("S115 strip is inside #card-mnemonic under Generate", async ({ page }) => {
+    const strip = page.locator("#card-mnemonic #labStrip");
+    await expect(strip).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("#panel-lab > #labStrip")).toHaveCount(0);
+    const gen = await page.locator("#btnGenerate").boundingBox();
+    const box = await strip.boundingBox();
+    expect(gen && box).toBeTruthy();
+    expect(box!.y).toBeGreaterThan(gen!.y);
+  });
+
+  test("S116 starter ghosts are ticks; empty card one line", async ({ page }) => {
+    const strip = page.locator("#labStrip");
+    await expect(strip).toBeVisible({ timeout: 8000 });
+    await expect(strip.locator("#stripEmptyHint")).toHaveText(/Generate to fill this backup/);
+    await expect(strip.locator(".ww")).toHaveCount(0);
+    const words = await strip.locator(".stage-words").boundingBox();
+    const ent = await strip.locator(".stage-entropy").boundingBox();
+    expect(words && ent).toBeTruthy();
+    expect(ent!.width).toBeLessThan(48);
+    expect(words!.width).toBeGreaterThan(ent!.width * 2);
+    await expect(strip.locator(".stage-entropy .stage-caption")).toBeHidden();
+  });
+
+  test("S117 Starter is/isn’t collapsed; air-gap banner stays", async ({ page }) => {
+    await expect(page.locator("#labSafetyBanner")).toBeVisible();
+    await expect(page.locator("#orientationFold")).not.toHaveAttribute("open");
+    await expect(page.locator("#cardOrientation")).toBeVisible();
   });
 });

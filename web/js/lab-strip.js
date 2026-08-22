@@ -1,12 +1,12 @@
 /**
  * Gradual visual teach strip — injects #labStrip and paints by Classroom level.
  * Spec: .agents/specs/2026-08-22-gradual-visual-teach.md
- * Stamp: 0.16.25 (after slim-rail 0.16.24). Teach-A/B/C are later ships.
+ * Stamp: 0.16.26 (strip inside #card-mnemonic). Teach-A/B/C are later ships.
  */
 (function () {
   "use strict";
 
-  var STRIP_CSS_V = "0.16.25";
+  var STRIP_CSS_V = "0.16.26";
 
   function $(id) {
     return document.getElementById(id);
@@ -24,10 +24,7 @@
   function ensureStrip() {
     ensureCss();
     if ($("labStrip")) return $("labStrip");
-    // Always-visible Lab host — do not mount inside #card-mnemonic
-    // (data-face=starter is hidden on Intermediate/Advanced; 0.16.19 faces stay).
-    var host = $("panel-lab");
-    if (!host) host = $("card-mnemonic");
+    var host = $("card-mnemonic");
     if (!host) return null;
     var wrap = document.createElement("div");
     wrap.innerHTML =
@@ -53,7 +50,17 @@
       "</div>" +
       "</div>";
     var node = wrap.firstChild;
-    host.insertBefore(node, host.firstChild);
+    node.classList.add("face-keep");
+    var gen = $("btnGenerate");
+    var genRow = gen && gen.closest ? gen.closest(".row") : null;
+    if (genRow && genRow.parentNode === host) {
+      if (genRow.nextSibling) host.insertBefore(node, genRow.nextSibling);
+      else host.appendChild(node);
+    } else {
+      var head = host.querySelector(".card-head");
+      if (head && head.nextSibling) host.insertBefore(node, head.nextSibling);
+      else host.insertBefore(node, host.firstChild);
+    }
     return node;
   }
 
@@ -62,22 +69,29 @@
     var ta = $("mnemonic");
     if (grid) {
       var words = ta && ta.value ? ta.value.trim().split(/\s+/).filter(Boolean) : [];
-      var n = words.length >= 24 ? 24 : 12;
-      grid.style.gridTemplateColumns =
-        n >= 24 ? "repeat(6, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))";
-      var html = "";
-      for (var i = 0; i < n; i++) {
-        var w = words[i] || "—";
-        html +=
-          '<li title="word ' +
-          (i + 1) +
-          '"><span class="wi">' +
-          (i + 1) +
-          '</span><span class="ww">' +
-          w +
-          "</span></li>";
+      if (!words.length) {
+        grid.style.gridTemplateColumns = "1fr";
+        grid.innerHTML =
+          '<li class="strip-empty" id="stripEmptyHint">Generate to fill this backup</li>';
+      } else {
+        var n = words.length >= 24 ? 24 : words.length > 12 ? 24 : 12;
+        if (words.length === 15 || words.length === 18 || words.length === 21) n = words.length;
+        grid.style.gridTemplateColumns =
+          n >= 24 ? "repeat(6, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))";
+        var html = "";
+        for (var i = 0; i < n; i++) {
+          var w = words[i] || "—";
+          html +=
+            '<li title="word ' +
+            (i + 1) +
+            '"><span class="wi">' +
+            (i + 1) +
+            '</span><span class="ww">' +
+            w +
+            "</span></li>";
+        }
+        grid.innerHTML = html;
       }
-      grid.innerHTML = html;
     }
     var ent = $("entropyMnemonic");
     var stripEnt = $("stripEnt");

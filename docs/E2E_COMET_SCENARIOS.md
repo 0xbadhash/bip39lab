@@ -32,7 +32,7 @@ surfaces:
   - id: lab-strip
     path: /
     playwright: e2e/lab-strip.spec.ts
-scenarios: S0–S113 · Playwright 131 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S117 · Playwright 134 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -42,7 +42,7 @@ scenarios: S0–S113 · Playwright 131 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.25 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S113 · Playwright S-ids: 131`
+`Product: 0.16.26 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S117 · Playwright S-ids: 134`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -79,9 +79,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **131** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **134** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S113** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S117** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -778,6 +778,15 @@ Intermediate: `.lab-strip-extra.int-only` visible with Keys vs shares. Advanced:
 ### S114 — Lab-strip rec-flow
 Form: Generate still fills mnemonic. Results: strip paints from classroom level. Comparison: Intermediate extra vs Advanced extra (not the same copy). Missing-data: empty Derive still missing-data. Recommendation: next-step Beginner still exists. Plain English: strip captions readable. Mobile 390px: strip visible, no blowout. Errors: invalid mnemonic still flagged. Textarea stays (Teach-B later).
 
+### S115 — Strip inside mnemonic card
+`#labStrip` is inside `#card-mnemonic`, below Generate / Validate / Clear — not first child of `#panel-lab` / not above What this is.
+
+### S116 — Starter ticks + empty backup line
+Starter ghost stages are ~40px ticks; words ~50% width. Empty card shows “Generate to fill this backup” (no twelve em-dashes). Ghost captions stay hidden with Extra help On.
+
+### S117 — Starter is/isn’t collapsed
+`#orientationFold` starts closed. `#labSafetyBanner` stays visible. First-hour Go on h1 opens the fold.
+
 ### S44 — First-hour Go (replaces step rail)
 First hour checklist: **Go** on a step scrolls to target (e.g. mnemonic) and shows amber **← Back to First hour** dock; Back returns to checklist. No mid-page step-rail wizard.
 
@@ -1131,6 +1140,9 @@ S111 Starter strip words only, no ENT/QR: PASS|FAIL —
 S112 Extra help Off hides captions not strip: PASS|FAIL —
 S113 Intermediate keys≠shares; Advanced master→child: PASS|FAIL —
 S114 Lab-strip rec-flow form/results/comparison/missing/recommendation/plain English/mobile/errors: PASS|FAIL —
+S115 Strip inside #card-mnemonic under Generate: PASS|FAIL —
+S116 Starter ticks + empty “Generate to fill this backup”: PASS|FAIL —
+S117 Starter is/isn’t collapsed; banner stays: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).
@@ -1168,4 +1180,4 @@ npm run test:e2e:live         # production
 | `e2e/help-ux.spec.ts` | S41–S48b Extra help / tips (no rails) |
 | `e2e/glossary.spec.ts` | S49–S52 Glossary |
 | `e2e/learn.spec.ts` | S61–S71 learning levels + I1/I4 docks |
-| `e2e/lab-strip.spec.ts` | S110–S113 gradual visual teach strip |
+| `e2e/lab-strip.spec.ts` | S110–S117 gradual visual teach strip in card |
