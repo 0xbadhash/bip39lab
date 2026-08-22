@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var STRIP_CSS_V = "0.16.29";
+  var STRIP_CSS_V = "0.16.30";
 
   function $(id) {
     return document.getElementById(id);
@@ -69,28 +69,36 @@
     var ta = $("mnemonic");
     if (grid) {
       var words = ta && ta.value ? ta.value.trim().split(/\s+/).filter(Boolean) : [];
+      var wc = $("wordCount");
+      var nSel = wc ? parseInt(wc.value, 10) : 12;
+      if (![12, 15, 18, 21, 24].includes(nSel)) nSel = 12;
+      var n = words.length >= 12 ? words.length : nSel;
+      if (words.length >= 24) n = 24;
+      grid.style.gridTemplateColumns =
+        n >= 24 ? "repeat(6, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))";
+      var html = "";
       if (!words.length) {
-        grid.style.gridTemplateColumns = "1fr";
-        grid.innerHTML =
-          '<li class="strip-empty" id="stripEmptyHint">Generate to fill this backup</li>';
-      } else {
-        var n = words.length >= 24 ? 24 : words.length > 12 ? 24 : 12;
-        if (words.length === 15 || words.length === 18 || words.length === 21) n = words.length;
-        grid.style.gridTemplateColumns =
-          n >= 24 ? "repeat(6, minmax(0, 1fr))" : "repeat(4, minmax(0, 1fr))";
-        var html = "";
-        for (var i = 0; i < n; i++) {
-          var w = words[i] || "—";
-          html +=
-            '<li title="word ' +
-            (i + 1) +
-            '"><span class="wi">' +
-            (i + 1) +
-            '</span><span class="ww">' +
-            w +
-            "</span></li>";
-        }
-        grid.innerHTML = html;
+        html +=
+          '<li class="strip-empty" id="stripEmptyHint" style="grid-column:1/-1">Generate to fill this backup</li>';
+      }
+      for (var i = 0; i < n; i++) {
+        var w = words[i] || "—";
+        html +=
+          '<li title="word ' +
+          (i + 1) +
+          '"><span class="wi">' +
+          (i + 1) +
+          '</span><span class="ww">' +
+          w +
+          "</span></li>";
+      }
+      grid.innerHTML = html;
+      if (
+        words.length >= 12 &&
+        window.LearnLevels &&
+        LearnLevels.autoCompleteHour
+      ) {
+        LearnLevels.autoCompleteHour("h1");
       }
     }
     var ent = $("entropyMnemonic");

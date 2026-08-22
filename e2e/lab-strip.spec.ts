@@ -133,7 +133,14 @@ test.describe("gradual visual teach strip (0.16.25–0.16.29)", () => {
 
 test.describe("0.16.29 first-run ack + 7-step rail", () => {
   test("S130 first load without lab:ack-v1 shows ack overlay", async ({ page }) => {
-    await page.addInitScript(() => localStorage.clear());
+    await page.addInitScript(() => {
+      try {
+        localStorage.clear();
+        localStorage.removeItem("lab:ack-v1");
+      } catch (e) {
+        /* ignore */
+      }
+    });
     await page.goto("/index.html");
     await expect(page.locator("#ackOverlay")).toBeVisible();
     await expect(page.locator("#ackOverlay #orientationTable")).toContainText(/This lab is/i);
@@ -188,5 +195,113 @@ test.describe("0.16.29 first-run ack + 7-step rail", () => {
     const ack = await page.evaluate(() => localStorage.getItem("lab:ack-v1"));
     expect(ack).toBeFalsy();
     await expect(page.locator("#ackOverlay")).toBeVisible();
+  });
+});
+
+test.describe("0.16.30 tiles + path/PP/self-check", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.clear();
+        localStorage.setItem("lab:ack-v1", "1");
+      } catch (e) {
+        /* ignore */
+      }
+    });
+    await page.goto("/index.html");
+  });
+
+  async function finishGenAddr(page: import("@playwright/test").Page) {
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await page.locator("#btnDerive").click();
+    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+  }
+
+  test("S140 word tile = separate .wi square + .ww rect; 12 tiles at wordcount 12", async ({
+    page,
+  }) => {
+    await page.locator("#wordCount").selectOption("12");
+    const tiles = page.locator("#stripWordGrid li:not(.strip-empty)");
+    await expect(tiles).toHaveCount(12);
+    await expect(tiles.first().locator(".wi")).toBeVisible();
+    await expect(tiles.first().locator(".ww")).toBeVisible();
+    const wi = await tiles.first().locator(".wi").boundingBox();
+    const ww = await tiles.first().locator(".ww").boundingBox();
+    expect(wi && ww).toBeTruthy();
+    expect(Math.abs(wi!.width - wi!.height)).toBeLessThan(6);
+    expect(ww!.x).toBeGreaterThan(wi!.x + wi!.width - 2);
+  });
+
+  test("S141 rail: step number is not inside the name chip (two nodes)", async ({ page }) => {
+    const step = page.locator('[data-hour-step="h1"]');
+    await expect(step.locator(".hour-num-circle")).toHaveText("1");
+    await expect(step.locator(".hour-name")).toHaveText("Generate");
+    const circ = await step.locator(".hour-num-circle").boundingBox();
+    const name = await step.locator(".hour-name").boundingBox();
+    expect(circ && name).toBeTruthy();
+    expect(name!.x).toBeGreaterThan(circ!.x + circ!.width - 4);
+  });
+
+  test("S142 Path does not complete until receive/change or index is toggled", async ({
+    page,
+  }) => {
+    await finishGenAddr(page);
+    await page.locator('[data-hour-step="h3"]').click();
+    await expect(page.locator("#hourPathPad")).toBeVisible();
+    await expect(page.locator('[data-hour-step="h3"]')).not.toHaveClass(/hour-step-done/);
+    await page.locator("#hourPathIndex").click();
+    await expect(page.locator('[data-hour-step="h3"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+  });
+
+  test("S143 Passphrase step not green until Compare clicked", async ({ page }) => {
+    await finishGenAddr(page);
+    await page.locator('[data-hour-step="h3"]').click();
+    await page.locator("#hourPathIndex").click();
+    await expect(page.locator('[data-hour-step="h3"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await page.locator('[data-hour-step="h4"]').click();
+    await expect(page.locator("#hourPpPad")).toBeVisible();
+    await expect(page.locator('[data-hour-step="h4"]')).not.toHaveClass(/hour-step-done/);
+    await page.locator("#hourPpCompare").click();
+    await expect(page.locator("#hourPpResult")).toBeVisible();
+    await expect(page.locator('[data-hour-step="h4"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+  });
+
+  test("S144 click Self-check shows Continue pad (not empty)", async ({ page }) => {
+    await finishGenAddr(page);
+    await page.locator('[data-hour-step="h3"]').click();
+    await page.locator("#hourPathIndex").click();
+    await expect(page.locator('[data-hour-step="h3"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await page.locator('[data-hour-step="h4"]').click();
+    await page.locator("#hourPpCompare").click();
+    await expect(page.locator('[data-hour-step="h4"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await page.locator('[data-hour-step="h5"]').click();
+    await expect(page.locator("#hourSelfCheck")).toBeVisible();
+    await expect(page.locator("#hourSelfCheckContinue")).toBeVisible();
+    await expect(page.locator("#hourSelfCheck")).toContainText(/Q1–Q4|Q1-Q4|quiz exists/i);
+  });
+
+  test("S145 all hour work pads share one content width class", async ({ page }) => {
+    await expect(page.locator("#card-mnemonic")).toHaveClass(/hour-pad/);
+    await expect(page.locator("#hourPathPad")).toHaveClass(/hour-pad/);
+    await expect(page.locator("#hourPpPad")).toHaveClass(/hour-pad/);
+    await expect(page.locator("#hourSelfCheck")).toHaveClass(/hour-pad/);
+    const w1 = await page.locator("#card-mnemonic").evaluate((el) => getComputedStyle(el).maxWidth);
+    const w2 = await page.locator("#hourPathPad").evaluate((el) => getComputedStyle(el).maxWidth);
+    expect(w1).toBe(w2);
   });
 });

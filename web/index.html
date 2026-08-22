@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.29" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.30" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.29">v0.16.29</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.30">v0.16.30</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -149,33 +149,34 @@
                 Reset first hour
               </button>
             </div>
+            <p class="hour-kicker" id="hourKicker">Create a practice 12-word card</p>
             <ol class="hour-list hour-list-h" id="firstHourList">
               <li class="hour-step is-selected" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#card-mnemonic">
-                <span class="hour-num">1</span> Generate
+                <span class="hour-num-circle">1</span><span class="hour-name">Generate</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
               <li class="hour-step" data-hour-step="h2" data-hour-tab="lab" data-hour-target="#card-addresses">
-                <span class="hour-num">2</span> Address
+                <span class="hour-num-circle">2</span><span class="hour-name">Address</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h3" data-hour-tab="tools" data-hour-target="#cardPathPlay">
-                <span class="hour-num">3</span> Path
+              <li class="hour-step" data-hour-step="h3" data-hour-tab="lab" data-hour-target="#hourPathPad">
+                <span class="hour-num-circle">3</span><span class="hour-name">Path</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h4" data-hour-tab="tools" data-hour-target="#cardCmpPp">
-                <span class="hour-num">4</span> Passphrase
+              <li class="hour-step" data-hour-step="h4" data-hour-tab="lab" data-hour-target="#hourPpPad">
+                <span class="hour-num-circle">4</span><span class="hour-name">Passphrase</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
               <li class="hour-step" data-hour-step="h5" data-hour-tab="lab" data-hour-target="#hourSelfCheck">
-                <span class="hour-num">5</span> Self-check
+                <span class="hour-num-circle">5</span><span class="hour-name">Self-check</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
               <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#hourNetworkOpt">
-                <span class="hour-num">6</span> Network?
+                <span class="hour-num-circle">6</span><span class="hour-name">Network?</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
               <li class="hour-step" data-hour-step="h7" data-hour-tab="lab" data-hour-target="#hourSetBeginner">
-                <span class="hour-num">7</span> Beginner
+                <span class="hour-num-circle">7</span><span class="hour-name">Beginner</span>
               </li>
             </ol>
             <div class="hour-rail-actions" id="hourRailActions">
@@ -200,12 +201,40 @@
             </div>
           </div>
 
-          <div class="card" id="hourSelfCheck" hidden>
+          <div class="card hour-pad" id="hourPathPad" hidden>
+            <h2>Path playground</h2>
+            <p class="control-help">A path is a folder on the same phrase. Change the folder, the address changes. The words do not.</p>
+            <p class="hour-path-line" id="hourPathLine">
+              m / 84h / 0h / 0h /
+              <button type="button" class="btn secondary btn-sm" id="hourPathChange" data-change="0">0 receive</button>
+              /
+              <button type="button" class="btn secondary btn-sm" id="hourPathIndex" data-index="0">index 0</button>
+            </p>
+            <p class="control-help" id="hourPathNeedPhrase" hidden>Generate a practice phrase on step 1 first.</p>
+            <p>Preview (last 8): <code id="hourPathTail">—</code></p>
+          </div>
+          <div class="card hour-pad" id="hourPpPad" hidden>
+            <h2>Passphrase compare</h2>
+            <p class="control-help">Same words, two passphrases, two wallets — or the same one if they match.</p>
+            <label class="field">Passphrase A
+              <input id="hourPpA" type="text" autocomplete="off" spellcheck="false" placeholder="(empty)" />
+            </label>
+            <label class="field">Passphrase B
+              <input id="hourPpB" type="text" autocomplete="off" spellcheck="false" value="TREZOR" />
+            </label>
+            <button type="button" class="btn" id="hourPpCompare">Compare</button>
+            <p id="hourPpNeedPhrase" class="control-help" hidden>Generate a practice phrase on step 1 first.</p>
+            <p id="hourPpResult" hidden>
+              A <code id="hourPpTailA">—</code> · B <code id="hourPpTailB">—</code>
+              <span id="hourPpVerdict"></span>
+            </p>
+          </div>
+          <div class="card hour-pad" id="hourSelfCheck" hidden>
             <h2>Self-check</h2>
-            <p class="control-help">Beginner quiz is Q1–Q4 after you set Beginner.</p>
+            <p class="control-help">Starter does not run Q1–Q4 yet. That board opens when you Set Beginner. This step only confirms you know the quiz exists.</p>
             <button type="button" class="btn" id="hourSelfCheckContinue">Continue</button>
           </div>
-          <div class="card" id="hourNetworkOpt" hidden>
+          <div class="card hour-pad" id="hourNetworkOpt" hidden>
             <h2>Network?</h2>
             <p class="control-help">Optional. Address-only fees and balances — never paste a phrase.</p>
             <div class="row">
@@ -213,14 +242,14 @@
               <button type="button" class="btn secondary" id="hourSkipNetwork">Skip</button>
             </div>
           </div>
-          <div class="card" id="hourSetBeginner" hidden>
+          <div class="card hour-pad" id="hourSetBeginner" hidden>
             <h2>Set Beginner</h2>
             <p class="control-help">Unlock Passphrase and entropy (Q1–Q4). This site is still not a wallet.</p>
             <button type="button" class="btn" id="hourSetBeginnerBtn">Set Beginner</button>
           </div>
 
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
-<div class="card" id="card-mnemonic" data-face="starter">
+<div class="card hour-pad" id="card-mnemonic" data-face="starter">
             <div class="card-head">
               <h2>Mnemonic
                 <span class="help-tip" data-term="SHORTCUTS">
@@ -841,7 +870,7 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="card-addresses" data-face="starter">
+          <div class="card card-wide hour-pad" id="card-addresses" data-face="starter">
             <div class="card-head">
               <h2 id="headingReceive">Receive addresses</h2>
             </div>
@@ -1557,11 +1586,12 @@
     </div>
   </div>
 
-  <script src="js/site-version.js?v=0.16.29"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.29"></script>
-  <script src="js/glossary.js?v=0.16.29"></script>
-  <script src="js/help-ui.js?v=0.16.29"></script>
-  <script src="js/learn-levels.js?v=0.16.29"></script>
-  <script src="js/app.js?v=0.16.29"></script>
+  <script src="js/site-version.js?v=0.16.30"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.30"></script>
+  <script src="js/glossary.js?v=0.16.30"></script>
+  <script src="js/help-ui.js?v=0.16.30"></script>
+  <script src="js/learn-levels.js?v=0.16.30"></script>
+  <script src="js/lab-strip.js?v=0.16.30"></script>
+  <script src="js/app.js?v=0.16.30"></script>
 </body>
 </html>

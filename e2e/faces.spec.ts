@@ -52,7 +52,7 @@ test.describe("Level faces", () => {
     await expect(page.locator("#hourRailGo")).toBeHidden();
     await expect(page.locator("#hourRailDone")).toBeHidden();
     await expect(page.locator("#btnClear")).toHaveClass(/danger/);
-    await expect(page.locator("#card-mnemonic h2").first()).toHaveText(/Mnemonic/);
+    await expect(page.locator("#card-mnemonic h2").first()).toContainText(/Mnemonic/);
     await expect(page.locator("#cardQuiz")).toBeHidden();
     await expect(page.locator("#cardIntQuiz")).toBeHidden();
     await expect(page.locator("#cardAdvQuiz")).toBeHidden();

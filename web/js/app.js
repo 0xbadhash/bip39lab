@@ -822,6 +822,8 @@
         LearnLevels.noteHour("h3Derived", true);
         if (
           LearnLevels.autoCompleteHour &&
+          !quiet &&
+          !(opts && opts.skipHourH2) &&
           document.documentElement.getAttribute("data-hour-active") === "h2"
         ) {
           LearnLevels.autoCompleteHour("h2");
@@ -871,7 +873,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.29";
+    return "v0.16.30";
   }
 
   function setStatus(text, kind) {
@@ -1769,9 +1771,19 @@
     const n = parseInt($("wordCount").value, 10);
     const m = await BIP39Lab.generateMnemonic(n);
     $("mnemonic").value = m;
+    try {
+      $("mnemonic").dispatchEvent(new Event("input", { bubbles: true }));
+    } catch (eIn) {
+      /* ignore */
+    }
+    try {
+      if (window.LearnLevels && LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h1");
+    } catch (eH1) {
+      /* ignore */
+    }
     await refreshMnemonicEntropy();
     refreshPassphraseEntropy();
-    await deriveNow({ quiet: false });
+    await deriveNow({ quiet: false, skipHourH2: true });
     try {
       if (
         window.BIP39Lab &&
@@ -1804,6 +1816,84 @@
     $("btnGenerate").addEventListener("click", () => onGenerate().catch(console.error));
     $("btnDerive").addEventListener("click", () => deriveNow({ quiet: false }).catch(console.error));
     $("btnClear").addEventListener("click", () => clearSecrets());
+    (function wireHourPads() {
+      async function refreshPath() {
+        const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
+        const need = $("hourPathNeedPhrase");
+        const tail = $("hourPathTail");
+        if (!m || !window.BIP39Lab || !BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
+          if (need) need.hidden = false;
+          if (tail) tail.textContent = "—";
+          return;
+        }
+        if (need) need.hidden = true;
+        const chBtn = $("hourPathChange");
+        const ixBtn = $("hourPathIndex");
+        const change = chBtn && chBtn.getAttribute("data-change") === "1" ? 1 : 0;
+        const index = ixBtn && ixBtn.getAttribute("data-index") === "1" ? 1 : 0;
+        const path = Object.assign({}, getDeriveOptions(), { change: change, count: 2, network: "test" });
+        const r = await BIP39Lab.deriveAddresses(m, "", path);
+        const field = ADDR_TYPE_META.bip84.field;
+        const addr = r.rows && r.rows[index] ? r.rows[index][field] : "";
+        if (tail) tail.textContent = addr ? String(addr).slice(-8) : "—";
+      }
+      function maybeCompletePath() {
+        const tail = $("hourPathTail");
+        if (tail && tail.textContent && tail.textContent !== "—") {
+          if (window.LearnLevels && LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h3");
+        }
+      }
+      const chBtn = $("hourPathChange");
+      const ixBtn = $("hourPathIndex");
+      if (chBtn) {
+        chBtn.addEventListener("click", function () {
+          const next = chBtn.getAttribute("data-change") === "1" ? "0" : "1";
+          chBtn.setAttribute("data-change", next);
+          chBtn.textContent = next === "1" ? "1 change" : "0 receive";
+          refreshPath().then(maybeCompletePath).catch(console.error);
+        });
+      }
+      if (ixBtn) {
+        ixBtn.addEventListener("click", function () {
+          const next = ixBtn.getAttribute("data-index") === "1" ? "0" : "1";
+          ixBtn.setAttribute("data-index", next);
+          ixBtn.textContent = "index " + next;
+          refreshPath().then(maybeCompletePath).catch(console.error);
+        });
+      }
+      const cmp = $("hourPpCompare");
+      if (cmp) {
+        cmp.addEventListener("click", async function () {
+          const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
+          const need = $("hourPpNeedPhrase");
+          const box = $("hourPpResult");
+          if (!m || !window.BIP39Lab) {
+            if (need) need.hidden = false;
+            return;
+          }
+          if (need) need.hidden = true;
+          const a = ($("hourPpA") && $("hourPpA").value) || "";
+          const b = ($("hourPpB") && $("hourPpB").value) || "TREZOR";
+          const path = Object.assign({}, getDeriveOptions(), { count: 1, network: "test" });
+          const ra = await BIP39Lab.deriveAddresses(m, a, path);
+          const rb = await BIP39Lab.deriveAddresses(m, b, path);
+          const field = ADDR_TYPE_META.bip84.field;
+          const aa = (ra.rows && ra.rows[0] && ra.rows[0][field]) || "";
+          const bb = (rb.rows && rb.rows[0] && rb.rows[0][field]) || "";
+          if ($("hourPpTailA")) $("hourPpTailA").textContent = String(aa).slice(-8);
+          if ($("hourPpTailB")) $("hourPpTailB").textContent = String(bb).slice(-8);
+          const same = aa === bb;
+          const v = $("hourPpVerdict");
+          if (v) {
+            v.textContent = same ? " same wallet" : " two wallets from one phrase";
+            v.className = same ? "status err" : "status ok";
+          }
+          if (box) box.hidden = false;
+          if (window.LearnLevels && LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h4");
+        });
+      }
+      window.HourPads = { refreshPath: refreshPath };
+    })();
     $("hidePrivate").addEventListener("change", (e) => setPrivateVisible(!e.target.checked));
 
     $("mnemonic").addEventListener("input", () => {

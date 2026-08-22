@@ -497,10 +497,8 @@
     var st = loadJson(HOUR_KEY, {});
     if (id === "h1") return !!st.h1 || !!ev.h2Generated;
     if (id === "h2") return !!st.h2 || !!ev.h3Derived || addressesFilled();
-    if (id === "h3") {
-      return !!(st.h3 || ev.h4Opened || (ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index));
-    }
-    if (id === "h4") return !!(st.h4 || ev.h5Opened || ev.h5ComparedDiff);
+    if (id === "h3") return !!st.h3;
+    if (id === "h4") return !!st.h4;
     if (id === "h5") return !!st.h5;
     if (id === "h6") return !!(st.h6 || ev.h7Ack);
     if (id === "h7") return LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner") || !!st.h7;
@@ -611,7 +609,11 @@
     var level = getLevel();
     var acked = hasAck();
     var ov = $("ackOverlay");
-    if (ov) ov.hidden = !(level === "starter" && !acked);
+    if (ov) {
+      var showAck = level === "starter" && !acked;
+      ov.hidden = !showAck;
+      if (showAck) ov.removeAttribute("hidden");
+    }
     var ori = $("cardOrientation");
     if (ori) ori.hidden = true;
     var sid =
@@ -620,10 +622,25 @@
     var selfC = $("hourSelfCheck");
     var netC = $("hourNetworkOpt");
     var begC = $("hourSetBeginner");
+    var pathC = $("hourPathPad");
+    var ppC = $("hourPpPad");
+    var kick = $("hourKicker");
+    var kickMap = {
+      h1: "Create a practice 12-word card",
+      h2: "Validate and fill a receive address",
+      h3: "Change the folder, not the words",
+      h4: "Same words, two passphrases",
+      h5: "The Beginner quiz exists — confirm and continue",
+      h6: "Optional: Network is addresses only",
+      h7: "Unlock Beginner when you are ready",
+    };
+    if (kick) kick.textContent = kickMap[sid] || "";
     if (level !== "starter") {
       if (selfC) selfC.hidden = true;
       if (netC) netC.hidden = true;
       if (begC) begC.hidden = true;
+      if (pathC) pathC.hidden = true;
+      if (ppC) ppC.hidden = true;
       var mnB = $("card-mnemonic");
       if (mnB) mnB.hidden = false;
       var addrB = $("card-addresses");
@@ -633,18 +650,23 @@
       return;
     }
     if (!acked) return;
+    ["cardQuiz", "cardIntQuiz", "cardAdvQuiz"].forEach(function (id) {
+      var q = $(id);
+      if (q) q.hidden = true;
+    });
     if (selfC) selfC.hidden = sid !== "h5";
     if (netC) netC.hidden = sid !== "h6";
     if (begC) begC.hidden = sid !== "h7";
+    if (pathC) pathC.hidden = sid !== "h3";
+    if (ppC) ppC.hidden = sid !== "h4";
     var mn = $("card-mnemonic");
     if (mn) mn.hidden = !(sid === "h1" || sid === "h2");
     var addr = $("card-addresses");
     if (addr) addr.hidden = sid !== "h2";
     var der = $("btnDerive");
     if (der) der.disabled = sid === "h1";
-    if (sid === "h3") goTab("tools");
-    if (sid === "h4") goTab("tools");
-    if (sid === "h1" || sid === "h2" || sid === "h5" || sid === "h6" || sid === "h7") goTab("lab");
+    goTab("lab");
+    if (sid === "h3" && window.HourPads && HourPads.refreshPath) HourPads.refreshPath();
   }
 
   function wireAckGate() {
@@ -950,7 +972,8 @@
     st2[id] = true;
     saveJson(HOUR_KEY, st2);
     refreshFirstHour();
-    advanceToNextIncomplete();
+    /* Keep Path/PP pads on screen after the action so suffixes stay visible. */
+    if (id !== "h3" && id !== "h4") advanceToNextIncomplete();
   }
 
   function goHourStep(li) {
@@ -964,15 +987,8 @@
     setHourActive(stepId);
     if (stepId === "h4") snapshotH4IfNeeded();
     setHourReturn();
-    if (stepId === "h3") {
-      goTab("tools");
-      autoCompleteHour("h3");
-      noteHour("h4Opened", true);
-    }
-    if (stepId === "h4") {
-      goTab("tools");
-      autoCompleteHour("h4");
-      noteHour("h5Opened", true);
+    if (stepId === "h3" || stepId === "h4") {
+      goTab("lab");
     }
     if (href) {
       // Network (or external page): return via bar on index after user navigates back, or query
@@ -1861,15 +1877,7 @@
   function goTab(name) {
     if (typeof window.__bip39ShowTab === "function") window.__bip39ShowTab(name);
     if (name === "tools") {
-      var sidT = getSelectedHourLi() && getSelectedHourLi().getAttribute("data-hour-step");
-      if (sidT === "h3") {
-        noteHour("h4Opened", true);
-        autoCompleteHour("h3");
-      }
-      if (sidT === "h4") {
-        noteHour("h5Opened", true);
-        autoCompleteHour("h4");
-      }
+      /* Path/PP hour pads live on Lab — visiting Tools does not complete steps */
     }
   }
 
