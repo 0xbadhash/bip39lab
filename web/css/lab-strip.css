@@ -1,0 +1,126 @@
+/* Gradual visual teach strip (0.16.25-wip, app-shell tokens only) */
+.lab-strip {
+  margin: 0.75rem 0 1rem;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+}
+.lab-strip-stages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+.lab-strip-arrow {
+  color: var(--muted);
+  align-self: center;
+  font-size: 0.85rem;
+}
+.lab-stage {
+  flex: 1 1 5.5rem;
+  min-width: 4.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  padding: 0.4rem 0.45rem;
+  opacity: 0.38;
+}
+.lab-stage .stage-label {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+.lab-stage .stage-detail {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+  word-break: break-all;
+}
+.lab-stage .stage-caption {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.3;
+}
+html[data-teach="off"] .lab-strip .stage-caption {
+  display: none !important;
+}
+.lab-stage.lit,
+#labStrip[data-paint="starter"] .stage-words,
+#labStrip[data-paint="beginner"] .stage-entropy,
+#labStrip[data-paint="beginner"] .stage-checksum,
+#labStrip[data-paint="beginner"] .stage-words,
+#labStrip[data-paint="beginner"] .stage-address,
+#labStrip[data-paint="intermediate"] .stage-entropy,
+#labStrip[data-paint="intermediate"] .stage-checksum,
+#labStrip[data-paint="intermediate"] .stage-words,
+#labStrip[data-paint="intermediate"] .stage-address,
+#labStrip[data-paint="advanced"] .lab-stage {
+  opacity: 1;
+  background: var(--panel);
+  border-color: var(--accent);
+}
+.word-grid {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+.word-grid li {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-2);
+  padding: 0.2rem 0.3rem 0.25rem;
+  font-size: 0.72rem;
+  color: var(--text);
+}
+.word-grid .wi {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+html[data-paint="intermediate"] .word-grid li:nth-child(-n+4) .ww,
+html[data-level="intermediate"] .word-grid li:nth-child(-n+4) .ww,
+html[data-paint="advanced"] .word-grid li:nth-child(-n+4) .ww,
+html[data-level="advanced"] .word-grid li:nth-child(-n+4) .ww {
+  font-weight: 750;
+}
+#labStrip[data-paint="starter"] .stage-entropy .stage-detail,
+#labStrip[data-paint="starter"] .stage-checksum .stage-detail,
+#labStrip[data-paint="starter"] .stage-seed .stage-detail,
+#labStrip[data-paint="starter"] .stage-address .stage-detail {
+  visibility: hidden;
+}
+.lab-strip-extra {
+  display: none;
+  margin-top: 0.55rem;
+  gap: 0.5rem;
+}
+#labStrip[data-paint="intermediate"] .lab-strip-extra.int-only,
+#labStrip[data-paint="advanced"] .lab-strip-extra.int-only,
+#labStrip[data-paint="advanced"] .lab-strip-extra.adv-only {
+  display: grid;
+}
+.ks-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+.ks-box {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.5rem;
+  background: var(--panel);
+  font-size: 0.78rem;
+}
+.ks-box strong { display: block; }
