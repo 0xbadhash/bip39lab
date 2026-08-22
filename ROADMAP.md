@@ -85,6 +85,46 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** e2e/faces.spec.ts S102 + learn first-hour
 - **Notes:** grill-me complete (locked brief)
 
+### [OPEN] Gradual visual teach (Catalyxt skin)
+- **Status:** open (draft — paint states await CEO lock)
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-22-gradual-visual-teach.md`
+- **Depends:** Slim Starter First-hour rail
+- **Next:** after slim-rail + paint-state yes
+- **Acceptance:**
+  - [ ] One `#labStrip`; `data-paint` Starter → Advanced
+  - [ ] Unlit stages are hairline ghosts; lit stages use app-shell tokens only
+  - [ ] Extra help Off hides captions, not the strip
+  - [ ] No new `--cx-*`; no marketing/desk fork
+- **Notes:** Teaching grows by lighting the same composition. A/B/C below are content, not skins.
+
+### [OPEN] Teach-A — Pipeline interactivity
+- **Status:** open
+- **Priority:** P2
+- **Depends:** Gradual visual teach
+- **Acceptance:**
+  - [ ] ENT slider paints entropy bar; checksum bits `--cx-ok`
+  - [ ] LearnMeABitcoin *content* (bits → 11-bit → words → PBKDF2), Catalyxt *skin*
+- **Notes:** Not a white textbook page.
+
+### [OPEN] Teach-B — Numbered card specimen
+- **Status:** open
+- **Priority:** P2
+- **Depends:** Gradual visual teach
+- **Acceptance:**
+  - [ ] Mnemonic is 3×4 / 4×6 numbered cells, not a textarea
+  - [ ] Index badge; Intermediate bolds first-4 prefix
+- **Notes:** Hardware-backup *object*, not wallet onboarding chrome.
+
+### [OPEN] Teach-C — Air-gap actions on the card
+- **Status:** open
+- **Priority:** P2
+- **Depends:** Teach-B + P0 lab-safety QR/print walls
+- **Acceptance:**
+  - [ ] Seed QR + print sit on the card object
+  - [ ] Same `#3d8bfd` accent; no SeedSigner orange
+- **Notes:** Instrument behavior, Catalyxt look.
+
 ### [DONE] Starter rail + Beginner/Advanced stills
 - **Status:** done
 - **Priority:** P1
@@ -539,7 +579,8 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Current focus
 
-**Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`).  
-**Next:** Pruned Knots on Pi/SSD until IBD complete → finish **2000-seed** hash campaign (CLI tooling already shipped).  
-**Later (optional):** private Knots balance proxy for Network; private operator scan console — not public Network.  
-**Out of scope:** 7th sidebar nav item for SLIP-39 (deep-link from Shamir only — keeps 6-nav mental model).
+**Shipped:** through **`v0.13.10`** (SLIP-39 lab A–D docs stamp + Pi/Knots ops checklist in `docs/BITCOIN_KNOTS.md`). Live web stamp lineage **0.16.23**.  
+**Next (UI):** Slim Starter rail **0.16.24**, then **Gradual visual teach** if paint states lock.  
+**Next (ops):** Pruned Knots on Pi/SSD until IBD complete → finish **2000-seed** hash campaign.  
+**Later:** Teach-A/B/C content modules inside app-shell; private Knots balance proxy — not public Network.  
+**Out of scope:** 7th sidebar nav for SLIP-39; new visual skins (SeedSigner / Ian / marketing variant).
