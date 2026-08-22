@@ -24,8 +24,11 @@
   function ensureStrip() {
     ensureCss();
     if ($("labStrip")) return $("labStrip");
-    var card = $("card-mnemonic");
-    if (!card) return null;
+    // Always-visible Lab host — do not mount inside #card-mnemonic
+    // (data-face=starter is hidden on Intermediate/Advanced; 0.16.19 faces stay).
+    var host = $("panel-lab");
+    if (!host) host = $("card-mnemonic");
+    if (!host) return null;
     var wrap = document.createElement("div");
     wrap.innerHTML =
       '<div id="labStrip" class="lab-strip" data-paint="starter" aria-label="BIP-39 pipeline">' +
@@ -50,13 +53,7 @@
       "</div>" +
       "</div>";
     var node = wrap.firstChild;
-    var ta = $("mnemonic");
-    if (ta && ta.closest("label")) card.insertBefore(node, ta.closest("label"));
-    else {
-      var head = card.querySelector(".card-head");
-      if (head && head.nextSibling) card.insertBefore(node, head.nextSibling);
-      else card.insertBefore(node, card.firstChild);
-    }
+    host.insertBefore(node, host.firstChild);
     return node;
   }
 

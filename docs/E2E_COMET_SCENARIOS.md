@@ -29,7 +29,10 @@ surfaces:
   - id: help
     path: /
     playwright: e2e/help-ux.spec.ts
-scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
+  - id: lab-strip
+    path: /
+    playwright: e2e/lab-strip.spec.ts
+scenarios: S0–S113 · Playwright 131 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -39,7 +42,7 @@ scenarios: S0–S108 · Playwright 127 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.24 · Contract: 2 · Last aligned: 2026-08-21 · Scenarios: S0–S108 · Playwright S-ids: 127`
+`Product: 0.16.25 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S113 · Playwright S-ids: 131`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -76,9 +79,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **127** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **131** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S108** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S113** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -760,6 +763,21 @@ On Starter, hover an (i) without click; panel visible.
 ### S108 — Faces rec-flow
 390px: Generate produces phrase + table (form/results); empty Derive missing-data; next-step Beginner chapter; Intermediate hides Advanced; Advanced not-a-wallet; no page blowout; 12-check not a nav page.
 
+### S110 — Lab strip follows classroom level
+`#labStrip` is visible on Lab. Changing `#learnLevel` sets `data-paint` to starter / beginner / intermediate / advanced. One strip, not four stacked faces as the live layout.
+
+### S111 — Starter strip is words only
+Starter `data-paint=starter`: word cards / `.stage-words` visible. Strip has **no** ENT slider (`input[type=range]`) and **no** QR (`img`, canvas, `[data-qr]`). Practice-backup stamp visible. Intermediate extra (keys≠shares) hidden.
+
+### S112 — Extra help Off hides captions, not the strip
+`data-teach=off` keeps `#labStrip` visible; `.stage-caption` is hidden. Extra help Off is captions-only for the strip.
+
+### S113 — Intermediate keys≠shares; Advanced master→child
+Intermediate: `.lab-strip-extra.int-only` visible with Keys vs shares. Advanced: `.lab-strip-extra.adv-only` visible with master → child. Do not reopen 0.16.16–0.16.24 faces/overlays.
+
+### S114 — Lab-strip rec-flow
+Form: Generate still fills mnemonic. Results: strip paints from classroom level. Comparison: Intermediate extra vs Advanced extra (not the same copy). Missing-data: empty Derive still missing-data. Recommendation: next-step Beginner still exists. Plain English: strip captions readable. Mobile 390px: strip visible, no blowout. Errors: invalid mnemonic still flagged. Textarea stays (Teach-B later).
+
 ### S44 — First-hour Go (replaces step rail)
 First hour checklist: **Go** on a step scrolls to target (e.g. mnemonic) and shows amber **← Back to First hour** dock; Back returns to checklist. No mid-page step-rail wizard.
 
@@ -1108,6 +1126,11 @@ S105 Advanced master → child keys not a wallet A1–A4: PASS|FAIL —
 S106 Faces Reset + overlays kept: PASS|FAIL —
 S107 Faces hover-(i) kept: PASS|FAIL —
 S108 Faces rec-flow form/results/missing/next/mobile: PASS|FAIL —
+S110 Lab strip data-paint follows level: PASS|FAIL —
+S111 Starter strip words only, no ENT/QR: PASS|FAIL —
+S112 Extra help Off hides captions not strip: PASS|FAIL —
+S113 Intermediate keys≠shares; Advanced master→child: PASS|FAIL —
+S114 Lab-strip rec-flow form/results/comparison/missing/recommendation/plain English/mobile/errors: PASS|FAIL —
 
 Score: __ / __ PASS   (denominator = stamped Playwright S-id count at file header, e.g. 88)
   Formula: count rows marked PASS only (not NEEDS-DOM unless you verified via Playwright).
@@ -1145,3 +1168,4 @@ npm run test:e2e:live         # production
 | `e2e/help-ux.spec.ts` | S41–S48b Extra help / tips (no rails) |
 | `e2e/glossary.spec.ts` | S49–S52 Glossary |
 | `e2e/learn.spec.ts` | S61–S71 learning levels + I1/I4 docks |
+| `e2e/lab-strip.spec.ts` | S110–S113 gradual visual teach strip |
