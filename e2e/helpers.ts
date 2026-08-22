@@ -16,6 +16,15 @@ export const GOLDEN = {
 /** Six primary nav items (Shamir after Multisig). */
 export const NAV = ["lab", "multisig", "shamir", "network", "tools", "glossary"] as const;
 
+/** Dismiss first-visit is/isn’t ack if present. */
+export async function dismissAck(page: Page) {
+  const ov = page.locator("#ackOverlay");
+  if (await ov.isVisible()) {
+    await page.locator("#ackUnderstand").click();
+    await expect(ov).toBeHidden();
+  }
+}
+
 /** Click Lab Generate/Derive/Clear (hover help, no OK modal). */
 export async function clickLabAction(page: Page, which: "generate" | "derive" | "clear") {
   const btn =

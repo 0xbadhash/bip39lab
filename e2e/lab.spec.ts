@@ -8,11 +8,23 @@ import {
   selectLabMainnet,
   waitForTableRows,
   clickLabAction,
+  dismissAck,
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("lab:ack-v1", "1");
+      } catch (e) {
+        /* ignore */
+      }
+    });
+  });
+
   test("S0 smoke load · 6-nav · chips · CSP offline", async ({ page }) => {
     await page.goto("/");
+    await dismissAck(page);
     await expect(page).toHaveTitle(/BIP39/i);
     await expect(page.getByRole("heading", { name: /Offline BIP-39 lab/i })).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
@@ -25,10 +37,10 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.28$/);
+    await expect(chip).toContainText(/^v0\.16\.29$/);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.28");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.28/);
+    expect(htmlChip).toContain("v0.16.29");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.29/);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
@@ -119,6 +131,7 @@ test.describe("Lab shell & chrome", () => {
 
   test("S100 three distinct Lab hover overlays (no OK)", async ({ page }) => {
     await page.goto("/");
+    await dismissAck(page);
     await page.locator("#wordCount").selectOption("24");
     await page.locator("#btnGenerate").hover();
     await expect(page.locator("#overlayGenerate")).toBeVisible();
@@ -150,6 +163,16 @@ test.describe("Lab shell & chrome", () => {
 });
 
 test.describe("Lab mnemonic & derive", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem("lab:ack-v1", "1");
+      } catch (e) {
+        /* ignore */
+      }
+    });
+  });
+
   test("S1 generate 12-word fills entropy + table", async ({ page }) => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("12");

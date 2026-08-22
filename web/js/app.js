@@ -820,7 +820,12 @@
       await refreshWatchOnly();
       if (result && result.rows && result.rows.length && window.LearnLevels && LearnLevels.noteHour) {
         LearnLevels.noteHour("h3Derived", true);
-        if (LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h3");
+        if (
+          LearnLevels.autoCompleteHour &&
+          document.documentElement.getAttribute("data-hour-active") === "h2"
+        ) {
+          LearnLevels.autoCompleteHour("h2");
+        }
       }
     } catch (e) {
       if (!quiet) setStatus("Error: " + (e && e.message ? e.message : e), "err");
@@ -866,7 +871,7 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.28";
+    return "v0.16.29";
   }
 
   function setStatus(text, kind) {
@@ -1776,7 +1781,7 @@
         LearnLevels.noteHour
       ) {
         LearnLevels.noteHour("h2Generated", true);
-        if (LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h2");
+        if (LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h1");
       }
     } catch (eGen) {
       /* ignore */

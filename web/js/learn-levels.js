@@ -7,6 +7,8 @@
 
   var LEVEL_KEY = "bip39lab.level";
   var HOUR_KEY = "bip39lab.firstHour";
+  var ACK_KEY = "lab:ack-v1";
+  var HOUR_ORDER = ["h1", "h2", "h3", "h4", "h5", "h6", "h7"];
   var QUIZ_KEY = "bip39lab.quiz";
   var LEVELS = ["starter", "beginner", "intermediate", "advanced"];
 
@@ -252,7 +254,7 @@
 
   function graduateToBeginner() {
     setLevel("beginner", { announce: true });
-    markHourStep("h8", true);
+    markHourStep("h7", true);
     updateFirstHourNext();
     setTimeout(function () {
       var next = $("firstHourNext");
@@ -270,8 +272,8 @@
   function maybeAutoBeginner() {
     if (getLevel() !== "starter") return;
     var st = loadJson(HOUR_KEY, {});
-    if (st.h1 && st.h2 && st.h3 && st.h4 && st.h5 && st.h6) {
-      graduateToBeginner();
+    if (st.h1 && st.h2 && st.h3 && st.h4 && st.h5) {
+      /* h6 optional — do not auto-graduate; step 7 is explicit */
     }
   }
 
@@ -325,8 +327,7 @@
     refreshBeginnerChrome();
     applyFaces(level);
     if (level === "beginner") {
-      autoCompleteHour("h6");
-      autoCompleteHour("h8");
+      autoCompleteHour("h7");
     }
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
@@ -474,24 +475,35 @@
     return (st.q1 ? 1 : 0) + (st.q2 ? 1 : 0) + (st.q3 ? 1 : 0) + (st.q4 ? 1 : 0);
   }
 
+  function hasAck() {
+    try {
+      return localStorage.getItem(ACK_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function setAck(on) {
+    try {
+      if (on) localStorage.setItem(ACK_KEY, "1");
+      else localStorage.removeItem(ACK_KEY);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
   function hourStepReady(id) {
     var ev = loadHourEvidence();
-    if (id === "h1") return !!ev.h1SeenOrientation;
-    if (id === "h2") return !!ev.h2Generated;
-    if (id === "h3") return !!ev.h3Derived || addressesFilled();
-    if (id === "h4") {
-      return !!(ev.h4Opened || (ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index));
+    var st = loadJson(HOUR_KEY, {});
+    if (id === "h1") return !!st.h1 || !!ev.h2Generated;
+    if (id === "h2") return !!st.h2 || !!ev.h3Derived || addressesFilled();
+    if (id === "h3") {
+      return !!(st.h3 || ev.h4Opened || (ev.h4Purpose && ev.h4Coin && ev.h4Account && ev.h4Change && ev.h4Index));
     }
-    if (id === "h5") return !!(ev.h5Opened || ev.h5ComparedDiff);
-    if (id === "h6") {
-      var q = loadJson(QUIZ_KEY, {});
-      return (
-        !!(q.q1 && q.q2 && q.q3 && q.q4) ||
-        LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner")
-      );
-    }
-    if (id === "h7") return !!(ev.h7Ack);
-    if (id === "h8") return LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner");
+    if (id === "h4") return !!(st.h4 || ev.h5Opened || ev.h5ComparedDiff);
+    if (id === "h5") return !!st.h5;
+    if (id === "h6") return !!(st.h6 || ev.h7Ack);
+    if (id === "h7") return LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner") || !!st.h7;
     return false;
   }
 
@@ -593,6 +605,82 @@
     if (!btn) return;
     btn.disabled = !on;
     btn.setAttribute("aria-disabled", on ? "false" : "true");
+  }
+
+  function applyHourFrame() {
+    var level = getLevel();
+    var acked = hasAck();
+    var ov = $("ackOverlay");
+    if (ov) ov.hidden = !(level === "starter" && !acked);
+    var ori = $("cardOrientation");
+    if (ori) ori.hidden = true;
+    var sid =
+      (getSelectedHourLi() && getSelectedHourLi().getAttribute("data-hour-step")) || "h1";
+    document.documentElement.setAttribute("data-hour-active", sid);
+    var selfC = $("hourSelfCheck");
+    var netC = $("hourNetworkOpt");
+    var begC = $("hourSetBeginner");
+    if (level !== "starter") {
+      if (selfC) selfC.hidden = true;
+      if (netC) netC.hidden = true;
+      if (begC) begC.hidden = true;
+      var mnB = $("card-mnemonic");
+      if (mnB) mnB.hidden = false;
+      var addrB = $("card-addresses");
+      if (addrB) addrB.hidden = false;
+      var derB = $("btnDerive");
+      if (derB) derB.disabled = false;
+      return;
+    }
+    if (!acked) return;
+    if (selfC) selfC.hidden = sid !== "h5";
+    if (netC) netC.hidden = sid !== "h6";
+    if (begC) begC.hidden = sid !== "h7";
+    var mn = $("card-mnemonic");
+    if (mn) mn.hidden = !(sid === "h1" || sid === "h2");
+    var addr = $("card-addresses");
+    if (addr) addr.hidden = sid !== "h2";
+    var der = $("btnDerive");
+    if (der) der.disabled = sid === "h1";
+    if (sid === "h3") goTab("tools");
+    if (sid === "h4") goTab("tools");
+    if (sid === "h1" || sid === "h2" || sid === "h5" || sid === "h6" || sid === "h7") goTab("lab");
+  }
+
+  function wireAckGate() {
+    var ov = $("ackOverlay");
+    var btn = $("ackUnderstand");
+    if (btn && !btn.getAttribute("data-ack-wired")) {
+      btn.setAttribute("data-ack-wired", "1");
+      btn.addEventListener("click", function () {
+        setAck(true);
+        if (ov) ov.hidden = true;
+        selectHourStep("h1");
+        applyHourFrame();
+      });
+    }
+    var cont = $("hourSelfCheckContinue");
+    if (cont && !cont.getAttribute("data-hour-wired")) {
+      cont.setAttribute("data-hour-wired", "1");
+      cont.addEventListener("click", function () {
+        autoCompleteHour("h5");
+      });
+    }
+    var skip = $("hourSkipNetwork");
+    if (skip && !skip.getAttribute("data-hour-wired")) {
+      skip.setAttribute("data-hour-wired", "1");
+      skip.addEventListener("click", function () {
+        autoCompleteHour("h6");
+      });
+    }
+    var setB = $("hourSetBeginnerBtn") || $("hourGoBeginner");
+    if (setB && !setB.getAttribute("data-hour-wired")) {
+      setB.setAttribute("data-hour-wired", "1");
+      setB.addEventListener("click", function () {
+        graduateToBeginner();
+      });
+    }
+    if (!hasAck() && getLevel() === "starter" && ov) ov.hidden = false;
   }
 
   function refreshHourGates() {
@@ -836,12 +924,18 @@
   }
 
   function advanceToNextIncomplete() {
-    var order = ["h1", "h2", "h3", "h4", "h5", "h6", "h8"];
     var st = loadJson(HOUR_KEY, {});
     var next = null;
-    for (var i = 0; i < order.length; i++) {
-      if (!st[order[i]]) {
-        next = order[i];
+    for (var i = 0; i < HOUR_ORDER.length; i++) {
+      if (HOUR_ORDER[i] === "h6" && !st.h6) {
+        /* optional — prefer next required if 5 done */
+        if (st.h5 && !st.h7) {
+          next = "h6";
+          break;
+        }
+      }
+      if (!st[HOUR_ORDER[i]]) {
+        next = HOUR_ORDER[i];
         break;
       }
     }
@@ -870,14 +964,14 @@
     setHourActive(stepId);
     if (stepId === "h4") snapshotH4IfNeeded();
     setHourReturn();
+    if (stepId === "h3") {
+      goTab("tools");
+      autoCompleteHour("h3");
+      noteHour("h4Opened", true);
+    }
     if (stepId === "h4") {
       goTab("tools");
       autoCompleteHour("h4");
-      noteHour("h4Opened", true);
-    }
-    if (stepId === "h5") {
-      goTab("tools");
-      autoCompleteHour("h5");
       noteHour("h5Opened", true);
     }
     if (href) {
@@ -943,15 +1037,34 @@
     );
   }
 
+  function canSelectHour(id) {
+    var st = loadJson(HOUR_KEY, {});
+    if (st[id]) return true;
+    if (id === "h1") return true;
+    if (id === "h6") return !!(st.h1 && st.h2);
+    var idx = HOUR_ORDER.indexOf(id);
+    if (idx < 0) return false;
+    for (var i = 0; i < idx; i++) {
+      if (HOUR_ORDER[i] === "h6") continue;
+      if (!st[HOUR_ORDER[i]]) return false;
+    }
+    return true;
+  }
+
   function selectHourStep(id) {
     var list = $("firstHourList");
     if (!list || !id) return;
+    if (!canSelectHour(id)) return;
     list.querySelectorAll("[data-hour-step]").forEach(function (el) {
       var on = el.getAttribute("data-hour-step") === id;
       el.classList.toggle("is-selected", on);
     });
+    setHourActive(id);
     refreshHourGates();
-    if (id === "h8" && getLevel() === "starter") graduateToBeginner();
+    applyHourFrame();
+    if (id === "h7" && getLevel() === "starter" && canSelectHour("h7")) {
+      /* wait for Set Beginner button */
+    }
   }
 
   function wireFirstHour() {
@@ -1323,6 +1436,7 @@
 
   function resetFirstHour() {
     saveJson(HOUR_KEY, {});
+    setAck(false);
     try {
       sessionStorage.removeItem(HOUR_RETURN_KEY);
       sessionStorage.removeItem(HOUR_ACTIVE_KEY);
@@ -1332,6 +1446,7 @@
     }
     showLearnReturn(null);
     refreshFirstHour();
+    applyHourFrame();
   }
 
   function resetQuiz() {
@@ -1746,8 +1861,15 @@
   function goTab(name) {
     if (typeof window.__bip39ShowTab === "function") window.__bip39ShowTab(name);
     if (name === "tools") {
-      noteHour("h4Opened", true);
-      autoCompleteHour("h4");
+      var sidT = getSelectedHourLi() && getSelectedHourLi().getAttribute("data-hour-step");
+      if (sidT === "h3") {
+        noteHour("h4Opened", true);
+        autoCompleteHour("h3");
+      }
+      if (sidT === "h4") {
+        noteHour("h5Opened", true);
+        autoCompleteHour("h4");
+      }
     }
   }
 
@@ -2023,7 +2145,8 @@
     applyFaces(getLevel());
     updateFirstHourNext();
     watchOrientationTable();
-    autoCompleteHour("h1");
+    wireAckGate();
+    applyHourFrame();
     refreshHourGates();
     window.addEventListener("pageshow", function () {
       refreshHourGates();

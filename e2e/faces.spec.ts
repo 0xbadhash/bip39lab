@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { clickLabAction } from "./helpers";
+import { clickLabAction, dismissAck } from "./helpers";
 
 /** Four locked level faces. Local 4173 until 0.16.19 is live; then BASE_URL=live. */
 
@@ -26,11 +26,13 @@ test.describe("Level faces", () => {
         localStorage.removeItem("bip39lab.quiz");
         localStorage.removeItem("bip39lab.intQuiz");
         localStorage.removeItem("bip39lab.advQuiz");
+        localStorage.setItem("lab:ack-v1", "1");
       } catch (e) {
         /* ignore */
       }
     });
     await page.reload();
+    await dismissAck(page);
   });
 
   test("S102 F1 Starter face: intro + First hour + lab; later off the face", async ({ page }) => {
@@ -38,14 +40,13 @@ test.describe("Level faces", () => {
     await expect(page.locator("#panel-sub")).toHaveText(
       "Generate, validate, and derive receive addresses — English wordlist only."
     );
-    await expect(page.locator("#cardOrientation")).toBeVisible();
+    await expect(page.locator("#cardOrientation")).toBeHidden();
     await expect(page.locator("#cardFirstHour")).toBeVisible();
-    await expect(page.locator("#starterSplit")).toBeVisible();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
-    await expect(page.locator("#firstHourList")).toContainText(/Air-gap warn/);
-    await expect(page.locator("#firstHourList")).toContainText(/Generate 12-word/);
-    await expect(page.locator("#firstHourList")).toContainText(/Set Beginner/);
+    await expect(page.locator("#firstHourList")).not.toContainText(/Air-gap warn/);
+    await expect(page.locator("#firstHourList")).toContainText(/Generate/);
+    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(7);
     await expect(page.locator("#firstHourList .hour-go")).toHaveCount(0);
     await expect(page.locator("#firstHourList .hour-done")).toHaveCount(0);
     await expect(page.locator("#hourRailGo")).toBeHidden();

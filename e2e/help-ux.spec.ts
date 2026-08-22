@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { expectNavCount, hourRailGo } from "./helpers";
+import { dismissAck, expectNavCount } from "./helpers";
 
 /**
  * Help UX hybrid P0–P4: tips, Extra help (no mid-page step rails).
@@ -19,6 +19,7 @@ test.describe("Help UX hybrid", () => {
   test("S41 Lab Extra help On · teach-only copy visible · no step rail", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
+    await dismissAck(page);
     await expect(page.locator("#btnTeach")).toBeVisible();
     await expect(page.locator("#btnTeach")).toContainText(/Extra help: On|Teach: On/i);
     await expect(page.locator("html")).toHaveAttribute("data-teach", "on");
@@ -29,6 +30,7 @@ test.describe("Help UX hybrid", () => {
   test("S42 Extra help Off hides teach-only · keeps safety", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
+    await dismissAck(page);
     await page.locator("#btnTeach").click();
     await expect(page.locator("#btnTeach")).toContainText(/Extra help: Off|Teach: Off/i);
     await expect(page.locator("html")).toHaveAttribute("data-teach", "off");
@@ -42,6 +44,7 @@ test.describe("Help UX hybrid", () => {
   test("S43 help tip opens and Escape closes", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
+    await dismissAck(page);
     const tip = page.locator("#card-mnemonic .help-tip").first();
     const btn = tip.locator(".help-tip-btn");
     const panel = tip.locator(".help-tip-panel");
@@ -56,7 +59,8 @@ test.describe("Help UX hybrid", () => {
   test("S44 first-hour Go jumps to Lab sections (replaces step rail)", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
-    await page.locator('#firstHourList [data-hour-step="h2"]').click();
+    await dismissAck(page);
+    await page.locator('#firstHourList [data-hour-step="h1"]').click();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#btnGenerate")).toBeVisible();
   });
@@ -64,6 +68,7 @@ test.describe("Help UX hybrid", () => {
   test("S44b Tools panel opens without mid-page rails", async ({ page }) => {
     await forceTeach(page, "on");
     await page.goto("/");
+    await dismissAck(page);
     await page.locator('.nav-item[data-nav="tools"]').click();
     await expect(page.locator("#panel-tools")).toBeVisible();
     await expect(page.locator("[data-step-rail], #labStepRail, #toolsStepRail")).toHaveCount(0);

@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.28" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.29" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.28">v0.16.28</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.29">v0.16.29</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -137,119 +137,54 @@
 
         <!-- Panel: Lab -->
         <section id="panel-lab" class="panel active" role="tabpanel">
-          <!-- E0 orientation + first hour -->
-          <div class="card card-wide" id="cardOrientation" data-face="starter">
-            <details class="orientation-fold" id="orientationFold">
-            <summary>
-            <h2>What this is / isn’t
-              <span class="help-tip help-tip-safety" data-chapter="starter">
-                <button type="button" class="help-tip-btn" aria-label="Starter chapter visual">i</button>
-                <span class="help-tip-panel" hidden>
-                  Offline BIP-39 lab + First hour + lab. Later levels stay off this face.
-                  <img class="chapter-visual-img" data-chapter="starter" data-ds-asset="assets/ds/faces/bip39-starter.svg" alt="Starter chapter" hidden src="assets/catalyxt/chapters/starter-info.svg" />
-                </span>
-              </span>
-            </h2>
-            </summary>
-            <table class="compare-table" id="orientationTable">
-              <thead>
-                <tr><th scope="col">This lab is</th><th scope="col">This lab is not</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>An offline classroom for BIP-39 ideas (generate, derive, watch-only)</td>
-                  <td>A Bitcoin wallet (no send, no balance of your seed)</td>
-                </tr>
-                <tr>
-                  <td>Safe for <strong>practice</strong> phrases and goldens (e.g. abandon…about)</td>
-                  <td>A place to type a funded recovery phrase on a random computer</td>
-                </tr>
-                <tr>
-                  <td>Educational Multisig, Shamir, SLIP-39 demos</td>
-                  <td>Trezor Suite / production SLIP-39 backup tool</td>
-                </tr>
-                <tr>
-                  <td>Tools for path, passphrase compare, PSBT <em>inspect</em>, entropy demos</td>
-                  <td>A signer, broadcaster, or public seed scanner</td>
-                </tr>
-              </tbody>
-            </table>
-            <p class="control-help">
-              Prefer an air-gapped machine for anything that looks like a real seed.
-              Use the First hour checklist below — that is the in-lab guide.
-            </p>
-            </details>
+          <div class="card card-wide" id="cardOrientation" data-face="starter" hidden>
+            <h2>What this is / isn’t</h2>
+            <p class="control-help">Shown on first visit only (ack overlay).</p>
           </div>
 
-          <div class="starter-split" id="starterSplit">
-          <div class="card card-wide hour-rail" id="cardFirstHour" data-face="starter">
-            <h2>First hour <span id="firstHourProgress" class="chip">0 / 0</span></h2>
-            <ol class="hour-list hour-list-slim" id="firstHourList">
-              <li class="hour-step is-selected" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#cardOrientation">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">1</span> Air-gap warn
-                </div>
+          <div class="card card-wide hour-rail hour-rail-h" id="cardFirstHour" data-face="starter">
+            <div class="hour-rail-head">
+              <h2>First hour <span id="firstHourProgress" class="chip">0 / 7</span></h2>
+              <button type="button" class="btn secondary btn-sm" id="btnResetFirstHour" title="Clear first-hour progress in this browser">
+                Reset first hour
+              </button>
+            </div>
+            <ol class="hour-list hour-list-h" id="firstHourList">
+              <li class="hour-step is-selected" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#card-mnemonic">
+                <span class="hour-num">1</span> Generate
               </li>
-              <li class="hour-step" data-hour-step="h2" data-hour-tab="lab" data-hour-target="#card-mnemonic">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">2</span> Generate 12-word
-                </div>
+              <li class="hour-arrow" aria-hidden="true">→</li>
+              <li class="hour-step" data-hour-step="h2" data-hour-tab="lab" data-hour-target="#card-addresses">
+                <span class="hour-num">2</span> Address
               </li>
-              <li class="hour-step" data-hour-step="h3" data-hour-tab="lab" data-hour-target="#headingReceive">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">3</span> Addresses fill
-                </div>
+              <li class="hour-arrow" aria-hidden="true">→</li>
+              <li class="hour-step" data-hour-step="h3" data-hour-tab="tools" data-hour-target="#cardPathPlay">
+                <span class="hour-num">3</span> Path
               </li>
-              <li class="hour-step" data-hour-step="h4" data-hour-tab="tools" data-hour-target="#cardPathPlay">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">4</span> Path playground
-                </div>
+              <li class="hour-arrow" aria-hidden="true">→</li>
+              <li class="hour-step" data-hour-step="h4" data-hour-tab="tools" data-hour-target="#cardCmpPp">
+                <span class="hour-num">4</span> Passphrase
               </li>
-              <li class="hour-step" data-hour-step="h5" data-hour-tab="tools" data-hour-target="#cardCmpPp">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">5</span> Passphrase compare
-                </div>
+              <li class="hour-arrow" aria-hidden="true">→</li>
+              <li class="hour-step" data-hour-step="h5" data-hour-tab="lab" data-hour-target="#hourSelfCheck">
+                <span class="hour-num">5</span> Self-check
               </li>
-              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#cardQuiz" data-hour-level="beginner">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">6</span> Four self-checks
-                </div>
+              <li class="hour-arrow" aria-hidden="true">→</li>
+              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#hourNetworkOpt">
+                <span class="hour-num">6</span> Network?
               </li>
-              <li class="hour-step" data-hour-step="h7" data-hour-href="network.html">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">7</span> Network leak ack (optional)
-                </div>
-              </li>
-              <li class="hour-step" data-hour-step="h8" data-hour-tab="lab" data-hour-target="#cardFirstHour">
-                <div class="hour-step-label hour-rail-pick" role="button" tabindex="0">
-                  <input type="checkbox" class="hour-step-cb" tabindex="-1" />
-                  <span class="hour-num">8</span> Set Beginner
-                </div>
+              <li class="hour-arrow" aria-hidden="true">→</li>
+              <li class="hour-step" data-hour-step="h7" data-hour-tab="lab" data-hour-target="#hourSetBeginner">
+                <span class="hour-num">7</span> Beginner
               </li>
             </ol>
             <div class="hour-rail-actions" id="hourRailActions">
               <button type="button" class="btn secondary btn-sm hour-go" id="hourRailGo" hidden>Go</button>
               <button type="button" class="btn secondary btn-sm hour-done" id="hourRailDone" hidden>Mark done</button>
-              <button type="button" class="btn btn-sm" id="hourGoBeginner" hidden title="Sets Classroom level to Beginner">
-                Set Beginner
-              </button>
+              <button type="button" class="btn btn-sm" id="hourGoBeginner" hidden>Set Beginner</button>
             </div>
-            <div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem">
-              <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner" hidden>I’m ready for Beginner</button>
-              <button type="button" class="btn secondary btn-sm" id="hourScrollTop" hidden title="Jump back to this checklist">
-                Back to this checklist
-              </button>
-              <button type="button" class="btn secondary btn-sm" id="btnResetFirstHour" title="Clear first-hour checkboxes in this browser">
-                Reset checklist
-              </button>
-            </div>
+            <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner" hidden>I’m ready for Beginner</button>
+            <button type="button" class="btn secondary btn-sm" id="hourScrollTop" hidden>Back to this checklist</button>
             <!-- Shown after Level is Beginner (and ideally first hour finished) -->
             <div id="firstHourNext" class="first-hour-next face-keep" hidden role="region" aria-label="What to do next">
               <h3 class="first-hour-next-title">You’re a Beginner — what’s next?</h3>
@@ -263,6 +198,25 @@
                 <button type="button" class="btn secondary" id="btnNextGoIntermediate">Raise Level to Intermediate</button>
               </div>
             </div>
+          </div>
+
+          <div class="card" id="hourSelfCheck" hidden>
+            <h2>Self-check</h2>
+            <p class="control-help">Beginner quiz is Q1–Q4 after you set Beginner.</p>
+            <button type="button" class="btn" id="hourSelfCheckContinue">Continue</button>
+          </div>
+          <div class="card" id="hourNetworkOpt" hidden>
+            <h2>Network?</h2>
+            <p class="control-help">Optional. Address-only fees and balances — never paste a phrase.</p>
+            <div class="row">
+              <a class="btn" id="hourOpenNetwork" href="network.html">Open Network</a>
+              <button type="button" class="btn secondary" id="hourSkipNetwork">Skip</button>
+            </div>
+          </div>
+          <div class="card" id="hourSetBeginner" hidden>
+            <h2>Set Beginner</h2>
+            <p class="control-help">Unlock Passphrase and entropy (Q1–Q4). This site is still not a wallet.</p>
+            <button type="button" class="btn" id="hourSetBeginnerBtn">Set Beginner</button>
           </div>
 
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
@@ -1572,11 +1526,42 @@
     <button type="button" class="learn-return-dismiss" id="learnReturnBarDismiss" title="Hide this bar" aria-label="Hide return bar">×</button>
   </div>
 
-  <script src="js/site-version.js?v=0.16.28"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.28"></script>
-  <script src="js/glossary.js?v=0.16.28"></script>
-  <script src="js/help-ui.js?v=0.16.28"></script>
-  <script src="js/learn-levels.js?v=0.16.28"></script>
-  <script src="js/app.js?v=0.16.28"></script>
+  <div id="ackOverlay" class="ack-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ackOverlayTitle">
+    <div class="ack-overlay-card">
+      <h2 id="ackOverlayTitle">What this is / isn’t</h2>
+      <table class="compare-table" id="orientationTable">
+        <thead>
+          <tr><th scope="col">This lab is</th><th scope="col">This lab is not</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>An offline classroom for BIP-39 ideas (generate, derive, watch-only)</td>
+            <td>A Bitcoin wallet (no send, no balance of your seed)</td>
+          </tr>
+          <tr>
+            <td>Safe for <strong>practice</strong> phrases and goldens (e.g. abandon…about)</td>
+            <td>A place to type a funded recovery phrase on a random computer</td>
+          </tr>
+          <tr>
+            <td>Educational Multisig, Shamir, SLIP-39 demos</td>
+            <td>Trezor Suite / production SLIP-39 backup tool</td>
+          </tr>
+          <tr>
+            <td>Tools for path, passphrase compare, PSBT <em>inspect</em>, entropy demos</td>
+            <td>A signer, broadcaster, or public seed scanner</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="control-help">Air-gap recommended. Crypto stays in this tab. Do not type a funded phrase.</p>
+      <button type="button" class="btn" id="ackUnderstand">I understand — start the lab</button>
+    </div>
+  </div>
+
+  <script src="js/site-version.js?v=0.16.29"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.29"></script>
+  <script src="js/glossary.js?v=0.16.29"></script>
+  <script src="js/help-ui.js?v=0.16.29"></script>
+  <script src="js/learn-levels.js?v=0.16.29"></script>
+  <script src="js/app.js?v=0.16.29"></script>
 </body>
 </html>

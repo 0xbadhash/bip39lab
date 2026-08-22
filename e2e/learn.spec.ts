@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { clickLabAction, hourRailGo, hourRailMark } from "./helpers";
+import { clickLabAction, dismissAck, hourRailGo } from "./helpers";
 
 test.describe("Learning levels E0–E6", () => {
   test.beforeEach(async ({ page }) => {
@@ -26,36 +26,27 @@ test.describe("Learning levels E0–E6", () => {
         localStorage.removeItem("bip39lab.quiz");
         localStorage.removeItem("bip39lab.intQuiz");
         localStorage.removeItem("bip39lab.advQuiz");
+        localStorage.setItem("lab:ack-v1", "1");
       } catch (e) {
         /* ignore */
       }
     });
     await page.reload();
+    await dismissAck(page);
   });
 
   test("S61 orientation + first hour", async ({ page }) => {
-    await expect(page.locator("#cardOrientation")).toBeVisible();
-    await expect(page.locator("#orientationTable")).toContainText(/wallet|practice|PSBT/i);
     await expect(page.locator("#cardFirstHour")).toBeVisible();
-    await expect(page.locator("[data-hour-step]")).toHaveCount(8);
-    await expect(page.locator('#hourRailDone')).toBeHidden();
-    await expect(page.locator('[data-hour-step="h1"] input')).toBeDisabled();
-    await expect(page.locator('[data-hour-step="h1"] input')).toBeChecked();
-    await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*8/);
+    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(7);
+    await expect(page.locator("#hourRailDone")).toBeHidden();
+    await expect(page.locator("#firstHourProgress")).toContainText(/0\s*\/\s*7/);
     await page.locator("#btnGenerate").click();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
-    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked({ timeout: 8000 });
-    await expect(page.locator("#firstHourProgress")).toContainText(/[2-3]\s*\/\s*8/);
-    await page.locator('#firstHourList [data-hour-step="h8"]').click();
-    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
-    await expect(page.locator("#firstHourProgress")).toContainText(/[3-8]\s*\/\s*8/);
-    await page.reload();
-    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
-    await expect(page.locator('[data-hour-step="h1"] input')).toBeChecked();
-    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked();
-    await expect(page.locator('[data-hour-step="h1"] input')).toBeDisabled();
-    await expect(page.locator("#firstHourProgress")).toContainText(/[3-8]\s*\/\s*8/);
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*7/);
   });
 
   test("S62 level chip soft gates", async ({ page }) => {
@@ -65,7 +56,7 @@ test.describe("Learning levels E0–E6", () => {
     await expect(page.locator("#cardBip85")).toBeVisible();
     await expect(page.locator("#cardOps")).toBeVisible();
     await page.locator("#learnLevel").selectOption("starter");
-    await expect(page.locator("#cardOrientation")).toBeVisible();
+    await expect(page.locator("#cardFirstHour")).toBeVisible();
   });
 
   test("S63 quiz shell", async ({ page }) => {
@@ -260,11 +251,13 @@ test.describe("First Hour real loop", () => {
         sessionStorage.removeItem("bip39lab.hourEvidence");
         sessionStorage.removeItem("bip39lab.hourActive");
         sessionStorage.removeItem("bip39lab.hourReturn");
+        localStorage.setItem("lab:ack-v1", "1");
       } catch (e) {
         /* ignore */
       }
     });
     await page.reload();
+    await dismissAck(page);
   });
 
   test("S83 no FIRST_HOUR.md user links", async ({ page }) => {
@@ -281,22 +274,18 @@ test.describe("First Hour real loop", () => {
     await page.locator("#btnGenerate").click();
     await expect(page.locator("#mnemonic")).toBeVisible();
     await expect(page.locator("#mnemonic")).toHaveValue(/.{20,}/);
-    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked({ timeout: 8000 });
-    await hourRailGo(page, "h5");
-    await expect(page.locator("#cardCmpPp")).toBeVisible();
-    await expect(page.locator('[data-hour-step="h5"] input')).toBeChecked({ timeout: 5000 });
-    await page.locator("#cmpPpA").fill("");
-    await page.locator("#cmpPpB").fill("");
-    await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpVerdict")).toBeVisible();
-    await page.locator("#cmpPpB").fill("test");
-    await page.locator("#btnCmpPp").click();
-    await expect(page.locator("#cmpPpVerdict")).toContainText(/Different/i);
-    await expect(page.locator('[data-hour-step="h5"] input')).toBeChecked();
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/is-selected/);
+    await page.locator("#btnDerive").click();
+    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
   });
 
   test("S85 Go h3 before derive", async ({ page }) => {
-    await page.locator('#firstHourList [data-hour-step="h3"]').click();
+    await page.locator('#firstHourList [data-hour-step="h2"]').click();
     await expect(page.locator("#hourRailGo")).toBeHidden();
     const emptyRows = await page.locator("#addrTableBody tr:not(.empty-row)").count();
     expect(emptyRows).toBe(0);
@@ -304,7 +293,9 @@ test.describe("First Hour real loop", () => {
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
-    await expect(page.locator('[data-hour-step="h3"] input')).toBeChecked({ timeout: 8000 });
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
   });
 
   test("S86 Tools Path playground spacer", async ({ page }) => {
@@ -322,9 +313,10 @@ test.describe("First Hour real loop", () => {
   });
 
   test("S87 dock names unfinished action", async ({ page }) => {
-    await hourRailGo(page, "h4");
-    await expect(page.locator("#cardPathPlay")).toBeVisible();
-    await expect(page.locator('[data-hour-step="h4"] input')).toBeChecked({ timeout: 5000 });
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
     await expect(page.locator("#hourRailDone")).toBeHidden();
   });
 

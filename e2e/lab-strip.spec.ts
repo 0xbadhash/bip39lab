@@ -1,9 +1,18 @@
 import { test, expect } from "@playwright/test";
+import { dismissAck } from "./helpers";
 
-test.describe("gradual visual teach strip (0.16.25–0.16.27)", () => {
+test.describe("gradual visual teach strip (0.16.25–0.16.29)", () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => localStorage.clear());
+    await page.addInitScript(() => {
+      try {
+        localStorage.clear();
+        localStorage.setItem("lab:ack-v1", "1");
+      } catch (e) {
+        /* ignore */
+      }
+    });
     await page.goto("/index.html");
+    await dismissAck(page);
   });
 
   test("S110 level select changes data-paint on #labStrip", async ({ page }) => {
@@ -78,35 +87,35 @@ test.describe("gradual visual teach strip (0.16.25–0.16.27)", () => {
     expect(ent!.width).toBeLessThanOrEqual(32);
   });
 
-  test("S117 #btnReadyBeginner stays hidden; h8 label sets Beginner", async ({ page }) => {
+  test("S117 #btnReadyBeginner stays hidden", async ({ page }) => {
     await expect(page.locator("#btnReadyBeginner")).toBeHidden();
-    await page.locator('#firstHourList [data-hour-step="h2"]').click();
+    await page.locator('#firstHourList [data-hour-step="h1"]').click();
     await expect(page.locator("#btnReadyBeginner")).toBeHidden();
-    await page.locator('#firstHourList [data-hour-step="h8"]').click();
-    await expect(page.locator("#btnReadyBeginner")).toBeHidden();
-    await expect(page.locator("#learnLevel")).toHaveValue("beginner");
   });
 
-  test("S118 Generate click auto-marks first-hour step h2 (no Mark done required)", async ({
+  test("S118 Generate click auto-marks first-hour step 1 (no Mark done required)", async ({
     page,
   }) => {
     await expect(page.locator("#hourRailDone")).toBeHidden();
     await page.locator("#btnGenerate").click();
-    await expect(page.locator('[data-hour-step="h2"] input')).toBeChecked({ timeout: 8000 });
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
+    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/is-selected/);
   });
 
-  test("S119 Derive/validate with a phrase auto-marks h3", async ({ page }) => {
+  test("S119 Derive/validate with a phrase auto-marks step 2", async ({ page }) => {
     await page.locator("#btnGenerate").click();
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
     await page.locator("#btnDerive").click();
-    await expect(page.locator('[data-hour-step="h3"] input')).toBeChecked({ timeout: 8000 });
+    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
   });
 
-  test("S120 #hourRailDone hidden or disabled for h2/h3", async ({ page }) => {
-    await page.locator('#firstHourList [data-hour-step="h2"]').click();
-    await expect(page.locator("#hourRailDone")).toBeHidden();
-    await page.locator('#firstHourList [data-hour-step="h3"]').click();
+  test("S120 #hourRailDone hidden for generate/address steps", async ({ page }) => {
+    await page.locator('#firstHourList [data-hour-step="h1"]').click();
     await expect(page.locator("#hourRailDone")).toBeHidden();
   });
 
@@ -119,5 +128,65 @@ test.describe("gradual visual teach strip (0.16.25–0.16.27)", () => {
     await expect(page.locator("#overlayGenerate .lab-overlay-ok")).toHaveCount(0);
     await expect(page.locator("#overlayGenerate")).not.toContainText(/^OK$/);
     await expect(page.locator("#wrapGenerate button.lab-overlay-ok")).toHaveCount(0);
+  });
+});
+
+test.describe("0.16.29 first-run ack + 7-step rail", () => {
+  test("S130 first load without lab:ack-v1 shows ack overlay", async ({ page }) => {
+    await page.addInitScript(() => localStorage.clear());
+    await page.goto("/index.html");
+    await expect(page.locator("#ackOverlay")).toBeVisible();
+    await expect(page.locator("#ackOverlay #orientationTable")).toContainText(/This lab is/i);
+    await expect(page.locator("#ackUnderstand")).toBeVisible();
+    await expect(page.locator("#ackOverlay button")).toHaveCount(1);
+    await expect(page.locator("#cardOrientation")).toBeHidden();
+  });
+
+  test("S131 ack click sets lab:ack-v1 and lands on Generate", async ({ page }) => {
+    await page.addInitScript(() => localStorage.clear());
+    await page.goto("/index.html");
+    await page.locator("#ackUnderstand").click();
+    await expect(page.locator("#ackOverlay")).toBeHidden();
+    const ack = await page.evaluate(() => localStorage.getItem("lab:ack-v1"));
+    expect(ack).toBe("1");
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/is-selected/);
+    await expect(page.locator("#btnGenerate")).toBeVisible();
+  });
+
+  test("S132 rail has 7 steps horizontal (no Air-gap warn)", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("lab:ack-v1", "1"));
+    await page.goto("/index.html");
+    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(7);
+    await expect(page.locator("#firstHourList")).not.toContainText(/Air-gap warn/i);
+    await expect(page.locator("#firstHourList")).toContainText(/Generate/);
+    const display = await page.locator("#firstHourList").evaluate((el) => getComputedStyle(el).display);
+    expect(display).toContain("flex");
+  });
+
+  test("S133 Generate auto-completes step 1 and selects step 2", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("lab:ack-v1", "1"));
+    await page.goto("/index.html");
+    await page.locator("#btnGenerate").click();
+    await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
+      timeout: 8000,
+    });
+    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/is-selected/);
+  });
+
+  test("S134 Starter step 1: passphrase strength + quiz board not visible", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("lab:ack-v1", "1"));
+    await page.goto("/index.html");
+    await expect(page.locator("#ppStrengthBlock")).toBeHidden();
+    await expect(page.locator("#cardQuiz")).toBeHidden();
+  });
+
+  test("S135 Reset first hour clears lab:ack-v1", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("lab:ack-v1", "1"));
+    await page.goto("/index.html");
+    page.once("dialog", (d) => d.accept());
+    await page.locator("#btnResetFirstHour").click();
+    const ack = await page.evaluate(() => localStorage.getItem("lab:ack-v1"));
+    expect(ack).toBeFalsy();
+    await expect(page.locator("#ackOverlay")).toBeVisible();
   });
 });
