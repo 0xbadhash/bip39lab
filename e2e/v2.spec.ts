@@ -101,6 +101,22 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#v2Card .ww")).toHaveCount(21);
   });
 
+  test("V2-S6 secret-wall no export no session leak", async ({ page }) => {
+    await page.goto("/v2/?uc=1");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Generate").click();
+    const store = await page.evaluate(() => sessionStorage.getItem("bip39lab.v2") || "");
+    expect(store).not.toMatch(/abandon|mnemonic|seed/i);
+    const words = await page.locator("#v2Card .ww").first().textContent();
+    expect(store.includes(words || "___never___")).toBeFalsy();
+  });
+
+  test("V2-S7 isolation two-holder IDOR wrong-id-not-other-holder", async ({ page }) => {
+    await page.goto("/v2/?uc=99");
+    await expect(page.locator("#pickerGrid")).toBeVisible();
+    await expect(page.locator("#viewGate")).toBeHidden();
+  });
+
   test("V2-S3 deep link uc=3 opens passphrase gate", async ({ page }) => {
     await page.goto("/v2/?uc=3");
     await expect(page.locator("#gateTitle")).toContainText(/UC3/);

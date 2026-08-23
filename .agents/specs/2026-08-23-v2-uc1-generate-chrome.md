@@ -5,7 +5,7 @@
 - **Status:** ready-for-agent
 - **Priority:** P0
 - **Roadmap:** ROADMAP.md → Open work
-- **Plan:** none
+- **Plan:** `.agents/specs/2026-08-23-v2-uc1-generate-chrome-plan.md`
 - **Tracker:** local
 - **Constitution:** AGENTS.md
 - **Grill-me:** complete

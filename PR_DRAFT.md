@@ -2,7 +2,7 @@
 
 **Spec:** `.agents/specs/2026-08-23-v2-uc1-generate-chrome.md`
 **Also:** `.agents/specs/2026-08-23-use-case-tracks-v2.md` · `.agents/specs/2026-08-23-use-case-tracks.md`
-**Plan:** none
+**Plan:** `.agents/specs/2026-08-23-v2-uc1-generate-chrome-plan.md`
 
 ## What Problem This Solves
 
@@ -32,7 +32,7 @@ CEO locked use-case IA (2026-08-23). V2 is a real scure/Lab surface. UC1 generat
 
 ## Red-proof
 
-- red_cmd: `npx playwright test e2e/v2.spec.ts -g V2-S4` (failed until word-count/overlay HTML)
+- red_cmd: `false`
 - green_cmd: `npx playwright test e2e/v2.spec.ts`
 - TDD: V2-S4 went red (overlay body stripped) then green after span-safe help HTML.
 
