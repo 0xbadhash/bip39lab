@@ -1,1 +1,137 @@
-<!DOCTYPE html><html><head><meta charset=utf-8><title>UC2 mock</title></head><body><p>Placeholder - open artifacts/mock-uc2-paper-backup.html locally for full mock.</p><p><a href=https://htmlpreview.github.io/?https://raw.githubusercontent.com/0xbadhash/bip39lab/feat/gradual-visual-teach/web/mock-uc2-paper-backup.html>preview</a></p></body></html>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UC2 mock · Paper backup</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--p2:#1a2330;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;--r:12px;--rs:8px;--f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px}
+.app{display:grid;grid-template-columns:180px 1fr;min-height:100vh}
+.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.8rem}.brand{font-weight:700}.brand span{color:var(--ac)}
+.main{padding:1rem;max-width:900px}
+.banner{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.08);color:#f0d78a;border-radius:var(--r);padding:.5rem .7rem;margin:0 0 .7rem;font-size:.8rem}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem;margin:0 0 .7rem}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.4rem .7rem;font:inherit;cursor:pointer}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.4rem 0}
+.chip{border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem;font-size:.7rem;color:var(--mu)}
+.rail{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.circ{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.circ.on{border-color:var(--ac);color:var(--ac)}.circ.done{color:var(--ok);border-color:var(--ok)}
+.name{border:1px solid var(--bd);border-radius:999px;padding:.15rem .5rem;font-size:.78rem;color:var(--mu)}
+.name.on{border-color:var(--ac);color:var(--tx);font-weight:600}.name.done{color:var(--ok)}
+.words{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;margin:.5rem 0}
+.pair{display:flex;gap:.25rem}.idx{width:28px;height:28px;border-radius:6px;border:1px solid var(--bd);background:var(--p2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.wd{flex:1;border:1px solid var(--bd);border-radius:8px;background:var(--panel);padding:.3rem .45rem;font-family:var(--m)}
+.muted{color:var(--mu);font-size:.8rem}.hidden{display:none!important}
+.pause,.quiz,.exit{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
+.exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
+.checklist{list-style:none;padding:0;margin:.5rem 0}
+.checklist li{display:flex;gap:.45rem;padding:.4rem;border:1px solid var(--bd);border-radius:8px;margin:0 0 .3rem;background:var(--panel);font-size:.85rem}
+.checklist li.ok{border-color:rgba(62,207,142,.35)}.checklist li.bad{border-color:rgba(232,93,93,.35)}
+.viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
+.viz .hi{border-color:var(--ac)}.viz .dim{opacity:.4}
+.overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
+.panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+.sheet{background:#f7f5ef;color:#222;border-radius:8px;padding:.6rem;margin:.5rem 0;font-family:var(--m);font-size:.8rem}
+@media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">bip39<span>·lab</span></div><p class="muted" style="font-size:.75rem">UC2 Paper backup</p><span class="chip">MOCK</span></aside>
+<main class="main">
+<p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+<div class="banner">Backup discipline track. Practice only. Do not photograph a real seed.</div>
+<div class="card">
+<div class="row" style="justify-content:space-between"><strong>Paper backup</strong><span class="chip" id="prog">0/4</span></div>
+<div class="rail">
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Get phrase</span><span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">Card = backup</span><span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Do / don’t</span><span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Verify drill</span><span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+</div></div>
+<div class="card">
+<div class="viz">
+<div id="v1"><strong>Card = backup</strong><br/>Numbered words are the object you copy to paper.</div>
+<div id="v2"><strong>What breaks it</strong><br/>Photo · cloud notes · email · chat.</div>
+<div id="v3"><strong>What holds up</strong><br/>Paper/metal offline · read-back verify.</div>
+</div>
+<div class="row">
+<button class="btn primary" id="gen">Generate 12-word practice</button>
+<button class="btn danger" id="clr">Clear</button>
+</div>
+<div class="words" id="grid"></div>
+<div class="pause hidden" id="pause">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> This numbered card is what you would copy to paper — not a text field, not a screenshot.</p>
+<button class="btn primary" id="seen">I treat this card as the backup object</button>
+</div>
+</div>
+<div class="card hidden" id="rules">
+<strong>Do / don’t</strong>
+<p class="muted">Tick only safe practices (green). Leave bad ones unchecked.</p>
+<ul class="checklist">
+<li class="ok"><input type="checkbox" data-ok="1"/> Write offline on paper, numbered 1…12.</li>
+<li class="bad"><input type="checkbox" data-ok="0"/> Phone photo “just in case.”</li>
+<li class="bad"><input type="checkbox" data-ok="0"/> Paste into iCloud / Google Notes / email.</li>
+<li class="ok"><input type="checkbox" data-ok="1"/> Store paper where only you control access.</li>
+<li class="ok"><input type="checkbox" data-ok="1"/> Verify by reading paper back against the card once.</li>
+<li class="bad"><input type="checkbox" data-ok="0"/> Share words in a chat for “recovery help.”</li>
+</ul>
+<button class="btn primary" id="rulesGo" disabled>Rules OK — continue</button>
+</div>
+<div class="quiz hidden" id="quiz">
+<strong>Verify drill</strong>
+<p class="muted">Which check catches a mistake?</p>
+<label class="muted"><input type="radio" name="v" value="a"/> Glance once and put paper away.</label><br/>
+<label class="muted"><input type="radio" name="v" value="b"/> Read 1…12 from paper while looking at the card; fix mismatches before leaving.</label><br/>
+<label class="muted"><input type="radio" name="v" value="c"/> Email the list to yourself to verify later.</label>
+<p class="muted" id="vmsg"></p>
+<button class="btn primary" id="vgo" disabled>Confirm</button>
+<div class="hidden" id="print">
+<div class="sheet" id="sheet"></div>
+<button class="btn" id="printBtn">Print practice sheet</button>
+<button class="btn primary" id="toExit">Continue to exit</button>
+</div>
+</div>
+<div class="exit hidden" id="exit">
+<strong>UC2 force exit</strong>
+<label class="muted"><input type="checkbox" id="ack"/> I will not photograph, cloud-sync, or email a real recovery phrase, and I will verify paper against the source once.</label>
+<div class="row"><button class="btn primary" id="fin" disabled>Finish UC2</button></div>
+</div>
+</main></div>
+<div class="overlay" id="gate"><div class="panel">
+<h2>UC2 · Paper backup</h2>
+<p class="muted">Assumes UC1 (phrase ≠ address). Job here: don’t mess up the backup. Still practice only.</p>
+<button class="btn primary" id="go">I understand — start UC2</button>
+</div></div>
+<script>
+var W="control catch mixture gift size glimpse hamster pizza income ignore fall aerobic".split(" ");
+var step=0,has=0,seen=0,rules=0,ver=0,done=0;
+function $(i){return document.getElementById(i)}
+function show(e,o){e.classList.toggle("hidden",!o)}
+function fill(){var g=$("grid"),s=$("sheet");g.innerHTML="";s.innerHTML="<strong>PRACTICE backup — not a wallet</strong><br/>";W.forEach(function(w,i){g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">'+w+'</div></div>';s.innerHTML+=(i+1)+". "+w+(i%4===3?"<br/>":"  ");});}
+function empty(){var g=$("grid");g.innerHTML="";for(var i=0;i<12;i++)g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">—</div></div>'}
+function paint(){
+ document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
+ $("prog").textContent=((has?1:0)+(seen?1:0)+(rules?1:0)+(ver?1:0))+"/4";
+ ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
+ if(step<=2){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step===3){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
+}
+function checkRules(){var ok=1;document.querySelectorAll(".checklist input").forEach(function(inp){var s=+inp.getAttribute("data-ok");if(s===1&&!inp.checked)ok=0;if(s===0&&inp.checked)ok=0});$("rulesGo").disabled=!ok}
+$("go").onclick=function(){show($("gate"),0);step=1;paint()};
+$("gen").onclick=function(){has=1;seen=rules=ver=done=0;fill();show($("pause"),1);show($("rules"),0);show($("quiz"),0);show($("exit"),0);show($("print"),0);step=2;paint()};
+$("seen").onclick=function(){if(!has)return;seen=1;show($("pause"),0);show($("rules"),1);step=3;paint()};
+$("clr").onclick=function(){has=seen=rules=ver=done=0;empty();show($("pause"),0);show($("rules"),0);show($("quiz"),0);show($("exit"),0);step=1;paint()};
+document.querySelectorAll(".checklist input").forEach(function(i){i.onchange=checkRules});
+$("rulesGo").onclick=function(){rules=1;show($("quiz"),1);step=4;paint()};
+document.querySelectorAll("input[name=v]").forEach(function(r){r.onchange=function(){$("vgo").disabled=0}});
+$("vgo").onclick=function(){var v=(document.querySelector("input[name=v]:checked")||{}).value;if(v==="b"){ver=1;$("vmsg").textContent="Correct — slow read-back, not a second digital copy.";show($("print"),1);paint()}else{$("vmsg").textContent="Not that. Avoid glance-only and network copies.";show($("print"),0);ver=0;paint()}};
+$("printBtn").onclick=function(){window.print()};
+$("toExit").onclick=function(){if(!ver)return;show($("exit"),1);step=5;paint()};
+$("ack").onchange=function(){$("fin").disabled=!this.checked};
+$("fin").onclick=function(){done=1;alert("UC2 complete. Next optional: UC3 Passphrase.");paint()};
+empty();paint();
+</script></body></html>
