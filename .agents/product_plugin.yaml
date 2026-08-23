@@ -114,6 +114,11 @@ vault:
   dev_log_rel: 01-Projects/bip39lab/dev-log.md
   mirror_docs: []
 
+property_tests:
+  enabled: true
+  modules:
+    - bip39lab
+
 product_path_prefixes:
   - src/
   - web/
