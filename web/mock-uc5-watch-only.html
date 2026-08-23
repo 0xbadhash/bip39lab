@@ -28,6 +28,8 @@
 .desc{font-family:var(--m);font-size:.72rem;padding:.5rem;border:1px solid var(--bd);border-radius:8px;background:var(--panel);word-break:break-all;margin:.4rem 0}
 .overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
 .panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+.msg-ok{color:var(--ok)!important;font-weight:600}
+.msg-bad{color:var(--bad)!important;font-weight:600}
 @media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
 </style></head>
 <body>
@@ -109,8 +111,8 @@ $("descGo").onclick=function(){s3=1;show($("seedBox"),1);step=4;paint()};
 document.querySelectorAll("input[name=q]").forEach(function(r){r.onchange=function(){$("qGo").disabled=0}});
 $("qGo").onclick=function(){
  var v=(document.querySelector("input[name=q]:checked")||{}).value;
- if(v==="b"){s4=1;$("qmsg").textContent="Correct — public material only.";show($("exit"),1);step=5;paint()}
- else $("qmsg").textContent="No — never put the recovery phrase or seed QR into a watch app."
+ if(v==="b"){s4=1;$("qmsg").className="msg-ok";$("qmsg").textContent="Correct — public material only.";show($("exit"),1);step=5;paint()}
+ else {$("qmsg").className="msg-bad";$("qmsg").textContent="No — never put the recovery phrase or seed QR into a watch app."}
 };
 $("ack").onchange=function(){$("fin").disabled=!this.checked};
 $("fin").onclick=function(){alert("UC5 complete. Next: UC6 Multisig.");};
