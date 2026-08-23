@@ -18,11 +18,17 @@ V2 UC1: 8 words per line at laptop width (24 = 3 lines), 3 addresses per row, en
 
 ## Traceability
 
-| AC | Test |
-|----|------|
-| Compact 24-word 3 lines, 3 addresses, entropy | V2-S9 |
-| UC2 colour gate + do/do-not + print not air-gap + quiz | V2-S8 |
-| Classic `/` still Lab | V2-S0 |
+| AC | Test / smoke |
+|----|----------------|
+| AC-1 24-word card three lines at 1920px | Playwright V2-S9 |
+| AC-2 at least three addresses on one line | Playwright V2-S9 `#v2AddrGrid` |
+| AC-3 entropy 128 vs 256 bits | Playwright V2-S9 `#v2Entropy` |
+| AC-4 UC2 coloured What this is / is not / Done when | Playwright V2-S8 `#gateIs` `#gateIsnt` `#gateDone` |
+| AC-5 Do / Do not colour panels, no contractions | Playwright V2-S8 `#v2DoNotList` |
+| AC-6 print is not air-gap | Playwright V2-S8 `#v2PrintHelp` |
+| AC-7 quiz: print and photo not most secure | Playwright V2-S8 `[data-quiz=ok]` |
+| AC-8 classic `/` still Generate | Playwright V2-S0 |
+| AC-9 pytest smoke | `python -m pytest -q` |
 
 ## Red-proof
 
