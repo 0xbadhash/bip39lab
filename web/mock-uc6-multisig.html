@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UC6 mock · Multisig shared custody</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--p2:#1a2330;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;--r:12px;--rs:8px;--f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px}
+.app{display:grid;grid-template-columns:180px 1fr;min-height:100vh}
+.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.8rem}.brand{font-weight:700}.brand span{color:var(--ac)}
+.main{padding:1rem;max-width:900px}
+.banner{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.08);color:#f0d78a;border-radius:var(--r);padding:.5rem .7rem;margin:0 0 .7rem;font-size:.8rem}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem;margin:0 0 .7rem}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.4rem .7rem;font:inherit;cursor:pointer}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.4rem 0}
+.chip{border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem;font-size:.7rem;color:var(--mu)}
+.rail{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.circ{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.circ.on{border-color:var(--ac);color:var(--ac)}.circ.done{color:var(--ok);border-color:var(--ok)}
+.name{border:1px solid var(--bd);border-radius:999px;padding:.15rem .5rem;font-size:.78rem;color:var(--mu)}
+.name.on{border-color:var(--ac);color:var(--tx);font-weight:600}.name.done{color:var(--ok)}
+.muted{color:var(--mu);font-size:.8rem}.hidden{display:none!important}
+.pause,.ex,.exit{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
+.exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
+.viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
+.viz .hi{border-color:var(--ac)}.viz .dim{opacity:.4}
+.keys{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.keys div{border:1px solid var(--bd);border-radius:8px;padding:.45rem;background:var(--panel);font-size:.75rem;font-family:var(--m)}
+.keys div.on{border-color:var(--ok)}
+.addr{font-family:var(--m);font-size:.8rem;padding:.5rem;border:1px solid var(--bd);border-radius:8px;background:var(--panel);margin:.4rem 0}
+.overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
+.panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+@media(max-width:700px){.app{grid-template-columns:1fr}.viz,.keys{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">bip39<span>·lab</span></div><p class="muted" style="font-size:.75rem">UC6 Multisig</p><span class="chip">MOCK</span></aside>
+<main class="main">
+<p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+<div class="banner">Intermediate. Multisig = M-of-N keys, not “split the 12 words.” Model only.</div>
+<div class="card">
+<div class="row" style="justify-content:space-between"><strong>Shared custody (multisig)</strong><span class="chip" id="prog">0/4</span></div>
+<div class="rail">
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Keys ≠ shares</span><span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">2-of-3 model</span><span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Who must sign</span><span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Not BIP-39 shares</span><span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+</div></div>
+<div class="card">
+<div class="viz">
+<div id="v1"><strong>Keys ≠ word shares</strong><br/>Each cosigner has a key. Words are not multisig pieces.</div>
+<div id="v2"><strong>M-of-N</strong><br/>2-of-3: any two keys sign; one alone cannot spend.</div>
+<div id="v3"><strong>Policy elsewhere</strong><br/>This lab is the mental model. Real setup is in a wallet.</div>
+</div>
+<div class="pause" id="idea">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> Multisig is not cutting a seed into three envelopes. It is independent keys with a rule like “2 of 3 must sign.”</p>
+<button class="btn primary" id="ideaGo">Keys ≠ BIP-39 word shares</button>
+</div>
+<div class="hidden" id="model">
+<p class="muted">Demo 2-of-3 with public key stubs:</p>
+<div class="keys">
+<div id="k1">Key A · cosigner 1</div>
+<div id="k2">Key B · cosigner 2</div>
+<div id="k3">Key C · cosigner 3</div>
+</div>
+<div class="addr">Joint address (demo): bc1q…m2of3demo</div>
+<div class="pause">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> The joint address is controlled by the policy, not by any single key alone.</p>
+<button class="btn primary" id="modelGo">I see the 2-of-3 address</button>
+</div>
+</div>
+<div class="ex hidden" id="signBox">
+<strong>Who must sign?</strong>
+<p class="muted">Click keys to add a signature. Spend unlocks only at 2.</p>
+<div class="row">
+<button class="btn" id="sA">Sign A</button>
+<button class="btn" id="sB">Sign B</button>
+<button class="btn" id="sC">Sign C</button>
+<button class="btn" id="sReset">Reset sigs</button>
+</div>
+<p class="muted">Signatures: <span id="sigN">0</span> / 2 required · <span id="sigState">locked</span></p>
+<button class="btn primary" id="signGo" disabled>I saw 2-of-3 unlock</button>
+</div>
+<div class="ex hidden" id="quiz">
+<strong>Not BIP-39 shares</strong>
+<p class="muted">Which statement is correct?</p>
+<label class="muted"><input type="radio" name="q" value="a"/> Give each friend 4 of my 12 words so any two can rebuild the seed.</label><br/>
+<label class="muted"><input type="radio" name="q" value="b"/> Each cosigner holds their own key; spending needs M signatures under a multisig policy.</label><br/>
+<label class="muted"><input type="radio" name="q" value="c"/> Multisig means one hardware wallet with three PINs.</label>
+<p class="muted" id="qmsg"></p>
+<button class="btn primary" id="qGo" disabled>Confirm</button>
+</div>
+<div class="exit hidden" id="exit">
+<strong>UC6 force exit</strong>
+<label class="muted"><input type="checkbox" id="ack"/> I will not treat BIP-39 words as multisig shares; real multisig is M-of-N keys in a proper wallet policy.</label>
+<div class="row"><button class="btn primary" id="fin" disabled>Finish UC6</button></div>
+</div>
+</div>
+</main></div>
+<div class="overlay" id="gate"><div class="panel">
+<h2>UC6 · Multisig</h2>
+<p class="muted">Intermediate. Shared custody mental model. Not a production multisig setup.</p>
+<button class="btn primary" id="go">I understand — start UC6</button>
+</div></div>
+<script>
+var step=0,s1=0,s2=0,s3=0,s4=0,sigs={A:0,B:0,C:0};
+function $(i){return document.getElementById(i)}
+function show(e,o){e.classList.toggle("hidden",!o)}
+function paint(){
+ document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
+ $("prog").textContent=((s1?1:0)+(s2?1:0)+(s3?1:0)+(s4?1:0))+"/4";
+ ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
+ if(step<=1){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step<=3){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
+}
+function updSig(){
+ var n=sigs.A+sigs.B+sigs.C;
+ $("sigN").textContent=n;
+ $("sigState").textContent=n>=2?"unlocked (demo)":"locked";
+ $("k1").classList.toggle("on",!!sigs.A);$("k2").classList.toggle("on",!!sigs.B);$("k3").classList.toggle("on",!!sigs.C);
+ $("signGo").disabled=n<2;
+}
+$("go").onclick=function(){show($("gate"),0);step=1;paint()};
+$("ideaGo").onclick=function(){s1=1;show($("idea"),0);show($("model"),1);step=2;paint()};
+$("modelGo").onclick=function(){s2=1;show($("model"),0);show($("signBox"),1);step=3;paint()};
+$("sA").onclick=function(){sigs.A=1;updSig()};
+$("sB").onclick=function(){sigs.B=1;updSig()};
+$("sC").onclick=function(){sigs.C=1;updSig()};
+$("sReset").onclick=function(){sigs={A:0,B:0,C:0};updSig()};
+$("signGo").onclick=function(){s3=1;show($("quiz"),1);step=4;paint()};
+document.querySelectorAll("input[name=q]").forEach(function(r){r.onchange=function(){$("qGo").disabled=0}});
+$("qGo").onclick=function(){
+ var v=(document.querySelector("input[name=q]:checked")||{}).value;
+ if(v==="b"){s4=1;$("qmsg").textContent="Correct — independent keys + M-of-N policy.";show($("exit"),1);step=5;paint()}
+ else $("qmsg").textContent="No — splitting BIP-39 words is not multisig."
+};
+$("ack").onchange=function(){$("fin").disabled=!this.checked};
+$("fin").onclick=function(){alert("UC6 complete. Next optional: UC7 Shamir.");};
+paint();
+</script></body></html>
