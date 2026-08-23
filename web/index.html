@@ -8,7 +8,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.30" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.35" />
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
 
       <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.30">v0.16.30</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.35">v0.16.35</span>
           <br />
           Secrets stay in this browser tab only. Prefer an air-gapped machine for real recovery phrases.
         </p>
@@ -128,6 +128,7 @@
       </header>
 
       <main class="content">
+        <div class="main-work" id="mainWork">
         <div class="warn" role="note" id="labSafetyBanner">
           <strong>Air-gap recommended.</strong>
           Crypto stays in this tab. Progress/theme may be saved in the browser.
@@ -142,47 +143,45 @@
             <p class="control-help">Shown on first visit only (ack overlay).</p>
           </div>
 
-          <div class="card card-wide hour-rail hour-rail-h" id="cardFirstHour" data-face="starter">
+          <div class="card hour-rail hour-rail-h hour-rail-sticky" id="cardFirstHour">
             <div class="hour-rail-head">
-              <h2>First hour <span id="firstHourProgress" class="chip">0 / 7</span></h2>
+              <h2>First hour <span id="firstHourProgress" class="chip">0 / 6</span></h2>
               <button type="button" class="btn secondary btn-sm" id="btnResetFirstHour" title="Clear first-hour progress in this browser">
                 Reset first hour
               </button>
             </div>
             <p class="hour-kicker" id="hourKicker">Create a practice 12-word card</p>
-            <ol class="hour-list hour-list-h" id="firstHourList">
+            <ol class="hour-list hour-list-h hour-rail-locked" id="firstHourList">
               <li class="hour-step is-selected" data-hour-step="h1" data-hour-tab="lab" data-hour-target="#card-mnemonic">
-                <span class="hour-num-circle">1</span><span class="hour-name">Generate</span>
+                <span class="hour-num-circle">1</span><span class="hour-name">Generate 12-word</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
               <li class="hour-step" data-hour-step="h2" data-hour-tab="lab" data-hour-target="#card-addresses">
-                <span class="hour-num-circle">2</span><span class="hour-name">Address</span>
+                <span class="hour-num-circle">2</span><span class="hour-name">Fill addresses</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h3" data-hour-tab="lab" data-hour-target="#hourPathPad">
-                <span class="hour-num-circle">3</span><span class="hour-name">Path</span>
+              <li class="hour-step" data-hour-step="h3" data-hour-tab="tools" data-hour-target="#cardPathPlay">
+                <span class="hour-num-circle">3</span><span class="hour-name">Path playground</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h4" data-hour-tab="lab" data-hour-target="#hourPpPad">
-                <span class="hour-num-circle">4</span><span class="hour-name">Passphrase</span>
+              <li class="hour-step" data-hour-step="h4" data-hour-tab="tools" data-hour-target="#cardCmpPp">
+                <span class="hour-num-circle">4</span><span class="hour-name">Passphrase compare</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h5" data-hour-tab="lab" data-hour-target="#hourSelfCheck">
-                <span class="hour-num-circle">5</span><span class="hour-name">Self-check</span>
+              <li class="hour-step" data-hour-step="h5" data-hour-tab="lab" data-hour-target="#hourRailActions">
+                <span class="hour-num-circle">5</span><span class="hour-name">Network? optional</span>
               </li>
               <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#hourNetworkOpt">
-                <span class="hour-num-circle">6</span><span class="hour-name">Network?</span>
-              </li>
-              <li class="hour-arrow" aria-hidden="true">→</li>
-              <li class="hour-step" data-hour-step="h7" data-hour-tab="lab" data-hour-target="#hourSetBeginner">
-                <span class="hour-num-circle">7</span><span class="hour-name">Beginner</span>
+              <li class="hour-step" data-hour-step="h6" data-hour-tab="lab" data-hour-target="#hourGoBeginner">
+                <span class="hour-num-circle">6</span><span class="hour-name">Set Beginner</span>
               </li>
             </ol>
             <div class="hour-rail-actions" id="hourRailActions">
               <button type="button" class="btn secondary btn-sm hour-go" id="hourRailGo" hidden>Go</button>
               <button type="button" class="btn secondary btn-sm hour-done" id="hourRailDone" hidden>Mark done</button>
-              <button type="button" class="btn btn-sm" id="hourGoBeginner" hidden>Set Beginner</button>
+              <a class="btn" id="hourOpenNetwork" href="network.html" hidden>Open Network</a>
+              <button type="button" class="btn secondary" id="hourSkipNetwork" hidden>Skip</button>
+              <button type="button" class="btn" id="hourGoBeginner" hidden>Set Beginner</button>
             </div>
             <button type="button" class="btn" data-level-set="beginner" id="btnReadyBeginner" hidden>I’m ready for Beginner</button>
             <button type="button" class="btn secondary btn-sm" id="hourScrollTop" hidden>Back to this checklist</button>
@@ -199,53 +198,6 @@
                 <button type="button" class="btn secondary" id="btnNextGoIntermediate">Raise Level to Intermediate</button>
               </div>
             </div>
-          </div>
-
-          <div class="card hour-pad" id="hourPathPad" hidden>
-            <h2>Path playground</h2>
-            <p class="control-help">A path is a folder on the same phrase. Change the folder, the address changes. The words do not.</p>
-            <p class="hour-path-line" id="hourPathLine">
-              m / 84h / 0h / 0h /
-              <button type="button" class="btn secondary btn-sm" id="hourPathChange" data-change="0">0 receive</button>
-              /
-              <button type="button" class="btn secondary btn-sm" id="hourPathIndex" data-index="0">index 0</button>
-            </p>
-            <p class="control-help" id="hourPathNeedPhrase" hidden>Generate a practice phrase on step 1 first.</p>
-            <p>Preview (last 8): <code id="hourPathTail">—</code></p>
-          </div>
-          <div class="card hour-pad" id="hourPpPad" hidden>
-            <h2>Passphrase compare</h2>
-            <p class="control-help">Same words, two passphrases, two wallets — or the same one if they match.</p>
-            <label class="field">Passphrase A
-              <input id="hourPpA" type="text" autocomplete="off" spellcheck="false" placeholder="(empty)" />
-            </label>
-            <label class="field">Passphrase B
-              <input id="hourPpB" type="text" autocomplete="off" spellcheck="false" value="TREZOR" />
-            </label>
-            <button type="button" class="btn" id="hourPpCompare">Compare</button>
-            <p id="hourPpNeedPhrase" class="control-help" hidden>Generate a practice phrase on step 1 first.</p>
-            <p id="hourPpResult" hidden>
-              A <code id="hourPpTailA">—</code> · B <code id="hourPpTailB">—</code>
-              <span id="hourPpVerdict"></span>
-            </p>
-          </div>
-          <div class="card hour-pad" id="hourSelfCheck" hidden>
-            <h2>Self-check</h2>
-            <p class="control-help">Starter does not run Q1–Q4 yet. That board opens when you Set Beginner. This step only confirms you know the quiz exists.</p>
-            <button type="button" class="btn" id="hourSelfCheckContinue">Continue</button>
-          </div>
-          <div class="card hour-pad" id="hourNetworkOpt" hidden>
-            <h2>Network?</h2>
-            <p class="control-help">Optional. Address-only fees and balances — never paste a phrase.</p>
-            <div class="row">
-              <a class="btn" id="hourOpenNetwork" href="network.html">Open Network</a>
-              <button type="button" class="btn secondary" id="hourSkipNetwork">Skip</button>
-            </div>
-          </div>
-          <div class="card hour-pad" id="hourSetBeginner" hidden>
-            <h2>Set Beginner</h2>
-            <p class="control-help">Unlock Passphrase and entropy (Q1–Q4). This site is still not a wallet.</p>
-            <button type="button" class="btn" id="hourSetBeginnerBtn">Set Beginner</button>
           </div>
 
           <!-- Lab-only jump rail (hidden when Tools/Glossary active) -->
@@ -316,6 +268,23 @@
               </span>
               <textarea id="mnemonic" rows="3" spellcheck="false" autocomplete="off"></textarea>
             </label>
+            <div class="table-scroll cols-modern" id="tableScroll" aria-live="polite" hidden>
+              <table class="addr-table" id="addrTable">
+                <thead>
+                  <tr>
+                    <th scope="col" class="col-idx">#</th>
+                    <th scope="col" id="addrColHeader">Address · BIP86 Taproot</th>
+                    <th scope="col" class="col-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="addrTableBody">
+                  <tr class="empty-row">
+                    <td colspan="3">Validate &amp; derive to fill receive addresses.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p id="copyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
             <label class="check"><input type="checkbox" id="hidePrivate" /> Hide private fields</label>
             <div class="row starter-hide" data-private data-level-min="beginner" data-level-hide="1" id="rowSeedAirgap">
               <span class="help-tip action-hover">
@@ -405,8 +374,6 @@
 
             <p id="status" class="status" aria-live="polite"></p>
           </div>
-
-          </div><!-- /starter-split -->
 
           <div class="card card-wide" id="cardQuiz" data-face="beginner" data-level-min="beginner" data-level-hide="1">
             <div class="control-help level-gate-msg" data-level-gate-banner="beginner" hidden></div>
@@ -878,6 +845,7 @@
               Offline “account numbers” from your phrase. Crypto stays in this tab.
               Progress/theme may be saved in the browser. Addresses go to Network only after explicit opt-in.
             </p>
+            <p id="hourAddrStatus" class="status" aria-live="polite"></p>
             <details class="help-fold teach-only">
               <summary>Bank vault metaphor</summary>
               <p class="control-help">
@@ -988,23 +956,6 @@
 
             <p id="derivePathSummary" class="path-summary" aria-live="polite"></p>
             <p id="deriveStatusPlain" class="status-plain" aria-live="polite"></p>
-
-            <div class="table-scroll cols-modern" id="tableScroll" aria-live="polite">
-              <table class="addr-table" id="addrTable">
-                <thead>
-                  <tr>
-                    <th scope="col" class="col-idx">#</th>
-                    <th scope="col" id="addrColHeader">Address · BIP86 Taproot</th>
-                    <th scope="col" class="col-actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="addrTableBody">
-                  <tr class="empty-row">
-                    <td colspan="3">Generate or paste a valid mnemonic to fill addresses.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
             <details class="help-fold teach-only">
               <summary>Copy &amp; QR tips</summary>
               <p class="control-help copy-hint">
@@ -1012,7 +963,6 @@
                 Use <strong>QR</strong> for a scannable code offline. Only the address is copied — never the recovery phrase.
               </p>
             </details>
-            <p id="copyFeedback" class="copy-feedback" role="status" aria-live="polite"></p>
 
             <div class="card-sub watch-only" id="watchOnlyPanel">
               <h3 class="label-row">Watch-only export
@@ -1063,7 +1013,7 @@
           <p class="control-help teach-only" id="toolsTeachLine">
             Use ⓘ for each card; Teach Off hides long tips but keeps safety notes.
           </p>
-          <div class="card card-wide" id="cardPathPlay">
+          <div class="card lab-work-pad" id="cardPathPlay">
             <div class="card-head">
               <h2 class="label-row">Path playground
                 <span class="help-tip" data-term="PATH">
@@ -1072,6 +1022,35 @@
                 </span>
               </h2>
             </div>
+            <p class="control-help" id="pathPlayFolderCopy">
+              A path is a folder on the same phrase. Change the folder, the address changes. The words do not.
+            </p>
+            <p class="hour-path-line" id="hourPathLine">
+              m / 84h / 0h / 0h /
+              <button type="button" class="btn secondary btn-sm" id="pathPlayChange" data-change="0">0 receive</button>
+              /
+              <button type="button" class="btn secondary btn-sm" id="pathPlayIndex" data-index="0">index 0</button>
+            </p>
+            <p>Preview (last 8): <code id="pathPlayTail">—</code></p>
+            <figure class="path-bip-fig" id="pathBipFig">
+              <svg id="pathBipSvg" viewBox="0 0 560 220" width="100%" height="220" role="img" aria-labelledby="pathBipCaption">
+                <title>BIP purpose folders from one phrase</title>
+                <text x="8" y="22" fill="currentColor" font-size="13" font-weight="700">phrase</text>
+                <text x="78" y="22" fill="var(--muted, #8b9bb0)" font-size="13">→ seed</text>
+                <line x1="28" y1="32" x2="28" y2="200" stroke="var(--border, #2a3545)" stroke-width="2" />
+                <rect x="48" y="40" width="480" height="32" rx="6" fill="var(--panel-2, #1c2533)" stroke="var(--border, #2a3545)" />
+                <text x="60" y="61" fill="var(--muted, #8b9bb0)" font-size="13">m/44h/…   1…     legacy</text>
+                <rect x="48" y="80" width="480" height="32" rx="6" fill="var(--panel-2, #1c2533)" stroke="var(--border, #2a3545)" />
+                <text x="60" y="101" fill="var(--muted, #8b9bb0)" font-size="13">m/49h/…   3…     nested</text>
+                <rect x="48" y="120" width="480" height="32" rx="6" fill="var(--accent-soft, rgba(61,139,253,0.14))" stroke="var(--accent, #3d8bfd)" />
+                <text x="60" y="141" fill="var(--text, #eef2f7)" font-size="13" font-weight="700">m/84h/…   bc1q   native segwit  · default</text>
+                <rect x="48" y="160" width="480" height="32" rx="6" fill="var(--panel-2, #1c2533)" stroke="var(--border, #2a3545)" />
+                <text x="60" y="181" fill="var(--muted, #8b9bb0)" font-size="13">m/86h/…   bc1p   taproot</text>
+              </svg>
+              <figcaption id="pathBipCaption" class="control-help">
+                Same words. Different BIP = different address shape. This lab defaults to BIP84 (bc1q).
+              </figcaption>
+            </figure>
             <p class="control-help">
               <strong>What this is:</strong> a <em>derivation path</em> is the folder path inside your seed tree
               that produces one receive (or change) address. It is <strong>not</strong> the seed itself —
@@ -1144,8 +1123,8 @@
             </table>
             <p class="control-help" id="pathPlayHelp" style="margin-top:0.65rem">—</p>
             <div class="row" style="margin-top:0.5rem">
-              <button type="button" class="btn secondary" id="btnPathToLab" title="Open Lab tab where you change type / network / account">
-                Open Lab path controls
+              <button type="button" class="btn" id="btnPathToggleChange">
+                Toggle receive / change
               </button>
             </div>
           </div>
@@ -1206,7 +1185,7 @@
                 </label>
                 <button type="button" class="btn" id="btnEntToSeed" title="Turn pad log into practice words — never for real funds">
                   Build practice seed from pad
-                </div>
+                </button>
               </div>
             </div>
 
@@ -1242,7 +1221,7 @@
               <div class="row" style="flex-wrap:wrap;gap:0.5rem">
                 <button type="button" class="btn secondary" id="btnEntToLab" title="Optional: paste practice words into Lab for more demos">
                   Optional: put practice words on Lab tab
-                </div>
+                </button>
               </div>
               <p class="control-help teach-only" style="margin:0.5rem 0 0">
                 For a <em>proper</em> random demo phrase, use Lab → <strong>Generate</strong> (OS CSPRNG) instead of this pad.
@@ -1250,7 +1229,7 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardCmpPp">
+          <div class="card lab-work-pad" id="cardCmpPp">
             <h2 class="label-row">Compare two passphrases
               <span class="help-tip" data-term="PASSPHRASE">
                 <button type="button" class="help-tip-btn" aria-label="About passphrase compare">i</button>
@@ -1275,10 +1254,10 @@
               <div class="row" style="flex-wrap:wrap;gap:0.5rem">
                 <button type="button" class="btn secondary" id="btnCmpUseLab" title="Refresh preview from Lab mnemonic field">
                   Use / refresh Lab phrase
-                </div>
+                </button>
                 <button type="button" class="btn secondary" id="btnCmpGen" title="Write a new throwaway phrase into Lab, then show it here">
                   Generate throwaway test phrase
-                </div>
+                </button>
               </div>
             </div>
 
@@ -1335,7 +1314,7 @@
             </div>
           </div>
 
-          <div class="card card-wide" id="cardDescriptors">
+          <div class="card lab-work-pad" id="cardDescriptors">
             <h2 class="label-row">Output descriptors (watch-only)
               <span class="help-tip" data-term="DESCRIPTOR">
                 <button type="button" class="help-tip-btn" aria-label="About output descriptors">i</button>
@@ -1357,7 +1336,7 @@
             <pre class="out" id="descOut">Click refresh — uses Lab phrase or generates a test one.</pre>
           </div>
 
-          <div class="card card-wide" id="cardPsbt" data-level-min="intermediate">
+          <div class="card lab-work-pad" id="cardPsbt" data-level-min="intermediate">
             <h2 class="label-row">PSBT inspector (no sign)
               <span class="help-tip help-tip-safety" data-term="PSBT">
                 <button type="button" class="help-tip-btn" aria-label="About PSBT">i</button>
@@ -1426,7 +1405,7 @@
             <pre class="out" id="psbtOut">Click sample 1 or 2 (fills + inspects), or paste then click 3 · Inspect again.</pre>
           </div>
 
-          <div class="card card-wide" id="cardDescExplain">
+          <div class="card lab-work-pad" id="cardDescExplain">
             <h2 class="label-row">Descriptor explain
               <span class="help-tip" data-term="DESCRIPTOR">
                 <button type="button" class="help-tip-btn" aria-label="About descriptors">i</button>
@@ -1509,6 +1488,7 @@
           </div>
         </section>
 
+        </div><!-- /main-work -->
         <div id="printBackup" class="print-only" hidden aria-hidden="true">
           <h1>BIP-39 backup sheet (offline)</h1>
           <p>Write words by hand if this is for real funds. Never photograph a funded sheet on a networked phone.</p>
@@ -1558,40 +1538,33 @@
   <div id="ackOverlay" class="ack-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ackOverlayTitle">
     <div class="ack-overlay-card">
       <h2 id="ackOverlayTitle">What this is / isn’t</h2>
-      <table class="compare-table" id="orientationTable">
-        <thead>
-          <tr><th scope="col">This lab is</th><th scope="col">This lab is not</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>An offline classroom for BIP-39 ideas (generate, derive, watch-only)</td>
-            <td>A Bitcoin wallet (no send, no balance of your seed)</td>
-          </tr>
-          <tr>
-            <td>Safe for <strong>practice</strong> phrases and goldens (e.g. abandon…about)</td>
-            <td>A place to type a funded recovery phrase on a random computer</td>
-          </tr>
-          <tr>
-            <td>Educational Multisig, Shamir, SLIP-39 demos</td>
-            <td>Trezor Suite / production SLIP-39 backup tool</td>
-          </tr>
-          <tr>
-            <td>Tools for path, passphrase compare, PSBT <em>inspect</em>, entropy demos</td>
-            <td>A signer, broadcaster, or public seed scanner</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="control-help">Air-gap recommended. Crypto stays in this tab. Do not type a funded phrase.</p>
+      <div class="ack-grid" id="orientationTable">
+        <div class="ack-col ack-col-is">
+          <h3 class="ack-col-head">This lab is</h3>
+          <p class="ack-chip">An offline classroom for BIP-39 ideas (generate, derive, watch-only)</p>
+          <p class="ack-chip">Safe for <strong>practice</strong> phrases and goldens (e.g. abandon…about)</p>
+          <p class="ack-chip">Educational Multisig, Shamir, SLIP-39 demos</p>
+          <p class="ack-chip">Tools for path, passphrase compare, PSBT <em>inspect</em>, entropy demos</p>
+        </div>
+        <div class="ack-col ack-col-not">
+          <h3 class="ack-col-head">This lab is not</h3>
+          <p class="ack-chip">A Bitcoin wallet (no send, no balance of your seed)</p>
+          <p class="ack-chip">A place to type a funded recovery phrase on a random computer</p>
+          <p class="ack-chip">Trezor Suite / production SLIP-39 backup tool</p>
+          <p class="ack-chip">A signer, broadcaster, or public seed scanner</p>
+        </div>
+      </div>
+      <p class="control-help ack-foot">Air-gap recommended. Crypto stays in this tab. Do not type a funded phrase.</p>
       <button type="button" class="btn" id="ackUnderstand">I understand — start the lab</button>
     </div>
   </div>
 
-  <script src="js/site-version.js?v=0.16.30"></script>
-  <script src="js/bip39lab.bundle.js?v=0.16.30"></script>
-  <script src="js/glossary.js?v=0.16.30"></script>
-  <script src="js/help-ui.js?v=0.16.30"></script>
-  <script src="js/learn-levels.js?v=0.16.30"></script>
-  <script src="js/lab-strip.js?v=0.16.30"></script>
-  <script src="js/app.js?v=0.16.30"></script>
+  <script src="js/site-version.js?v=0.16.35"></script>
+  <script src="js/bip39lab.bundle.js?v=0.16.35"></script>
+  <script src="js/glossary.js?v=0.16.35"></script>
+  <script src="js/help-ui.js?v=0.16.35"></script>
+  <script src="js/learn-levels.js?v=0.16.35"></script>
+  <script src="js/lab-strip.js?v=0.16.35"></script>
+  <script src="js/app.js?v=0.16.35"></script>
 </body>
 </html>

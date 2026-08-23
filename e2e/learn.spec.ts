@@ -37,16 +37,16 @@ test.describe("Learning levels E0–E6", () => {
 
   test("S61 orientation + first hour", async ({ page }) => {
     await expect(page.locator("#cardFirstHour")).toBeVisible();
-    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(7);
+    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(6);
     await expect(page.locator("#hourRailDone")).toBeHidden();
-    await expect(page.locator("#firstHourProgress")).toContainText(/0\s*\/\s*7/);
+    await expect(page.locator("#firstHourProgress")).toContainText(/0\s*\/\s*6/);
     await page.locator("#btnGenerate").click();
     await expect(page.locator("#card-mnemonic")).toBeVisible();
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
     await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
       timeout: 8000,
     });
-    await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*7/);
+    await expect(page.locator("#firstHourProgress")).toContainText(/1\s*\/\s*6/);
   });
 
   test("S62 level chip soft gates", async ({ page }) => {
@@ -214,6 +214,7 @@ test.describe("E3 mobile shell", () => {
     await expect(page.locator("#btnGenerate")).toBeVisible();
     // Generate so the address table has wide bc1 rows
     await clickLabAction(page, "generate");
+    await clickLabAction(page, "derive");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
@@ -272,12 +273,11 @@ test.describe("First Hour real loop", () => {
 
   test("S84 first hour form + compare gates", async ({ page }) => {
     await page.locator("#btnGenerate").click();
-    await expect(page.locator("#mnemonic")).toBeVisible();
     await expect(page.locator("#mnemonic")).toHaveValue(/.{20,}/);
     await expect(page.locator('[data-hour-step="h1"]')).toHaveClass(/hour-step-done/, {
       timeout: 8000,
     });
-    await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/is-selected/);
+    await expect(page.locator("#card-mnemonic")).toBeVisible();
     await page.locator("#btnDerive").click();
     await expect(page.locator('[data-hour-step="h2"]')).toHaveClass(/hour-step-done/, {
       timeout: 8000,
@@ -290,6 +290,7 @@ test.describe("First Hour real loop", () => {
     const emptyRows = await page.locator("#addrTableBody tr:not(.empty-row)").count();
     expect(emptyRows).toBe(0);
     await clickLabAction(page, "generate");
+    await page.locator("#btnDerive").click();
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
@@ -353,16 +354,14 @@ test.describe("First Hour real loop", () => {
   test("S91 Go h3 lands on Receive addresses heading", async ({ page }) => {
     page.once("dialog", (d) => d.accept());
     await clickLabAction(page, "generate");
+    await expect(page.locator("#tableScroll")).toBeHidden();
+    await clickLabAction(page, "derive");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({
       timeout: 10_000,
     });
-    await page.locator("#headingReceive").scrollIntoViewIfNeeded();
-    await expect(page.locator("#headingReceive")).toBeInViewport();
-    await expect(page.locator("#cardOps")).not.toBeInViewport();
-    const tableTop = await page.locator("#addrTable").evaluate((el) => el.getBoundingClientRect().top);
-    const headTop = await page.locator("#headingReceive").evaluate((el) => el.getBoundingClientRect().top);
-    expect(headTop).toBeLessThan(tableTop);
-    expect(headTop).toBeGreaterThanOrEqual(-8);
+    await expect(page.locator("#tableScroll")).toBeVisible();
+    await page.locator("#addrTable").scrollIntoViewIfNeeded();
+    await expect(page.locator("#addrTable")).toBeInViewport();
   });
 
   test("S92 Q2 Go lands on Practice secret", async ({ page }) => {

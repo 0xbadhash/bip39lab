@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var STRIP_CSS_V = "0.16.30";
+  var STRIP_CSS_V = "0.16.35";
 
   function $(id) {
     return document.getElementById(id);

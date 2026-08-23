@@ -87,8 +87,19 @@ web_e2e:
         - { id: fees, name: "S13b fees", steps: ["bands", "traffic", "UTXO"] }
         - { id: bal, name: "S13c–d balances", steps: ["reject seed", "fetch", "bridge"] }
         - { id: edge, name: "S33–S35 edge", steps: ["no ack", "empty", "tools link"] }
-    - id: chrome
+    - id: v2
       order: 5
+      path: /v2/
+      title: V2 use-case tracks
+      playwright: e2e/v2.spec.ts
+      scenarios:
+        - { id: picker, name: "V2-S0 picker", steps: ["10 cards", "classic /"] }
+        - { id: uc1, name: "V2-S1 generate", steps: ["words first", "validate gated"] }
+        - { id: quiz, name: "V2-S2 quiz+exit", steps: ["msg-ok", "force ack"] }
+        - { id: deeplink, name: "V2-S3 ?uc=3", steps: ["gate UC3"] }
+        - { id: chrome, name: "V2-S4 generate chrome", steps: ["12-24", "clear beside generate"] }
+    - id: chrome
+      order: 6
       path: /
       title: Site chrome
       playwright: e2e/site-chrome.spec.ts

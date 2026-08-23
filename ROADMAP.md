@@ -72,6 +72,56 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] V2 UC1 generate chrome
+- **Status:** open
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-08-23-v2-uc1-generate-chrome.md`
+- **Depends:** V2 tracks shell
+- **Acceptance:**
+  - [x] Clear secrets on UC1 Generate row, not sidebar
+  - [x] Word count 12, 15, 18, 21, 24
+  - [x] Plain-English generate explainer; BIP-39 (i)
+  - [x] Regenerate matches selected length including 15/18/21/24
+  - [x] Classic `/` unchanged; e2e/v2.spec.ts
+- **Smoke:** `npx playwright test e2e/v2.spec.ts`
+- **Notes:** grill-me complete (operator `/spec` brief)
+
+### [OPEN] Use-case tracks (mission-aligned IA)
+- **Status:** locked brief 2026-08-23 (picker · force ack · UC3 next · keep rooms)
+- **Priority:** P0
+- **Mission:** Practice the custody decision offline, then do the real thing in a wallet you trust.
+- **Spec:** `.agents/specs/2026-08-23-use-case-tracks.md`
+- **Depends:** none (replaces “generic First hour tours entire product”)
+- **Next:** true
+- **Acceptance (epic):**
+  - [ ] Mission sentence in README + site chrome (later stamp)
+  - [ ] Entry is use-case picker; sidebar rooms remain
+  - [ ] UC1 force-ack exit before optional Beginner tracks
+  - [ ] UC3 is next track after UC1/UC2; uses existing `#cardCmpPp`
+  - [ ] No new wallet/signer/broadcast surface
+
+#### Ship order (agile slices — separate specs later)
+
+| ID | Slice | Level | Notes |
+|----|--------|-------|-------|
+| UC1 | First wallet (safe & easy) | Starter | Generate → numbered card → one receive table → force ack exit |
+| UC2 | Paper backup discipline | Starter | Card is the backup; print optional after confirm |
+| UC3 | Passphrase (25th word) | Beginner | Existing Compare passphrases only |
+| UC4 | Path folders + BIP map | Beginner | Existing Path playground + one BIP SVG |
+| UC5 | Watch-only | Beginner | Existing descriptor tools |
+| UC6 | Shared custody multisig | Intermediate | Existing Multisig room; keys ≠ shares |
+| UC7 | Split secret Shamir | Intermediate | Existing Shamir; not SLIP-39 unless that page |
+| UC8 | PSBT inspect / air-gap model | Intermediate | Existing PSBT inspector; never sign |
+| UC9 | master → child / xpub threat | Advanced | Strip + existing advanced face |
+| UC10 | Network leak / fees / balances | Advanced | Existing Network; unknown ≠ 0 |
+
+Out of scope for this epic: reinventing pads, SeedSigner chrome, new tokens, merging rooms into an SPA, funded wallet onboarding that stores keys.
+
+**V2 parallel surface (2026-08-23):** real tracks at `web/v2/` (`0.17.0-v2`). Classic `/` unchanged until CEO promote. Spec: `.agents/specs/2026-08-23-use-case-tracks-v2.md`.
+
+This epic **does not implement UC1 UI** in the lock stamp. Next product work: separate `/spec` + `/execute_dev` for **UC1 only**.
+
 ### [OPEN] Slim Starter First-hour rail
 - **Status:** open
 - **Priority:** P1

@@ -667,6 +667,31 @@
     }
   }
 
+  /** Receive table stays hidden until the user clicks Validate & derive. */
+  let suppressAddressesUntilDerive = false;
+
+  function hideReceiveTable(message) {
+    const wrap = $("tableScroll");
+    if (wrap) wrap.hidden = true;
+    const addrCard = $("card-addresses");
+    if (addrCard) addrCard.hidden = true;
+    clearAddressTable(message);
+  }
+
+  function showReceiveTable() {
+    suppressAddressesUntilDerive = false;
+    const wrap = $("tableScroll");
+    if (wrap) {
+      wrap.hidden = false;
+      wrap.removeAttribute("hidden");
+    }
+    const addrCard = $("card-addresses");
+    if (addrCard) {
+      addrCard.hidden = false;
+      addrCard.removeAttribute("hidden");
+    }
+  }
+
   function clearAddressTable(message) {
     lastRows = null;
     const tbody = $("addrTableBody");
@@ -676,8 +701,7 @@
     const td = document.createElement("td");
     td.colSpan = 3;
     td.textContent =
-      message ||
-      "Generate or paste a valid recovery phrase to list receive addresses (like printing cheque numbers from a pad).";
+      message || "Validate & derive to fill receive addresses.";
     tr.appendChild(td);
     tbody.appendChild(tr);
     updateAddrTypeChrome();
@@ -787,7 +811,13 @@
         return;
       }
       const result = await BIP39Lab.deriveAddresses(m, pp, path);
+      if (quiet && suppressAddressesUntilDerive) {
+        await refreshMnemonicEntropy();
+        refreshPassphraseEntropy();
+        return;
+      }
       fillAddressTable(result);
+      showReceiveTable();
       // Do not write sessionStorage here — only Send addresses → Network
       updatePathSummary(path, (result.rows && result.rows.length) || path.count);
       const plain =
@@ -820,13 +850,19 @@
       await refreshWatchOnly();
       if (result && result.rows && result.rows.length && window.LearnLevels && LearnLevels.noteHour) {
         LearnLevels.noteHour("h3Derived", true);
-        if (
-          LearnLevels.autoCompleteHour &&
-          !quiet &&
-          !(opts && opts.skipHourH2) &&
-          document.documentElement.getAttribute("data-hour-active") === "h2"
-        ) {
+        if (LearnLevels.autoCompleteHour && !quiet && !(opts && opts.skipHourH2)) {
           LearnLevels.autoCompleteHour("h2");
+        }
+        if (!quiet) {
+          const table = $("addrTable") || $("tableScroll");
+          if (table) table.hidden = false;
+          if (table && table.scrollIntoView) {
+            try {
+              table.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            } catch (eSc) {
+              /* ignore */
+            }
+          }
         }
       }
     } catch (e) {
@@ -838,6 +874,7 @@
   }
 
   function scheduleDerive() {
+    if (suppressAddressesUntilDerive) return;
     if (deriveTimer) clearTimeout(deriveTimer);
     deriveTimer = setTimeout(() => {
       deriveNow({ quiet: true }).catch(console.error);
@@ -847,7 +884,8 @@
   function clearSecrets() {
     $("mnemonic").value = "";
     $("passphrase").value = "";
-    clearAddressTable();
+    suppressAddressesUntilDerive = true;
+    hideReceiveTable();
     clearEntropyFields();
     const cmp = $("cmpPpOut");
     if (cmp) {
@@ -873,14 +911,17 @@
     if (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) {
       return "v" + BIP39LAB_SITE_VERSION;
     }
-    return "v0.16.30";
+    return "v0.16.35";
   }
 
   function setStatus(text, kind) {
-    const el = $("status");
-    el.textContent = text;
-    el.classList.remove("ok", "err");
-    if (kind) el.classList.add(kind);
+    ["status", "hourAddrStatus"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = text;
+      el.classList.remove("ok", "err");
+      if (kind) el.classList.add(kind);
+    });
   }
 
   function saveSessionAddresses(result) {
@@ -1506,6 +1547,7 @@
       $("cmpPpVerdict").classList.add(same ? "ok" : "err");
     }
     if (resultBox) resultBox.hidden = false;
+    if (window.LearnLevels && LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h4");
 
     // Quiz Q1: different addresses = demo ready → show Mark on bottom dock
     if (!same) {
@@ -1768,6 +1810,8 @@
   }
 
   async function onGenerate() {
+    suppressAddressesUntilDerive = true;
+    if (deriveTimer) clearTimeout(deriveTimer);
     const n = parseInt($("wordCount").value, 10);
     const m = await BIP39Lab.generateMnemonic(n);
     $("mnemonic").value = m;
@@ -1783,7 +1827,6 @@
     }
     await refreshMnemonicEntropy();
     refreshPassphraseEntropy();
-    await deriveNow({ quiet: false, skipHourH2: true });
     try {
       if (
         window.BIP39Lab &&
@@ -1798,11 +1841,17 @@
     } catch (eGen) {
       /* ignore */
     }
-    const path = getDeriveOptions();
-    setStatus(
-      "Generated offline · " + path.count + " receive addresses in the table below.",
-      "ok"
-    );
+    setStatus("Practice phrase ready. Validate & derive to fill receive addresses.", "ok");
+    if (deriveTimer) clearTimeout(deriveTimer);
+    hideReceiveTable("Validate & derive to fill receive addresses.");
+    try {
+      if (window.LearnLevels && LearnLevels.selectHourStep) LearnLevels.selectHourStep("h1");
+      var mnKeep = $("card-mnemonic");
+      if (mnKeep) mnKeep.hidden = false;
+      if (mnKeep && mnKeep.scrollIntoView) mnKeep.scrollIntoView({ behavior: "auto", block: "start" });
+    } catch (eStay) {
+      /* ignore */
+    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -1815,36 +1864,42 @@
     if ($("wordCount")) $("wordCount").addEventListener("change", syncGenerateWordsHint);
     $("btnGenerate").addEventListener("click", () => onGenerate().catch(console.error));
     $("btnDerive").addEventListener("click", () => deriveNow({ quiet: false }).catch(console.error));
+    if ($("btnDeriveAddr")) {
+      $("btnDeriveAddr").addEventListener("click", () => deriveNow({ quiet: false }).catch(console.error));
+    }
     $("btnClear").addEventListener("click", () => clearSecrets());
     (function wireHourPads() {
       async function refreshPath() {
         const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
-        const need = $("hourPathNeedPhrase");
-        const tail = $("hourPathTail");
+        const tail = $("pathPlayTail");
         if (!m || !window.BIP39Lab || !BIP39Lab.validateMnemonic || !(await BIP39Lab.validateMnemonic(m))) {
-          if (need) need.hidden = false;
           if (tail) tail.textContent = "—";
           return;
         }
-        if (need) need.hidden = true;
-        const chBtn = $("hourPathChange");
-        const ixBtn = $("hourPathIndex");
+        const chBtn = $("pathPlayChange");
+        const ixBtn = $("pathPlayIndex");
         const change = chBtn && chBtn.getAttribute("data-change") === "1" ? 1 : 0;
         const index = ixBtn && ixBtn.getAttribute("data-index") === "1" ? 1 : 0;
-        const path = Object.assign({}, getDeriveOptions(), { change: change, count: 2, network: "test" });
+        if ($("deriveChange")) $("deriveChange").value = String(change);
+        const path = Object.assign({}, getDeriveOptions(), {
+          change: change,
+          count: 2,
+          network: "test",
+        });
         const r = await BIP39Lab.deriveAddresses(m, "", path);
         const field = ADDR_TYPE_META.bip84.field;
         const addr = r.rows && r.rows[index] ? r.rows[index][field] : "";
         if (tail) tail.textContent = addr ? String(addr).slice(-8) : "—";
+        updatePathPlayground(path);
       }
       function maybeCompletePath() {
-        const tail = $("hourPathTail");
+        const tail = $("pathPlayTail");
         if (tail && tail.textContent && tail.textContent !== "—") {
           if (window.LearnLevels && LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h3");
         }
       }
-      const chBtn = $("hourPathChange");
-      const ixBtn = $("hourPathIndex");
+      const chBtn = $("pathPlayChange");
+      const ixBtn = $("pathPlayIndex");
       if (chBtn) {
         chBtn.addEventListener("click", function () {
           const next = chBtn.getAttribute("data-change") === "1" ? "0" : "1";
@@ -1859,37 +1914,6 @@
           ixBtn.setAttribute("data-index", next);
           ixBtn.textContent = "index " + next;
           refreshPath().then(maybeCompletePath).catch(console.error);
-        });
-      }
-      const cmp = $("hourPpCompare");
-      if (cmp) {
-        cmp.addEventListener("click", async function () {
-          const m = ($("mnemonic") && $("mnemonic").value.trim()) || "";
-          const need = $("hourPpNeedPhrase");
-          const box = $("hourPpResult");
-          if (!m || !window.BIP39Lab) {
-            if (need) need.hidden = false;
-            return;
-          }
-          if (need) need.hidden = true;
-          const a = ($("hourPpA") && $("hourPpA").value) || "";
-          const b = ($("hourPpB") && $("hourPpB").value) || "TREZOR";
-          const path = Object.assign({}, getDeriveOptions(), { count: 1, network: "test" });
-          const ra = await BIP39Lab.deriveAddresses(m, a, path);
-          const rb = await BIP39Lab.deriveAddresses(m, b, path);
-          const field = ADDR_TYPE_META.bip84.field;
-          const aa = (ra.rows && ra.rows[0] && ra.rows[0][field]) || "";
-          const bb = (rb.rows && rb.rows[0] && rb.rows[0][field]) || "";
-          if ($("hourPpTailA")) $("hourPpTailA").textContent = String(aa).slice(-8);
-          if ($("hourPpTailB")) $("hourPpTailB").textContent = String(bb).slice(-8);
-          const same = aa === bb;
-          const v = $("hourPpVerdict");
-          if (v) {
-            v.textContent = same ? " same wallet" : " two wallets from one phrase";
-            v.className = same ? "status err" : "status ok";
-          }
-          if (box) box.hidden = false;
-          if (window.LearnLevels && LearnLevels.autoCompleteHour) LearnLevels.autoCompleteHour("h4");
         });
       }
       window.HourPads = { refreshPath: refreshPath };
@@ -2063,24 +2087,10 @@
     if ($("btnEntToLab")) {
       $("btnEntToLab").addEventListener("click", copyPracticePadToLab);
     }
-    if ($("btnPathToLab")) {
-      $("btnPathToLab").addEventListener("click", function () {
-        showTab("lab");
-        window.setTimeout(function () {
-          const target =
-            $("card-addresses") ||
-            $("addrTypeTabs") ||
-            document.querySelector("[data-addr-type]");
-          if (target) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-            try {
-              if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-              target.focus({ preventScroll: true });
-            } catch (e) {
-              /* ignore */
-            }
-          }
-        }, 60);
+    if ($("btnPathToggleChange")) {
+      $("btnPathToggleChange").addEventListener("click", function () {
+        const ch = $("pathPlayChange");
+        if (ch) ch.click();
       });
     }
     if ($("btnCmpPp")) $("btnCmpPp").addEventListener("click", () => comparePassphrases().catch(console.error));

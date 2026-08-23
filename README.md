@@ -6,7 +6,9 @@
 
 **Repo:** [github.com/0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)
 
-Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by public converters but without third-party trust for seed material.
+**Mission:** Practice the custody decision offline, then do the real thing in a wallet you trust.
+
+Self-hosted, **no-retention** BIP-39 tooling (CLI + static web), inspired by public converters but without third-party trust for seed material. Not a funded wallet, not a signer, not a broadcaster.
 
 **Public host:** [https://bip39.catalyxt.xyz/](https://bip39.catalyxt.xyz/) (English UI only). Brand domain is **`catalyxt.xyz`** — do not use `catalyxt.ltd` for new deploys.
 
@@ -40,6 +42,8 @@ See **`docs/BITCOIN_KNOTS.md`** for running Knots (pruned is enough for current 
 ## Quick start (web)
 
 **Hosted:** open [https://bip39.catalyxt.xyz/](https://bip39.catalyxt.xyz/) (same Catalyxt card shell as `card.catalyxt.xyz`).
+
+**V2 tracks (parallel, not root):** [https://bip39.catalyxt.xyz/v2/](https://bip39.catalyxt.xyz/v2/) — use-case picker UC1–UC10 (`0.17.0-v2`). Classic `/` is unchanged until an explicit promote. Feature compare: [https://bip39.catalyxt.xyz/v2/compare.md](https://bip39.catalyxt.xyz/v2/compare.md).
 
 Locally:
 

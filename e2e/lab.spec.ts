@@ -37,10 +37,10 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.30$/);
+    await expect(chip).toContainText(/^v0\.16\.35$/);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.30");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.30/);
+    expect(htmlChip).toContain("v0.16.35");
+    await expect(page.locator("#status")).toContainText(/v0\.16\.35/);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
@@ -177,10 +177,12 @@ test.describe("Lab mnemonic & derive", () => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("12");
     await clickLabAction(page, "generate");
-    await waitForTableRows(page, 5);
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(12);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
+    await expect(page.locator("#tableScroll")).toBeHidden();
+    await clickLabAction(page, "derive");
+    await waitForTableRows(page, 5);
     await expect(page.locator("#addrTableBody")).toContainText(/tb1p/);
   });
 
@@ -188,13 +190,13 @@ test.describe("Lab mnemonic & derive", () => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("12");
     await clickLabAction(page, "generate");
-    await waitForTableRows(page, 5);
     const first = await page.locator("#mnemonic").inputValue();
     page.once("dialog", (d) => d.dismiss());
     await clickLabAction(page, "generate");
     await expect(page.locator("#mnemonic")).toHaveValue(first);
     page.once("dialog", (d) => d.accept());
     await clickLabAction(page, "generate");
+    await clickLabAction(page, "derive");
     await waitForTableRows(page, 5);
     const second = await page.locator("#mnemonic").inputValue();
     expect(second.trim().split(/\s+/).length).toBe(12);
@@ -204,7 +206,6 @@ test.describe("Lab mnemonic & derive", () => {
     await page.goto("/");
     await page.locator("#wordCount").selectOption("24");
     await clickLabAction(page, "generate");
-    await waitForTableRows(page, 5);
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(24);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/256 bits \(24-word BIP-39\)/);
@@ -365,7 +366,7 @@ test.describe("Lab mnemonic & derive", () => {
     await clickLabAction(page, "clear");
     await expect(page.locator("#mnemonic")).toHaveValue("");
     await expect(page.locator("#entropyMnemonic")).toHaveText("—");
-    await expect(page.locator("#addrTableBody .empty-row")).toBeVisible();
+    await expect(page.locator("#tableScroll")).toBeHidden();
   });
 
   test("S82 receive and compare do not over-claim nothing-is-sent", async ({ page }) => {

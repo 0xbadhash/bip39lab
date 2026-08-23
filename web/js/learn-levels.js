@@ -8,7 +8,41 @@
   var LEVEL_KEY = "bip39lab.level";
   var HOUR_KEY = "bip39lab.firstHour";
   var ACK_KEY = "lab:ack-v1";
-  var HOUR_ORDER = ["h1", "h2", "h3", "h4", "h5", "h6", "h7"];
+  var HOUR_ORDER = ["h1", "h2", "h3", "h4", "h5", "h6"];
+  var RAIL_SETS = {
+    starter: [
+      { id: "h1", name: "Generate 12-word", tab: "lab", target: "#card-mnemonic" },
+      { id: "h2", name: "Fill addresses", tab: "lab", target: "#card-addresses" },
+      { id: "h3", name: "Path playground", tab: "tools", target: "#cardPathPlay" },
+      { id: "h4", name: "Passphrase compare", tab: "tools", target: "#cardCmpPp" },
+      { id: "h5", name: "Network? optional", tab: "lab", target: "#hourRailActions" },
+      { id: "h6", name: "Set Beginner", tab: "lab", target: "#hourGoBeginner" },
+    ],
+    beginner: [
+      { id: "b1", name: "Words", tab: "lab", target: "#card-mnemonic" },
+      { id: "b2", name: "Addresses", tab: "lab", target: "#card-addresses" },
+      { id: "b3", name: "Path", tab: "tools", target: "#cardPathPlay" },
+      { id: "b4", name: "Passphrase", tab: "tools", target: "#cardCmpPp" },
+      { id: "b5", name: "Q1–Q4", tab: "lab", target: "#cardQuiz" },
+      { id: "b6", name: "Network?", tab: "lab", target: "#hourRailActions" },
+    ],
+    intermediate: [
+      { id: "i1", name: "Keys≠shares", tab: "lab", target: "#cardIntQuiz" },
+      { id: "i2", name: "Multisig room", href: "multisig.html" },
+      { id: "i3", name: "Shamir room", href: "shamir.html" },
+      { id: "i4", name: "PSBT inspect", tab: "tools", target: "#cardPsbt" },
+      { id: "i5", name: "Descriptor", tab: "tools", target: "#cardDescriptors" },
+      { id: "i6", name: "Next", tab: "lab", target: "#cardIntQuiz" },
+    ],
+    advanced: [
+      { id: "a1", name: "master→child", tab: "lab", target: "#cardAdvQuiz" },
+      { id: "a2", name: "Not a wallet", tab: "glossary", target: "#panel-glossary" },
+      { id: "a3", name: "Address-only", href: "network.html" },
+      { id: "a4", name: "Air-gap QR", tab: "lab", target: "#card-mnemonic" },
+      { id: "a5", name: "Threat check", tab: "glossary", target: "#panel-glossary" },
+      { id: "a6", name: "Done", tab: "lab", target: "#cardAdvQuiz" },
+    ],
+  };
   var QUIZ_KEY = "bip39lab.quiz";
   var LEVELS = ["starter", "beginner", "intermediate", "advanced"];
 
@@ -164,6 +198,12 @@
       if (fi == null) fi = 0;
       var force = el.getAttribute("data-level-force") === "show";
       el.classList.remove("face-current", "face-past", "face-later", "face-collapsed");
+      if (el.id === "cardFirstHour") {
+        el.hidden = false;
+        el.classList.add("face-current");
+        el.classList.remove("face-collapsed", "face-later", "face-past");
+        return;
+      }
       if (force) {
         el.hidden = false;
         el.classList.add("face-current");
@@ -254,15 +294,13 @@
 
   function graduateToBeginner() {
     setLevel("beginner", { announce: true });
-    markHourStep("h7", true);
+    markHourStep("h6", true);
     updateFirstHourNext();
     setTimeout(function () {
-      var next = $("firstHourNext");
       var quiz = $("cardQuiz");
-      if (next) {
-        next.hidden = false;
-        next.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      } else if (quiz) {
+      if (quiz) {
+        quiz.hidden = false;
+        quiz.removeAttribute("hidden");
         quiz.scrollIntoView({ behavior: "auto", block: "start" });
       }
     }, 150);
@@ -326,8 +364,9 @@
     updateFirstHourNext();
     refreshBeginnerChrome();
     applyFaces(level);
+    renderHourRail(level);
     if (level === "beginner") {
-      autoCompleteHour("h7");
+      autoCompleteHour("h6");
     }
     if (opts.announce && prev !== level) {
       showLevelToast(level, prev);
@@ -499,9 +538,8 @@
     if (id === "h2") return !!st.h2 || !!ev.h3Derived || addressesFilled();
     if (id === "h3") return !!st.h3;
     if (id === "h4") return !!st.h4;
-    if (id === "h5") return !!st.h5;
-    if (id === "h6") return !!(st.h6 || ev.h7Ack);
-    if (id === "h7") return LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner") || !!st.h7;
+    if (id === "h5") return !!(st.h5 || ev.h7Ack);
+    if (id === "h6") return LEVELS.indexOf(getLevel()) >= LEVELS.indexOf("beginner") || !!st.h6;
     return false;
   }
 
@@ -605,6 +643,40 @@
     btn.setAttribute("aria-disabled", on ? "false" : "true");
   }
 
+  function syncWorkColumnWidth() {
+    var wrap = $("mainWork");
+    var ids = [
+      "cardFirstHour",
+      "card-mnemonic",
+      "card-addresses",
+      "cardPathPlay",
+      "cardCmpPp",
+      "cardDescriptors",
+      "cardPsbt",
+      "cardDescExplain",
+      "cardQuiz",
+      "cardIntQuiz",
+      "cardAdvQuiz",
+    ];
+    ids.forEach(function (id) {
+      var el = $(id);
+      if (!el) return;
+      el.style.width = "100%";
+      el.style.maxWidth = "100%";
+      el.style.boxSizing = "border-box";
+    });
+    ["panel-tools", "panel-lab", "panel-glossary"].forEach(function (id) {
+      var pan = $(id);
+      if (!pan) return;
+      pan.style.width = "100%";
+      pan.style.maxWidth = "none";
+    });
+    if (wrap) {
+      wrap.style.width = "100%";
+      wrap.style.maxWidth = "none";
+    }
+  }
+
   function applyHourFrame() {
     var level = getLevel();
     var acked = hasAck();
@@ -619,32 +691,27 @@
     var sid =
       (getSelectedHourLi() && getSelectedHourLi().getAttribute("data-hour-step")) || "h1";
     document.documentElement.setAttribute("data-hour-active", sid);
-    var selfC = $("hourSelfCheck");
-    var netC = $("hourNetworkOpt");
-    var begC = $("hourSetBeginner");
-    var pathC = $("hourPathPad");
-    var ppC = $("hourPpPad");
     var kick = $("hourKicker");
     var kickMap = {
       h1: "Create a practice 12-word card",
       h2: "Validate and fill a receive address",
       h3: "Change the folder, not the words",
       h4: "Same words, two passphrases",
-      h5: "The Beginner quiz exists — confirm and continue",
-      h6: "Optional: Network is addresses only",
-      h7: "Unlock Beginner when you are ready",
+      h5: "Optional: Network is addresses only",
+      h6: "Unlock Beginner when you are ready",
     };
     if (kick) kick.textContent = kickMap[sid] || "";
+    var openN = $("hourOpenNetwork");
+    var skipN = $("hourSkipNetwork");
+    var setB = $("hourGoBeginner");
+    if (openN) openN.hidden = !(sid === "h5" || sid === "b6");
+    if (skipN) skipN.hidden = !(sid === "h5" || sid === "b6");
+    if (setB) setB.hidden = !(level === "starter" && sid === "h6");
+    var mn = $("card-mnemonic");
+    var addr = $("card-addresses");
     if (level !== "starter") {
-      if (selfC) selfC.hidden = true;
-      if (netC) netC.hidden = true;
-      if (begC) begC.hidden = true;
-      if (pathC) pathC.hidden = true;
-      if (ppC) ppC.hidden = true;
-      var mnB = $("card-mnemonic");
-      if (mnB) mnB.hidden = false;
-      var addrB = $("card-addresses");
-      if (addrB) addrB.hidden = false;
+      if (mn) mn.hidden = false;
+      if (addr) addr.hidden = false;
       var derB = $("btnDerive");
       if (derB) derB.disabled = false;
       return;
@@ -654,19 +721,32 @@
       var q = $(id);
       if (q) q.hidden = true;
     });
-    if (selfC) selfC.hidden = sid !== "h5";
-    if (netC) netC.hidden = sid !== "h6";
-    if (begC) begC.hidden = sid !== "h7";
-    if (pathC) pathC.hidden = sid !== "h3";
-    if (ppC) ppC.hidden = sid !== "h4";
-    var mn = $("card-mnemonic");
-    if (mn) mn.hidden = !(sid === "h1" || sid === "h2");
-    var addr = $("card-addresses");
-    if (addr) addr.hidden = sid !== "h2";
+    if (mn) mn.hidden = false;
+    var tableOn = $("tableScroll") && !$("tableScroll").hidden;
+    if (addr) addr.hidden = sid !== "h2" && !tableOn;
     var der = $("btnDerive");
-    if (der) der.disabled = sid === "h1";
+    if (der) der.disabled = false;
+    if (sid === "h3" || sid === "b3") {
+      goTab("tools");
+      setTimeout(function () {
+        var el = $("cardPathPlay");
+        if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "auto", block: "start" });
+        if (window.HourPads && HourPads.refreshPath) HourPads.refreshPath();
+        syncWorkColumnWidth();
+      }, 50);
+      return;
+    }
+    if (sid === "h4" || sid === "b4") {
+      goTab("tools");
+      setTimeout(function () {
+        var el = $("cardCmpPp");
+        if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "auto", block: "start" });
+        syncWorkColumnWidth();
+      }, 50);
+      return;
+    }
     goTab("lab");
-    if (sid === "h3" && window.HourPads && HourPads.refreshPath) HourPads.refreshPath();
+    syncWorkColumnWidth();
   }
 
   function wireAckGate() {
@@ -681,21 +761,14 @@
         applyHourFrame();
       });
     }
-    var cont = $("hourSelfCheckContinue");
-    if (cont && !cont.getAttribute("data-hour-wired")) {
-      cont.setAttribute("data-hour-wired", "1");
-      cont.addEventListener("click", function () {
-        autoCompleteHour("h5");
-      });
-    }
     var skip = $("hourSkipNetwork");
     if (skip && !skip.getAttribute("data-hour-wired")) {
       skip.setAttribute("data-hour-wired", "1");
       skip.addEventListener("click", function () {
-        autoCompleteHour("h6");
+        autoCompleteHour("h5");
       });
     }
-    var setB = $("hourSetBeginnerBtn") || $("hourGoBeginner");
+    var setB = $("hourGoBeginner");
     if (setB && !setB.getAttribute("data-hour-wired")) {
       setB.setAttribute("data-hour-wired", "1");
       setB.addEventListener("click", function () {
@@ -723,10 +796,10 @@
     var sel = getSelectedHourLi();
     var sid = sel ? sel.getAttribute("data-hour-step") : "h1";
     var sReady = hourStepReady(sid);
-    if (railGrad) railGrad.hidden = sid !== "h8";
+    if (railGrad) railGrad.hidden = !(getLevel() === "starter" && sid === "h6");
     var readyBeg = $("btnReadyBeginner");
     if (readyBeg) readyBeg.hidden = true;
-    if (railGo) railGo.hidden = !/^(h4|h5|h7)$/.test(sid || "");
+    if (railGo) railGo.hidden = true;
     if (railDone) {
       railDone.hidden = true;
       railDone.disabled = true;
@@ -949,10 +1022,9 @@
     var st = loadJson(HOUR_KEY, {});
     var next = null;
     for (var i = 0; i < HOUR_ORDER.length; i++) {
-      if (HOUR_ORDER[i] === "h6" && !st.h6) {
-        /* optional — prefer next required if 5 done */
-        if (st.h5 && !st.h7) {
-          next = "h6";
+      if (HOUR_ORDER[i] === "h5" && !st.h5) {
+        if (st.h4 && !st.h6) {
+          next = "h5";
           break;
         }
       }
@@ -973,7 +1045,7 @@
     saveJson(HOUR_KEY, st2);
     refreshFirstHour();
     /* Keep Path/PP pads on screen after the action so suffixes stay visible. */
-    if (id !== "h3" && id !== "h4") advanceToNextIncomplete();
+    if (id !== "h1" && id !== "h2" && id !== "h3" && id !== "h4") advanceToNextIncomplete();
   }
 
   function goHourStep(li) {
@@ -1041,6 +1113,8 @@
     });
     var prog = $("firstHourProgress");
     if (prog) prog.textContent = done + " / " + total + " steps done";
+    var list = $("firstHourList");
+    if (list) list.classList.toggle("hour-rail-locked", !st.h1);
     refreshHourGates();
     refreshBeginnerChrome();
     maybeAutoBeginner();
@@ -1054,14 +1128,15 @@
   }
 
   function canSelectHour(id) {
+    if (!id || !/^h[1-6]$/.test(id)) return true;
     var st = loadJson(HOUR_KEY, {});
     if (st[id]) return true;
     if (id === "h1") return true;
-    if (id === "h6") return !!(st.h1 && st.h2);
+    if (id === "h5") return !!(st.h1 && st.h2 && st.h3 && st.h4);
     var idx = HOUR_ORDER.indexOf(id);
     if (idx < 0) return false;
     for (var i = 0; i < idx; i++) {
-      if (HOUR_ORDER[i] === "h6") continue;
+      if (HOUR_ORDER[i] === "h5") continue;
       if (!st[HOUR_ORDER[i]]) return false;
     }
     return true;
@@ -1070,7 +1145,18 @@
   function selectHourStep(id) {
     var list = $("firstHourList");
     if (!list || !id) return;
-    if (!canSelectHour(id)) return;
+    if (!canSelectHour(id)) {
+      var toast = $("learnLevelToast");
+      if (toast) {
+        toast.textContent = "Generate first";
+        toast.hidden = false;
+        clearTimeout(selectHourStep._t);
+        selectHourStep._t = setTimeout(function () {
+          toast.hidden = true;
+        }, 4000);
+      }
+      return;
+    }
     list.querySelectorAll("[data-hour-step]").forEach(function (el) {
       var on = el.getAttribute("data-hour-step") === id;
       el.classList.toggle("is-selected", on);
@@ -1078,27 +1164,70 @@
     setHourActive(id);
     refreshHourGates();
     applyHourFrame();
-    if (id === "h7" && getLevel() === "starter" && canSelectHour("h7")) {
-      /* wait for Set Beginner button */
+    var picked = list.querySelector('[data-hour-step="' + id + '"]');
+    if (picked && getLevel() !== "starter") {
+      goHourStep(picked);
     }
   }
 
-  function wireFirstHour() {
+  function renderHourRail(level) {
+    level = level || getLevel();
+    var steps = RAIL_SETS[level] || RAIL_SETS.starter;
     var list = $("firstHourList");
-    if (list) {
-      list.querySelectorAll("[data-hour-step]").forEach(function (li) {
-        li.addEventListener("click", function (ev) {
-          if (ev.target && ev.target.closest && ev.target.closest("a, .hour-go, .hour-done")) return;
-          ev.preventDefault();
-          selectHourStep(li.getAttribute("data-hour-step"));
-        });
-        li.addEventListener("keydown", function (ev) {
-          if (ev.key !== "Enter" && ev.key !== " ") return;
-          ev.preventDefault();
-          selectHourStep(li.getAttribute("data-hour-step"));
-        });
-      });
+    if (!list) return;
+    var keep = getHourActive();
+    var hasKeep = false;
+    for (var k = 0; k < steps.length; k++) {
+      if (steps[k].id === keep) hasKeep = true;
     }
+    if (!hasKeep) keep = steps[0].id;
+    var html = "";
+    for (var i = 0; i < steps.length; i++) {
+      var s = steps[i];
+      if (i) html += '<li class="hour-arrow" aria-hidden="true">→</li>';
+      html +=
+        '<li class="hour-step' +
+        (s.id === keep ? " is-selected" : "") +
+        '" data-hour-step="' +
+        s.id +
+        '"' +
+        (s.tab ? ' data-hour-tab="' + s.tab + '"' : "") +
+        (s.target ? ' data-hour-target="' + s.target + '"' : "") +
+        (s.href ? ' data-hour-href="' + s.href + '"' : "") +
+        ">" +
+        '<span class="hour-num-circle">' +
+        (i + 1) +
+        '</span><span class="hour-name">' +
+        s.name +
+        "</span></li>";
+    }
+    list.innerHTML = html;
+    if (level !== "starter") list.classList.remove("hour-rail-locked");
+    var head = $("cardFirstHour") && $("cardFirstHour").querySelector(".hour-rail-head h2");
+    if (head) {
+      var chip = $("firstHourProgress");
+      var label = level === "starter" ? "First hour" : "This face";
+      head.textContent = "";
+      head.appendChild(document.createTextNode(label + " "));
+      if (chip) head.appendChild(chip);
+    }
+    list.querySelectorAll("[data-hour-step]").forEach(function (li) {
+      li.addEventListener("click", function (ev) {
+        if (ev.target && ev.target.closest && ev.target.closest("a, .hour-go, .hour-done")) return;
+        ev.preventDefault();
+        selectHourStep(li.getAttribute("data-hour-step"));
+      });
+      li.addEventListener("keydown", function (ev) {
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        ev.preventDefault();
+        selectHourStep(li.getAttribute("data-hour-step"));
+      });
+    });
+    refreshFirstHour();
+  }
+
+  function wireFirstHour() {
+    renderHourRail(getLevel());
     var go = $("hourRailGo");
     if (go) {
       go.addEventListener("click", function (ev) {
@@ -2154,8 +2283,11 @@
     updateFirstHourNext();
     watchOrientationTable();
     wireAckGate();
+    refreshFirstHour();
     applyHourFrame();
     refreshHourGates();
+    syncWorkColumnWidth();
+    window.addEventListener("resize", syncWorkColumnWidth);
     window.addEventListener("pageshow", function () {
       refreshHourGates();
     });
@@ -2179,5 +2311,9 @@
     hourStepReady: hourStepReady,
     markHourStep: markHourStep,
     autoCompleteHour: autoCompleteHour,
+    selectHourStep: selectHourStep,
+    applyHourFrame: applyHourFrame,
+    syncWorkColumnWidth: syncWorkColumnWidth,
+    refreshFirstHour: refreshFirstHour,
   };
 })();

@@ -1,30 +1,33 @@
 # CODE-REVIEW
 
-**command:** `/code_review` after `/execute_dev`
-**base:** main (6fc31f2) · **head:** feat/gradual-visual-teach
-**task:** v0.16.25 gradual visual teach strip
-**spec:** `.agents/specs/2026-08-22-gradual-visual-teach.md`
+**Command:** `/code_review`
+**Base:** `origin/main` (committed) + working tree product paths
+**Head:** working tree (pre-commit at review) then HEAD after product commit
+**Date:** 2026-08-23
 
 ## Secrets
 
-- Full `check_secrets_diff` vs origin/main failed here (shallow clone, no merge-base).
-- Fallback regex on strip JS/CSS/spec: clean (no keys / xprv / assigned mnemonic secrets).
-- Strip mirrors Lab `#mnemonic` into cells. No new retention.
+`python3 scripts/check_secrets_diff.py --base origin/main --head HEAD` — gitleaks clean on committed range. V2 JS does not write mnemonic to sessionStorage.
 
-## Findings
+## Findings accepted (P0)
 
-| ID | Sev | Class | Decision |
-|----|-----|-------|----------|
-| CR1 | P1 | follow_up | Word cells use innerHTML of Lab words. Not P0; Teach-B later. |
-| CR2 | nit | follow_up | Some HTML `?v=` may still read 0.16.24; VERSION + site-version.js are 0.16.25. |
-| CR3 | nit | follow_up | Lab→room next-CTA out of this spec. |
+None.
 
-**P0 accepted:** 0
-**Follow-ups:** 3
+## Findings rejected
 
-## Tests
+None material. Full classic Playwright fail cluster is **follow_up** (Starter-hidden Seed QR, hover/ack, Tools `#cardCmpPp` timeouts) — not introduced as V2-only AC.
 
-Playwright S110–S113 authored. Runtime not run in this sandbox.
+## Follow-ups
 
-✅ CODE-REVIEW DONE  p0=0  follow_ups=3
-NEXT_SKILL=/behavior_validator
+- Port remaining compare.md gaps (copy/QR, path SVG, entropy pad, full rooms).
+- Do not commit dirty harness `scripts/*.py`.
+
+## Smoke / tests
+
+- `npx playwright test e2e/v2.spec.ts` — 5 passed
+- Classic full suite: not green (known)
+
+## P0 count
+
+p0=0
+follow_ups=2

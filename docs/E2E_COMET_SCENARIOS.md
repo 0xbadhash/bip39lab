@@ -32,7 +32,10 @@ surfaces:
   - id: lab-strip
     path: /
     playwright: e2e/lab-strip.spec.ts
-scenarios: S0–S145 · Playwright 151 tests · auto-stamped from e2e/ + VERSION
+  - id: v2
+    path: /v2/
+    playwright: e2e/v2.spec.ts
+scenarios: S0–S183 · V2-S0–V2-S4 · Playwright 172+ tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -42,7 +45,7 @@ scenarios: S0–S145 · Playwright 151 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.30 · Contract: 2 · Last aligned: 2026-08-22 · Scenarios: S0–S145 · Playwright S-ids: 151`
+`Product: 0.16.35 · Contract: 2 · Last aligned: 2026-08-23 · Scenarios: S0–S183 · Playwright S-ids: 172`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -79,9 +82,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **151** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **172** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S145** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S183** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -1017,6 +1020,13 @@ SLIP-39:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Network:  coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Chrome/Extra help: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Cross-product story (secrets offline / addresses online / shares≠keys / Shamir≠SLIP-39): PASS|FAIL —
+
+### V2 tracks (`/v2/`)
+V2-S0 picker + classic `/` still Lab: PASS|FAIL —
+V2-S1 UC1 generate words before addresses; Validate gated: PASS|FAIL —
+V2-S2 quiz colors + force exit: PASS|FAIL —
+V2-S3 deep link `?uc=3`: PASS|FAIL —
+V2-S4 word counts 12–24, Clear secrets beside Generate, regenerate length: PASS|FAIL —
 
 ## Scenarios (PASS | FAIL | NEEDS-DOM | SKIP)
 Use **NEEDS-DOM** only when scrape cannot see attributes/viewport (aria-current, mobile width). Prefer Playwright for those.

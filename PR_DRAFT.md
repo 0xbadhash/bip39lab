@@ -1,62 +1,61 @@
-# PR Draft: v0.16.24 slim Starter First-hour rail
+# PR Draft: v0.16.35 + V2 tracks (`0.17.0-v2`)
 
-**Spec:** `.agents/specs/2026-08-21-slim-rail.md`
-**Plan:** `.agents/specs/2026-08-21-slim-rail-plan.md`
+**Spec:** `.agents/specs/2026-08-23-v2-uc1-generate-chrome.md`
+**Also:** `.agents/specs/2026-08-23-use-case-tracks-v2.md` · `.agents/specs/2026-08-23-use-case-tracks.md`
+**Plan:** none
 
 ## What Problem This Solves
 
-Starter First hour was a fat 8-card rail with Go/Mark done on every step. CEO locked slim numbered labels plus one action pair for the selected step.
+Classic Lab is a room tour. Learners need a parallel V2 use-case track at `/v2/` without replacing `/`. UC1 generate chrome must match classic word counts, Clear secrets next to Generate, and plain-English BIP-39 help.
 
 ## Why This Change Was Made
 
-Hold lifted. Slim still is composition lock only — not a screenshot. Stamp 0.16.24. Do not Imagine. Do not copy CATALYSTS.
+CEO locked use-case IA (2026-08-23). V2 is a real scure/Lab surface. UC1 generate copy and regenerate length were v1-vs-v2 gaps.
 
 ## User Impact
 
-Eight short numbered labels beside the live Mnemonic lab. Click a step, then Go / Mark done for that step. Clear secrets stays filled red.
+- `/` stays classic Lab (stamp `0.16.35`).
+- `/v2/` picker UC1–UC10; UC1 Generate 12/15/18/21/24; Clear secrets on the pad; regenerate matches length.
+- Compare note: `/v2/compare.md`.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC slim labels no per-step Go | Playwright S102 |
-| AC selected-step Go/Mark done loop | Playwright learn first-hour / S102 |
-| AC Mnemonic title | Playwright S102 |
-| AC Clear secrets filled danger | Playwright S102 |
-| AC Intermediate stills | Playwright S104 |
-| AC Beginner stills | Playwright S103 |
-| AC Advanced PNG | Playwright S105 |
-| AC Overlay OK | Playwright S106 S100 |
-| AC Hover | Playwright S107 |
-| AC rec-flow | Playwright S108 |
-| AC stamp 0.16.24 | Playwright S0 |
+| AC picker + classic root | Playwright V2-S0 |
+| AC generate words before addresses | Playwright V2-S1 |
+| AC quiz colors + force exit | Playwright V2-S2 |
+| AC deep link uc=3 | Playwright V2-S3 |
+| AC word counts 12–24, Clear secrets beside Generate, regenerate 15/18/21/24 | Playwright V2-S4 |
+| AC classic Generate still on `/` | Playwright V2-S0 `#btnGenerate` |
+| AC no secrets on disk | Clear secrets tab-only; sessionStorage `bip39lab.v2` has no mnemonic |
 
 ## Red-proof
 
-- red_cmd: `false`
-- green_cmd: `npx playwright test e2e/faces.spec.ts -g S102`
+- red_cmd: `npx playwright test e2e/v2.spec.ts -g V2-S4` (failed until word-count/overlay HTML)
+- green_cmd: `npx playwright test e2e/v2.spec.ts`
+- TDD: V2-S4 went red (overlay body stripped) then green after span-safe help HTML.
 
 ## Threat notes
 
-- secrets: none
-- xss: none
-- csrf: none
+- secrets: mnemonics stay in tab memory; `sessionStorage` `bip39lab.v2` is progress/gates only
+- xss: static CSP `connect-src 'none'` on `/v2/`
+- csrf: no forms that mutate a server
+- network: V2 does not fetch balances
 
 ## Evidence pack
 
 - hard_gates / pr_validator (this ship)
-- Playwright S0 S100 S102–S108 + learn first-hour
-- pytest via compliance_engine on /pr_review --validate
+- smoke: `npx playwright test e2e/v2.spec.ts` (5 passed)
+- pytest: `python -m pytest -q` (product smoke unit)
 
 ## Things that look bad but are actually fine
 
-1. Live lab is not the PNG screenshot.
-2. Do not copy CATALYSTS from the still.
-3. Dirty harness scripts not in this ship.
+1. Full Playwright classic suite still has known Starter-gate / hover / Tools-timeout fails (pre-existing; not this V2 AC).
+2. Harness `scripts/*.py` dirty files stay uncommitted (operator hold).
+3. Pipeline was previously `approved` for 0.16.25; this PR_DRAFT is the 0.16.35 + V2 card.
+4. V2 footer is `0.17.0-v2` while repo `VERSION` is `0.16.35` — parallel surface, not a root minor bump.
 
 ## Cross-review
 
-blockers=0.
-
-### Obsolete / cleanup (scoped)
-Tier A: 0.
+blockers=0 (code_review this session).

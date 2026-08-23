@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'" />
+  <meta name="description" content="bip39lab V2 use-case tracks — practice custody offline." />
+  <title>BIP39 Lab V2 · use-case tracks</title>
+  <link rel="stylesheet" href="../css/app.css" />
+  <link rel="stylesheet" href="css/v2.css" />
+</head>
+<body>
+  <div class="app v2-app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">39</div>
+        <div>
+          <div class="brand-title">bip39lab</div>
+          <div class="brand-sub">V2 tracks · Catalyxt</div>
+        </div>
+      </div>
+      <p class="v2-mission">Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+      <nav class="nav" aria-label="Rooms">
+        <a class="nav-item active" href="index.html"><span class="nav-step">0</span><span class="nav-label"><strong>Tracks</strong><small>UC1–UC10 picker</small></span></a>
+        <a class="nav-item" href="../index.html"><span class="nav-step">1</span><span class="nav-label"><strong>Lab</strong><small>Classic generate / derive</small></span></a>
+        <a class="nav-item" href="../multisig.html"><span class="nav-step">2</span><span class="nav-label"><strong>Multisig</strong><small>Public keys · M-of-N</small></span></a>
+        <a class="nav-item" href="../shamir.html"><span class="nav-step">3</span><span class="nav-label"><strong>Shamir</strong><small>Edu shares · not SLIP-39 Suite</small></span></a>
+        <a class="nav-item" href="../network.html"><span class="nav-step">4</span><span class="nav-label"><strong>Network</strong><small>Opt-in address lookup</small></span></a>
+        <a class="nav-item" href="../index.html#tools"><span class="nav-step">5</span><span class="nav-label"><strong>Tools</strong><small>Path · PSBT · descriptors</small></span></a>
+        <a class="nav-item" href="../index.html#glossary"><span class="nav-step">6</span><span class="nav-label"><strong>Glossary</strong><small>Terms</small></span></a>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="site-version-chip" data-v2-version>v0.17.0-v2</span>
+        <p class="sidebar-note"><a href="../index.html">Classic lab</a> stays at <code>/</code>. This surface is V2 only.</p>
+        <p class="sidebar-note"><a href="compare.md">v1 vs v2 compare</a> (markdown deeplink)</p>
+      </div>
+    </aside>
+    <div class="main-wrap">
+      <header class="topbar">
+        <div>
+          <h1 id="panelTitle">Use-case tracks</h1>
+          <p class="sub" id="panelSub">Pick a job. Tracks teach; rooms stay in the sidebar.</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="chip">V2 · not production root</span>
+          <a class="btn secondary btn-sm" href="compare.md">v1 vs v2</a>
+          <a class="btn secondary btn-sm" href="../index.html">Classic lab</a>
+        </div>
+      </header>
+      <main class="content">
+        <div class="main-work" id="v2Work">
+          <div class="warn v2-banner" id="labSafetyBanner" role="note">
+            <strong>Air-gap recommended.</strong>
+            Crypto stays in this tab. Progress (not secrets) may be saved in sessionStorage under <code>bip39lab.v2</code>.
+            Do not fund practice phrases or addresses.
+          </div>
+
+          <section id="viewPicker" class="v2-picker">
+            <div class="v2-picker-grid" id="pickerGrid"></div>
+          </section>
+
+          <section id="viewGate" class="v2-gate v2-hidden">
+            <div class="card v2-pad">
+              <h2 id="gateTitle">Track gate</h2>
+              <div id="gateScope"></div>
+              <div class="row">
+                <button type="button" class="btn" id="btnGateStart">Start</button>
+                <button type="button" class="btn secondary" id="btnBackPicker">Back to picker</button>
+              </div>
+            </div>
+          </section>
+
+          <section id="viewTrack" class="v2-track v2-hidden">
+            <div class="card hour-rail">
+              <div class="hour-rail-head">
+                <h2>Track <span class="chip" id="trackProgress">1 / 6</span></h2>
+              </div>
+              <ol class="v2-rail" id="trackRail"></ol>
+            </div>
+            <div class="concept-strip" id="conceptStrip"></div>
+            <div id="trackBody"></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="../js/bip39lab.bundle.js"></script>
+  <script src="../js/shamir-core.js"></script>
+  <script src="js/v2-app.js"></script>
+</body>
+</html>

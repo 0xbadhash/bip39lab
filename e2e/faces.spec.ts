@@ -46,7 +46,7 @@ test.describe("Level faces", () => {
     await expect(page.locator("#btnGenerate")).toBeVisible();
     await expect(page.locator("#firstHourList")).not.toContainText(/Air-gap warn/);
     await expect(page.locator("#firstHourList")).toContainText(/Generate/);
-    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(7);
+    await expect(page.locator("#firstHourList [data-hour-step]")).toHaveCount(6);
     await expect(page.locator("#firstHourList .hour-go")).toHaveCount(0);
     await expect(page.locator("#firstHourList .hour-done")).toHaveCount(0);
     await expect(page.locator("#hourRailGo")).toBeHidden();
@@ -166,6 +166,8 @@ test.describe("Level faces", () => {
     await expect(page.locator("#btnGenerate")).toBeVisible();
     await clickLabAction(page, "generate");
     await expect(page.locator("#mnemonic")).not.toHaveValue("");
+    await expect(page.locator("#tableScroll")).toBeHidden();
+    await clickLabAction(page, "derive");
     await expect(page.locator("#addrTableBody tr:not(.empty-row)").first()).toBeVisible({ timeout: 10_000 });
     await clickLabAction(page, "clear");
     await clickLabAction(page, "derive");
