@@ -72,6 +72,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] V2 UC1 compact grid + entropy
+- **Status:** open
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-08-23-v2-uc1-compact-entropy.md`
+- **Acceptance:**
+  - [x] 24-word card three lines at 1920px
+  - [x] ≥3 addresses on one line; no scroll to see them on 1920×1080
+  - [x] Entropy bits for 12/15/18/21/24
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g V2-S9`
+- **Notes:** grill-me complete (operator brief)
+
 ### [OPEN] V2 UC1 generate chrome
 - **Status:** open
 - **Priority:** P0

@@ -5,6 +5,7 @@
   "use strict";
   var STORE = "bip39lab.v2";
   var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12 };
+  var ENT_BITS = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 };
   var PSBT_MIN = "cHNidP8A";
 
   var TRACKS = [
@@ -84,9 +85,13 @@
     if (!gated(id)) {
       $("gateTitle").textContent = "UC" + t.id + " — " + t.title;
       $("gateScope").innerHTML =
-        "<p><strong>What this is:</strong> an offline practice track. Not a funded wallet, not a signer, not a broadcaster.</p>" +
-        "<p><strong>What this isn’t:</strong> do not import these words into a real wallet or send coins to practice addresses.</p>" +
-        "<p><strong>Done when:</strong> " + t.done + "</p>";
+        '<div class="v2-callout is" id="gateIs"><strong>What this is</strong>' +
+        "An offline practice track. Not a funded wallet, not a signer, not a broadcaster.</div>" +
+        '<div class="v2-callout isnt" id="gateIsnt"><strong>What this is not</strong>' +
+        "Do not import these words into a real wallet. Do not send coins to practice addresses.</div>" +
+        '<div class="v2-callout done" id="gateDone"><strong>Done when</strong>' +
+        t.done +
+        "</div>";
       $("btnGateStart").onclick = function () {
         setGated(id);
         startTrack(id);
@@ -102,7 +107,7 @@
   function stepsFor(id) {
     var map = {
       1: ["Generate", "Backup card", "Validate", "Exercise", "Quiz", "Finish"],
-      2: ["Card is backup", "Do / don’t", "Print optional", "Quiz", "Finish"],
+      2: ["Card is backup", "Do and do not", "Print sheet", "Quiz", "Finish"],
       3: ["Same words", "Compare A/B", "Quiz", "Finish"],
       4: ["Folders", "Toggle path", "Quiz", "Finish"],
       5: ["Public only", "Export", "Quiz", "Finish"],
@@ -118,7 +123,7 @@
   function conceptsFor(id) {
     var c = {
       1: ["Entropy → words", "Backup card", "Address ≠ phrase"],
-      2: ["Card object", "No photo/cloud", "Separate passphrase"],
+      2: ["Card object", "Hand copy only", "Passphrase stored apart"],
       3: ["Optional 25th", "New wallet", "Forgotten = loss"],
       4: ["Path = folder", "BIP purpose", "Index / change"],
       5: ["Watch-only", "zpub/xpub", "Never the seed"],
@@ -156,12 +161,30 @@
     }).join("");
   }
 
+  function entropyHtml() {
+    var n = mem.wordCount || 12;
+    if (mem.mnemonic) {
+      var wn = mem.mnemonic.trim().split(/\s+/).filter(Boolean).length;
+      if (wn) n = wn;
+    }
+    var bits = ENT_BITS[n] || 128;
+    return (
+      '<p class="control-help" id="v2Entropy">' +
+      "<strong>Entropy:</strong> " +
+      bits +
+      " bits (" +
+      n +
+      "-word BIP-39 English). A longer phrase uses more random bits from the operating system. " +
+      "This is still a practice phrase. Do not fund it." +
+      "</p>"
+    );
+  }
+
   function wordGridHtml(m) {
     var words = (m || "").trim().split(/\s+/).filter(Boolean);
     if (!words.length) return '<p class="control-help">Generate to fill this backup.</p>';
     var n = words.length;
-    var cls = n >= 24 ? "word-grid w24" : "word-grid";
-    var html = '<ol class="' + cls + '">';
+    var html = '<ol class="word-grid" id="v2WordGrid">';
     for (var i = 0; i < n; i++) {
       html += '<li><span class="wi">' + (i + 1) + '</span><span class="ww">' + words[i] + "</span></li>";
     }
@@ -216,6 +239,7 @@
       return pad(
         "<h2>Generate a practice phrase</h2>" +
         generateExplainerHtml() +
+        entropyHtml() +
         mnemonicHelpHtml() +
         wordCountSelectHtml() +
         '<div class="row" id="v2GenRow">' +
@@ -231,6 +255,7 @@
       await ensurePhrase();
       return pad(
         "<h2>Look at the numbered backup card</h2>" +
+        entropyHtml() +
         wordGridHtml(mem.mnemonic) +
         '<label class="check"><input type="checkbox" id="v2CardAck" ' + (mem.cardAck ? "checked" : "") + "/> I looked at the backup card (indexes + words).</label>" +
         pauseBtn("Continue to Validate", !mem.cardAck)
@@ -239,14 +264,29 @@
     if (step === 2) {
       await ensurePhrase();
       var gated = !mem.cardAck;
+      var derived = !!(mem.lastRows && mem.lastRows.length);
       return pad(
         "<h2>Validate &amp; derive</h2>" +
+        '<p class="control-help" id="v2DeriveHelp">' +
+        "Addresses come from this phrase after it is stretched into a <strong>seed</strong>. Click Validate and derive. This is not a wallet." +
+        "</p>" +
+        entropyHtml() +
+        pipeHtml(true, derived, derived) +
+        '<div id="v2Card">' +
+        wordGridHtml(mem.mnemonic) +
+        "</div>" +
         (gated
           ? '<p class="msg-bad">Validate is locked until you ack the backup card (previous step).</p>'
-          : '<p class="control-help">Fills receive addresses from the phrase in this tab. Not a wallet.</p>') +
-        '<div class="row"><button type="button" class="btn" id="v2Derive" ' + (gated ? "disabled" : "") + ">Validate &amp; derive</button></div>" +
-        '<div id="v2AddrWrap">' + addrHtml() + "</div>" +
-        pauseBtn("I see an address that is not the phrase", !mem.lastRows)
+          : "") +
+        '<div class="row"><button type="button" class="btn" id="v2Derive" ' +
+        (gated ? "disabled" : "") +
+        ">Validate &amp; derive</button>" +
+        clearBtnHtml() +
+        "</div>" +
+        '<div id="v2AddrWrap">' +
+        (derived ? addrHtml() : '<p class="control-help">Addresses stay hidden until you click Validate and derive.</p>') +
+        "</div>" +
+        pauseBtn("I see an address that is not the phrase", !derived)
       );
     }
     if (step === 3) {
@@ -255,6 +295,7 @@
         "<h2>Exercise</h2>" +
         '<p class="control-help">Generate again with new practice words. Choose 12, 15, 18, 21, or 24 words — the same list as classic Lab. Receive addresses stay hidden until you use Validate and derive.</p>' +
         generateExplainerHtml() +
+        entropyHtml() +
         mnemonicHelpHtml() +
         wordCountSelectHtml() +
         '<div class="row">' +
@@ -281,28 +322,71 @@
   }
 
   async function uc2(step) {
-    await ensurePhrase();
     if (step === 0) {
-      return pad("<h2>The card is the backup</h2>" + wordGridHtml(mem.mnemonic) +
-        '<p class="control-help">Hardware backups look like numbered cells. The textarea is not the object.</p>' +
-        pauseBtn("The card is the backup", false));
+      return pad(
+        "<h2>The numbered card is the backup</h2>" +
+        mnemonicHelpHtml() +
+        '<p class="control-help" id="v2Uc2CardHelp">' +
+        "A paper backup is the numbered cells: index plus word. That object is what you would write by hand. " +
+        "A textarea on a screen is not the backup. This card is practice only. It is not a funded wallet." +
+        "</p>" +
+        (mem.mnemonic
+          ? ""
+          : wordCountSelectHtml() +
+            '<div class="row"><button type="button" class="btn" id="v2Generate">Generate practice card</button>' +
+            clearBtnHtml() +
+            "</div>") +
+        '<div id="v2Card">' +
+        wordGridHtml(mem.mnemonic) +
+        "</div>" +
+        (mem.mnemonic
+          ? '<div class="row">' + clearBtnHtml() + "</div>"
+          : "") +
+        '<label class="check"><input type="checkbox" id="v2CardAck" ' +
+        (mem.cardAck ? "checked" : "") +
+        "/> I looked at the backup card (indexes and words). The card is the backup.</label>" +
+        pauseBtn("The card is the backup", !mem.mnemonic || !mem.cardAck)
+      );
     }
     if (step === 1) {
-      return pad("<h2>Do / don’t</h2><ul class=\"help-list\">" +
-        "<li><strong>Do:</strong> write by hand on paper you control; store separately from any passphrase.</li>" +
-        "<li><strong>Don’t:</strong> photo, cloud drive, chat, or email a funded phrase.</li></ul>" +
-        pauseBtn("I can state do / don’t", false));
+      await ensurePhrase();
+      return pad(
+        "<h2>Do this. Do not do that.</h2>" +
+        mnemonicHelpHtml() +
+        '<p class="control-help">These rules apply to a funded recovery phrase. This lab card is practice. Treat the discipline as if coins were at risk, then do the real backup in a wallet you trust.</p>' +
+        '<div class="v2-donot" id="v2DoNotList">' +
+        '<div class="v2-callout is do"><strong>Do</strong>Copy the numbered cells by hand onto paper you control. Keep any passphrase in a different place from this sheet.</div>' +
+        '<div class="v2-callout isnt dont"><strong>Do not</strong>Photograph the sheet. Do not store it in a cloud drive, chat, or email. Do not keep it on a networked phone if the phrase is funded.</div>' +
+        "</div>" +
+        '<div class="row">' +
+        clearBtnHtml() +
+        "</div>" +
+        pauseBtn("I can state what to do and what not to do", false)
+      );
     }
     if (step === 2) {
-      return pad("<h2>Print optional</h2><p class=\"control-help\">Only on a trusted air-gapped machine. Practice sheet only.</p>" +
-        '<button type="button" class="btn secondary" id="v2Print">Print practice sheet</button>' +
-        pauseBtn("Print is optional after confirm", false));
+      await ensurePhrase();
+      return pad(
+        "<h2>Print is optional, after you confirm</h2>" +
+        '<div class="v2-callout warn" id="v2PrintHelp">' +
+        "<strong>Print is not the safest backup</strong>" +
+        "Printing from this lab means the words are already on a computer, so this is not an air-gap. " +
+        "The safer practice is to copy the numbered cells by hand with the computer offline, and not to print. " +
+        "Print is optional for classroom layout only. Do not use a printed practice sheet for real funds." +
+        "</div>" +
+        '<label class="check"><input type="checkbox" id="v2PrintAck"/> I am printing a practice sheet only. I will not photograph a funded phrase on a networked phone.</label>' +
+        '<div class="row" style="margin-top:0.65rem">' +
+        '<button type="button" class="btn secondary" id="v2Print" disabled>Print practice sheet</button>' +
+        clearBtnHtml() +
+        "</div>" +
+        pauseBtn("Print is optional after I confirm", false)
+      );
     }
     if (step === 3) {
-      return quiz("A photo of a funded backup on a phone is:", [
-        { k: "bad", t: "Fine if the phone is locked." },
-        { k: "ok", t: "A leak surface — don’t." },
-        { k: "bad", t: "Required for Shamir." }
+      return quiz("Which backup is the most secure for a funded phrase?", [
+        { k: "bad", t: "Photograph the sheet, or print it from this computer." },
+        { k: "ok", t: "Write the numbered cells by hand while the computer is offline. Photograph and print from this lab are not the most secure, because the words are on the computer (not an air-gap)." },
+        { k: "bad", t: "Print is as secure as an air-gapped handwritten copy." }
       ]);
     }
     return finishHtml(2);
@@ -527,6 +611,31 @@
     return '<button type="button" class="btn danger" id="v2Clear">Clear secrets</button>';
   }
 
+  function pipeHtml(litWords, litSeed, litAddr) {
+    function st(id, title, detail, on) {
+      return (
+        '<div class="st' +
+        (on ? " hi" : "") +
+        '" data-pipe="' +
+        id +
+        '"><span class="k">' +
+        title +
+        '</span><span class="d">' +
+        detail +
+        "</span></div>"
+      );
+    }
+    return (
+      '<div class="v2-pipe" id="v2Pipe" aria-label="Words to seed to address">' +
+      st("words", "words", "Numbered backup card", !!litWords) +
+      '<span class="arr" aria-hidden="true">→</span>' +
+      st("seed", "seed", "Phrase stretched into a seed (not the address)", !!litSeed) +
+      '<span class="arr" aria-hidden="true">→</span>' +
+      st("addr", "address", "Receive string from that seed", !!litAddr) +
+      "</div>"
+    );
+  }
+
   function pad(inner) {
     return '<div class="card v2-pad">' + inner + "</div>";
   }
@@ -556,10 +665,21 @@
     if (!mem.lastRows || !mem.lastRows.length) {
       return '<p class="control-help">No addresses yet.</p>';
     }
-    var rows = mem.lastRows.map(function (r) {
-      return "<tr><td>" + r.index + "</td><td class=\"addr-text\">" + (r.bip84_p2wpkh || r.bip86_p2tr || "") + "</td></tr>";
+    var cells = mem.lastRows.map(function (r) {
+      return (
+        '<div class="cell"><span class="idx">#' +
+        r.index +
+        '</span><span class="addr-text">' +
+        (r.bip84_p2wpkh || r.bip86_p2tr || "") +
+        "</span></div>"
+      );
     }).join("");
-    return '<table class="addr-table"><thead><tr><th>#</th><th>Receive (BIP84 test)</th></tr></thead><tbody>' + rows + "</tbody></table>";
+    return (
+      '<p class="control-help">Receive addresses from this seed (BIP84 test). At least three sit on one line when the window is wide.</p>' +
+      '<div class="v2-addr-grid" id="v2AddrGrid">' +
+      cells +
+      "</div>"
+    );
   }
 
   function wireStep() {
@@ -578,6 +698,10 @@
         mem.wordCount = parseInt(wc.value, 10) || 12;
         var regenBtn = $("v2Regen");
         if (regenBtn) regenBtn.textContent = "Regenerate " + mem.wordCount + "-word phrase";
+        var ent = $("v2Entropy");
+        if (ent && !mem.mnemonic) {
+          ent.outerHTML = entropyHtml();
+        }
       });
     }
     var gen = $("v2Generate");
@@ -588,10 +712,16 @@
       mem.lastRows = null;
       mem.cardAck = false;
       $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);
+      if ($("v2Entropy")) $("v2Entropy").outerHTML = entropyHtml();
       var aw = $("v2AddrWrap");
       if (aw) {
         aw.innerHTML = "";
         aw.classList.add("v2-hidden");
+      }
+      if (current.id === 2) {
+        mem.cardAck = false;
+        renderTrack();
+        return;
       }
       if (pause) pause.disabled = false;
     });
@@ -607,6 +737,13 @@
       mem.lastRows = r.rows || [];
       $("v2AddrWrap").innerHTML = addrHtml();
       $("v2AddrWrap").classList.remove("v2-hidden");
+      var pipe = $("v2Pipe");
+      if (pipe) {
+        var seedSt = pipe.querySelector('[data-pipe="seed"]');
+        var addrSt = pipe.querySelector('[data-pipe="addr"]');
+        if (seedSt) seedSt.classList.add("hi");
+        if (addrSt) addrSt.classList.add("hi");
+      }
       if (pause) pause.disabled = false;
     });
     var regen = $("v2Regen");
@@ -617,12 +754,31 @@
       mem.lastRows = null;
       mem.cardAck = false;
       $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);
+      if ($("v2Entropy")) $("v2Entropy").outerHTML = entropyHtml();
       regen.textContent = "Regenerate " + n + "-word phrase";
     });
     var clr = $("v2Clear");
     if (clr) clr.addEventListener("click", clearSecrets);
+    var pack = $("v2PrintAck");
     var pr = $("v2Print");
-    if (pr) pr.addEventListener("click", function () { window.print(); });
+    if (pack && pr) {
+      pack.addEventListener("change", function () {
+        pr.disabled = !pack.checked;
+        if (pack.checked) fillPrintSheet(true);
+      });
+    }
+    if (pr) {
+      pr.addEventListener("click", function () {
+        if (pack && !pack.checked) return;
+        fillPrintSheet(false);
+        window.print();
+        var sheet = $("printBackup");
+        if (sheet) {
+          sheet.hidden = true;
+          sheet.setAttribute("aria-hidden", "true");
+        }
+      });
+    }
     var cmp = $("v2Cmp");
     if (cmp) cmp.addEventListener("click", async function () {
       var a = ($("ppA") && $("ppA").value) || "";
@@ -712,11 +868,30 @@
     }
   }
 
+  function fillPrintSheet(keepHidden) {
+    var m = (mem.mnemonic || "").trim();
+    var ol = $("printWordList");
+    if (!ol) return;
+    ol.innerHTML = "";
+    var words = m.split(/\s+/).filter(Boolean);
+    var n = words.length || 12;
+    for (var i = 0; i < n; i++) {
+      var li = document.createElement("li");
+      li.textContent = words[i] || "________";
+      ol.appendChild(li);
+    }
+    var sheet = $("printBackup");
+    if (sheet && !keepHidden) {
+      sheet.hidden = false;
+      sheet.setAttribute("aria-hidden", "false");
+    }
+  }
+
   function clearSecrets() {
     mem.mnemonic = "";
     mem.lastRows = null;
     mem.cardAck = false;
-    if (current && current.id === 1) {
+    if (current && (current.id === 1 || current.id === 2)) {
       current.step = 0;
       renderTrack();
     } else {

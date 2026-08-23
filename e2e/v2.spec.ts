@@ -29,7 +29,14 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await page.locator("#v2CardAck").check();
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2Derive")).toBeEnabled();
+    await expect(page.locator("#v2Card .ww")).toHaveCount(12);
+    await expect(page.locator("#v2Pipe [data-pipe=seed]")).toBeVisible();
+    await expect(page.locator("#v2Pipe [data-pipe=seed]")).toContainText(/seed/i);
+    await expect(page.locator("#v2DeriveHelp")).toContainText(/seed/i);
     await page.locator("#v2Derive").click();
+    await expect(page.locator("#v2Pipe [data-pipe=seed]")).toHaveClass(/hi/);
+    await expect(page.locator("#v2Pipe [data-pipe=addr]")).toHaveClass(/hi/);
+    await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toBeVisible();
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/tb1|bc1/);
   });
@@ -101,6 +108,38 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#v2Card .ww")).toHaveCount(21);
   });
 
+  test("V2-S9 UC1 compact 24-word three lines, entropy bits, three addresses per row", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto("/v2/?uc=1");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Entropy")).toContainText(/128 bits \(12-word/);
+    await page.locator("#v2WordCount").selectOption("24");
+    await page.locator("#v2Generate").click();
+    await expect(page.locator("#v2Entropy")).toContainText(/256 bits \(24-word/);
+    await expect(page.locator("#v2WordGrid .ww")).toHaveCount(24);
+    const cols = await page.locator("#v2WordGrid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+    expect(cols).toBe(8);
+    const y0 = await page.locator("#v2WordGrid li").nth(0).evaluate((el) => el.getBoundingClientRect().y);
+    const y7 = await page.locator("#v2WordGrid li").nth(7).evaluate((el) => el.getBoundingClientRect().y);
+    const y8 = await page.locator("#v2WordGrid li").nth(8).evaluate((el) => el.getBoundingClientRect().y);
+    expect(Math.abs(y7 - y0)).toBeLessThan(6);
+    expect(y8 - y0).toBeGreaterThan(8);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2CardAck").check();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Derive").click();
+    const a0 = await page.locator("#v2AddrGrid .cell").nth(0).boundingBox();
+    const a1 = await page.locator("#v2AddrGrid .cell").nth(1).boundingBox();
+    const a2 = await page.locator("#v2AddrGrid .cell").nth(2).boundingBox();
+    expect(a0 && a1 && a2).toBeTruthy();
+    expect(Math.abs(a0!.y - a1!.y)).toBeLessThan(8);
+    expect(Math.abs(a0!.y - a2!.y)).toBeLessThan(8);
+    const addrBottom = a0!.y + a0!.height;
+    expect(addrBottom).toBeLessThan(1080);
+  });
+
   test("V2-S6 secret-wall no export no session leak", async ({ page }) => {
     await page.goto("/v2/?uc=1");
     await page.locator("#btnGateStart").click();
@@ -115,6 +154,44 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await page.goto("/v2/?uc=99");
     await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator("#viewGate")).toBeHidden();
+  });
+
+  test("V2-S8 UC2 paper backup: card, (i), Clear secrets, do-not copy, print sheet", async ({
+    page,
+  }) => {
+    await page.goto("/v2/?uc=2");
+    await expect(page.locator("#gateIs")).toHaveClass(/is/);
+    await expect(page.locator("#gateIsnt")).toHaveClass(/isnt/);
+    await expect(page.locator("#gateDone")).toHaveClass(/done/);
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#panelTitle")).toContainText(/Paper backup/);
+    await page.locator("#v2Generate").click();
+    await expect(page.locator("#v2Card .ww")).toHaveCount(12);
+    await expect(page.locator("#v2Card")).toContainText(/practice backup/i);
+    await expect(page.locator("#v2Clear")).toHaveClass(/danger/);
+    await page.locator("#wrapMnemonicI").hover();
+    await expect(page.locator("#overlayMnemonic")).toContainText(/English wordlist/);
+    await page.locator("#v2CardAck").check();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2DoNotList")).toBeVisible();
+    await expect(page.locator("#v2DoNotList .do")).toContainText(/^Do/i);
+    await expect(page.locator("#v2DoNotList .dont")).toContainText(/Do not/);
+    await expect(page.locator("#v2DoNotList")).not.toContainText("Don't");
+    await expect(page.locator("#v2DoNotList")).toContainText(/photograph/i);
+    await expect(page.locator("#v2Clear")).toBeVisible();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2PrintHelp")).toContainText(/not an air-gap/i);
+    await expect(page.locator("#v2PrintHelp")).toContainText(/not to print/i);
+    await expect(page.locator("#v2Print")).toBeDisabled();
+    await expect(page.locator("#printBackup")).toHaveCount(1);
+    await page.locator("#v2PrintAck").check();
+    await expect(page.locator("#v2Print")).toBeEnabled();
+    await expect(page.locator("#printWordList li")).toHaveCount(12);
+    await expect(page.locator("#printBackup")).toContainText(/Practice only/);
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-quiz="ok"]').click();
+    await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
+    await expect(page.locator('[data-quiz="ok"]')).toContainText(/not the most secure/i);
   });
 
   test("V2-S3 deep link uc=3 opens passphrase gate", async ({ page }) => {

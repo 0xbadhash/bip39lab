@@ -1,158 +1,221 @@
-# Classic Lab (v1) vs V2 tracks — feature compare
+# Use-case compare: classic Lab (v1) vs V2 tracks
 
-- **Deeplink (hosted):** https://bip39.catalyxt.xyz/v2/compare.md
-- **Local:** `/v2/compare.md` (same origin as the V2 app)
-- **Date:** 2026-08-23
-- **V1:** `web/index.html` + rooms (`/` · stamp currently `v0.16.x`)
-- **V2:** `web/v2/` (`0.17.0-v2`) — parallel surface, **not** a root replace
+- **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
+- **Local:** `/v2/compare.md`
+- **Repo:** `web/v2/compare.md`
+- **As of:** 2026-08-23 (after UC1 generate-chrome ship on V2)
+- **v1:** `/` · `web/index.html` + rooms (`v0.16.35`)
+- **v2:** `/v2/` · `web/v2/` (`0.17.0-v2`)
 
-**Mission (V2 only, always visible):** Practice the custody decision offline, then do the real thing in a wallet you trust.
-
-This note is for CEO / product compare. **Bold “gap” rows** are capabilities that exist in classic Lab (or sibling rooms) and are **missing or only linked-out** on V2.
-
----
-
-## How to read this
+This rewrite is **by use-case (UC1–UC10)**, using the operator highlights from the live V2 pass (Clear secrets placement, word-count list, plain-English generate copy, BIP-39 (i), regenerate length). **Missing** means classic Lab (or a sibling room) has a real control V2 does not yet wire in-track.
 
 | Mark | Meaning |
 |------|---------|
-| Yes | Implemented on that surface |
-| Partial | Subset / demo / deep-link to the other surface |
-| **Gap** | Classic has it; V2 does not (likely missing if V2 were promoted to root) |
-| n/a | Intentionally not on that surface |
+| Yes | In that surface |
+| Partial | Subset, dump, or **link out** to v1 |
+| **Missing** | v1 has it; V2 track does not |
+| Shipped | Highlighted gap that V2 now covers |
 
-V2 **reuses** `bip39lab.bundle.js` + `shamir-core.js`. It is not a second crypto stack. Gaps are **product/UX surface**, not a different BIP-39 library.
-
----
-
-## Navigation & chrome
-
-| Feature | v1 classic | v2 tracks | Notes |
-|---------|------------|-----------|--------|
-| Use-case picker UC1–UC10 | No | Yes | V2 primary entry |
-| Per-track is/isn’t + Done-when gate | No (one Lab ack overlay) | Yes | |
-| Mission sentence in chrome | README only | Yes (sidebar) | |
-| Sidebar rooms Lab / Multisig / Shamir / Network / Tools / Glossary | Yes (in-page + pages) | Partial — **links out** to v1 URLs | V2 is not a 6-room SPA |
-| Classroom level (Starter→Advanced) | Yes `#learnLevel` | **Gap** | No soft-gates by classroom chip |
-| First-hour 6-step sticky rail | Yes | n/a (per-track rails) | Different pedagogy |
-| Theme dark/light | Yes | **Gap** | |
-| Extra help On/Off (`data-teach`) | Yes | **Gap** | Teach-only copy not toggled |
-| Hover-(i) / OK-only overlays | Yes (Generate/Derive/Clear + glossary tips) | **Gap** | V2 has almost no ⓘ |
-| Air-gap / `navigator.onLine` chip | Yes | **Gap** | |
-| Offline-crypto CSP chip | Yes | Partial (CSP on page, no chip) | |
-| Site version chip (prod stamp) | `web/VERSION` | Separate `0.17.0-v2` | By design |
+V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are UX/surface, not a second crypto stack.
 
 ---
 
-## BIP-39 generate / derive (Lab core)
+## Operator highlights (the list you called out)
 
-| Feature | v1 | v2 | Notes |
-|---------|----|----|--------|
-| Generate practice mnemonic (scure) | Yes 12/15/18/21/24 | Partial **12 or 24 only** | **Gap:** 15/18/21 |
-| Generate stays on words (no address jump) | Yes (after 0.16.34+) | Yes (UC1) | |
-| Numbered word card (index + word) | Yes `#labStrip` | Yes (UC1/UC2) | |
-| Practice-backup stamp | Yes | Yes | |
-| Raw mnemonic textarea (paste/edit) | Yes `#mnemonic` | **Gap** | V2 memory-only; no paste pad |
-| Validate & derive | Yes | Yes (UC1, gated on card ack) | |
-| Card-ack before Validate | No | Yes (UC1/UC2 intent) | V2-only |
-| Address table: BIP44 / 49 / 84 / 86 tabs | Yes | **Gap** — BIP84 **testnet** rows only | No Taproot/legacy/nested switch |
-| Mainnet + testnet network control | Yes `#deriveNetwork` | **Gap** — hardcoded `network: "test"` | |
-| Account / change / count controls | Yes | **Gap** (UC4 toggles index 0/1 only) | |
-| Copy address + per-row QR | Yes | **Gap** | |
-| Hide private fields | Yes | **Gap** | |
-| Passphrase on Lab derive (masked + strength bar) | Yes | **Gap** on UC1; UC3 has **plain-text** A/B | No strength meter, no Lab `#passphrase` |
-| Entropy / checksum bit readout | Yes `#entropyMnemonic` | **Gap** | Strip ENT/CS stages not painted |
-| Status / plain-English derive copy | Yes | Partial (short track copy) | |
-| Clear secrets (red) | Yes (mnemonic row) | Yes on UC1 Generate / Regenerate rows (not sidebar) | Empties this-tab practice phrase only |
-| Replace-phrase confirm dialog | Intended (S80) | **Gap** | Neither is reliable; v1 test fails |
-| Keyboard G / D / Esc / ? | Yes | **Gap** | |
+These were **not all** in the first compare.md. Status after the UC1 chrome pass:
+
+| Highlight | Was in first compare.md? | v1 | v2 now | Still missing? |
+|-----------|--------------------------|----|--------|----------------|
+| **Clear secrets** on bottom-left pane; should sit next to Generate | No (treated as “has Clear secrets”) | Mnemonic **row**: Generate · Validate · **Clear secrets** (red) | **Shipped:** `#v2Clear` on UC1 Generate row and Regenerate row. **Not** in the sidebar. | Yes on **UC2–UC10** pads (no Clear secrets on those steps). Picker/sidebar still has none (intentional). |
+| Generate **word count 12, 15, 18, 21, 24** (same as v1) | Yes (v2 “12 or 24 only”) | `#wordCount` five values | **Shipped:** `#v2WordCount` same five values | No on UC1. Other UCs do not expose a length control. |
+| Replace jargon **“OS CSPRNG via Lab’s scure path”** with plain English | No (only “plain-English derive copy”) | Hover overlay: “practice recovery phrase… English words only… nothing leaves this tab” | **Shipped on UC1 Generate:** operating-system random bits → BIP-39 practice phrase; do not send money. No CSPRNG/scure on `#v2GenHelp`. | Other UC steps still use short jargon (zpub, GF(256), PSBT) without a matching (i). |
+| **BIP-39 mnemonic (i) — English words only**, full sentences, **no contractions** | Partial (global “almost no ⓘ”) | `#mnemonic` label + glossary `data-term="MNEMONIC"` hover | **Shipped on UC1 Generate + exercise:** `#wrapMnemonicI` / `#overlayMnemonic` | **Missing** on UC2–UC10. UC2 still uses contractions (“Don’t”). Validate/Clear on V2 have no (i). |
+| **Regenerate 12-word** did not follow 15/18/21; 24 was missing | No (only Generate length) | No separate “Regenerate” button (Generate again + confirm) | **Shipped:** button reads **Regenerate N-word phrase** from the select; 15/18/21/24 tile counts match | None for that bug. v1 still has no labelled regenerate; v1 Generate-again confirm (S80) is its own mess. |
+
+**Read this table first** if you only care what you circled on the screen.
 
 ---
 
-## Tools pack (classic Tools tab)
+## Pedestal (entry / chrome) — not a numbered UC in v1
 
-| Feature | v1 | v2 | Notes |
-|---------|----|----|--------|
-| Path playground + BIP SVG (44/49/84/86) | Yes `#cardPathPlay` | **Gap** — UC4 text + index toggle, **no SVG** | |
-| Path purpose table / coin / account why | Yes | **Gap** | |
-| Toggle receive **and** change | Yes | **Gap** — index 0/1 only | |
-| Entropy pad (dice/coin, bit table, practice seed) | Yes `#cardEntPad` | **Gap** | Beginner quiz Q3/Q4 live here |
-| Compare two passphrases (full table + verdict) | Yes `#cardCmpPp` | Partial UC3 (two lines of BIP84) | **Gap:** honesty banner, Lab-source preview, TEST DATA chip |
-| Output descriptors refresh | Yes | Partial (dumped in UC5 pre) | **Gap:** no dedicated card / copy |
-| Descriptor **explain** (refuse secrets) | Yes `#cardDescExplain` | **Gap** | |
-| PSBT inspect: samples 1, 2, 1-of-2 partial, paste | Yes | Partial — **one** `cHNidP8A` sample | **Gap:** story sample, paste box, never-sign essay fold |
-| Tools “phrase source” / auto TEST DATA | Yes | **Gap** | |
+| Job | v1 | v2 | Missing on v2 |
+|-----|----|----|----------------|
+| How you start | Feature rooms + First-hour rail | **Use-case picker** UC1–UC10 | — (v2 ahead) |
+| Scope gate | One Lab ack overlay (`lab:ack-v1`) | Per-track is / is not + Done when + Start | Collapse not required (ok) |
+| Mission sentence | README | Always in V2 sidebar | — |
+| Clear secrets | On Lab mnemonic **row** | UC1 Generate / Regenerate only | **Missing** beside later UC actions |
+| Theme, Extra help, air-gap chip, Classroom level | Yes | No | **Missing** (power chrome) |
+| Hover-(i) on Generate / Validate / Clear | Yes | UC1 mnemonic (i) only | **Missing** Validate (i), Clear (i), Tools (i) |
+| Glossary in-page | Yes | Link to `/#glossary` | **Missing** in-track terms |
 
 ---
 
-## Advanced Lab surfaces
+## UC1 — First wallet (Starter)
 
-| Feature | v1 | v2 | Notes |
-|---------|----|----|--------|
-| Seed QR (offline, confirm) | Yes (Beginner+) | **Gap** | |
-| Print backup sheet (formatted `#printBackup`) | Yes | Partial UC2 `window.print()` | **Gap:** dedicated print stylesheet / word list sheet |
-| Send addresses → Network session bridge | Yes | **Gap** | UC10 only **links** to `network.html` |
-| Watch-only UI (purpose tabs, copy, QR) | Yes | Partial dump in `<pre>` | **Gap:** zpub/ypub/xpub **tabs**, copy, QR |
-| BIP-85 educational demo | Yes `#btnBip85Demo` | **Gap** | |
-| Beginner stills (key / dice / lock) | Yes | **Gap** | |
-| Intermediate stills (keys ≠ shares ≠ SLIP-39) | Yes | **Gap** | |
-| Advanced master→child face | Yes | **Gap** | |
-| `#labStrip` gradual paint by level | Yes | **Gap** | |
-| In-page Glossary + search | Yes | **Gap** — link to v1 `#glossary` | |
-| Guided Q1–Q4 + I1–I4 + A1–A4 boards | Yes | Partial — one quiz **per track** | Different item bank; no “Go try” docks |
+**v1 home:** Lab `#card-mnemonic`, `#labStrip`, `#addrTable`, `#btnGenerate`, `#btnDerive`, `#btnClear`.
 
----
-
-## Sibling rooms (full pages)
-
-| Feature | v1 | v2 | Notes |
-|---------|----|----|--------|
-| Multisig page (M-of-N, BIP67, public keys, build) | Yes `/multisig.html` | Partial UC6: 3 throwaway xpubs + **link** | **Gap:** real M-of-N builder, script, QR |
-| Shamir GF(256) split/recombine UI | Yes `/shamir.html` | Partial UC7: one-shot 2-of-3 in `<pre>` + **link** | **Gap:** full share cards, fail-then-M-of-N drill |
-| **SLIP-39 lab** `/slip39.html` | Yes (lab-only) | **Gap** | Spec: do not claim Suite; still a v1 room |
-| Network fees + opt-in address balances | Yes `/network.html` | Partial UC10 **link only** | **Gap:** no fee bands, no lookup, no leak ack UI on V2 |
-| Fee API / mempool proxy | Yes (Network CSP) | n/a (V2 CSP `connect-src 'none'`) | Correct for V2 Lab pages |
+| Capability | v1 | v2 UC1 | Missing on v2 |
+|------------|----|--------|----------------|
+| Generate practice phrase | Yes | Yes | — |
+| Word count 12 / 15 / 18 / 21 / 24 | Yes | **Yes (shipped)** | — |
+| Words first; no address jump | Yes | Yes | — |
+| Numbered card + practice stamp | Yes (`#labStrip`) | Yes | Gradual **ENT → checksum → seed → address** strip paint |
+| BIP-39 (i) English words only | Glossary tip | **Yes (shipped)** | — |
+| Plain-English randomness copy | Hover overlay | **Yes (shipped)** | — |
+| Clear secrets next to Generate | Yes | **Yes (shipped)** | — |
+| Validate gated on “I looked at the card” | No | Yes | — |
+| Receive table after Validate | BIP44/49/84/86 tabs, main/test, account/change/count, copy, QR | BIP84 **testnet**, 5 rows, no copy/QR | **Missing:** type tabs, mainnet, path controls, copy, QR, hide-private |
+| Paste / edit raw `#mnemonic` | Yes | No | **Missing** |
+| Entropy bit line | Yes | No | **Missing** |
+| Passphrase on this derive | Masked + strength | No (UC3) | **Missing** on UC1 |
+| Seed QR / print / send → Network | Beginner+ | No | **Missing** |
+| Force-exit “will not fund” | Banner only | Yes checkbox | — |
 
 ---
 
-## Pedagogy / state
+## UC2 — Paper backup (Starter)
 
-| Feature | v1 | v2 |
-|---------|----|----|
-| First-visit ack overlay | Yes `lab:ack-v1` | Per-track gate (`bip39lab.v2.gateN`) |
-| Force-exit “will not fund practice” | No (banner only) | Yes checkbox before Finish |
-| Pause-before-advance | Partial (hour Go) | Yes explicit pause buttons |
-| Concept strip (3 cards, current `hi`) | No | Yes |
-| Progress persistence | `localStorage` first-hour / quiz / level | `sessionStorage` `bip39lab.v2` (tab-scoped) |
-| Deep link into a lesson | Hash tabs `#tools` | `?uc=3` |
-| Learn-return dock / quiz evidence | Yes | **Gap** |
+**v1 home:** numbered strip + `#btnPrintBackup` + `#printBackup` print sheet.
 
----
-
-## Likely missing on V2 if you promoted it to root tomorrow
-
-These are the **high-impact gaps** (not “nice-to-have copy”):
-
-1. **Power Lab controls** — paste mnemonic, 15/18/21 words, mainnet, BIP44/49/86 tabs, account/change/count.
-2. **Address actions** — copy, QR, hide-private, seed QR, send-to-Network handoff.
-3. **Passphrase-on-derive** — masked field + strength; UC3 is compare-only.
-4. **Path playground fidelity** — BIP SVG, change-chain toggle, purpose table.
-5. **Entropy pad + bit verdicts** (classroom Q3/Q4).
-6. **PSBT paste + extra samples**; descriptor explain.
-7. **Full Multisig / Shamir / SLIP-39 / Network UIs** (V2 only deep-links).
-8. **Glossary, Extra help, theme, air-gap chip, hover-(i).**
-9. **Classroom levels + First-hour sticky rail + chapter stills.**
-10. **Watch-only chrome** (tabs, copy, QR) vs a text dump.
-
-V2 **ahead of v1:** use-case picker, per-track gate + Done when, generate→card→ack→derive, force-exit, mission in chrome, concept strip, pause rails.
+| Capability | v1 | v2 UC2 | Missing on v2 |
+|------------|----|--------|----------------|
+| Card = backup object | Strip in Lab | Numbered grid + card-ack (shipped) | — |
+| Print practice sheet | Dedicated print CSS + word list | **Shipped:** `#printBackup` sheet, confirm before print | — |
+| Clear secrets on this pad | Lab row (always) | **Shipped** on UC2 steps | — |
+| Full sentences, no contractions | Mixed | **Shipped:** “Do not” (no Don’t) | — |
+| BIP-39 (i) | Lab | **Shipped** on card + do-not steps | — |
+| Photo/cloud warning | Teach copy | **Shipped** full-sentence list | — |
 
 ---
 
-## What V2 is for (so gaps are not all bugs)
+## UC3 — Passphrase / 25th word (Beginner)
 
-V2 is a **guided custody curriculum** beside classic rooms. Rooms stay as implementation surfaces. Promoting V2 to `/` without porting the gap list would **drop** the power-user lab.
+**v1 home:** Lab `#passphrase` (password) + `#ppStrengthBlock` + Tools `#cardCmpPp`.
 
-Classic stays canonical until an explicit promote ship.
+| Capability | v1 | v2 UC3 | Missing on v2 |
+|------------|----|--------|----------------|
+| Compare A vs B addresses | Full table + verdict + Lab phrase source + TEST DATA | Two BIP84 lines in `<pre>` | **Missing:** table, honesty banner, TEST DATA chip, “use Lab phrase” |
+| Masked Lab passphrase + strength bar | Yes | Plain-text A/B | **Missing** strength; shoulder-surf warning is weak |
+| Empty A vs `test` in B | Yes | Yes (default B=`test`) | — |
+| (i) PASSPHRASE | Yes | No | **Missing** |
+| No contractions / full explain | Mixed | Short lines; “25th factor” | **Missing** full Lab-style overlay |
+
+---
+
+## UC4 — Path folders (Beginner)
+
+**v1 home:** Tools `#cardPathPlay` + BIP SVG 44/49/84/86 + toggle receive/change + index.
+
+| Capability | v1 | v2 UC4 | Missing on v2 |
+|------------|----|--------|----------------|
+| Path = folder, words unchanged | Yes | Yes (text) | — |
+| BIP map SVG (44/49/84/86) | Yes | No | **Missing** |
+| Toggle **change** (receive vs change) | Yes | No | **Missing** (index 0/1 only) |
+| Purpose / coin / account why-table | Yes | No | **Missing** |
+| Open Lab path controls | Removed in v1 | n/a | — |
+| (i) PATH | Yes | No | **Missing** |
+
+---
+
+## UC5 — Watch-only (Beginner)
+
+**v1 home:** Lab watch-only panel + Tools descriptors.
+
+| Capability | v1 | v2 UC5 | Missing on v2 |
+|------------|----|--------|----------------|
+| Export zpub/xpub/ypub | Purpose **tabs**, copy, QR | One `<pre>` dump | **Missing:** tabs, copy, QR |
+| Output descriptors | Dedicated card + explain | Dump lines | **Missing:** `#cardDescExplain`, refuse-private UX |
+| Never paste seed into watch app | Copy + quiz elsewhere | Quiz yes | — |
+| (i) WATCHONLY / DESCRIPTOR | Yes | No | **Missing** |
+
+---
+
+## UC6 — Multisig (Intermediate)
+
+**v1 home:** `/multisig.html` (M-of-N, BIP67, build, copy).
+
+| Capability | v1 | v2 UC6 | Missing on v2 |
+|------------|----|--------|----------------|
+| Keys ≠ BIP-39 shares | Teach + stills | Text + quiz | **Missing** intermediate stills |
+| Real M-of-N builder | Yes | 3 throwaway xpubs in `<pre>` + **link** | **Missing:** policy, BIP67, P2SH/P2WSH, copy/QR |
+| Clear / rebuild | Yes | No | **Missing** |
+
+---
+
+## UC7 — Shamir (Intermediate)
+
+**v1 home:** `/shamir.html` + `/slip39.html` (lab-only).
+
+| Capability | v1 | v2 UC7 | Missing on v2 |
+|------------|----|--------|----------------|
+| GF(256) split/combine | Share **cards**, fail then M-of-N | One-shot 2-of-3 `<pre>` + **link** | **Missing:** cards, under-threshold error UX |
+| SLIP-39 lab | `/slip39.html` | Explicitly not Suite; **no page** | **Missing** as a room (by spec: no Suite claim; v1 still has the lab) |
+| Shares ≠ cosigners | Stills + copy | Quiz | **Missing** stills |
+
+---
+
+## UC8 — PSBT / air-gap (Intermediate)
+
+**v1 home:** Tools `#cardPsbt` (samples 1, 2, 1-of-2 partial, paste, inspect, never sign).
+
+| Capability | v1 | v2 UC8 | Missing on v2 |
+|------------|----|--------|----------------|
+| Inspect structure only | Yes | Yes (minimal `cHNidP8A`) | **Missing:** sample 2, partial, **paste box**, teach fold |
+| Never sign / broadcast | Yes | Quiz + copy | — |
+| (i) PSBT / BIP174 | Yes | No | **Missing** |
+
+---
+
+## UC9 — xpub privacy (Intermediate / Advanced in v1)
+
+**v1 home:** watch-only export + advanced master→child face.
+
+| Capability | v1 | v2 UC9 | Missing on v2 |
+|------------|----|--------|----------------|
+| Show account xpub / zpub | Tabs + copy + QR | One BIP84 key in `<pre>` | **Missing:** copy, QR, other purposes |
+| xpub ≠ spend + privacy | Copy | Quiz | **Missing** master→child strip/face |
+| Hide xprv | Yes | Claims “no xprv” | — |
+
+---
+
+## UC10 — Network leak (Advanced)
+
+**v1 home:** `/network.html` fees, leak ack, address balances, Lab session bridge.
+
+| Capability | v1 | v2 UC10 | Missing on v2 |
+|------------|----|--------|----------------|
+| Default Lab offline | CSP `connect-src 'none'` | Same on `/v2/` | — |
+| Opt-in lookup | Full Network UI | **Link only** | **Missing:** fees, bands, leak checkbox, fetch, unknown ≠ 0 live display |
+| Send addresses from Lab | `#btnSendNetwork` | No | **Missing** session handoff |
+| unknown ≠ 0 | Fail-closed UI | Quiz only | **Missing** live fail display |
+
+---
+
+## What V2 has that v1 does not (do not treat as gaps)
+
+- Use-case picker + Done-when cards
+- Per-track force gate
+- Horizontal track rail + 3-card concept strip + pause-before-advance
+- UC1 card-ack before Validate
+- Force-exit checkbox
+- Mission in chrome
+- Deep link `?uc=N`
+
+---
+
+## If you promoted V2 to `/` tomorrow — still missing (priority)
+
+1. **Your highlights leftover:** (i) + full no-contraction copy on **every** UC, not only UC1 Generate; Clear secrets on later pads.
+2. **UC1 power derive:** paste mnemonic, BIP44/49/86, mainnet, copy/QR, hide-private.
+3. **UC3** full Compare card + masked strength.
+4. **UC4** Path SVG + receive/change.
+5. **UC5/UC9** watch-only tabs + copy/QR + descriptor explain.
+6. **UC6/UC7** real Multisig / Shamir rooms (not `<pre>` + link).
+7. **UC8** PSBT paste + extra samples.
+8. **UC10** live Network opt-in, not a link.
+9. **SLIP-39 lab**, glossary, Extra help, theme, Classroom levels.
+
+Classic `/` stays the power lab until an explicit promote.
 
 ---
 
@@ -163,4 +226,3 @@ Classic stays canonical until an explicit promote ship.
 | https://bip39.catalyxt.xyz/v2/compare.md | This file (after deploy) |
 | https://bip39.catalyxt.xyz/v2/ | V2 picker |
 | https://bip39.catalyxt.xyz/ | Classic Lab |
-| Repo path | `web/v2/compare.md` |
