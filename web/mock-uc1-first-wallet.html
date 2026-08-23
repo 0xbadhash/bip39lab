@@ -24,7 +24,7 @@
 .pair{display:flex;gap:.25rem}.idx{width:28px;height:28px;border-radius:6px;border:1px solid var(--bd);background:var(--p2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
 .wd{flex:1;border:1px solid var(--bd);border-radius:8px;background:var(--panel);padding:.3rem .45rem;font-family:var(--m)}
 .muted{color:var(--mu);font-size:.8rem}.hidden{display:none!important}
-.pause,.exercise,.exit{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
+.pause,.exercise,.exit,.ex{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
 .exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
 .viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
 .viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
@@ -33,6 +33,7 @@
 .table th,.table td{border:1px solid var(--bd);padding:.35rem}
 .overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
 .panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+.msg-ok{color:var(--ok)!important;font-weight:600}.msg-bad{color:var(--bad)!important;font-weight:600}
 @media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
 </style></head>
 <body>
@@ -42,13 +43,13 @@
 <p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
 <div class="banner">Air-gap recommended. Practice only. Do not use a funded phrase.</div>
 <div class="card">
-<div class="row" style="justify-content:space-between"><strong>First wallet</strong><span class="chip" id="prog">0/4</span></div>
-<div class="rail" id="rail">
-<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Generate</span><span>→</span>
-<span class="circ" data-s="2">2</span><span class="name" data-s="2">Backup card</span><span>→</span>
-<span class="circ" data-s="3">3</span><span class="name" data-s="3">Address ≠ phrase</span><span>→</span>
-<span class="circ" data-s="4">4</span><span class="name" data-s="4">Exercise</span><span>→</span>
-<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+<div class="row" style="justify-content:space-between"><strong>First wallet</strong><span class="chip" id="prog">0/5</span></div>
+<div class="rail">
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Idea</span><span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">Generate</span><span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Backup card</span><span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Address ≠ phrase</span><span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Quiz + exit</span>
 </div></div>
 <div class="card">
 <div class="viz">
@@ -56,6 +57,11 @@
 <div id="v2"><strong>Receive address</strong><br/>Public bc1q… Not the phrase.</div>
 <div id="v3"><strong>Many addresses</strong><br/>Same phrase, path index 0,1,2…</div>
 </div>
+<div class="pause" id="idea">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> A recovery phrase is entropy as words (e.g. 128-bit → 12 words). Anyone with the words can move coins in a real wallet. Here: practice only.</p>
+<button class="btn primary" id="ideaGo">I understand what a phrase is</button>
+</div>
+<div class="hidden" id="genBox">
 <div class="row">
 <label class="muted">Words <select id="wc"><option value="12">12 · 128 bit</option><option value="24">24 · 256 bit</option></select></label>
 <span class="chip" id="ent">ENT 128</span>
@@ -76,7 +82,7 @@
 </div>
 <div class="exercise hidden" id="ex">
 <strong>Exercise</strong>
-<p class="muted">Prove a new phrase changes addresses before “many addresses.”</p>
+<p class="muted">Prove a new phrase changes addresses.</p>
 <div class="row">
 <button class="btn primary" id="regen">Regenerate</button>
 <button class="btn" id="to24">Switch to 24 words</button>
@@ -85,49 +91,65 @@
 </div>
 <p class="muted">Before: <code id="b4">—</code> · After: <code id="af">—</code></p>
 <p class="muted" id="exmsg"></p>
-<p class="muted">Passphrase (25th word) = UC3 later — not required here.</p>
+<p class="muted">Passphrase (25th word) = UC3 later.</p>
+</div>
+<div class="ex hidden" id="quiz">
+<strong>Check</strong>
+<p class="muted">Which is true?</p>
+<label class="muted"><input type="radio" name="q" value="a"/> The receive address is the same thing as the recovery phrase.</label><br/>
+<label class="muted"><input type="radio" name="q" value="b"/> The phrase is secret; the address is public and safe to share.</label><br/>
+<label class="muted"><input type="radio" name="q" value="c"/> Practice addresses should be funded to test the lab.</label>
+<p class="muted" id="qmsg"></p>
+<button class="btn primary" id="qGo" disabled>Confirm</button>
 </div>
 <div class="exit hidden" id="exit">
 <strong>Force exit</strong>
 <label class="muted"><input type="checkbox" id="ack"/> I will not fund these practice addresses or import this practice phrase into a funded wallet.</label>
 <div class="row"><button class="btn primary" id="fin" disabled>Finish UC1</button></div>
 </div>
+</div>
 </main></div>
 <div class="overlay" id="gate"><div class="panel">
-<h2>What this is / isn’t</h2>
-<p class="muted">Offline classroom · practice phrases · not a wallet · not for funded seeds.</p>
+<h2>UC1 · First wallet</h2>
+<p class="muted">Starter. <strong>Done when:</strong> you can generate a practice phrase, treat the numbered card as the backup, and know address ≠ phrase — then set up a real wallet outside this site.</p>
+<p class="muted">Offline classroom · practice only · not a wallet · not for funded seeds.</p>
 <button class="btn primary" id="go">I understand — start</button>
 </div></div>
 <script>
 var W12="control catch mixture gift size glimpse hamster pizza income ignore fall aerobic".split(" ");
 var W24=W12.concat("river open focus usual verify simple cloth eagle frame journey ocean pattern".split(" "));
 var A=[["bc1qk0a9hr7wjfxeenz9nwenw9flhq0tmsf6vsgnn2","bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"],["bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu","bc1qjp00l37lrqyeqac5yhfyrdlx9m6qzhp5h3y5h0"]];
-var step=0,has=0,seen=0,addr=0,ex=0,done=0,set=0,b4="";
+var step=0,idea=0,has=0,seen=0,addr=0,ex=0,quiz=0,set=0,b4="";
 function $(i){return document.getElementById(i)}
 function show(e,o){e.classList.toggle("hidden",!o)}
 function fill(ws){var g=$("grid");g.innerHTML="";ws.forEach(function(w,i){g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">'+w+'</div></div>'})}
-function empty(){fill(Array(+$("wc").value).fill("—"))}
-function words(){return (+$("wc").value===24?(set?W24:W24):W12)}
+function empty(){fill(Array(+$("wc").value||12).fill("—"))}
+function words(){return +$("wc").value===24?W24:W12}
 function paint(){
  document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
- $("prog").textContent=((has?1:0)+(seen?1:0)+(addr?1:0)+(ex?1:0))+"/4";
+ $("prog").textContent=((idea?1:0)+(has?1:0)+(seen?1:0)+(addr?1:0)+(quiz?1:0))+"/5";
  $("val").disabled=!(has&&seen);
  ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
  if(step<=2){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
- else if(step===3){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step<=4){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
  else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
 }
 $("go").onclick=function(){show($("gate"),0);step=1;paint()};
+$("ideaGo").onclick=function(){idea=1;show($("idea"),0);show($("genBox"),1);step=2;paint()};
 $("wc").onchange=function(){$("ent").textContent=+$("wc").value===24?"ENT 256":"ENT 128";if(!has)empty()};
-$("gen").onclick=function(){has=1;seen=0;addr=0;ex=0;done=0;set=0;fill(words());show($("pause"),1);show($("addrs"),0);show($("ex"),0);show($("exit"),0);step=2;paint()};
+$("gen").onclick=function(){has=1;seen=0;addr=0;ex=0;quiz=0;set=0;fill(words());show($("pause"),1);show($("addrs"),0);show($("ex"),0);show($("quiz"),0);show($("exit"),0);step=3;paint()};
 $("seen").onclick=function(){if(!has)return;seen=1;show($("pause"),0);paint()};
-$("val").onclick=function(){if(!has||!seen)return;addr=1;b4=A[0][0];$("b4").textContent=b4;$("abody").innerHTML="<tr><td>0</td><td>"+A[0][0]+"</td><td>m/84h/0h/0h/0/0</td></tr><tr><td>1</td><td>"+A[0][1]+"</td><td>m/84h/0h/0h/0/1</td></tr>";show($("addrs"),1);show($("ex"),1);step=3;paint()};
-$("regen").onclick=function(){set=1;has=1;addr=0;fill(words());show($("addrs"),0);$("val2").disabled=0;$("exdone").disabled=1;$("af").textContent="—";$("exmsg").textContent="New phrase. Validate again.";step=4;paint()};
-$("to24").onclick=function(){$("wc").value=24;$("ent").textContent="ENT 256";set=1;fill(words());show($("addrs"),0);$("val2").disabled=0;$("exdone").disabled=1;$("af").textContent="—";$("exmsg").textContent="24-word phrase. Validate again.";step=4;paint()};
-$("val2").onclick=function(){addr=1;var a=A[1][0];$("af").textContent=a;$("abody").innerHTML="<tr><td>0</td><td>"+A[1][0]+"</td><td>m/84h/0h/0h/0/0</td></tr><tr><td>1</td><td>"+A[1][1]+"</td><td>m/84h/0h/0h/0/1</td></tr>";show($("addrs"),1);$("exmsg").textContent="Addresses changed. New phrase ⇒ different numbers.";$("exdone").disabled=0;paint()};
-$("exdone").onclick=function(){ex=1;show($("exit"),1);step=5;paint()};
+$("val").onclick=function(){if(!has||!seen)return;addr=1;b4=A[0][0];$("b4").textContent=b4;$("abody").innerHTML="<tr><td>0</td><td>"+A[0][0]+"</td><td>m/84h/0h/0h/0/0</td></tr><tr><td>1</td><td>"+A[0][1]+"</td><td>m/84h/0h/0h/0/1</td></tr>";show($("addrs"),1);show($("ex"),1);step=4;paint()};
+$("regen").onclick=function(){set=1;has=1;addr=0;fill(words());show($("addrs"),0);$("val2").disabled=0;$("exdone").disabled=1;$("af").textContent="—";$("exmsg").className="muted";$("exmsg").textContent="New phrase. Validate again.";paint()};
+$("to24").onclick=function(){$("wc").value=24;$("ent").textContent="ENT 256";set=1;fill(words());show($("addrs"),0);$("val2").disabled=0;$("exdone").disabled=1;$("af").textContent="—";$("exmsg").className="muted";$("exmsg").textContent="24-word phrase. Validate again.";paint()};
+$("val2").onclick=function(){addr=1;$("af").textContent=A[1][0];$("abody").innerHTML="<tr><td>0</td><td>"+A[1][0]+"</td><td>m/84h/0h/0h/0/0</td></tr><tr><td>1</td><td>"+A[1][1]+"</td><td>m/84h/0h/0h/0/1</td></tr>";show($("addrs"),1);$("exmsg").className="msg-ok";$("exmsg").textContent="Addresses changed. New phrase ⇒ different numbers.";$("exdone").disabled=0;paint()};
+$("exdone").onclick=function(){ex=1;show($("quiz"),1);step=5;paint()};
+document.querySelectorAll("input[name=q]").forEach(function(r){r.onchange=function(){$("qGo").disabled=0}});
+$("qGo").onclick=function(){var v=(document.querySelector("input[name=q]:checked")||{}).value;
+ if(v==="b"){quiz=1;$("qmsg").className="msg-ok";$("qmsg").textContent="Correct — phrase is secret; address is public.";show($("exit"),1);paint()}
+ else{$("qmsg").className="msg-bad";$("qmsg").textContent="No — address ≠ phrase, and practice addresses must not be funded."}};
 $("ack").onchange=function(){$("fin").disabled=!this.checked};
-$("fin").onclick=function(){done=1;alert("UC1 complete. Next optional: UC3 Passphrase.");paint()};
-$("clr").onclick=function(){has=seen=addr=ex=done=0;empty();show($("pause"),0);show($("addrs"),0);show($("ex"),0);show($("exit"),0);step=1;paint()};
+$("fin").onclick=function(){alert("UC1 complete. Next optional: UC2 Paper backup.");};
+$("clr").onclick=function(){has=seen=addr=ex=quiz=0;empty();show($("pause"),0);show($("addrs"),0);show($("ex"),0);show($("quiz"),0);show($("exit"),0);step=2;paint()};
 empty();paint();
 </script></body></html>
