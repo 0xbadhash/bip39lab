@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UC10 mock · Network leak discipline</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;--r:12px;--rs:8px;--f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px}
+.app{display:grid;grid-template-columns:180px 1fr;min-height:100vh}
+.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.8rem}.brand{font-weight:700}.brand span{color:var(--ac)}
+.main{padding:1rem;max-width:900px}
+.banner{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.08);color:#f0d78a;border-radius:var(--r);padding:.5rem .7rem;margin:0 0 .7rem;font-size:.8rem}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem;margin:0 0 .7rem}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.4rem .7rem;font:inherit;cursor:pointer}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.4rem 0}
+.chip{border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem;font-size:.7rem;color:var(--mu)}
+.rail{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.circ{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.circ.on{border-color:var(--ac);color:var(--ac)}.circ.done{color:var(--ok);border-color:var(--ok)}
+.name{border:1px solid var(--bd);border-radius:999px;padding:.15rem .5rem;font-size:.78rem;color:var(--mu)}
+.name.on{border-color:var(--ac);color:var(--tx);font-weight:600}.name.done{color:var(--ok)}
+.muted{color:var(--mu);font-size:.8rem}.hidden{display:none!important}
+.pause,.ex,.exit{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
+.exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
+.viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
+.viz .hi{border-color:var(--ac)}.viz .dim{opacity:.4}
+.box{font-family:var(--m);font-size:.78rem;padding:.5rem;border:1px solid var(--bd);border-radius:8px;background:var(--panel);margin:.35rem 0}
+.overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
+.panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+.msg-ok{color:var(--ok)!important;font-weight:600}.msg-bad{color:var(--bad)!important;font-weight:600}
+@media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">bip39<span>·lab</span></div><p class="muted" style="font-size:.75rem">UC10 Network</p><span class="chip">MOCK</span></aside>
+<main class="main">
+<p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+<div class="banner">Default offline. Balances, fees, broadcast only after explicit opt-in. Never a funded seed.</div>
+<div class="card">
+<div class="row" style="justify-content:space-between"><strong>Network leak discipline</strong><span class="chip" id="prog">0/4</span></div>
+<div class="rail">
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Default off</span> <span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">Opt-in</span> <span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Fees</span> <span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Discipline</span> <span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+</div></div>
+<div class="card">
+<div class="viz">
+<div id="v1"><strong>Default offline</strong><br/>Crypto stays in the tab until you opt in.</div>
+<div id="v2"><strong>Explicit leak</strong><br/>Balances / fees / broadcast are conscious choices.</div>
+<div id="v3"><strong>No funded seed</strong><br/>Network never needs the recovery phrase.</div>
+</div>
+<div class="pause" id="idea">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> Network features only after explicit opt-in — practice addresses should not leak by default.</p>
+<button class="btn primary" id="ideaGo">Default = offline</button>
+</div>
+<div class="hidden" id="opt">
+<div class="box">☐ Fetch balances for practice addresses<br/>☐ Estimate fees from public mempool<br/>☐ Broadcast a signed PSBT</div>
+<div class="pause">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> Each checkbox is a conscious leak of public data. Seeds never leave with these.</p>
+<button class="btn primary" id="optGo">I understand explicit opt-in</button>
+</div>
+</div>
+<div class="ex hidden" id="fee">
+<strong>Fees are real</strong>
+<label class="muted"><input type="radio" name="f" value="a"/> Practice mode means on-chain fees are always free.</label><br/>
+<label class="muted"><input type="radio" name="f" value="b"/> Real broadcasts pay miner fees; fee estimates are network data you opt into.</label><br/>
+<label class="muted"><input type="radio" name="f" value="c"/> Fees are paid by pasting your seed into the explorer.</label>
+<p class="muted" id="fmsg"></p>
+<button class="btn primary" id="fGo" disabled>Confirm</button>
+</div>
+<div class="ex hidden" id="quiz">
+<strong>Leak discipline</strong>
+<label class="muted"><input type="radio" name="q" value="a"/> Auto-fetch balances on every page load for convenience.</label><br/>
+<label class="muted"><input type="radio" name="q" value="b"/> Keep network off until you deliberately opt in; never send a funded seed.</label><br/>
+<label class="muted"><input type="radio" name="q" value="c"/> Always broadcast practice PSBTs to test the pipes.</label>
+<p class="muted" id="qmsg"></p>
+<button class="btn primary" id="qGo" disabled>Confirm</button>
+</div>
+<div class="exit hidden" id="exit">
+<strong>UC10 force exit</strong>
+<label class="muted"><input type="checkbox" id="ack"/> I will treat network features as explicit opt-in, will not auto-leak practice addresses, and will never put a funded seed into this lab.</label>
+<div class="row"><button class="btn primary" id="fin" disabled>Finish UC10</button></div>
+</div>
+</div>
+</main></div>
+<div class="overlay" id="gate"><div class="panel">
+<h2>UC10 · Network</h2>
+<p class="muted">Advanced. Model only.</p>
+<button class="btn primary" id="go">I understand — start</button>
+</div></div>
+<script>
+var step=0,s1=0,s2=0,s3=0,s4=0;
+function $(i){return document.getElementById(i)}
+function show(e,o){e.classList.toggle("hidden",!o)}
+function paint(){
+ document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
+ $("prog").textContent=((s1?1:0)+(s2?1:0)+(s3?1:0)+(s4?1:0))+"/4";
+ ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
+ if(step<=1){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step<=2){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
+}
+$("go").onclick=function(){show($("gate"),0);step=1;paint()};
+$("ideaGo").onclick=function(){s1=1;show($("idea"),0);show($("opt"),1);step=2;paint()};
+$("optGo").onclick=function(){s2=1;show($("opt"),0);show($("fee"),1);step=3;paint()};
+document.querySelectorAll("input[name=f]").forEach(function(r){r.onchange=function(){$("fGo").disabled=0}});
+$("fGo").onclick=function(){var v=(document.querySelector("input[name=f]:checked")||{}).value;
+ if(v==="b"){s3=1;$("fmsg").className="msg-ok";$("fmsg").textContent="Correct — fees are network reality; estimates are opt-in data.";show($("quiz"),1);step=4;paint()}
+ else{$("fmsg").className="msg-bad";$("fmsg").textContent="No — practice does not make chain fees free, and seeds never pay fees."}};
+document.querySelectorAll("input[name=q]").forEach(function(r){r.onchange=function(){$("qGo").disabled=0}});
+$("qGo").onclick=function(){var v=(document.querySelector("input[name=q]:checked")||{}).value;
+ if(v==="b"){s4=1;$("qmsg").className="msg-ok";$("qmsg").textContent="Correct.";show($("exit"),1);step=5;paint()}
+ else{$("qmsg").className="msg-bad";$("qmsg").textContent="No — default offline; do not auto-leak or casual-broadcast."}};
+$("ack").onchange=function(){$("fin").disabled=!this.checked};
+$("fin").onclick=function(){alert("UC10 complete. Full mock set UC1–UC10 ready for review.");};
+paint();
+</script></body></html>

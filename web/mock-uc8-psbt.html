@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UC8 mock · PSBT / air-gap</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;--r:12px;--rs:8px;--f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px}
+.app{display:grid;grid-template-columns:180px 1fr;min-height:100vh}
+.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.8rem}.brand{font-weight:700}.brand span{color:var(--ac)}
+.main{padding:1rem;max-width:900px}
+.banner{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.08);color:#f0d78a;border-radius:var(--r);padding:.5rem .7rem;margin:0 0 .7rem;font-size:.8rem}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem;margin:0 0 .7rem}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.4rem .7rem;font:inherit;cursor:pointer}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.4rem 0}
+.chip{border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem;font-size:.7rem;color:var(--mu)}
+.rail{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.circ{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.circ.on{border-color:var(--ac);color:var(--ac)}.circ.done{color:var(--ok);border-color:var(--ok)}
+.name{border:1px solid var(--bd);border-radius:999px;padding:.15rem .5rem;font-size:.78rem;color:var(--mu)}
+.name.on{border-color:var(--ac);color:var(--tx);font-weight:600}.name.done{color:var(--ok)}
+.muted{color:var(--mu);font-size:.8rem}.hidden{display:none!important}
+.pause,.ex,.exit{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
+.exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
+.viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
+.viz .hi{border-color:var(--ac)}.viz .dim{opacity:.4}
+.box{font-family:var(--m);font-size:.78rem;padding:.5rem;border:1px solid var(--bd);border-radius:8px;background:var(--panel);margin:.35rem 0}
+.overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
+.panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+.msg-ok{color:var(--ok)!important;font-weight:600}.msg-bad{color:var(--bad)!important;font-weight:600}
+@media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">bip39<span>·lab</span></div><p class="muted" style="font-size:.75rem">UC8 PSBT</p><span class="chip">MOCK</span></aside>
+<main class="main">
+<p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+<div class="banner">PSBT = inspect + sign offline + broadcast online. Never paste a seed into a broadcaster.</div>
+<div class="card">
+<div class="row" style="justify-content:space-between"><strong>PSBT / air-gap</strong><span class="chip" id="prog">0/4</span></div>
+<div class="rail">
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Idea</span> <span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">Inspect</span> <span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Air-gap</span> <span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Not seed</span> <span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+</div></div>
+<div class="card">
+<div class="viz">
+<div id="v1"><strong>PSBT</strong><br/>Partially signed tx you can review before signing.</div>
+<div id="v2"><strong>Air-gap</strong><br/>Online builds · offline signs · online broadcasts.</div>
+<div id="v3"><strong>Not the seed</strong><br/>Signing does not require typing recovery words online.</div>
+</div>
+<div class="pause" id="idea">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> PSBT: inspect offline, sign air-gapped, broadcast online — seed never goes online.</p>
+<button class="btn primary" id="ideaGo">I get review → sign → broadcast</button>
+</div>
+<div class="hidden" id="inspect">
+<p class="muted">Demo PSBT summary (not a real tx):</p>
+<div class="box">Inputs: 1 · 0.05 BTC<br/>Outputs: bc1q…payee 0.049 · change bc1q…me 0.0008<br/>Fee: ~0.0002 BTC</div>
+<div class="pause">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> Always read outputs and fee before signing.</p>
+<button class="btn primary" id="inspGo">I checked outputs + fee</button>
+</div>
+</div>
+<div class="ex hidden" id="air">
+<strong>Air-gap model</strong>
+<label class="muted"><input type="radio" name="a" value="a"/> Put the seed on the online laptop, then sign there for speed.</label><br/>
+<label class="muted"><input type="radio" name="a" value="b"/> Build PSBT online → transfer to offline signer → sign → return PSBT → broadcast online.</label><br/>
+<label class="muted"><input type="radio" name="a" value="c"/> Email the recovery phrase with the PSBT so support can help.</label>
+<p class="muted" id="amsg"></p>
+<button class="btn primary" id="aGo" disabled>Confirm</button>
+</div>
+<div class="ex hidden" id="quiz">
+<strong>What PSBT is not</strong>
+<label class="muted"><input type="radio" name="q" value="a"/> PSBT requires pasting your 12 words into the broadcast site.</label><br/>
+<label class="muted"><input type="radio" name="q" value="b"/> PSBT lets you review and sign without exposing the seed to the online machine.</label><br/>
+<label class="muted"><input type="radio" name="q" value="c"/> PSBT is only for multisig; single-sig never uses it.</label>
+<p class="muted" id="qmsg"></p>
+<button class="btn primary" id="qGo" disabled>Confirm</button>
+</div>
+<div class="exit hidden" id="exit">
+<strong>UC8 force exit</strong>
+<label class="muted"><input type="checkbox" id="ack"/> I will treat PSBT as inspect + sign + broadcast, keep the seed offline, and never paste a recovery phrase into a broadcaster.</label>
+<div class="row"><button class="btn primary" id="fin" disabled>Finish UC8</button></div>
+</div>
+</div>
+</main></div>
+<div class="overlay" id="gate"><div class="panel">
+<h2>UC8 · PSBT</h2>
+<p class="muted">Intermediate. Model only.</p>
+<button class="btn primary" id="go">I understand — start</button>
+</div></div>
+<script>
+var step=0,s1=0,s2=0,s3=0,s4=0;
+function $(i){return document.getElementById(i)}
+function show(e,o){e.classList.toggle("hidden",!o)}
+function paint(){
+ document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
+ $("prog").textContent=((s1?1:0)+(s2?1:0)+(s3?1:0)+(s4?1:0))+"/4";
+ ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
+ if(step<=1){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step<=2){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
+}
+$("go").onclick=function(){show($("gate"),0);step=1;paint()};
+$("ideaGo").onclick=function(){s1=1;show($("idea"),0);show($("inspect"),1);step=2;paint()};
+$("inspGo").onclick=function(){s2=1;show($("inspect"),0);show($("air"),1);step=3;paint()};
+document.querySelectorAll("input[name=a]").forEach(function(r){r.onchange=function(){$("aGo").disabled=0}});
+$("aGo").onclick=function(){var v=(document.querySelector("input[name=a]:checked")||{}).value;
+ if(v==="b"){s3=1;$("amsg").className="msg-ok";$("amsg").textContent="Correct — offline sign, online broadcast.";show($("quiz"),1);step=4;paint()}
+ else{$("amsg").className="msg-bad";$("amsg").textContent="No — keep the seed offline; never email the phrase."}};
+document.querySelectorAll("input[name=q]").forEach(function(r){r.onchange=function(){$("qGo").disabled=0}});
+$("qGo").onclick=function(){var v=(document.querySelector("input[name=q]:checked")||{}).value;
+ if(v==="b"){s4=1;$("qmsg").className="msg-ok";$("qmsg").textContent="Correct.";show($("exit"),1);step=5;paint()}
+ else{$("qmsg").className="msg-bad";$("qmsg").textContent="No — PSBT is not paste-seed, and single-sig can use it."}};
+$("ack").onchange=function(){$("fin").disabled=!this.checked};
+$("fin").onclick=function(){alert("UC8 complete. Next: UC9 xpub threat.");};
+paint();
+</script></body></html>

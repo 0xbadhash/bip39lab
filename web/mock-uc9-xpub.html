@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UC9 mock · xpub / privacy threat</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--wn:#e6b84d;--bad:#e85d5d;--r:12px;--rs:8px;--f:Segoe UI,system-ui,sans-serif;--m:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:14px}
+.app{display:grid;grid-template-columns:180px 1fr;min-height:100vh}
+.sidebar{background:var(--el);border-right:1px solid var(--bd);padding:.8rem}.brand{font-weight:700}.brand span{color:var(--ac)}
+.main{padding:1rem;max-width:900px}
+.banner{border:1px solid rgba(230,184,77,.4);background:rgba(230,184,77,.08);color:#f0d78a;border-radius:var(--r);padding:.5rem .7rem;margin:0 0 .7rem;font-size:.8rem}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:.85rem;margin:0 0 .7rem}
+.btn{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:var(--rs);padding:.4rem .7rem;font:inherit;cursor:pointer}
+.btn.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.4rem 0}
+.chip{border:1px solid var(--bd);border-radius:999px;padding:.1rem .45rem;font-size:.7rem;color:var(--mu)}
+.rail{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.circ{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--mu)}
+.circ.on{border-color:var(--ac);color:var(--ac)}.circ.done{color:var(--ok);border-color:var(--ok)}
+.name{border:1px solid var(--bd);border-radius:999px;padding:.15rem .5rem;font-size:.78rem;color:var(--mu)}
+.name.on{border-color:var(--ac);color:var(--tx);font-weight:600}.name.done{color:var(--ok)}
+.muted{color:var(--mu);font-size:.8rem}.hidden{display:none!important}
+.pause,.ex,.exit{border:1px solid rgba(61,139,253,.4);background:rgba(61,139,253,.08);border-radius:8px;padding:.65rem;margin-top:.5rem}
+.exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
+.viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
+.viz .hi{border-color:var(--ac)}.viz .dim{opacity:.4}
+.box{font-family:var(--m);font-size:.78rem;padding:.5rem;border:1px solid var(--bd);border-radius:8px;background:var(--panel);margin:.35rem 0}
+.overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
+.panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
+.msg-ok{color:var(--ok)!important;font-weight:600}.msg-bad{color:var(--bad)!important;font-weight:600}
+@media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">bip39<span>·lab</span></div><p class="muted" style="font-size:.75rem">UC9 xpub</p><span class="chip">MOCK</span></aside>
+<main class="main">
+<p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
+<div class="banner">xpub cannot spend alone — but it can expose every address under that account. Privacy-sensitive.</div>
+<div class="card">
+<div class="row" style="justify-content:space-between"><strong>xpub / privacy threat</strong><span class="chip" id="prog">0/4</span></div>
+<div class="rail">
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Master→child</span> <span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">Tree</span> <span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Threat</span> <span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Habit</span> <span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+</div></div>
+<div class="card">
+<div class="viz">
+<div id="v1"><strong>Master → child</strong><br/>Seed derives accounts; xpub derives many addresses.</div>
+<div id="v2"><strong>Watchability</strong><br/>xpub holder can list balances under that account.</div>
+<div id="v3"><strong>Not public by default</strong><br/>Export only to tools you trust.</div>
+</div>
+<div class="pause" id="idea">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> Master seed → account xpub → many child addresses. xpub cannot spend alone, but can reveal the address set.</p>
+<button class="btn primary" id="ideaGo">I get master → children</button>
+</div>
+<div class="hidden" id="tree">
+<div class="box">master (seed stays offline)<br/>└─ account 0 xpub<br/>&nbsp;&nbsp;&nbsp;├─ /0/0 receive<br/>&nbsp;&nbsp;&nbsp;├─ /0/1 receive<br/>&nbsp;&nbsp;&nbsp;└─ /1/0 change</div>
+<div class="pause">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> Anyone with that account xpub can list those addresses and watch balances forever.</p>
+<button class="btn primary" id="treeGo">xpub is privacy-sensitive</button>
+</div>
+</div>
+<div class="ex hidden" id="threat">
+<strong>Threat model</strong>
+<label class="muted"><input type="radio" name="t" value="a"/> Full spending of all funds without the seed.</label><br/>
+<label class="muted"><input type="radio" name="t" value="b"/> Watching all addresses/balances under that account (privacy loss).</label><br/>
+<label class="muted"><input type="radio" name="t" value="c"/> Nothing — xpubs are always safe to post publicly.</label>
+<p class="muted" id="tmsg"></p>
+<button class="btn primary" id="tGo" disabled>Confirm</button>
+</div>
+<div class="ex hidden" id="quiz">
+<strong>Practice habit</strong>
+<label class="muted"><input type="radio" name="q" value="a"/> Paste account xpubs into random portfolio trackers.</label><br/>
+<label class="muted"><input type="radio" name="q" value="b"/> Treat xpubs as sensitive for privacy; only export to tools you trust.</label><br/>
+<label class="muted"><input type="radio" name="q" value="c"/> Publish the master seed so friends can generate the same xpub.</label>
+<p class="muted" id="qmsg"></p>
+<button class="btn primary" id="qGo" disabled>Confirm</button>
+</div>
+<div class="exit hidden" id="exit">
+<strong>UC9 force exit</strong>
+<label class="muted"><input type="checkbox" id="ack"/> I understand xpub ≠ spend key, but xpub leak is a privacy threat; I will not treat xpubs as public by default.</label>
+<div class="row"><button class="btn primary" id="fin" disabled>Finish UC9</button></div>
+</div>
+</div>
+</main></div>
+<div class="overlay" id="gate"><div class="panel">
+<h2>UC9 · xpub</h2>
+<p class="muted">Intermediate. Model only.</p>
+<button class="btn primary" id="go">I understand — start</button>
+</div></div>
+<script>
+var step=0,s1=0,s2=0,s3=0,s4=0;
+function $(i){return document.getElementById(i)}
+function show(e,o){e.classList.toggle("hidden",!o)}
+function paint(){
+ document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
+ $("prog").textContent=((s1?1:0)+(s2?1:0)+(s3?1:0)+(s4?1:0))+"/4";
+ ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
+ if(step<=1){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step<=2){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
+}
+$("go").onclick=function(){show($("gate"),0);step=1;paint()};
+$("ideaGo").onclick=function(){s1=1;show($("idea"),0);show($("tree"),1);step=2;paint()};
+$("treeGo").onclick=function(){s2=1;show($("tree"),0);show($("threat"),1);step=3;paint()};
+document.querySelectorAll("input[name=t]").forEach(function(r){r.onchange=function(){$("tGo").disabled=0}});
+$("tGo").onclick=function(){var v=(document.querySelector("input[name=t]:checked")||{}).value;
+ if(v==="b"){s3=1;$("tmsg").className="msg-ok";$("tmsg").textContent="Correct — privacy / watchability, not spend.";show($("quiz"),1);step=4;paint()}
+ else{$("tmsg").className="msg-bad";$("tmsg").textContent="No — xpub does not spend alone, but it is not always safe to post."}};
+document.querySelectorAll("input[name=q]").forEach(function(r){r.onchange=function(){$("qGo").disabled=0}});
+$("qGo").onclick=function(){var v=(document.querySelector("input[name=q]:checked")||{}).value;
+ if(v==="b"){s4=1;$("qmsg").className="msg-ok";$("qmsg").textContent="Correct.";show($("exit"),1);step=5;paint()}
+ else{$("qmsg").className="msg-bad";$("qmsg").textContent="No — do not spray xpubs or publish seeds."}};
+$("ack").onchange=function(){$("fin").disabled=!this.checked};
+$("fin").onclick=function(){alert("UC9 complete. Next: UC10 Network leak.");};
+paint();
+</script></body></html>
