@@ -27,13 +27,17 @@
 .exit{border-color:rgba(230,184,77,.4);background:rgba(230,184,77,.07)}
 .checklist{list-style:none;padding:0;margin:.5rem 0}
 .checklist li{display:flex;gap:.45rem;padding:.4rem;border:1px solid var(--bd);border-radius:8px;margin:0 0 .3rem;background:var(--panel);font-size:.85rem}
-.checklist li.ok{border-color:rgba(62,207,142,.35)}.checklist li.bad{border-color:rgba(232,93,93,.35)}
+.checklist li.ok-row{border-color:rgba(62,207,142,.35)}
+.checklist li.bad-row{border-color:rgba(232,93,93,.35)}
+.checklist li.mark-ok{background:rgba(62,207,142,.12);border-color:var(--ok)}
+.checklist li.mark-bad{background:rgba(232,93,93,.12);border-color:var(--bad)}
 .viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
 .viz div{border:1px solid var(--bd);border-radius:8px;padding:.5rem;background:var(--panel);font-size:.75rem}
 .viz .hi{border-color:var(--ac)}.viz .dim{opacity:.4}
 .overlay{position:fixed;inset:0;background:rgba(11,15,20,.8);display:flex;align-items:center;justify-content:center;z-index:20}
 .panel{background:var(--el);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;width:min(640px,92vw)}
 .sheet{background:#f7f5ef;color:#222;border-radius:8px;padding:.6rem;margin:.5rem 0;font-family:var(--m);font-size:.8rem}
+.msg-ok{color:var(--ok)!important;font-weight:600}.msg-bad{color:var(--bad)!important;font-weight:600}
 @media(max-width:700px){.app{grid-template-columns:1fr}.viz{grid-template-columns:1fr}}
 </style></head>
 <body>
@@ -41,15 +45,15 @@
 <aside class="sidebar"><div class="brand">bip39<span>·lab</span></div><p class="muted" style="font-size:.75rem">UC2 Paper backup</p><span class="chip">MOCK</span></aside>
 <main class="main">
 <p class="muted"><strong style="color:var(--tx)">Mission:</strong> Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
-<div class="banner">Backup discipline track. Practice only. Do not photograph a real seed.</div>
+<div class="banner">Backup discipline. Practice only. Do not photograph a real seed.</div>
 <div class="card">
-<div class="row" style="justify-content:space-between"><strong>Paper backup</strong><span class="chip" id="prog">0/4</span></div>
+<div class="row" style="justify-content:space-between"><strong>Paper backup</strong><span class="chip" id="prog">0/5</span></div>
 <div class="rail">
-<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Get phrase</span><span>→</span>
-<span class="circ" data-s="2">2</span><span class="name" data-s="2">Card = backup</span><span>→</span>
-<span class="circ" data-s="3">3</span><span class="name" data-s="3">Do / don’t</span><span>→</span>
-<span class="circ" data-s="4">4</span><span class="name" data-s="4">Verify drill</span><span>→</span>
-<span class="circ" data-s="5">5</span><span class="name" data-s="5">Exit</span>
+<span class="circ on" data-s="1">1</span><span class="name on" data-s="1">Idea</span><span>→</span>
+<span class="circ" data-s="2">2</span><span class="name" data-s="2">Get phrase</span><span>→</span>
+<span class="circ" data-s="3">3</span><span class="name" data-s="3">Card = backup</span><span>→</span>
+<span class="circ" data-s="4">4</span><span class="name" data-s="4">Do / don’t</span><span>→</span>
+<span class="circ" data-s="5">5</span><span class="name" data-s="5">Verify + exit</span>
 </div></div>
 <div class="card">
 <div class="viz">
@@ -57,32 +61,39 @@
 <div id="v2"><strong>What breaks it</strong><br/>Photo · cloud notes · email · chat.</div>
 <div id="v3"><strong>What holds up</strong><br/>Paper/metal offline · read-back verify.</div>
 </div>
+<div class="pause" id="idea">
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> A backup is not a text field. It is a numbered card you copy to paper. Photos and cloud notes create copies you do not control.</p>
+<button class="btn primary" id="ideaGo">Backup = numbered card on paper</button>
+</div>
+<div class="hidden" id="genBox">
 <div class="row">
 <button class="btn primary" id="gen">Generate 12-word practice</button>
 <button class="btn danger" id="clr">Clear</button>
 </div>
 <div class="words" id="grid"></div>
 <div class="pause hidden" id="pause">
-<p class="muted"><strong style="color:var(--tx)">Pause.</strong> This numbered card is what you would copy to paper — not a text field, not a screenshot.</p>
+<p class="muted"><strong style="color:var(--tx)">Pause.</strong> This numbered card is what you would copy to paper — not a screenshot.</p>
 <button class="btn primary" id="seen">I treat this card as the backup object</button>
 </div>
 </div>
-<div class="card hidden" id="rules">
+<div class="hidden" id="rules">
+<div class="pause">
 <strong>Do / don’t</strong>
-<p class="muted">Tick only safe practices (green). Leave bad ones unchecked.</p>
+<p class="muted">Tick only safe practices. Lines light green/red as you choose.</p>
 <ul class="checklist">
-<li class="ok"><input type="checkbox" data-ok="1"/> Write offline on paper, numbered 1…12.</li>
-<li class="bad"><input type="checkbox" data-ok="0"/> Phone photo “just in case.”</li>
-<li class="bad"><input type="checkbox" data-ok="0"/> Paste into iCloud / Google Notes / email.</li>
-<li class="ok"><input type="checkbox" data-ok="1"/> Store paper where only you control access.</li>
-<li class="ok"><input type="checkbox" data-ok="1"/> Verify by reading paper back against the card once.</li>
-<li class="bad"><input type="checkbox" data-ok="0"/> Share words in a chat for “recovery help.”</li>
+<li class="ok-row" data-ok="1"><input type="checkbox"/> Write offline on paper, numbered 1…12.</li>
+<li class="bad-row" data-ok="0"><input type="checkbox"/> Phone photo “just in case.”</li>
+<li class="bad-row" data-ok="0"><input type="checkbox"/> Paste into iCloud / Google Notes / email.</li>
+<li class="ok-row" data-ok="1"><input type="checkbox"/> Store paper where only you control access.</li>
+<li class="ok-row" data-ok="1"><input type="checkbox"/> Verify by reading paper back against the card once.</li>
+<li class="bad-row" data-ok="0"><input type="checkbox"/> Share words in a chat for “recovery help.”</li>
 </ul>
+<p class="muted" id="rulesHint">Tick only the safe practices.</p>
 <button class="btn primary" id="rulesGo" disabled>Rules OK — continue</button>
+</div>
 </div>
 <div class="quiz hidden" id="quiz">
 <strong>Verify drill</strong>
-<p class="muted">Which check catches a mistake?</p>
 <label class="muted"><input type="radio" name="v" value="a"/> Glance once and put paper away.</label><br/>
 <label class="muted"><input type="radio" name="v" value="b"/> Read 1…12 from paper while looking at the card; fix mismatches before leaving.</label><br/>
 <label class="muted"><input type="radio" name="v" value="c"/> Email the list to yourself to verify later.</label>
@@ -99,39 +110,53 @@
 <label class="muted"><input type="checkbox" id="ack"/> I will not photograph, cloud-sync, or email a real recovery phrase, and I will verify paper against the source once.</label>
 <div class="row"><button class="btn primary" id="fin" disabled>Finish UC2</button></div>
 </div>
+</div>
 </main></div>
 <div class="overlay" id="gate"><div class="panel">
 <h2>UC2 · Paper backup</h2>
-<p class="muted">Assumes UC1 (phrase ≠ address). Job here: don’t mess up the backup. Still practice only.</p>
+<p class="muted"><strong>Done when:</strong> you treat the numbered card as the backup object and can state do/don’t rules (no photo, no cloud).</p>
+<p class="muted">Assumes UC1. Still practice only.</p>
 <button class="btn primary" id="go">I understand — start UC2</button>
 </div></div>
 <script>
 var W="control catch mixture gift size glimpse hamster pizza income ignore fall aerobic".split(" ");
-var step=0,has=0,seen=0,rules=0,ver=0,done=0;
+var step=0,idea=0,has=0,seen=0,rules=0,ver=0;
 function $(i){return document.getElementById(i)}
 function show(e,o){e.classList.toggle("hidden",!o)}
 function fill(){var g=$("grid"),s=$("sheet");g.innerHTML="";s.innerHTML="<strong>PRACTICE backup — not a wallet</strong><br/>";W.forEach(function(w,i){g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">'+w+'</div></div>';s.innerHTML+=(i+1)+". "+w+(i%4===3?"<br/>":"  ");});}
 function empty(){var g=$("grid");g.innerHTML="";for(var i=0;i<12;i++)g.innerHTML+='<div class="pair"><div class="idx">'+(i+1)+'</div><div class="wd">—</div></div>'}
 function paint(){
  document.querySelectorAll("[data-s]").forEach(function(el){var s=+el.getAttribute("data-s");el.classList.remove("on","done");if(s<step)el.classList.add("done");if(s===step)el.classList.add("on")});
- $("prog").textContent=((has?1:0)+(seen?1:0)+(rules?1:0)+(ver?1:0))+"/4";
+ $("prog").textContent=((idea?1:0)+(has?1:0)+(seen?1:0)+(rules?1:0)+(ver?1:0))+"/5";
  ["v1","v2","v3"].forEach(function(id){$(id).classList.remove("hi","dim")});
  if(step<=2){$("v1").classList.add("hi");$("v2").classList.add("dim");$("v3").classList.add("dim")}
- else if(step===3){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
+ else if(step===4){$("v2").classList.add("hi");$("v1").classList.add("dim");$("v3").classList.add("dim")}
  else{$("v3").classList.add("hi");$("v1").classList.add("dim");$("v2").classList.add("dim")}
 }
-function checkRules(){var ok=1;document.querySelectorAll(".checklist input").forEach(function(inp){var s=+inp.getAttribute("data-ok");if(s===1&&!inp.checked)ok=0;if(s===0&&inp.checked)ok=0});$("rulesGo").disabled=!ok}
+function checkRules(){
+ var ok=1;
+ document.querySelectorAll(".checklist li").forEach(function(li){
+  var inp=li.querySelector("input"); var should=+li.getAttribute("data-ok");
+  li.classList.remove("mark-ok","mark-bad");
+  if(should===1){if(inp.checked)li.classList.add("mark-ok");else ok=0}
+  else{if(inp.checked){li.classList.add("mark-bad");ok=0}}
+ });
+ $("rulesGo").disabled=!ok;
+ $("rulesHint").className=ok?"msg-ok":"msg-bad";
+ $("rulesHint").textContent=ok?"All safe practices selected; bad ones left unchecked.":"Green rows must be ticked; red rows must stay unchecked.";
+}
 $("go").onclick=function(){show($("gate"),0);step=1;paint()};
-$("gen").onclick=function(){has=1;seen=rules=ver=done=0;fill();show($("pause"),1);show($("rules"),0);show($("quiz"),0);show($("exit"),0);show($("print"),0);step=2;paint()};
-$("seen").onclick=function(){if(!has)return;seen=1;show($("pause"),0);show($("rules"),1);step=3;paint()};
-$("clr").onclick=function(){has=seen=rules=ver=done=0;empty();show($("pause"),0);show($("rules"),0);show($("quiz"),0);show($("exit"),0);step=1;paint()};
+$("ideaGo").onclick=function(){idea=1;show($("idea"),0);show($("genBox"),1);step=2;paint()};
+$("gen").onclick=function(){has=1;seen=rules=ver=0;fill();show($("pause"),1);show($("rules"),0);show($("quiz"),0);show($("exit"),0);show($("print"),0);step=3;paint()};
+$("seen").onclick=function(){if(!has)return;seen=1;show($("pause"),0);show($("rules"),1);step=4;paint()};
+$("clr").onclick=function(){has=seen=rules=ver=0;empty();show($("pause"),0);show($("rules"),0);show($("quiz"),0);show($("exit"),0);step=2;paint()};
 document.querySelectorAll(".checklist input").forEach(function(i){i.onchange=checkRules});
-$("rulesGo").onclick=function(){rules=1;show($("quiz"),1);step=4;paint()};
+$("rulesGo").onclick=function(){rules=1;show($("quiz"),1);step=5;paint()};
 document.querySelectorAll("input[name=v]").forEach(function(r){r.onchange=function(){$("vgo").disabled=0}});
-$("vgo").onclick=function(){var v=(document.querySelector("input[name=v]:checked")||{}).value;if(v==="b"){ver=1;$("vmsg").textContent="Correct — slow read-back, not a second digital copy.";show($("print"),1);paint()}else{$("vmsg").textContent="Not that. Avoid glance-only and network copies.";show($("print"),0);ver=0;paint()}};
+$("vgo").onclick=function(){var v=(document.querySelector("input[name=v]:checked")||{}).value;if(v==="b"){ver=1;$("vmsg").className="msg-ok";$("vmsg").textContent="Correct — slow read-back, not a second digital copy.";show($("print"),1);paint()}else{$("vmsg").className="msg-bad";$("vmsg").textContent="Not that. Avoid glance-only and network copies.";show($("print"),0);ver=0;paint()}};
 $("printBtn").onclick=function(){window.print()};
-$("toExit").onclick=function(){if(!ver)return;show($("exit"),1);step=5;paint()};
+$("toExit").onclick=function(){if(!ver)return;show($("exit"),1);paint()};
 $("ack").onchange=function(){$("fin").disabled=!this.checked};
-$("fin").onclick=function(){done=1;alert("UC2 complete. Next optional: UC3 Passphrase.");paint()};
+$("fin").onclick=function(){alert("UC2 complete. Next optional: UC3 Passphrase.");};
 empty();paint();
 </script></body></html>
