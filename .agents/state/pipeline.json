@@ -1,9 +1,9 @@
 {
   "card_id": null,
-  "phase": "approved",
-  "score": 96,
-  "spec_id": ".agents/specs/2026-08-22-gradual-visual-teach.md",
-  "task": "v0.16.25 gradual visual teach strip",
-  "waiver": null,
-  "note": "approved pending operator PW S110-S113 + tag"
+  "note": "approved pending operator PW S110-S113 + tag",
+  "phase": "shipped",
+  "score": 100.0,
+  "spec_id": ".agents/specs/2026-08-23-v2-uc1-generate-chrome.md",
+  "task": "0.16.35 V2 tracks",
+  "waiver": null
 }
