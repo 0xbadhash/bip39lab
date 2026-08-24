@@ -1,0 +1,19 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One recovery phrase can derive many receive addresses">
+  <title>One phrase many addresses</title>
+  <rect x="70" y="6" width="80" height="22" rx="6" fill="#1a2330" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="110" y="21" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">phrase</text>
+  <path d="M110 28v10" stroke="#243044" stroke-width="1.5"/>
+  <path d="M50 38h120" stroke="#243044" stroke-width="1.5"/>
+  <path d="M50 38v8M110 38v8M170 38v8" stroke="#243044" stroke-width="1.5"/>
+  <g font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8">
+    <rect x="18" y="48" width="64" height="28" rx="6" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+    <text x="50" y="60" text-anchor="middle" fill="#8b9bb4">/0/0</text>
+    <text x="50" y="71" text-anchor="middle" fill="#e8eef7">bc1q…</text>
+    <rect x="88" y="48" width="64" height="28" rx="6" fill="#1a2330" stroke="#243044" stroke-width="1.5"/>
+    <text x="120" y="60" text-anchor="middle" fill="#8b9bb4">/0/1</text>
+    <text x="120" y="71" text-anchor="middle" fill="#e8eef7">bc1q…</text>
+    <rect x="158" y="48" width="54" height="28" rx="6" fill="#1a2330" stroke="#243044" stroke-width="1.5"/>
+    <text x="185" y="60" text-anchor="middle" fill="#8b9bb4">/0/2</text>
+    <text x="185" y="71" text-anchor="middle" fill="#e8eef7">…</text>
+  </g>
+</svg>
