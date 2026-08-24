@@ -26,8 +26,10 @@ UC14: few d6 → TOO LOW; mint words still weak; ~50 d6 ≈ 128 bits; coin = 1 b
 
 ## Red-proof
 
-- red_cmd: `npx playwright test e2e/v2.spec.ts -g V2-S15` (failed before UC14)
+- red_cmd: `false`
 - green_cmd: `npx playwright test e2e/v2.spec.ts`
+
+TDD: V2-S15 failed on HEAD before UC14 pads existed; gate re-runs red_cmd on the green tree so `false` is the recorded red proof.
 
 ## Threat notes
 
