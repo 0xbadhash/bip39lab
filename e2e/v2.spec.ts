@@ -1,14 +1,14 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.23-v2)", () => {
+test.describe("V2 use-case tracks (0.17.24-v2)", () => {
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
     await page.goto("/v2/");
     await expect(page.locator("#pickerGrid")).toBeVisible();
-    await expect(page.locator(".uc-card")).toHaveCount(13);
+    await expect(page.locator(".uc-card")).toHaveCount(14);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.23-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.24-v2/);
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
     await expect(page.locator(".sidebar")).not.toContainText(/Clear secrets/);
     await expect(page.locator(".topbar-actions #v2Clear")).toBeVisible();
@@ -305,7 +305,7 @@ test.describe("V2 use-case tracks (0.17.23-v2)", () => {
   });
 
   test("V2-S13 UC3–UC13 concept atoms mount", async ({ page }) => {
-    for (const uc of [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
+    for (const uc of [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) {
       await page.goto(`/v2/?uc=${uc}`);
       const start = page.locator("#btnGateStart");
       if (await start.isVisible()) await start.click();
@@ -353,5 +353,29 @@ test.describe("V2 use-case tracks (0.17.23-v2)", () => {
     await page.locator("#v2Pause").click();
     await page.locator('[data-quiz="ok"]').click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
+  });
+
+  test("V2-S15 UC14 few d6 TOO LOW; words still weak; 50 d6; coin 1 bit", async ({ page }) => {
+    await page.goto("/v2/?uc=14");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#uc14Viz .atom")).toHaveCount(3);
+    await expect(page.locator("#v2Dice")).toBeVisible();
+    await page.locator("#v2Dice").click();
+    await page.locator("#v2Dice").click();
+    await page.locator("#v2Dice").click();
+    await expect(page.locator("#v2EntMeta")).toContainText(/TOO LOW/i);
+    await expect(page.locator("#v2EntMeta")).toContainText(/128/);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2EntMint").click();
+    await expect(page.locator("#v2EntWords .ww")).toHaveCount(12);
+    await expect(page.locator("#v2EntMintNote")).toContainText(/TOO LOW/i);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2Coin")).toBeVisible();
+    await expect(page.locator("#trackBody")).toContainText(/128 flips/i);
+    await page.locator("#v2Coin").click();
+    await expect(page.locator("#v2EntMeta")).toContainText(/1 bit/i);
+    for (let i = 0; i < 5; i++) await page.locator("#v2Dice10").click();
+    await expect(page.locator("#v2EntMeta")).toContainText(/enough|128/i);
+    await expect(page.locator("#v2EntMeta")).not.toContainText(/TOO LOW/i);
   });
 });

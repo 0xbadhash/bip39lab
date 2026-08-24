@@ -229,6 +229,16 @@
   color: var(--muted);
   font-weight: 600;
 }
+.v2-ent-verdict-low,
+#v2EntMeta {
+  font-variant-numeric: tabular-nums;
+}
+#v2EntLog {
+  max-height: 4.5rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 .v2-net select {
   font: inherit;
   font-weight: 600;

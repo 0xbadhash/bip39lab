@@ -72,6 +72,20 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] V2 UC14 dice / coin entropy
+- **Status:** done
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-08-24-v2-uc-entropy-dice-coin.md`
+- **Plan:** `.agents/specs/2026-08-24-v2-uc-entropy-dice-coin-plan.md`
+- **Acceptance:**
+  - [x] Few d6 TOO LOW
+  - [x] Minted 12 words still TOO LOW
+  - [x] ~50 d6 ≥ 128 bits; coin = 1 bit
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g V2-S15`
+- **Notes:** grill-me complete via execute-dev defaults
+
+
 ### [OPEN] V2 UC1 compact grid + entropy
 - **Status:** open
 - **Priority:** P0

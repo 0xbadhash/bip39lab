@@ -1,0 +1,6 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Twelve words from a short pad are still TOO LOW">
+  <title>Words still weak</title>
+  <rect x="12" y="16" width="196" height="36" rx="6" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="110" y="38" text-anchor="middle" fill="#e8eef7" font-size="10" font-family="system-ui,sans-serif">12 words on screen</text>
+  <text x="110" y="72" text-anchor="middle" fill="#e85d5d" font-size="9" font-family="system-ui,sans-serif">format ≠ 128 bits</text>
+</svg>

@@ -4,7 +4,9 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", entEvents: [], entMnemonic: "" };
+  var D6_BITS = 2.58;
+  var ENT_PAD_MAX = 128;
   function emptyCosigners() {
     return [0, 1, 2].map(function () {
       return { mnemonic: "", wordCount: 12, zpub: "" };
@@ -26,7 +28,8 @@
     { id: 10, level: "Advanced", title: "Network leak", job: "Default offline; balances only after opt-in.", done: "Unknown ≠ 0; explicit Network page only." },
     { id: 11, level: "Beginner", title: "Custodial vs you hold the keys", job: "An exchange app is not a BIP-39 wallet.", done: "No seed on the exchange = they can freeze or lose it; seed on your device = you can spend and you can lose it." },
     { id: 12, level: "Beginner", title: "Hot software vs hardware signer", job: "Same words, different where they live.", done: "Phone is hot. Hardware keeps keys on the device. USB is not automatically air-gap. Typing the seed into a computer still kills the vault." },
-    { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." }
+    { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
+    { id: 14, level: "Beginner", title: "Dice and coin entropy", job: "Word count is not entropy. A few rolls can still print twelve words.", done: "Few d6 = TOO LOW. Minted words can still be weak. ~50 d6 ≈ 128 bits. Coin = 1 bit; 128 flips is the hard path." }
   ];
 
   function $(id) { return document.getElementById(id); }
@@ -126,7 +129,8 @@
       10: ["Offline default", "Opt-in Network", "Quiz", "Finish"],
       11: ["They hold keys", "You hold keys", "Quiz", "Finish"],
       12: ["Hot phone", "Hardware signer", "Quiz", "Finish"],
-      13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"]
+      13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"],
+      14: ["Few dice", "Words still weak", "Coin / 50 d6", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
   }
@@ -145,7 +149,8 @@
       10: ["connect-src none", "Address only", "unknown ≠ 0"],
       11: ["They hold", "You hold", "Not BIP-39"],
       12: ["Hot software", "Hardware", "USB ≠ air-gap"],
-      13: ["Hot vs cold", "Daily vs savings", "Four objects"]
+      13: ["Hot vs cold", "Daily vs savings", "Four objects"],
+      14: ["Few dice TOO LOW", "Words still weak", "Coin is 1 bit"]
     };
     return c[id] || ["A", "B", "C"];
   }
@@ -155,6 +160,10 @@
     mem.cardAck = false;
     mem.maxStep = 0;
     if (id === 6) mem.cosigners = emptyCosigners();
+    if (id === 14) {
+      mem.entEvents = [];
+      mem.entMnemonic = "";
+    }
     renderTrack();
     show("viewTrack");
   }
@@ -173,7 +182,8 @@
       10: [0, 1, 2],
       11: [0, 1, 2],
       12: [0, 1, 2],
-      13: [0, 1, 2]
+      13: [0, 1, 2],
+      14: [0, 1, 2]
     };
     var row = map[id] || [0, 1, 2];
     return row[chipIndex] != null ? row[chipIndex] : 0;
@@ -311,6 +321,13 @@
         atom(1, 0, "assets/uc13-atom-hot-cold.svg", "Hot versus cold is about whether keys are online", "<strong>Plan · Hot versus cold</strong><br/>Hot means the keys sit on a machine that talks to the internet. Cold means they do not. Brand is not the split."),
         atom(2, 1, "assets/uc13-atom-daily-savings.svg", "Daily spend can be hot. Savings stay cold or watch-only", "<strong>Practice · Daily versus savings</strong><br/>A small hot balance for spending is a choice. Savings belong on cold keys or watch-only."),
         atom(3, 2, "assets/uc13-atom-four-objects.svg", "Exchange, phone, hardware, watch-only are four different objects", "<strong>Review · Four objects</strong><br/>Exchange account, phone app, hardware signer, watch-only xpub. Four jobs. Do not mix them.")
+      ]
+    },
+    14: {
+      atoms: [
+        atom(1, 0, "assets/uc14-atom-few-dice.svg", "A few dice rolls are too little randomness", "<strong>Plan · Few dice</strong><br/>Each d6 is about 2.58 bits. Three rolls are nowhere near 128 bits."),
+        atom(2, 1, "assets/uc14-atom-words-weak.svg", "Twelve words from a short pad are still TOO LOW", "<strong>Practice · Words still weak</strong><br/>Hashing a short roll log can still print 12 words. Word count is not entropy."),
+        atom(3, 2, "assets/uc14-atom-coin-tedious.svg", "A coin flip is one bit; 128 flips is the hard path", "<strong>Review · Coin is 1 bit</strong><br/>One flip = 1 bit. You need about 128 flips, or about 50 d6, for 12-word ENT.")
       ]
     }
   };
@@ -476,6 +493,7 @@
     if (id === 11) return uc11(step);
     if (id === 12) return uc12(step);
     if (id === 13) return uc13(step);
+    if (id === 14) return uc14(step);
     return "";
   }
 
@@ -1448,6 +1466,152 @@
     return finishHtml(13);
   }
 
+  function entBits() {
+    var b = 0;
+    (mem.entEvents || []).forEach(function (e) {
+      if (String(e).indexOf("d6:") === 0) b += D6_BITS;
+      else if (String(e).indexOf("coin:") === 0) b += 1;
+    });
+    return b;
+  }
+
+  function countEnt(prefix) {
+    var n = 0;
+    (mem.entEvents || []).forEach(function (e) {
+      if (String(e).indexOf(prefix) === 0) n++;
+    });
+    return n;
+  }
+
+  function pushEnt(ev) {
+    mem.entEvents = mem.entEvents || [];
+    mem.entEvents.push(ev);
+    if (mem.entEvents.length > ENT_PAD_MAX) mem.entEvents.shift();
+  }
+
+  function entMetaInner() {
+    var bits = entBits();
+    var d6n = countEnt("d6:");
+    var cn = countEnt("coin:");
+    var low = bits + 0.001 < 128;
+    var verdict = low ? "TOO LOW" : "enough on paper for 12-word ENT (~128 bits)";
+    return (
+      (mem.entEvents || []).length +
+      " events · ~" +
+      Math.round(bits) +
+      " bits (d6≈2.58, coin = 1 bit each; simulated, not CSPRNG). " +
+      d6n +
+      " d6 · " +
+      cn +
+      " coin. 12-word wants 128 bits ≈ 50 d6 or 128 flips. " +
+      verdict
+    );
+  }
+
+  function refreshEntDom() {
+    var meta = $("v2EntMeta");
+    if (meta) meta.textContent = entMetaInner();
+    var log = $("v2EntLog");
+    if (log) log.textContent = (mem.entEvents || []).length ? mem.entEvents.join(" ") : "—";
+    var pause = $("v2Pause");
+    if (pause && current.id === 14 && current.step === 0 && countEnt("d6:") >= 3) pause.disabled = false;
+    if (pause && current.id === 14 && current.step === 2 && entBits() + 0.001 >= 128) pause.disabled = false;
+  }
+
+  function entButtonsHtml() {
+    return (
+      '<div class="row v2-gen-bar">' +
+      '<div class="v2-gen-left">' +
+      '<button type="button" class="btn" id="v2Dice">Roll d6 (simulated)</button>' +
+      '<button type="button" class="btn secondary" id="v2Dice10">+10 d6</button>' +
+      '<button type="button" class="btn secondary" id="v2Coin">Flip coin (simulated)</button>' +
+      "</div></div>" +
+      '<pre class="out" id="v2EntLog">' +
+      ((mem.entEvents || []).length ? mem.entEvents.join(" ") : "—") +
+      "</pre>" +
+      '<p class="control-help" id="v2EntMeta">' +
+      entMetaInner() +
+      "</p>"
+    );
+  }
+
+  async function uc14(step) {
+    if (step === 0) {
+      var few = countEnt("d6:") >= 3;
+      return pad(
+        "<h2>A few dice rolls</h2>" +
+        doDont(
+          "Roll a simulated d6 a few times and read the bit estimate against 128 bits.",
+          "Do not treat three rolls as a wallet. Buttons use Math.random. They are not physical dice and not OS CSPRNG."
+        ) +
+        desc(
+          "Each six-sided die is about 2.58 bits. A real 12-word BIP-39 phrase wants 128 bits of good randomness, about 50 rolls. Three rolls are still TOO LOW. This pad is a classroom demo."
+        ) +
+        callout("done", "Word count is not entropy", "You can print words from a short pad. That does not mean you had 128 bits.") +
+        entButtonsHtml() +
+        pauseBtn("I saw TOO LOW after a few rolls", !few)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Words from a short pad</h2>" +
+        doDont(
+          "Build practice words from the roll log. Read TOO LOW next to the twelve words.",
+          "Do not fund these words. A complete-looking phrase can still be weak if the pad was short."
+        ) +
+        desc(
+          "The lab hashes the roll log and turns that hash into BIP-39 words so you can see a phrase. That is not the same as having 128 bits of real entropy. If the estimate is TOO LOW, an attacker has a smaller guess space than a proper 12-word wallet."
+        ) +
+        '<button type="button" class="btn" id="v2EntMint">Build 12 practice words from this pad</button>' +
+        '<p class="control-help" id="v2EntMintNote">' +
+        (mem.entMnemonic
+          ? (entBits() + 0.001 < 128 ? "TOO LOW — " : "") +
+            "Practice words from the pad. Do not fund."
+          : "Click to mint words. A short pad stays TOO LOW.") +
+        "</p>" +
+        '<div id="v2EntWords">' +
+        (mem.entMnemonic ? wordGridHtml(mem.entMnemonic) : "") +
+        "</div>" +
+        pauseBtn("I saw words that were still TOO LOW", !mem.entMnemonic)
+      );
+    }
+    if (step === 2) {
+      return pad(
+        "<h2>Fifty dice, or 128 coin flips</h2>" +
+        doDont(
+          "Keep rolling d6 (use +10) until the estimate reaches 128 bits, or flip a coin and see 1 bit each.",
+          "Do not treat a coin as an easy 12-word wallet. One flip is one bit. You would need about 128 flips."
+        ) +
+        desc(
+          "About 50 d6 rolls reach the 12-word ENT estimate. A coin flip is 1 bit, so 128 flips is the hard path. Even then these buttons are simulated. Use Lab Generate (OS randomness) for a proper practice phrase, and never fund pad words."
+        ) +
+        callout("done", "Coin is 1 bit", "128 flips for 128 bits. Dice reach it faster (~50). Brand of RNG theatre does not skip the bits.") +
+        entButtonsHtml() +
+        pauseBtn("I saw 50 d6 or the coin cost", entBits() + 0.001 < 128)
+      );
+    }
+    if (step === 3) {
+      return quiz("A few dice rolls that still print 12 recovery words mean:", [
+        {
+          k: "ok",
+          t: "The pad can be TOO LOW — word count is not entropy.",
+          okwhy: "Correct. You need about 50 d6 (~128 bits) or 128 coin flips. Words from a short pad are still weak."
+        },
+        {
+          k: "bad",
+          t: "Twelve words always means 128 bits of good randomness.",
+          why: "Wrong. The format can look complete while the pad estimate is still TOO LOW."
+        },
+        {
+          k: "bad",
+          t: "Three coin flips are enough because each flip is 128 bits.",
+          why: "Wrong. Each coin flip is 1 bit. You would need about 128 flips."
+        }
+      ]);
+    }
+    return finishHtml(14);
+  }
+
   function attrEsc(s) {
     return String(s || "")
       .replace(/&/g, "&amp;")
@@ -1776,6 +1940,49 @@
         }
       });
     }
+    function rollD6() {
+      pushEnt("d6:" + (1 + Math.floor(Math.random() * 6)));
+      refreshEntDom();
+    }
+    if ($("v2Dice")) $("v2Dice").addEventListener("click", rollD6);
+    if ($("v2Dice10")) {
+      $("v2Dice10").addEventListener("click", function () {
+        for (var i = 0; i < 10; i++) pushEnt("d6:" + (1 + Math.floor(Math.random() * 6)));
+        refreshEntDom();
+      });
+    }
+    if ($("v2Coin")) {
+      $("v2Coin").addEventListener("click", function () {
+        pushEnt("coin:" + (Math.random() < 0.5 ? "H" : "T"));
+        refreshEntDom();
+        if (pause && current.step === 2) pause.disabled = false;
+      });
+    }
+    if ($("v2EntMint")) {
+      $("v2EntMint").addEventListener("click", async function () {
+        if (!(mem.entEvents && mem.entEvents.length)) {
+          $("v2EntMintNote").textContent = "Roll first, then mint. A short pad stays TOO LOW.";
+          return;
+        }
+        var B = window.BIP39Lab;
+        if (!B || typeof B.mnemonicFromEntropyBytes !== "function") {
+          $("v2EntMintNote").textContent = "Could not build pad words. Hard-refresh this page.";
+          return;
+        }
+        var data = new TextEncoder().encode(mem.entEvents.join("|"));
+        var dig = await crypto.subtle.digest("SHA-256", data);
+        var ent = new Uint8Array(dig).slice(0, 16);
+        mem.entMnemonic = B.mnemonicFromEntropyBytes(ent);
+        var low = entBits() + 0.001 < 128;
+        $("v2EntMintNote").textContent = low
+          ? "TOO LOW — ~" +
+            Math.round(entBits()) +
+            " bits from the pad, but these 12 words look complete. Do not fund."
+          : "Practice words from the pad. Still do not fund (simulated rolls).";
+        $("v2EntWords").innerHTML = wordGridHtml(mem.entMnemonic);
+        if (pause) pause.disabled = false;
+      });
+    }
     var regen = $("v2Regen");
     if (regen) regen.addEventListener("click", async function () {
       var n = parseInt(($("v2WordCount") && $("v2WordCount").value) || String(mem.wordCount || 12), 10);
@@ -2045,8 +2252,10 @@
     mem.cardAck = false;
     mem.cosigners = emptyCosigners();
     mem.shamirDone = false;
-    if (current && (current.id === 1 || current.id === 2 || current.id === 6)) {
-      if (current.id === 1 || current.id === 2) current.step = 0;
+    mem.entEvents = [];
+    mem.entMnemonic = "";
+    if (current && (current.id === 1 || current.id === 2 || current.id === 6 || current.id === 14)) {
+      if (current.id === 1 || current.id === 2 || current.id === 14) current.step = 0;
       renderTrack();
     } else {
       renderPicker();
@@ -2076,7 +2285,7 @@
     renderPicker();
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 13) openUc(n);
+      if (n >= 1 && n <= 14) openUc(n);
     }
   }
 

@@ -1,23 +1,12 @@
 # CROSS-REVIEW
 
 ## Security Guru
-
-**none.** Local derive only. No seed in sessionStorage.
+**none.** Educational pad; do not fund; SHA-256 of roll log is local.
 
 ## Maintainability Expert
-
-**none.** Duplicate pad `#v2Clear` removed. Obsolete Tier A 0.
+**none.** Same estimates as classic `estimateEntPadBits`. Obsolete Tier A 0.
 
 ## Domain Specialist
+**none.** d6 2.58 bits, coin 1 bit, 50 d6 ≈ 128, words ≠ entropy.
 
-**none.** Test tb1 / Mainnet bc1 match BIP-84 HRP. Word count is not this track.
-
-## Severity
-
-blockers 0 · major 0
-
-### Obsolete / cleanup (scoped)
-
-Tier A 0.
-
-blocker_count=0 obsolete_tier_a=0
+blockers 0 obsolete_tier_a=0

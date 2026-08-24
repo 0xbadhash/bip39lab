@@ -1,16 +1,14 @@
-# Behavior contract — V2 Clear secrets + Network
+# Behavior contract — V2 UC14 dice/coin
 
-- **Product:** bip39lab
-- **Target:** `/v2/`
-- **Setup:** `python3 -m http.server 4173 --directory web`
+- **Target:** `/v2/?uc=14`
 
 ## User tasks
 
-1. Clear secrets is visible in the top-right on picker and tracks, not in the sidebar.
-2. Validate & Derive has Test / Mainnet. Default addresses start `tb1`. Mainnet starts `bc1`.
-3. Classic `/` still has Generate.
+1. Three d6 → TOO LOW vs 128 bits.
+2. Mint 12 words still TOO LOW.
+3. Coin = 1 bit; ~50 d6 (via +10) reaches enough; no TOO LOW.
+4. Classic Generate still on `/`.
 
 ## Must not
 
-- Persist mnemonic in sessionStorage
-- Put Clear secrets in the left nav
+Fund pad words. Treat Math.random as CSPRNG.

@@ -1,0 +1,10 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A few dice rolls are too little randomness">
+  <title>Few dice</title>
+  <rect x="16" y="18" width="40" height="40" rx="6" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="36" y="44" text-anchor="middle" fill="#e8eef7" font-size="16" font-family="system-ui,sans-serif">3</text>
+  <rect x="68" y="18" width="40" height="40" rx="6" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="88" y="44" text-anchor="middle" fill="#e8eef7" font-size="16" font-family="system-ui,sans-serif">1</text>
+  <rect x="120" y="18" width="40" height="40" rx="6" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="140" y="44" text-anchor="middle" fill="#e8eef7" font-size="16" font-family="system-ui,sans-serif">5</text>
+  <text x="110" y="78" text-anchor="middle" fill="#e85d5d" font-size="9" font-family="system-ui,sans-serif">~8 bits · TOO LOW vs 128</text>
+</svg>
