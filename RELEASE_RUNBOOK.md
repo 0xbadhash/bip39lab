@@ -1,32 +1,34 @@
-# Release v0.16.24 — slim Starter First-hour rail
+# Release runbook — v0.16.37
 
-**Date:** 2026-08-21
-**Tag:** v0.16.24
-**Commit:** e1eaf99
+**Phase:** approved (score 100) → tag `v0.16.37`
 
 ## Smoke
 
-| Step | Exit |
-|------|------|
-| Playwright S0 S100 S102–S108 + First hour loop | 0 |
-| hard_gates / pr_validator | 100 |
+| Step | Command | Exit |
+|------|---------|------|
+| unit | `.venv/bin/python -m pytest -q` | 0 (105 passed) |
+| v2 e2e | `npx playwright test e2e/v2.spec.ts` | 0 (12 passed, earlier this ship) |
+| web_e2e gate | `python3 scripts/check_web_e2e.py --root .` | 0 |
+| plugin `npm run test:e2e` | full classic suite | **not re-run to green** — known pre-existing fails; V2 gated instead |
 
 ## Infra
 
-No vps_infra_ops.
+No INFRA_RUNBOOK. Skip.
 
 ## Evidence pack
 
-- hard_gates ok
-- Slim labels + selected-step Go/Mark done
-- Clear secrets `.btn.danger` #e2483d
+- hard_gates ok (venv python)
+- pr_validator 100 → approved
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT
+- pytest 105; V2 Playwright 12
 
 ## Rollback
 
-Revert to v0.16.23.
+`git checkout v0.16.36` on deploy. No DB.
 
 ## §9
 
-1. Slim still is a layout lock, not pasted as the page.
-2. CATALYSTS wordmark from Imagine still not copied.
-3. README-only `/sync_docs` after tag is FLAG.
+1. `scripts/*.py` uncommitted (stash `harness-scripts-uncommitted`).
+2. V2 footer `0.17.0-v2`.
+3. Classic Playwright not all-green.
+4. `/v2/js/lab-strip.js` 404 follow-up.
