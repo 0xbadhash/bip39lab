@@ -1,0 +1,11 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Export a public viewing key to the hot screen">
+  <title>Viewing key leaves</title>
+  <rect x="8" y="18" width="70" height="40" rx="8" fill="#1a2330" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="43" y="42" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">vault</text>
+  <path d="M82 38h24" stroke="#3d8bfd" stroke-width="1.5"/>
+  <path d="M102 34l6 4-6 4" fill="#3d8bfd"/>
+  <rect x="114" y="18" width="96" height="40" rx="8" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+  <text x="162" y="36" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="ui-monospace,Menlo,Consolas,monospace">zpub…</text>
+  <text x="162" y="50" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">watch screen</text>
+  <text x="110" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">public only</text>
+</svg>

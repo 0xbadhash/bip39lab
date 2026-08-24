@@ -1,0 +1,12 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sign on a cold device and broadcast elsewhere">
+  <title>Sign elsewhere</title>
+  <rect x="8" y="20" width="58" height="32" rx="6" fill="#1a2330" stroke="#243044"/>
+  <text x="37" y="40" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">inspect</text>
+  <path d="M70 36h18" stroke="#3d8bfd" stroke-width="1.5"/>
+  <rect x="90" y="20" width="58" height="32" rx="6" fill="#1a2330" stroke="#3ecf8e"/>
+  <text x="119" y="40" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">cold sign</text>
+  <path d="M152 36h18" stroke="#3d8bfd" stroke-width="1.5"/>
+  <rect x="172" y="20" width="40" height="32" rx="6" fill="#1a2330" stroke="#3d8bfd"/>
+  <text x="192" y="40" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">hot</text>
+  <text x="110" y="72" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">never paste a seed to help</text>
+</svg>

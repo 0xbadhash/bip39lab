@@ -1,0 +1,9 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cosigner keys are not pieces of one mnemonic">
+  <title>Not Shamir</title>
+  <rect x="8" y="16" width="92" height="44" rx="8" fill="#1a2330" stroke="#3d8bfd"/>
+  <text x="54" y="42" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">3 keys</text>
+  <text x="110" y="42" text-anchor="middle" fill="#e85d5d" font-size="14" font-weight="700" font-family="system-ui,sans-serif">≠</text>
+  <rect x="120" y="16" width="92" height="44" rx="8" fill="#1a2330" stroke="#243044"/>
+  <text x="166" y="42" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">1 phrase split</text>
+  <text x="110" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">UC6 is signatures, not shares</text>
+</svg>

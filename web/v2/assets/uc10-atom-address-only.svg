@@ -1,0 +1,9 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lookups are address-only after opt-in">
+  <title>Address only</title>
+  <rect x="16" y="16" width="70" height="40" rx="8" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="51" y="40" text-anchor="middle" fill="#e85d5d" font-size="8" font-family="system-ui,sans-serif">no seed</text>
+  <path d="M90 36h16" stroke="#3d8bfd" stroke-width="1.5"/>
+  <rect x="110" y="16" width="94" height="40" rx="8" fill="#1a2330" stroke="#3d8bfd"/>
+  <text x="157" y="40" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="ui-monospace,Menlo,Consolas,monospace">tb1q…</text>
+  <text x="110" y="76" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">Network after you opt in</text>
+</svg>

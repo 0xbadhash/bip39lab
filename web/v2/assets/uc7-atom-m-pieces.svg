@@ -1,0 +1,13 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Any M shares rebuild the same secret">
+  <title>M pieces rebuild</title>
+  <rect x="12" y="12" width="50" height="28" rx="5" fill="#1a2330" stroke="#3d8bfd"/>
+  <rect x="70" y="12" width="50" height="28" rx="5" fill="#1a2330" stroke="#3d8bfd"/>
+  <rect x="128" y="12" width="50" height="28" rx="5" fill="#1a2330" stroke="#243044"/>
+  <text x="37" y="30" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">s1</text>
+  <text x="95" y="30" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">s2</text>
+  <text x="153" y="30" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">s3</text>
+  <path d="M95 40v8" stroke="#3d8bfd" stroke-width="1.5"/>
+  <rect x="60" y="50" width="70" height="20" rx="5" fill="#1a2330" stroke="#3ecf8e"/>
+  <text x="95" y="64" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">secret</text>
+  <text x="190" y="64" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">2-of-3</text>
+</svg>

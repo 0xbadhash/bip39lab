@@ -1,15 +1,10 @@
 # BEHAVIOR-REPORT
 
-- **surface:** `/v2/` Playwright `e2e/v2.spec.ts`
-- **date:** 2026-08-24
+`npx playwright test e2e/v2.spec.ts` → **13 passed** (14.1s).
 
-| Clause | Result | Evidence |
-|--------|--------|----------|
-| UC1 atoms + back-nav | pass | V2-S12 `#uc1Viz` count 3, atom 1/2 hi |
-| Address 3-up | pass | V2-S9 |
-| Generate toolbar (i) | pass | V2-S4 `#wrapMnemonicI` |
-| UC2 atoms + print | pass | V2-S8 `#uc2Viz` atom 1 then 3 hi |
-| Quiz no nag | pass | V2-S8 not “Select both right sentences” |
-| Secret wall | pass | V2-S6 |
-
-`npx playwright test e2e/v2.spec.ts` → **12 passed** (14.3s).
+| Clause | Result |
+|--------|--------|
+| UC3–10 atoms | pass V2-S13 |
+| UC8 PSBT prose | pass V2-S13 |
+| Validate desc | pass V2-S1 `#v2DeriveHelp` |
+| Secret wall | pass V2-S6 |

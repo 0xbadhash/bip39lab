@@ -1,0 +1,10 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Each cosigner has a whole recovery phrase">
+  <title>Three phrases</title>
+  <rect x="10" y="16" width="60" height="44" rx="6" fill="#1a2330" stroke="#3d8bfd"/>
+  <rect x="80" y="16" width="60" height="44" rx="6" fill="#1a2330" stroke="#3d8bfd"/>
+  <rect x="150" y="16" width="60" height="44" rx="6" fill="#1a2330" stroke="#3d8bfd"/>
+  <text x="40" y="42" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">A words</text>
+  <text x="110" y="42" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">B words</text>
+  <text x="180" y="42" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">C words</text>
+  <text x="110" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">three whole phrases, three zpubs</text>
+</svg>

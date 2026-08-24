@@ -152,16 +152,16 @@
 
   function conceptTarget(id, chipIndex) {
     var map = {
-      1: [0, 1, 2],
+      1: [0, 2, 3],
       2: [0, 1, 2],
-      3: [0, 1, 1],
-      4: [0, 1, 1],
-      5: [0, 1, 1],
-      6: [0, 1, 0],
-      7: [0, 1, 1],
-      8: [0, 1, 1],
-      9: [0, 1, 1],
-      10: [0, 1, 1]
+      3: [0, 1, 2],
+      4: [0, 1, 2],
+      5: [0, 1, 2],
+      6: [0, 1, 2],
+      7: [0, 1, 2],
+      8: [0, 1, 2],
+      9: [0, 1, 2],
+      10: [0, 1, 2]
     };
     var row = map[id] || [0, 1, 2];
     return row[chipIndex] != null ? row[chipIndex] : 0;
@@ -204,50 +204,99 @@
     return html;
   }
 
-  function uc1VizForStep(step) {
-    if (step <= 1) return 1;
-    if (step === 3) return 3;
-    return 2;
+  function atom(n, jump, src, alt, cap) {
+    return { n: n, jump: jump, src: src, alt: alt, cap: cap };
+  }
+  var VIZ = {
+    1: {
+      forStep: function (s) { if (s <= 1) return 1; if (s === 3) return 3; return 2; },
+      atoms: [
+        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Random bits become numbered recovery words", "<strong>Plan · Entropy to words</strong><br/>Random bits become a numbered recovery phrase. That phrase is the secret."),
+        atom(2, 2, "assets/uc1-atom-phrase-ne-address.svg", "Recovery phrase is not the same as a receive address", "<strong>Practice · Phrase is not address</strong><br/>The words stay secret. The receive address is public and safe to share."),
+        atom(3, 3, "assets/uc1-atom-one-to-many.svg", "One recovery phrase can derive many receive addresses", "<strong>Review · One phrase, many addresses</strong><br/>The same phrase can derive many receive addresses (different path index).")
+      ]
+    },
+    2: {
+      forStep: function (s) { if (s <= 0) return 1; if (s === 2) return 3; return 2; },
+      atoms: [
+        atom(1, 0, "assets/uc2-atom-card-object.svg", "The numbered card is the backup object", "<strong>Plan · Card is the backup</strong><br/>The numbered cells are the backup object. A textarea on a screen is not."),
+        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Hand copy is not the same as a photo or a print", "<strong>Practice · Hand copy is not a photo</strong><br/>Write the cells by hand while the computer is offline. Photograph and print are not an air-gap."),
+        atom(3, 2, "assets/uc2-atom-passphrase-apart.svg", "Keep the passphrase in a different place from the word sheet", "<strong>Review · Passphrase stored apart</strong><br/>If there is a passphrase, store it in a different place from this sheet.")
+      ]
+    },
+    3: {
+      atoms: [
+        atom(1, 0, "assets/uc3-atom-same-words.svg", "Same recovery words on both sides", "<strong>Plan · Same words</strong><br/>Both vaults start from the same numbered card."),
+        atom(2, 1, "assets/uc3-atom-new-vault.svg", "A different passphrase makes a different vault", "<strong>Practice · 25th word, new vault</strong><br/>Same words plus a different passphrase derive a different receive address."),
+        atom(3, 2, "assets/uc3-atom-forgotten-loss.svg", "A forgotten passphrase cannot be reset", "<strong>Review · Forgotten is loss</strong><br/>The lab cannot reset a forgotten passphrase. That vault is gone.")
+      ]
+    },
+    4: {
+      atoms: [
+        atom(1, 0, "assets/uc4-atom-path-folder.svg", "A derivation path is a folder in the seed tree", "<strong>Plan · Path is a folder</strong><br/>Change the folder and the address changes. The recovery words do not."),
+        atom(2, 1, "assets/uc4-atom-index.svg", "The last number is which receive address", "<strong>Practice · Index is the last number</strong><br/>Wallets ask for a new address so you do not reuse the first one."),
+        atom(3, 2, "assets/uc4-atom-words-stay.svg", "Changing path does not rewrite the recovery words", "<strong>Review · Words stay</strong><br/>Only the last path number changes. The phrase is not rewritten.")
+      ]
+    },
+    5: {
+      atoms: [
+        atom(1, 0, "assets/uc5-atom-vault-stays.svg", "The twelve words stay in the vault", "<strong>Plan · Vault stays</strong><br/>The recovery words stay on paper or a hardware signer."),
+        atom(2, 1, "assets/uc5-atom-viewing-key.svg", "Export a public viewing key to the hot screen", "<strong>Practice · Viewing key leaves</strong><br/>A zpub or xpub is enough to list addresses. It cannot spend."),
+        atom(3, 2, "assets/uc5-atom-never-words.svg", "Never paste the twelve words into a watch app", "<strong>Review · Never the twelve words</strong><br/>Pasting the mnemonic makes a hot wallet, not watch-only.")
+      ]
+    },
+    6: {
+      atoms: [
+        atom(1, 0, "assets/uc6-atom-mofn.svg", "Two of three signatures spend", "<strong>Plan · M-of-N signatures</strong><br/>N is how many keys. M is how many signatures move coins."),
+        atom(2, 1, "assets/uc6-atom-three-phrases.svg", "Each cosigner has a whole recovery phrase", "<strong>Practice · Three whole phrases</strong><br/>Each cosigner keeps a full seed and shares only a zpub."),
+        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Cosigner keys are not pieces of one mnemonic", "<strong>Review · Not Shamir pieces</strong><br/>These are independent keys, not shares of one secret.")
+      ]
+    },
+    7: {
+      atoms: [
+        atom(1, 0, "assets/uc7-atom-one-secret.svg", "Shamir starts from one secret", "<strong>Plan · One secret</strong><br/>Shares are pieces of one blob, not cosigner keys."),
+        atom(2, 1, "assets/uc7-atom-m-pieces.svg", "Any M shares rebuild the same secret", "<strong>Practice · M pieces rebuild</strong><br/>Any two of three practice shares rebuild the same hex secret."),
+        atom(3, 2, "assets/uc7-atom-share-no-sign.svg", "A share cannot sign a bitcoin spend", "<strong>Review · A share cannot sign</strong><br/>Combining shares is recovery. It is not a two-person spend.")
+      ]
+    },
+    8: {
+      atoms: [
+        atom(1, 0, "assets/uc8-atom-package.svg", "A PSBT is a portable unsigned package", "<strong>Plan · Package</strong><br/>A PSBT carries an incomplete spend between devices."),
+        atom(2, 1, "assets/uc8-atom-no-seed.svg", "Inspect never needs the recovery phrase", "<strong>Practice · No seed</strong><br/>This card parses structure. It never asks for the twelve words."),
+        atom(3, 2, "assets/uc8-atom-sign-elsewhere.svg", "Sign on a cold device and broadcast elsewhere", "<strong>Review · Sign elsewhere</strong><br/>Inspect here. Sign on a cold device you trust. Broadcast from a hot coordinator.")
+      ]
+    },
+    9: {
+      atoms: [
+        atom(1, 0, "assets/uc9-atom-watch-only.svg", "An xpub is watch-only", "<strong>Plan · Watch-only</strong><br/>An account xpub or zpub derives receive addresses without spending."),
+        atom(2, 1, "assets/uc9-atom-cannot-spend.svg", "An xpub cannot sign or steal coins", "<strong>Practice · Cannot spend</strong><br/>Publishing an xpub does not let anyone steal coins immediately."),
+        atom(3, 2, "assets/uc9-atom-leaks-history.svg", "Publishing an xpub leaks future addresses", "<strong>Review · Leaks history</strong><br/>It still leaks future addresses and activity. Do not publish it casually.")
+      ]
+    },
+    10: {
+      atoms: [
+        atom(1, 0, "assets/uc10-atom-offline.svg", "This V2 page stays offline", "<strong>Plan · Page offline</strong><br/>Crypto stays in this tab. CSP connect-src is none."),
+        atom(2, 1, "assets/uc10-atom-address-only.svg", "Lookups are address-only after opt-in", "<strong>Practice · Address only</strong><br/>Network lookups use addresses you chose. Never the mnemonic."),
+        atom(3, 2, "assets/uc10-atom-unknown-not-zero.svg", "A failed lookup is unknown not zero", "<strong>Review · Unknown is not zero</strong><br/>A failed balance lookup must show unknown, never silent 0.")
+      ]
+    }
+  };
+
+  function defaultVizStep(s) {
+    if (s <= 0) return 1;
+    if (s === 1) return 2;
+    return 3;
   }
 
-  function uc1SetViz(n) {
-    n = String(n | 0);
-    window.uc1SetViz = uc1SetViz;
-    document.querySelectorAll("#uc1Viz [data-atom]").forEach(function (el) {
-      var on = el.getAttribute("data-atom") === n;
-      el.classList.toggle("hi", on);
-      el.classList.toggle("dim", !on);
-    });
-  }
-
-  function uc1VizHtml() {
+  function vizHtml(id) {
+    var spec = VIZ[id];
+    if (!spec) return "";
     var maxS = Math.max(0, mem.maxStep || 0);
-    var atoms = [
-      {
-        n: 1,
-        jump: 0,
-        src: "assets/uc1-atom-entropy-words.svg",
-        alt: "Random bits become numbered recovery words",
-        cap: "<strong>Plan · Entropy to words</strong><br/>Random bits become a numbered recovery phrase. That phrase is the secret."
-      },
-      {
-        n: 2,
-        jump: 2,
-        src: "assets/uc1-atom-phrase-ne-address.svg",
-        alt: "Recovery phrase is not the same as a receive address",
-        cap: "<strong>Practice · Phrase is not address</strong><br/>The words stay secret. The receive address is public and safe to share."
-      },
-      {
-        n: 3,
-        jump: 3,
-        src: "assets/uc1-atom-one-to-many.svg",
-        alt: "One recovery phrase can derive many receive addresses",
-        cap: "<strong>Review · One phrase, many addresses</strong><br/>The same phrase can derive many receive addresses (different path index)."
-      }
-    ];
     return (
-      '<div class="uc-viz" id="uc1Viz">' +
-      atoms
+      '<div class="uc-viz" id="uc' +
+      id +
+      'Viz">' +
+      spec.atoms
         .map(function (a) {
           var can = a.jump <= maxS;
           return (
@@ -271,76 +320,24 @@
     );
   }
 
-  function uc2VizForStep(step) {
-    if (step <= 0) return 1;
-    if (step === 2) return 3;
-    return 2;
-  }
-
-  function uc2SetViz(n) {
-    n = String(n | 0);
-    window.uc2SetViz = uc2SetViz;
-    document.querySelectorAll("#uc2Viz [data-atom]").forEach(function (el) {
-      var on = el.getAttribute("data-atom") === n;
-      el.classList.toggle("hi", on);
-      el.classList.toggle("dim", !on);
-    });
-  }
-
-  function uc2VizHtml() {
-    var maxS = Math.max(0, mem.maxStep || 0);
-    var atoms = [
-      {
-        n: 1,
-        jump: 0,
-        src: "assets/uc2-atom-card-object.svg",
-        alt: "The numbered card is the backup object",
-        cap: "<strong>Plan · Card is the backup</strong><br/>The numbered cells are the backup object. A textarea on a screen is not."
-      },
-      {
-        n: 2,
-        jump: 1,
-        src: "assets/uc2-atom-hand-not-photo.svg",
-        alt: "Hand copy is not the same as a photo or a print",
-        cap: "<strong>Practice · Hand copy is not a photo</strong><br/>Write the cells by hand while the computer is offline. Photograph and print are not an air-gap."
-      },
-      {
-        n: 3,
-        jump: 2,
-        src: "assets/uc2-atom-passphrase-apart.svg",
-        alt: "Keep the passphrase in a different place from the word sheet",
-        cap: "<strong>Review · Passphrase stored apart</strong><br/>If there is a passphrase, store it in a different place from this sheet."
-      }
-    ];
-    return (
-      '<div class="uc-viz" id="uc2Viz">' +
-      atoms
-        .map(function (a) {
-          var can = a.jump <= maxS;
-          return (
-            '<button type="button" class="atom dim" data-atom="' +
-            a.n +
-            '" data-concept-step="' +
-            a.jump +
-            '"' +
-            (can ? "" : " disabled") +
-            '><img src="' +
-            a.src +
-            '" alt="' +
-            a.alt +
-            '"><p class="cap">' +
-            a.cap +
-            "</p></button>"
-          );
-        })
-        .join("") +
-      "</div>"
-    );
+  function applyViz(id, step) {
+    var spec = VIZ[id];
+    if (!spec) return;
+    var n = String((spec.forStep || defaultVizStep)(step));
+    var fn = function (k) {
+      k = String(k | 0);
+      document.querySelectorAll("#uc" + id + "Viz [data-atom]").forEach(function (el) {
+        var on = el.getAttribute("data-atom") === k;
+        el.classList.toggle("hi", on);
+        el.classList.toggle("dim", !on);
+      });
+    };
+    window["uc" + id + "SetViz"] = fn;
+    fn(n);
   }
 
   function renderConcepts(id, step, nSteps) {
-    if (id === 1) return uc1VizHtml();
-    if (id === 2) return uc2VizHtml();
+    if (VIZ[id]) return vizHtml(id);
     var cs = conceptsFor(id);
     var maxS = Math.max(0, mem.maxStep || 0);
     return cs
@@ -429,8 +426,7 @@
     if (window.Bip39Glossary && typeof Bip39Glossary.enhance === "function") {
       Bip39Glossary.enhance();
     }
-    if (current.id === 1) uc1SetViz(uc1VizForStep(current.step));
-    if (current.id === 2) uc2SetViz(uc2VizForStep(current.step));
+    applyViz(current.id, current.step);
   }
 
   async function stepHtml(id, step) {
@@ -478,6 +474,9 @@
           "Read the numbered cells. The card is the backup object.",
           "Do not treat the receive address as the backup. The address is not the words."
         ) +
+        desc(
+          "This screen is only about looking at the numbered cells. Each cell has a number and a word. That grid is what you would write on paper as a backup. It is practice. It is not a funded wallet."
+        ) +
         entropyHtml() +
         wordGridHtml(mem.mnemonic) +
         '<label class="check"><input type="checkbox" id="v2CardAck" ' + (mem.cardAck ? "checked" : "") + "/> I looked at the backup card (indexes + words).</label>" +
@@ -489,19 +488,15 @@
       var gated = !mem.cardAck;
       var derived = !!(mem.lastRows && mem.lastRows.length);
       return pad(
-        '<h2 class="label-row">Validate &amp; derive' +
-        '<span class="help-tip help-tip-safety" id="wrapDeriveI">' +
-        '<button type="button" class="help-tip-btn" aria-label="What is not the same">i</button>' +
-        '<span class="help-tip-panel" hidden><strong>What is not the same</strong>' +
-        '<span class="control-help" style="display:block;margin-top:0.35rem">' +
-        "The seed is not the card. The seed is not the address. Click Validate and derive. This is not a wallet." +
-        "</span></span></span></h2>" +
+        "<h2>Validate &amp; derive</h2>" +
         doDont(
           "Keep the numbered card in view so you see the source of the addresses.",
           "Do not send coins to these practice addresses."
         ) +
-        '<p class="control-help" id="v2DeriveHelp"><strong>Where addresses come from.</strong> ' +
-        "The numbered card (words) is stretched into a <em>seed</em>. Receive addresses are derived from that seed.</p>" +
+        desc(
+          "The numbered list of words is your backup. The computer turns those words into a hidden number called a seed. From that seed it can make payment addresses (the long tb1q… strings). The words are not the seed. The seed is not the address. They are three different things. Click Validate and derive to see addresses. This is not a wallet you should fund.",
+          "v2DeriveHelp"
+        ) +
         entropyHtml() +
         pipeHtml(true, derived, derived) +
         '<div id="v2Card">' +
@@ -513,12 +508,6 @@
         '<div class="row"><button type="button" class="btn" id="v2Derive" ' +
         (gated ? "disabled" : "") +
         ">Validate &amp; derive</button>" +
-        '<span class="help-tip help-tip-safety">' +
-        '<button type="button" class="help-tip-btn" aria-label="What is not the same">i</button>' +
-        '<span class="help-tip-panel" hidden><strong>What is not the same</strong>' +
-        '<span class="control-help" style="display:block;margin-top:0.35rem">' +
-        "The seed is not the card. The seed is not the address. Click Validate and derive. This is not a wallet." +
-        "</span></span></span>" +
         clearBtnHtml() +
         "</div>" +
         '<div id="v2AddrWrap">' +
@@ -535,12 +524,9 @@
           "Try another word count. Entropy bits change with length.",
           "Do not fund any of these practice phrases or their addresses."
         ) +
-        callout(
-          "done",
-          "Try another length",
-          "Choose 12, 15, 18, 21, or 24 words. Entropy bits change with length. Receive addresses stay hidden until Validate and derive."
+        desc(
+          "Try a different length: 12, 15, 18, 21, or 24 words. A longer phrase uses more random bits from the operating system. Each new phrase is still practice. Do not send money to it or to addresses that come from it."
         ) +
-        generateExplainerHtml() +
         entropyHtml() +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar">' +
@@ -589,6 +575,9 @@
           "Treat the numbered cells as the backup object.",
           "Do not treat a textarea on a screen as the backup."
         ) +
+        desc(
+          "A backup is the numbered cells: each number next to a word. That is what you would write by hand. A box of text on a computer is not the backup. This card is practice only."
+        ) +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
         '<div class="v2-gen-left">' +
@@ -614,6 +603,9 @@
           "Copy the numbered cells by hand onto paper you control. Keep any passphrase in a different place from this sheet.",
           "Do not photograph the sheet. Do not store it in a cloud drive, chat, or email. Do not keep it on a networked phone if the phrase is funded.",
           "v2DoNotList"
+        ) +
+        desc(
+          "If these words were real money, you would copy them by hand while the computer is offline. Do not photograph the sheet. Do not keep a passphrase on the same paper as the words."
         ) +
         '<div class="row v2-gen-bar">' +
         '<div class="v2-gen-left">' +
@@ -668,11 +660,17 @@
           "Leave passphrase A empty and put a practice word in B (for example test) to see two wallets from one card.",
           "Do not treat the passphrase as a PIN on the same wallet. Forgotten passphrase means that vault is gone."
         ) +
+        desc(
+          "The optional extra secret (sometimes called the 25th word) is mixed with the recovery words. Same words plus a different extra secret make a different wallet. Forgetting that extra secret means that wallet cannot be opened from the words alone."
+        ) +
         entropyHtml() +
         wordCountSelectHtml() +
-        '<div class="row">' +
+        '<div class="row v2-gen-bar">' +
+        '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Generate">Generate</button>' +
         '<button type="button" class="btn secondary" id="v2Regen">Regenerate ' + n + "-word phrase</button>" +
+        mnemonicHelpHtml(true) +
+        "</div>" +
         clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
@@ -687,6 +685,9 @@
           "Compare two passphrases against the same words. Read the verdict.",
           "Do not fund either practice address."
         ) +
+        desc(
+          "Type two extra secrets (A and B) against the same words. Compare the first receive address. If the addresses differ, you have two wallets. If they match, you typed the same extra secret twice."
+        ) +
         callout("is", "What you are comparing", "Same BIP-39 words. Different optional passphrase. Different receive addresses. Public addresses only.") +
         '<label class="field">Passphrase A <input id="ppA" type="text" placeholder="(empty = no passphrase)" autocomplete="off"/></label>' +
         '<label class="field">Passphrase B <input id="ppB" type="text" value="test" autocomplete="off"/></label>' +
@@ -699,7 +700,7 @@
       return quiz("If you forget the passphrase for a vault:", [
         {
           k: "ok",
-          t: "That vault’s coins are not recoverable from the 12 words alone.",
+          t: "That vault’s coins are not recoverable from the recovery words alone.",
           okwhy: "Correct. Same words without that passphrase open a different vault."
         },
         {
@@ -726,6 +727,9 @@
           "A derivation path is a folder inside the seed tree. Change the folder, the address changes. The recovery words do not change.",
           "Do not think a new path makes a new recovery phrase. The path is not the seed."
         ) +
+        desc(
+          "Think of a path as a folder inside the backup. The words stay the same. Changing the folder changes which payment address you get. The path is not a new backup."
+        ) +
         callout(
           "is",
           "What each piece means (this lab, BIP84 test)",
@@ -748,6 +752,9 @@
         doDont(
           "Click to raise the last path number so you see the next receive address.",
           "Do not think a new index is a new recovery phrase. The words stay the same."
+        ) +
+        desc(
+          "Index 0 is the first payment address in this folder. Index 1 is the next. Wallets ask for a new address so you do not reuse the first one. The words stay the same. Only the last number in the path changes."
         ) +
         callout(
           "done",
@@ -794,6 +801,9 @@
           "Give a watch-only app an xpub, zpub, or descriptor (click i on those words on the next pad).",
           "Do not paste the recovery phrase or seed into a watch-only app."
         ) +
+        desc(
+          "A watch-only app can list payment addresses and incoming payments. It should receive a public viewing key, not the recovery words. If you type the words into that app, it becomes a full wallet that can spend."
+        ) +
         pauseBtn("Seed stays out of watch apps", false)
       );
     }
@@ -804,6 +814,9 @@
         doDont(
           "Export a public viewing key so a phone or desktop can list addresses and incoming payments while the twelve words stay on paper or a hardware signer.",
           "Do not export by typing the recovery phrase into the watch app. That is a full wallet, not watch-only."
+        ) +
+        desc(
+          "Refresh to see public account keys from this practice phrase (xpub, zpub, ypub). You should not see the recovery words. A zpub is the usual native-segwit viewing key. An xpub is a different prefix (often older wallets)."
         ) +
         callout(
           "is",
@@ -836,7 +849,7 @@
         },
         {
           k: "bad",
-          t: "The 12 words so it can “just work”.",
+          t: "The recovery words so it can “just work”.",
           why: "Wrong. Pasting the mnemonic makes a hot spend wallet, not watch-only."
         },
         {
@@ -894,6 +907,9 @@
           "Read M as how many signatures are required, N as how many independent keys exist. 2-of-3 means any two of three people can spend. Each person keeps a full recovery phrase.",
           "Do not read M-of-N as cutting one BIP-39 phrase into N pieces. That is Shamir (UC7), not this track."
         ) +
+        desc(
+          "Here N is how many people have a key (three). M is how many of them must sign to move coins (two). Each person keeps a full recovery phrase. You share public keys, not the words."
+        ) +
         callout(
           "is",
           "M and N in one sentence",
@@ -935,6 +951,9 @@
         doDont(
           "Generate three different practice phrases. Keep the words. Share only the zpub from each phrase.",
           "Do not paste any of the three seeds into chat, Discord, or a coordinator. Do not treat the three zpubs as slices of one mnemonic."
+        ) +
+        desc(
+          "Make three different practice phrases, one per cosigner. Keep the words. Show the zpub for each phrase. That zpub is what a coordinator would see. It is not a slice of one mnemonic."
         ) +
         callout(
           "is",
@@ -995,6 +1014,9 @@
           "Treat this demo as an educational split of one secret into hex shares. M shares rebuild that same secret.",
           "Do not treat these shares as Trezor Suite / SLIP-39 word lists. Do not treat them as multisig cosigner keys (that was UC6)."
         ) +
+        desc(
+          "This is one secret cut into pieces. Any two of three pieces rebuild the same secret. A piece cannot sign a bitcoin spend. That is different from UC6, where each person has a whole key."
+        ) +
         callout(
           "is",
           "One secret, many pieces",
@@ -1021,6 +1043,9 @@
         doDont(
           "Split a practice hex secret 2-of-3 and recombine two shares here.",
           "Do not fund these shares. They are not Trezor SLIP-39."
+        ) +
+        desc(
+          "Click to split a throwaway hex secret into three pieces and rebuild it from two of them. These hex shares are educational. They are not Trezor Suite word shares. Do not fund them."
         ) +
         callout("warn", "Never fund", "Hex shares in this lab are practice. Do not use them for real funds. They are not Trezor SLIP-39.") +
         '<button type="button" class="btn" id="v2Sh">Split practice secret 2-of-3</button>' +
@@ -1063,6 +1088,9 @@
           "Inspect the package here. Sign on a cold device you trust. Broadcast from a hot coordinator you choose.",
           "Do not paste a seed to help a PSBT. This card never signs and never broadcasts."
         ) +
+        desc(
+          "A PSBT is a package for an incomplete payment. You can inspect it here. You would sign it on a cold device you trust and broadcast it from a hot computer you choose. This page never signs and never sends it to the network."
+        ) +
         pauseBtn("I will not paste a seed to help a PSBT", false)
       );
     }
@@ -1072,6 +1100,9 @@
         doDont(
           "Inspect the sample package offline.",
           "Do not paste a seed. This card never signs and never broadcasts."
+        ) +
+        desc(
+          "Click inspect to read the sample package: magic bytes, maps, inputs, outputs. No signature is added. The recovery words are not needed."
         ) +
         callout("is", "Structure only", "A sample PSBT is parsed offline. No signature is added.") +
         '<button type="button" class="btn" id="v2Psbt">Inspect sample PSBT</button>' +
@@ -1109,6 +1140,9 @@
           "Treat an account xpub as watch-only: software can derive receive addresses.",
           "Do not publish an xpub casually. It cannot sign, but it leaks future addresses and history. It is not the recovery phrase."
         ) +
+        desc(
+          "An account xpub or zpub can list future payment addresses. It cannot move coins. It is still private in another way: anyone with it can see activity. It is not the recovery words."
+        ) +
         pauseBtn("xpub is watch-only and leaky", false)
       );
     }
@@ -1119,6 +1153,9 @@
         doDont(
           "Show the BIP-84 watch key. You should see a zpub or xpub.",
           "Do not expect an xprv or the twelve words on this pad."
+        ) +
+        desc(
+          "Show the BIP-84 watch key for this practice phrase. You should see a zpub (or xpub). You should not see an xprv or the recovery words."
         ) +
         callout("is", "Public extended key", "You should see an xpub or zpub. You should not see an xprv " + termI("XPRV") + " or the words.") +
         '<button type="button" class="btn" id="v2Xpub">Show BIP84 watch key</button>' +
@@ -1140,8 +1177,8 @@
         },
         {
           k: "bad",
-          t: "Is the same as the 12 words.",
-          why: "Wrong. The xpub is a public account key. The twelve words can spend."
+          t: "Is the same as the recovery words.",
+          why: "Wrong. The xpub is a public account key. The recovery words can spend."
         }
       ]);
     }
@@ -1156,6 +1193,9 @@
           "Keep this V2 page offline (CSP connect-src none). If a balance is unknown, treat it as unknown.",
           "Do not read a missing lookup as zero coins."
         ) +
+        desc(
+          "This V2 page does not call the internet for balances. Crypto stays in this tab. If a later lookup fails, the honest answer is unknown, not zero coins."
+        ) +
         pauseBtn("Default is offline", false)
       );
     }
@@ -1165,6 +1205,9 @@
         doDont(
           "Look up only addresses you chose, after opt-in on Network.",
           "Do not send the mnemonic. Lookups are address-only."
+        ) +
+        desc(
+          "Fees and balances live on the Network page after you opt in. Lookups use payment addresses you chose. Never send the recovery words to a balance site."
         ) +
         callout(
           "warn",
@@ -1269,9 +1312,19 @@
     );
   }
 
+  function desc(text, id) {
+    return (
+      '<p class="control-help v2-step-desc"' +
+      (id ? ' id="' + id + '"' : "") +
+      ">" +
+      text +
+      "</p>"
+    );
+  }
+
   function generateExplainerHtml() {
     return (
-      '<p class="control-help" id="v2GenHelp">' +
+      '<p class="control-help v2-step-desc" id="v2GenHelp">' +
       "This tab asks the operating system for random bits (a cryptographically strong random number generator), " +
       "then turns those bits into a BIP-39 practice recovery phrase. " +
       "Do not send money to these words or to addresses that come from them. " +
@@ -1651,7 +1704,17 @@
     var pb = $("v2Psbt");
     if (pb) pb.addEventListener("click", function () {
       var r = BIP39Lab.inspectPsbt(PSBT_MIN);
-      $("v2PsbtOut").textContent = JSON.stringify(r, null, 2);
+      var lines = [
+        "What this is: a sample PSBT package (educational). No signature is added.",
+        "Status: " + (r.status || "unknown"),
+        r.magic ? "Magic: " + r.magic : "",
+        r.globalKeys != null ? "Global map keys: " + r.globalKeys : "",
+        r.inputCount != null ? "Inputs: " + r.inputCount : "",
+        r.outputCount != null ? "Outputs: " + r.outputCount : "",
+        r.detail ? "Note: " + r.detail : "",
+        "This tab does not sign and does not broadcast."
+      ].filter(Boolean);
+      $("v2PsbtOut").textContent = lines.join("\n");
     });
     var uc2q = $("v2Uc2Quiz");
     if (uc2q) {

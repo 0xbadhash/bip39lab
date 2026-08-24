@@ -1,0 +1,11 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A different passphrase makes a different vault">
+  <title>New vault</title>
+  <rect x="8" y="14" width="86" height="48" rx="8" fill="#1a2330" stroke="#243044" stroke-width="1.5"/>
+  <text x="51" y="34" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">words + none</text>
+  <text x="51" y="50" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="ui-monospace,Menlo,Consolas,monospace">tb1q A</text>
+  <text x="110" y="40" text-anchor="middle" fill="#e85d5d" font-size="14" font-weight="700" font-family="system-ui,sans-serif">≠</text>
+  <rect x="126" y="14" width="86" height="48" rx="8" fill="#1a2330" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="169" y="34" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">words + 25th</text>
+  <text x="169" y="50" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="ui-monospace,Menlo,Consolas,monospace">tb1q B</text>
+  <text x="110" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">two vaults</text>
+</svg>

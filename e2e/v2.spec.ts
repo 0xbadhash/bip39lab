@@ -296,4 +296,20 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#uc1Viz .atom")).toHaveCount(3);
     await expect(page.locator("#v2WordGrid, #v2Card .ww").first()).toBeVisible();
   });
+
+  test("V2-S13 UC3–UC10 concept atoms mount", async ({ page }) => {
+    for (const uc of [3, 4, 5, 6, 7, 8, 9, 10]) {
+      await page.goto(`/v2/?uc=${uc}`);
+      const start = page.locator("#btnGateStart");
+      if (await start.isVisible()) await start.click();
+      await expect(page.locator(`#uc${uc}Viz .atom`)).toHaveCount(3);
+      await expect(page.locator(`#uc${uc}Viz [data-atom="1"]`)).toHaveClass(/hi/);
+      if (uc === 8) {
+        await page.locator("#v2Pause").click();
+        await page.locator("#v2Psbt").click();
+        await expect(page.locator("#v2PsbtOut")).toContainText(/What this is/i);
+        await expect(page.locator("#v2PsbtOut")).not.toContainText("{");
+      }
+    }
+  });
 });

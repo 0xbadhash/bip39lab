@@ -1,58 +1,53 @@
-# PR Draft: v0.16.38 V2 UC1/UC2 atoms, toolbar, inline addresses
+# PR Draft: v0.16.39 V2 UC3–UC10 atoms + step descriptions
 
-**Spec:** `.agents/specs/2026-08-24-v2-uc1-uc2-viz.md`
-**Plan:** `.agents/specs/2026-08-24-v2-uc1-uc2-viz-plan.md`
+**Spec:** `.agents/specs/2026-08-24-v2-uc3-uc10-viz-desc.md`
+**Plan:** `.agents/specs/2026-08-24-v2-uc3-uc10-viz-desc-plan.md`
 
 ## What Problem This Solves
 
-UC1 atoms existed on a branch but the live strip was text chips; the rail stole height; Generate hid BIP-39 (i); addresses stacked; UC2 quiz nags “select 2 and 3.”
+Tracks 3–10 had no App Shell strip. Teaching pads lacked a Generate-style description. Validate hid the seed/card/address split behind (i). Quizzes said “12 words.”
 
 ## Why This Change Was Made
 
-Operator validated UC1, asked UC2 the same way, then quiz silence on a single correct pick.
+Operator asked UC3–UC10 as proposed after UC2, then pad descriptions, then recovery-words wording.
 
 ## User Impact
 
-Visible Plan/Practice/Review SVGs on UC1 and UC2. Slim Track 1/6 rail. Generate + (i) left, Clear secrets right. `#n` beside `tb1q`, three pairs per row. UC2 quiz only scolds wrong answers.
+Each UC 3–10 shows three atoms. Every teaching pad has a plain paragraph. Validate explains words, seed, and address without (i). Quizzes say recovery words.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC-1 UC1 three atoms + viz step | V2-S12 `#uc1Viz` |
-| AC-2 UC2 three atoms + print hi | V2-S8 `#uc2Viz` |
-| AC-3 Generate toolbar + (i) | V2-S4 `#v2GenRow` `#wrapMnemonicI` |
-| AC-4 three address pairs one row | V2-S9 |
-| AC-5 no quiz nag 2 and 3 | V2-S8 |
-| AC-6 classic `/` | V2-S0 |
-| AC-7 pytest | `.venv/bin/python -m pytest -q` |
+| AC-1 UC3–10 three atoms, atom 1 hi | V2-S13 |
+| AC-2 UC8 PSBT prose | V2-S13 `#v2PsbtOut` |
+| AC-3 Validate desc seed | V2-S1 `#v2DeriveHelp` |
+| AC-4 classic `/` | V2-S0 |
+| AC-5 pytest | `.venv/bin/python -m pytest -q` |
 
 ## Red-proof
 
 - red_cmd: `false`
 - green_cmd: `npx playwright test e2e/v2.spec.ts`
-- TDD: S8/S9/S12 updated with UI.
 
 ## Threat notes
 
 - secrets: no mnemonic in sessionStorage
-- xss: CSP connect-src none; img-src self
+- xss: CSP connect-src none
 - csrf: none
 
 ## Evidence pack
 
-- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT
-- V2 Playwright; pytest 105
-- hard_gates / pr_validator (venv python)
+CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT; V2 Playwright; pytest; hard_gates.
 
 ## Things that look bad but are actually fine
 
-1. Classic full e2e still not all-green.
-2. Harness scripts uncommitted.
+1. Classic full e2e not all-green.
+2. `scripts/*.py` uncommitted.
 3. V2 footer `0.17.0-v2`.
-4. Preview HTML is optional operator file.
-5. lab-strip 404 under `/v2/` is pre-existing relative URL.
+4. lab-strip 404 on `/v2/`.
+5. Callouts remain under some desc paragraphs on purpose (Do/Do not + extra colour).
 
 ## Cross-review
 
-Blockers 0. Obsolete Tier A 0. See `.agents/artifacts/CROSS_REVIEW.md`.
+Blockers 0. Obsolete Tier A 0.

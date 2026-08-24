@@ -1,33 +1,33 @@
 # CROSS-REVIEW
 
-**base:** origin/master v0.16.37 · **head:** uncommitted UC1/UC2 viz
+**base:** v0.16.38 · **head:** UC3–UC10 viz + step desc
 
 ## Blocker count: 0
 
 ### Security Guru
 
-**none.** SVGs are static assets. CSP `img-src 'self'`. No mnemonic in sessionStorage.
+**none.** Static SVGs. CSP img-src self. No new persistence.
 
 ### Maintainability Expert
 
-**none (blocker).** Two viz builders — follow-up DRY.
+**none (blocker).** Shared VIZ catalog is the right DRY vs eight copy-pasted builders.
 
 #### Obsolete / cleanup (scoped)
 
 | Path | Tier | conf | Evidence |
 |------|------|------|----------|
-| `uc1-concept-strip-preview.html` | C | 0.4 | Operator preview; not in nav. Keep for htmlpreview. |
-| Whole-repo | — | — | run `/sweep` |
+| wrapDeriveI | — | — | **removed** this ship |
+| Whole-repo | — | — | `/sweep` |
 
 Tier A: **0**
 
 ### Domain Specialist
 
-**none.** UC2 atoms: card object, hand≠photo/print, passphrase apart. Quiz does not leak which numbers are correct on a single right click.
+**none.** UC6 vs UC7 atoms stay split (signatures vs shares). Quiz “recovery words” covers 12–24.
 
 ## §9
 
-1. V2 footer `0.17.0-v2` vs tag 0.16.38.
+1. V2 footer `0.17.0-v2` vs tag 0.16.39.
 2. Classic Playwright not all-green.
-3. `scripts/*.py` stay uncommitted.
-4. Preview HTML is a deeplink demo, not the live strip (live uses `<img>`).
+3. Harness scripts uncommitted.
+4. Some pads keep a coloured callout *and* a desc; desc is the required plain paragraph.

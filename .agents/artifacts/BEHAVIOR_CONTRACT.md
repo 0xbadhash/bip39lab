@@ -1,17 +1,15 @@
-# Behavior contract — V2 UC1/UC2 viz + toolbar
+# Behavior contract — V2 UC3–UC10 viz + pad descriptions
 
-- **Product:** bip39lab
-- **Target:** `http://127.0.0.1:4173/v2/`
+- **Target:** `/v2/`
 
 ## User tasks
 
-1. UC1 strip shows three atoms; after Validate, phrase≠address is `hi`.
-2. Addresses: `#n` beside `tb1q`, three pairs on first row.
-3. Generate: BIP-39 (i) beside Generate; Clear secrets on the right.
-4. UC2 strip three atoms; Print pad atom 3 `hi`.
-5. UC2 quiz: one right click does not say “Select both right sentences (2 and 3)”; wrong still explains.
+1. UC3–UC10 show three atoms; first is hi on step 0.
+2. Teaching pads have a description paragraph.
+3. Validate explains words / seed / address without (i).
+4. UC8 inspect is prose, not `{`.
+5. UC3 quiz does not say only 12 words.
 
 ## Must not
 
-- Persist mnemonic in sessionStorage
-- Replace the numbered word grid with atoms
+Persist mnemonic. Fund practice. Quiz/Finish extra desc not required.

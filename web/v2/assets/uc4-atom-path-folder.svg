@@ -1,0 +1,11 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A derivation path is a folder in the seed tree">
+  <title>Path is a folder</title>
+  <rect x="20" y="10" width="180" height="22" rx="6" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+  <text x="110" y="25" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace">m / 84' / 1' / 0'</text>
+  <path d="M70 32v10M110 32v10M150 32v10" stroke="#243044" stroke-width="1.5"/>
+  <rect x="48" y="42" width="44" height="22" rx="5" fill="#1a2330" stroke="#243044"/>
+  <rect x="88" y="42" width="44" height="22" rx="5" fill="#1a2330" stroke="#3d8bfd"/>
+  <rect x="128" y="42" width="44" height="22" rx="5" fill="#1a2330" stroke="#243044"/>
+  <text x="110" y="57" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">folder</text>
+  <text x="110" y="80" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">words stay put</text>
+</svg>
