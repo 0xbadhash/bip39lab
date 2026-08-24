@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "approved pending operator PW S110-S113 + tag",
-  "phase": "init",
-  "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-24-v2-uc3-uc10-viz-desc.md",
+  "phase": "ready_for_review",
+  "score": 0.0,
+  "spec_id": ".agents/specs/2026-08-24-v2-uc-entropy-dice-coin.md",
   "task": "0.16.36 V2 UC1/UC2",
   "waiver": null
 }
