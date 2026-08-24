@@ -1,29 +1,23 @@
 # CROSS-REVIEW
 
-**Scope:** UC11–UC13 V2 curriculum. `review_scope` on uncommitted product paths vs origin/master.
-
 ## Security Guru
 
-**none.** Static HTML/JS, existing CSP, no new network, no session seed, quizzes are local buttons.
+**none.** Local derive only. No seed in sessionStorage.
 
 ## Maintainability Expert
 
-**none.** Pad functions match UC9/UC10. Obsolete / cleanup (scoped): **Tier A 0.** Dead TRACKS/stepHtml already wired. Follow-up: lab-strip 404.
+**none.** Duplicate pad `#v2Clear` removed. Obsolete Tier A 0.
 
 ## Domain Specialist
 
-**none.** Teaching matches locked taxonomy: custodial IOU vs you-hold; hot software vs hardware (USB ≠ air-gap); hot vs cold (brand is not the split). Four objects on UC13.
+**none.** Test tb1 / Mainnet bc1 match BIP-84 HRP. Word count is not this track.
 
-## Severity counts
+## Severity
 
-blockers 0 · major 0 · nit 0 (P0-only report)
+blockers 0 · major 0
 
 ### Obsolete / cleanup (scoped)
 
 Tier A 0.
-
-## §9 oddities (see PR_DRAFT)
-
-Classic e2e, scripts dirty, lab-strip 404.
 
 blocker_count=0 obsolete_tier_a=0

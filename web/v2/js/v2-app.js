@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0 };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test" };
   function emptyCosigners() {
     return [0, 1, 2].map(function () {
       return { mnemonic: "", wordCount: 12, zpub: "" };
@@ -495,7 +495,6 @@
         '<button type="button" class="btn" id="v2Generate">Generate</button>' +
         mnemonicHelpHtml(true) +
         "</div>" +
-        clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         '<div id="v2AddrWrap" class="v2-hidden"></div>' +
@@ -530,7 +529,7 @@
           "Do not send coins to these practice addresses."
         ) +
         desc(
-          "The numbered list of words is your backup. The computer turns those words into a hidden number called a seed. From that seed it can make payment addresses (the long tb1q… strings). The words are not the seed. The seed is not the address. They are three different things. Click Validate and derive to see addresses. This is not a wallet you should fund.",
+          "The numbered list of words is your backup. The computer turns those words into a hidden number called a seed. From that seed it can make payment addresses. Test uses tb1… strings. Mainnet uses bc1… strings. The words are not the seed. The seed is not the address. They are three different things. Click Validate and derive to see addresses. This is not a wallet you should fund.",
           "v2DeriveHelp"
         ) +
         entropyHtml() +
@@ -541,10 +540,13 @@
         (gated
           ? '<p class="msg-bad">Validate is locked until you ack the backup card (previous step).</p>'
           : "") +
-        '<div class="row"><button type="button" class="btn" id="v2Derive" ' +
+        '<div class="row v2-gen-bar" id="v2DeriveRow">' +
+        '<div class="v2-gen-left">' +
+        '<button type="button" class="btn" id="v2Derive" ' +
         (gated ? "disabled" : "") +
         ">Validate &amp; derive</button>" +
-        clearBtnHtml() +
+        netSelectHtml() +
+        "</div>" +
         "</div>" +
         '<div id="v2AddrWrap">' +
         (derived ? addrHtml() : '<p class="control-help">Addresses stay hidden until you click Validate and derive.</p>') +
@@ -572,7 +574,6 @@
         "-word phrase</button>" +
         mnemonicHelpHtml(true) +
         "</div>" +
-        clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         pauseBtn("I tried regenerating", false)
@@ -620,7 +621,6 @@
         '<button type="button" class="btn" id="v2Generate">Generate practice card</button>' +
         mnemonicHelpHtml(true) +
         "</div>" +
-        clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' +
         wordGridHtml(mem.mnemonic) +
@@ -643,12 +643,7 @@
         desc(
           "If these words were real money, you would copy them by hand while the computer is offline. Do not photograph the sheet. Do not keep a passphrase on the same paper as the words."
         ) +
-        '<div class="row v2-gen-bar">' +
-        '<div class="v2-gen-left">' +
         mnemonicHelpHtml(true) +
-        "</div>" +
-        clearBtnHtml() +
-        "</div>" +
         '<p class="control-help">These rules apply to a funded recovery phrase. This lab card is practice.</p>' +
         pauseBtn("I can state what to do and what not to do", false)
       );
@@ -665,7 +660,6 @@
         '<label class="check"><input type="checkbox" id="v2PrintAck"/> I am printing a practice sheet only. I will not photograph a funded phrase on a networked phone.</label>' +
         '<div class="row" style="margin-top:0.65rem">' +
         '<button type="button" class="btn secondary" id="v2Print" disabled>Print practice sheet</button>' +
-        clearBtnHtml() +
         "</div>" +
         pauseBtn("Print is optional after I confirm", false)
       );
@@ -707,7 +701,6 @@
         '<button type="button" class="btn secondary" id="v2Regen">Regenerate ' + n + "-word phrase</button>" +
         mnemonicHelpHtml(true) +
         "</div>" +
-        clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         pauseBtn("Same words, two vaults", !mem.mnemonic)
@@ -1549,8 +1542,46 @@
     );
   }
 
-  function clearBtnHtml() {
-    return '<button type="button" class="btn danger" id="v2Clear">Clear secrets</button>';
+  function currentNet() {
+    return mem.network === "main" ? "main" : "test";
+  }
+
+  function netSelectHtml() {
+    var net = currentNet();
+    return (
+      '<label class="v2-net" for="v2Net">Network' +
+      '<select id="v2Net" aria-label="Bitcoin network">' +
+      '<option value="test"' +
+      (net === "test" ? " selected" : "") +
+      ">Test · tb1…</option>" +
+      '<option value="main"' +
+      (net === "main" ? " selected" : "") +
+      ">Mainnet · bc1…</option>" +
+      "</select></label>"
+    );
+  }
+
+  async function deriveNow() {
+    if (!mem.mnemonic || !window.BIP39Lab) return;
+    var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", {
+      network: currentNet(),
+      count: 5,
+      account: 0,
+      change: 0
+    });
+    mem.lastRows = r.rows || [];
+    var wrap = $("v2AddrWrap");
+    if (wrap) {
+      wrap.innerHTML = addrHtml();
+      wrap.classList.remove("v2-hidden");
+    }
+    var pipe = $("v2Pipe");
+    if (pipe) {
+      var seedSt = pipe.querySelector('[data-pipe="seed"]');
+      var addrSt = pipe.querySelector('[data-pipe="addr"]');
+      if (seedSt) seedSt.classList.add("hi");
+      if (addrSt) addrSt.classList.add("hi");
+    }
   }
 
   function pipeHtml(litWords, litSeed, litAddr) {
@@ -1662,7 +1693,9 @@
       );
     }).join("");
     return (
-      '<p class="v2-addr-kicker" id="v2AddrKicker">Receive addresses from this seed (BIP84 test).</p>' +
+      '<p class="v2-addr-kicker" id="v2AddrKicker">Receive addresses from this seed (BIP84 ' +
+      (currentNet() === "main" ? "mainnet · bc1…" : "test · tb1…") +
+      ").</p>" +
       '<div class="v2-addr-grid" id="v2AddrGrid">' +
       cells +
       "</div>"
@@ -1731,19 +1764,18 @@
     var der = $("v2Derive");
     if (der) der.addEventListener("click", async function () {
       if (!mem.cardAck) return;
-      var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: 5, account: 0, change: 0 });
-      mem.lastRows = r.rows || [];
-      $("v2AddrWrap").innerHTML = addrHtml();
-      $("v2AddrWrap").classList.remove("v2-hidden");
-      var pipe = $("v2Pipe");
-      if (pipe) {
-        var seedSt = pipe.querySelector('[data-pipe="seed"]');
-        var addrSt = pipe.querySelector('[data-pipe="addr"]');
-        if (seedSt) seedSt.classList.add("hi");
-        if (addrSt) addrSt.classList.add("hi");
-      }
+      await deriveNow();
       if (pause) pause.disabled = false;
     });
+    var netSel = $("v2Net");
+    if (netSel) {
+      netSel.addEventListener("change", async function () {
+        mem.network = netSel.value === "main" ? "main" : "test";
+        if (mem.mnemonic && mem.lastRows && mem.lastRows.length) {
+          await deriveNow();
+        }
+      });
+    }
     var regen = $("v2Regen");
     if (regen) regen.addEventListener("click", async function () {
       var n = parseInt(($("v2WordCount") && $("v2WordCount").value) || String(mem.wordCount || 12), 10);
@@ -1755,8 +1787,7 @@
       if ($("v2Entropy")) $("v2Entropy").outerHTML = entropyHtml();
       regen.textContent = "Regenerate " + n + "-word phrase";
     });
-    var clr = $("v2Clear");
-    if (clr) clr.addEventListener("click", clearSecrets);
+
     var pack = $("v2PrintAck");
     var pr = $("v2Print");
     if (pack && pr) {
@@ -2023,6 +2054,7 @@
   }
 
   function boot() {
+    if ($("v2Clear")) $("v2Clear").addEventListener("click", clearSecrets);
     if ($("btnBackPicker")) $("btnBackPicker").addEventListener("click", renderPicker);
     var rail = $("trackRail");
     if (rail) {

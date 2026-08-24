@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 173 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.40 · Contract: 2 · Last aligned: 2026-08-24 · Scenarios: S0–S183 · Playwright S-ids: 173`
+`Product: 0.16.41 · Contract: 2 · Last aligned: 2026-08-24 · Scenarios: S0–S183 · Playwright S-ids: 173`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -1026,7 +1026,7 @@ V2-S0 picker + classic `/` still Lab: PASS|FAIL —
 V2-S1 UC1 generate words before addresses; Validate gated: PASS|FAIL —
 V2-S2 quiz colors + force exit: PASS|FAIL —
 V2-S3 deep link `?uc=3`: PASS|FAIL —
-V2-S4 word counts 12–24, Clear secrets beside Generate, regenerate length: PASS|FAIL —
+V2-S4 word counts 12–24, Clear secrets in topbar, Test/Mainnet derive, regenerate length: PASS|FAIL —
 V2-S6 secret-wall no export no session leak: PASS|FAIL —
 V2-S7 isolation two-holder IDOR wrong-id-not-other-holder: PASS|FAIL —
 V2-S8 UC2 paper backup card, (i), Clear secrets, print sheet: PASS|FAIL —

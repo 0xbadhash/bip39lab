@@ -1,58 +1,53 @@
-# PR Draft: v0.16.40 V2 UC11–UC13 custody taxonomy
+# PR Draft: v0.16.41 V2 Clear secrets topbar + Test/Mainnet
 
-**Spec:** `.agents/specs/2026-08-24-v2-uc11-uc13.md`
-**Plan:** `.agents/specs/2026-08-24-v2-uc11-uc13-plan.md`
+**Spec:** `.agents/specs/2026-08-24-v2-clear-net.md`
+**Plan:** `.agents/specs/2026-08-24-v2-clear-net-plan.md`
 
 ## What Problem This Solves
 
-V2 never taught the objects people mix: exchange IOU vs seed you hold, hot software vs hardware signer, hot vs cold.
+Clear secrets was only on some pads. Validate always used testnet.
 
 ## Why This Change Was Made
 
-Operator asked wallet types, then new use cases, then “Go ahead with UC11 to UC13.”
+Operator asked Clear secrets right-aligned on all tracks, and Test/Mainnet beside Validate & Derive.
 
 ## User Impact
 
-Three Beginner tracks on `/v2/`. Picker has 13 cards. Chip `v0.17.22-v2`. Classic `/` unchanged.
+Red Clear secrets stays in the V2 header. Network dropdown: Test · tb1… / Mainnet · bc1…. Chip v0.17.23-v2.
 
 ## Traceability
 
-| AC | Test / smoke |
-|----|----------------|
-| AC-1 13 cards | V2-S0 `.uc-card` count 13 |
-| AC-2 atoms UC11–13 | V2-S13 |
-| AC-3 pads/quiz/exit | V2-S14 |
-| AC-4 classic `/` | V2-S0 `#btnGenerate` |
-| AC-5 pytest | `.venv/bin/python -m pytest -q` |
+| AC | Test |
+|----|------|
+| AC-1 topbar clear | V2-S0 |
+| AC-2 net tb1/bc1 | V2-S4 |
+| AC-3 classic `/` | V2-S0 |
+| AC-4 pytest | `.venv/bin/python -m pytest -q` |
 
 ## Red-proof
 
 - red_cmd: `false`
 - green_cmd: `npx playwright test e2e/v2.spec.ts`
 
-TDD N/A: curriculum pads added after taxonomy discussion, not a failing unit first.
+TDD N/A: chrome move after operator ask.
 
 ## Threat notes
 
-- secrets: no mnemonic in sessionStorage (`bip39lab.v2` progress only)
-- xss: CSP `connect-src 'none'`; SVG `img-src 'self'`
-- csrf: none (static)
-- threat-tag: custody-confusion (exchange ≠ BIP-39)
+- secrets: no mnemonic in sessionStorage
+- xss: CSP connect-src none
+- csrf: none
 
 ## Evidence pack
 
-- hard_gates / CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT
-- `npx playwright test e2e/v2.spec.ts` 14 passed
-- `.venv/bin/python -m pytest -q`
-- `python3 scripts/check_web_e2e.py --root .`
+CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT; V2 Playwright 14; pytest; hard_gates.
 
 ## Things that look bad but are actually fine
 
-1. Classic full Playwright not all-green; V2 suite is the ship gate for this change.
-2. Leftover `scripts/*.py` stay uncommitted (FEATURE LOCK).
-3. `/v2/js/lab-strip.js` 404 is pre-existing, not this track.
-4. Product tag `0.16.40` vs V2 chip `0.17.22-v2` is intentional dual stamp.
-5. Teaching pads have both Do/Do not and a `desc()` paragraph on purpose.
+1. Classic full e2e not all-green.
+2. leftover `scripts/*.py` uncommitted.
+3. lab-strip 404 on `/v2/`.
+4. Dual stamp 0.16.41 vs 0.17.23-v2.
+5. Dice/coin UC is a separate draft spec, not this ship.
 
 ## Cross-review
 

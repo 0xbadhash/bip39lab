@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.22-v2)", () => {
+test.describe("V2 use-case tracks (0.17.23-v2)", () => {
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
@@ -8,9 +8,11 @@ test.describe("V2 use-case tracks (0.17.22-v2)", () => {
     await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator(".uc-card")).toHaveCount(13);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.22-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.23-v2/);
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
     await expect(page.locator(".sidebar")).not.toContainText(/Clear secrets/);
+    await expect(page.locator(".topbar-actions #v2Clear")).toBeVisible();
+    await expect(page.locator(".topbar-actions #v2Clear")).toHaveClass(/danger/);
   });
 
   test("V2-S1 UC1 generate shows words not addresses; Validate gated", async ({ page }) => {
@@ -94,7 +96,12 @@ test.describe("V2 use-case tracks (0.17.22-v2)", () => {
     await page.locator("#v2Pause").click();
     await page.locator("#v2CardAck").check();
     await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2Net")).toBeVisible();
+    await expect(page.locator("#v2Net")).toHaveValue("test");
     await page.locator("#v2Derive").click();
+    await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/^tb1/);
+    await page.locator("#v2Net").selectOption("main");
+    await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/^bc1/);
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2WordCount")).toHaveValue("24");
     await expect(page.locator("#v2Regen")).toContainText(/24/);
