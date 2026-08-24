@@ -1,6 +1,7 @@
 # PR Draft: v0.16.37 V2 UC4–UC7 curriculum, quiz why, rail back-nav
 
 **Spec:** `.agents/specs/2026-08-24-v2-uc6-uc7-fsm.md`
+**Plan:** `.agents/specs/2026-08-24-v2-uc6-uc7-fsm-plan.md`
 **Also:** UC1–UC10 Do/Do not first; quiz why; UC4 index increment; UC5 export why; address index chips
 
 ## What Problem This Solves
