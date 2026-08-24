@@ -1,33 +1,29 @@
 # CROSS-REVIEW
 
-**base:** v0.16.38 · **head:** UC3–UC10 viz + step desc
+**Scope:** UC11–UC13 V2 curriculum. `review_scope` on uncommitted product paths vs origin/master.
 
-## Blocker count: 0
+## Security Guru
 
-### Security Guru
+**none.** Static HTML/JS, existing CSP, no new network, no session seed, quizzes are local buttons.
 
-**none.** Static SVGs. CSP img-src self. No new persistence.
+## Maintainability Expert
 
-### Maintainability Expert
+**none.** Pad functions match UC9/UC10. Obsolete / cleanup (scoped): **Tier A 0.** Dead TRACKS/stepHtml already wired. Follow-up: lab-strip 404.
 
-**none (blocker).** Shared VIZ catalog is the right DRY vs eight copy-pasted builders.
+## Domain Specialist
 
-#### Obsolete / cleanup (scoped)
+**none.** Teaching matches locked taxonomy: custodial IOU vs you-hold; hot software vs hardware (USB ≠ air-gap); hot vs cold (brand is not the split). Four objects on UC13.
 
-| Path | Tier | conf | Evidence |
-|------|------|------|----------|
-| wrapDeriveI | — | — | **removed** this ship |
-| Whole-repo | — | — | `/sweep` |
+## Severity counts
 
-Tier A: **0**
+blockers 0 · major 0 · nit 0 (P0-only report)
 
-### Domain Specialist
+### Obsolete / cleanup (scoped)
 
-**none.** UC6 vs UC7 atoms stay split (signatures vs shares). Quiz “recovery words” covers 12–24.
+Tier A 0.
 
-## §9
+## §9 oddities (see PR_DRAFT)
 
-1. V2 footer `0.17.0-v2` vs tag 0.16.39.
-2. Classic Playwright not all-green.
-3. Harness scripts uncommitted.
-4. Some pads keep a coloured callout *and* a desc; desc is the required plain paragraph.
+Classic e2e, scripts dirty, lab-strip 404.
+
+blocker_count=0 obsolete_tier_a=0

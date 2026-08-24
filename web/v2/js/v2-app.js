@@ -23,7 +23,10 @@
     { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Educational GF(256) shares — not SLIP-39 Suite.", done: "Shares ≠ multisig cosigners." },
     { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Inspect a partial transaction offline.", done: "Inspect → offline sign (elsewhere) → online broadcast; never paste seed." },
     { id: 9, level: "Intermediate", title: "xpub privacy", job: "Account xpub is watch-only and privacy-sensitive.", done: "xpub ≠ spend; do not publish casually." },
-    { id: 10, level: "Advanced", title: "Network leak", job: "Default offline; balances only after opt-in.", done: "Unknown ≠ 0; explicit Network page only." }
+    { id: 10, level: "Advanced", title: "Network leak", job: "Default offline; balances only after opt-in.", done: "Unknown ≠ 0; explicit Network page only." },
+    { id: 11, level: "Beginner", title: "Custodial vs you hold the keys", job: "An exchange app is not a BIP-39 wallet.", done: "No seed on the exchange = they can freeze or lose it; seed on your device = you can spend and you can lose it." },
+    { id: 12, level: "Beginner", title: "Hot software vs hardware signer", job: "Same words, different where they live.", done: "Phone is hot. Hardware keeps keys on the device. USB is not automatically air-gap. Typing the seed into a computer still kills the vault." },
+    { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." }
   ];
 
   function $(id) { return document.getElementById(id); }
@@ -120,7 +123,10 @@
       7: ["What a share is", "Split / combine", "Quiz", "Finish"],
       8: ["Air-gap model", "Inspect PSBT", "Quiz", "Finish"],
       9: ["xpub ≠ spend", "Export xpub", "Quiz", "Finish"],
-      10: ["Offline default", "Opt-in Network", "Quiz", "Finish"]
+      10: ["Offline default", "Opt-in Network", "Quiz", "Finish"],
+      11: ["They hold keys", "You hold keys", "Quiz", "Finish"],
+      12: ["Hot phone", "Hardware signer", "Quiz", "Finish"],
+      13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
   }
@@ -136,7 +142,10 @@
       7: ["Threshold shares", "Not cosigners", "Edu hex only"],
       8: ["PSBT package", "Never sign here", "Broadcast elsewhere"],
       9: ["Account xpub", "Privacy leak", "Cannot spend"],
-      10: ["connect-src none", "Address only", "unknown ≠ 0"]
+      10: ["connect-src none", "Address only", "unknown ≠ 0"],
+      11: ["They hold", "You hold", "Not BIP-39"],
+      12: ["Hot software", "Hardware", "USB ≠ air-gap"],
+      13: ["Hot vs cold", "Daily vs savings", "Four objects"]
     };
     return c[id] || ["A", "B", "C"];
   }
@@ -161,7 +170,10 @@
       7: [0, 1, 2],
       8: [0, 1, 2],
       9: [0, 1, 2],
-      10: [0, 1, 2]
+      10: [0, 1, 2],
+      11: [0, 1, 2],
+      12: [0, 1, 2],
+      13: [0, 1, 2]
     };
     var row = map[id] || [0, 1, 2];
     return row[chipIndex] != null ? row[chipIndex] : 0;
@@ -278,6 +290,27 @@
         atom(1, 0, "assets/uc10-atom-offline.svg", "This V2 page stays offline", "<strong>Plan · Page offline</strong><br/>Crypto stays in this tab. CSP connect-src is none."),
         atom(2, 1, "assets/uc10-atom-address-only.svg", "Lookups are address-only after opt-in", "<strong>Practice · Address only</strong><br/>Network lookups use addresses you chose. Never the mnemonic."),
         atom(3, 2, "assets/uc10-atom-unknown-not-zero.svg", "A failed lookup is unknown not zero", "<strong>Review · Unknown is not zero</strong><br/>A failed balance lookup must show unknown, never silent 0.")
+      ]
+    },
+    11: {
+      atoms: [
+        atom(1, 0, "assets/uc11-atom-they-hold.svg", "An exchange holds the keys", "<strong>Plan · They hold</strong><br/>If you have no recovery words, the service holds the keys. They can freeze or lose the coins."),
+        atom(2, 1, "assets/uc11-atom-you-hold.svg", "You hold the recovery words", "<strong>Practice · You hold</strong><br/>If you have the words, you can spend. You can also lose them. That is the trade."),
+        atom(3, 2, "assets/uc11-atom-not-a-wallet.svg", "A custodial app is not a BIP-39 wallet", "<strong>Review · Not a BIP-39 wallet</strong><br/>An exchange balance is an IOU. It is not a seed you can restore in another wallet.")
+      ]
+    },
+    12: {
+      atoms: [
+        atom(1, 0, "assets/uc12-atom-hot-phone.svg", "A phone app keeps keys next to the internet", "<strong>Plan · Hot phone</strong><br/>Software on a phone or laptop that goes online keeps keys near the internet."),
+        atom(2, 1, "assets/uc12-atom-hardware.svg", "A hardware signer keeps keys on a dedicated device", "<strong>Practice · Hardware signer</strong><br/>The device signs. The words should never be typed into the computer."),
+        atom(3, 2, "assets/uc12-atom-usb-not-airgap.svg", "USB to a laptop is not automatically air-gap", "<strong>Review · USB is not air-gap</strong><br/>A cable to a laptop is not the same as an air-gap. Typing the seed into a computer still kills the vault.")
+      ]
+    },
+    13: {
+      atoms: [
+        atom(1, 0, "assets/uc13-atom-hot-cold.svg", "Hot versus cold is about whether keys are online", "<strong>Plan · Hot versus cold</strong><br/>Hot means the keys sit on a machine that talks to the internet. Cold means they do not. Brand is not the split."),
+        atom(2, 1, "assets/uc13-atom-daily-savings.svg", "Daily spend can be hot. Savings stay cold or watch-only", "<strong>Practice · Daily versus savings</strong><br/>A small hot balance for spending is a choice. Savings belong on cold keys or watch-only."),
+        atom(3, 2, "assets/uc13-atom-four-objects.svg", "Exchange, phone, hardware, watch-only are four different objects", "<strong>Review · Four objects</strong><br/>Exchange account, phone app, hardware signer, watch-only xpub. Four jobs. Do not mix them.")
       ]
     }
   };
@@ -440,6 +473,9 @@
     if (id === 8) return uc8(step);
     if (id === 9) return uc9(step);
     if (id === 10) return uc10(step);
+    if (id === 11) return uc11(step);
+    if (id === 12) return uc12(step);
+    if (id === 13) return uc13(step);
     return "";
   }
 
@@ -731,7 +767,7 @@
           "Think of a path as a folder inside the backup. The words stay the same. Changing the folder changes which payment address you get. The path is not a new backup."
         ) +
         callout(
-          "is",
+          "done",
           "What each piece means (this lab, BIP84 test)",
           "<code>m</code> = master (from the words). " +
           "<code>84'</code> = native segwit purpose (addresses start with tb1q / bc1q). " +
@@ -796,7 +832,7 @@
   async function uc5(step) {
     if (step === 0) {
       return pad(
-        "<h2>Watch-only is public material " + termI("WATCHONLY") + "</h2>" +
+        "<h2>Watch-only is public material. " + termI("WATCHONLY") + "</h2>" +
         doDont(
           "Give a watch-only app an xpub, zpub, or descriptor (click i on those words on the next pad).",
           "Do not paste the recovery phrase or seed into a watch-only app."
@@ -810,7 +846,7 @@
     if (step === 1) {
       await ensurePhrase();
       return pad(
-        "<h2>Export " + termI("WATCHONLY") + "</h2>" +
+        "<h2>Export. " + termI("WATCHONLY") + "</h2>" +
         doDont(
           "Export a public viewing key so a phone or desktop can list addresses and incoming payments while the twelve words stay on paper or a hardware signer.",
           "Do not export by typing the recovery phrase into the watch app. That is a full wallet, not watch-only."
@@ -819,7 +855,7 @@
           "Refresh to see public account keys from this practice phrase (xpub, zpub, ypub). You should not see the recovery words. A zpub is the usual native-segwit viewing key. An xpub is a different prefix (often older wallets)."
         ) +
         callout(
-          "is",
+          "done",
           "Why you need this (not obvious)",
           "A watch-only app cannot derive the next receive address from nothing. Export is the hand-off: the vault gives the hot screen a public viewing key, not the seed. Without this, people paste the twelve words into every app that “just wants to show a balance.”"
         ) +
@@ -911,15 +947,16 @@
           "Here N is how many people have a key (three). M is how many of them must sign to move coins (two). Each person keeps a full recovery phrase. You share public keys, not the words."
         ) +
         callout(
-          "is",
+          "done",
           "M and N in one sentence",
-          "<strong>N</strong> = number of cosigners " +
+          "N = number of cosigners, here 3. " +
             termI("COSIGNER") +
-            " (here 3). <strong>M</strong> = signatures needed to move coins (here 2). Multisig " +
+            "<br />M = signatures needed to move coins, here 2." +
+            "<br />Multisig " +
             termI("MULTISIG") +
             " " +
             termI("MOFN") +
-            " builds one vault address from N public keys. Two signatures spend. One lost seed is painful, not always fatal."
+            " builds one vault address from N public keys. Two signatures required. One lost seed is painful, not always fatal."
         ) +
         '<div class="v2-mofn" id="v2MofnPic" aria-label="2 of 3">' +
         "<span><strong>N = 3</strong> keys (A, B, C)</span>" +
@@ -956,11 +993,12 @@
           "Make three different practice phrases, one per cosigner. Keep the words. Show the zpub for each phrase. That zpub is what a coordinator would see. It is not a slice of one mnemonic."
         ) +
         callout(
-          "is",
+          "done",
           "Where the public key comes from",
           "Each cosigner is a whole BIP-39 phrase. Show BIP84 zpub " +
             termI("ZPUB") +
-            " derives the account public key at m/84'/0'/0'. The string starts with zpub, not xpub " +
+            " derives the account public key at m/84'/0'/0'." +
+            "<br />The string starts with zpub, not xpub " +
             termI("XPUB") +
             ". xpub is a different prefix (often legacy). You would hand the zpub to a coordinator. You keep the words."
         ) +
@@ -1018,13 +1056,13 @@
           "This is one secret cut into pieces. Any two of three pieces rebuild the same secret. A piece cannot sign a bitcoin spend. That is different from UC6, where each person has a whole key."
         ) +
         callout(
-          "is",
+          "done",
           "One secret, many pieces",
           "Shamir " +
             termI("SHAMIR") +
             " takes one blob and makes N shares " +
             termI("SHARE") +
-            ". Any M of them rebuild the blob. A share cannot sign a bitcoin spend. Combining shares is recovery, not a 2-person signature."
+            ".<br />Any M of them rebuild the blob. A share cannot sign a bitcoin spend. Combining shares is recovery, not a 2-person signature."
         ) +
         callout(
           "isnt",
@@ -1104,7 +1142,7 @@
         desc(
           "Click inspect to read the sample package: magic bytes, maps, inputs, outputs. No signature is added. The recovery words are not needed."
         ) +
-        callout("is", "Structure only", "A sample PSBT is parsed offline. No signature is added.") +
+        callout("done", "Structure only", "A sample PSBT is parsed offline. No signature is added.") +
         '<button type="button" class="btn" id="v2Psbt">Inspect sample PSBT</button>' +
         '<pre class="out" id="v2PsbtOut">Structure only.</pre>' +
         pauseBtn("Inspected structure, no sign", false)
@@ -1149,7 +1187,7 @@
     if (step === 1) {
       await ensurePhrase();
       return pad(
-        "<h2>Export account xpub " + termI("XPUB") + " " + termI("ZPUB") + "</h2>" +
+        "<h2>Export account xpub. " + termI("XPUB") + " " + termI("ZPUB") + "</h2>" +
         doDont(
           "Show the BIP-84 watch key. You should see a zpub or xpub.",
           "Do not expect an xprv or the twelve words on this pad."
@@ -1157,7 +1195,7 @@
         desc(
           "Show the BIP-84 watch key for this practice phrase. You should see a zpub (or xpub). You should not see an xprv or the recovery words."
         ) +
-        callout("is", "Public extended key", "You should see an xpub or zpub. You should not see an xprv " + termI("XPRV") + " or the words.") +
+        callout("is", "Public extended key", "You should see an xpub or zpub. You should not see an xprv " + termI("XPRV") + ", or the recovery words.") +
         '<button type="button" class="btn" id="v2Xpub">Show BIP84 watch key</button>' +
         '<pre class="out" id="v2XpubOut">Public extended key only.</pre>' +
         pauseBtn("I did not see an xprv", false)
@@ -1240,6 +1278,183 @@
     return finishHtml(10);
   }
 
+  async function uc11(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>They hold the keys</h2>" +
+        doDont(
+          "Treat an exchange balance as an IOU. If you cannot export recovery words, the service holds the keys.",
+          "Do not call a custodial app a BIP-39 wallet. You cannot restore that balance in Sparrow or Electrum from a seed you never had."
+        ) +
+        desc(
+          "If the app never showed you recovery words, the company can freeze, delay, or lose the coins. A login and 2FA are not a seed. The balance is a claim on their books."
+        ) +
+        callout(
+          "done",
+          "They hold",
+          "No recovery words on your paper = they can freeze or lose it. That is custodial, not self-custody."
+        ) +
+        pauseBtn("I have no seed on the exchange", false)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>You hold the recovery words</h2>" +
+        doDont(
+          "If you have the words (or a hardware device that does), you can spend. You can also lose them.",
+          "Do not assume self-custody is safer in every accident. Lost words, a bad photo, or a typed seed into a phishing site are your loss, not the exchange’s."
+        ) +
+        desc(
+          "Self-custody means the recovery words (or the device that holds the seed) sit with you. Spend works without asking a company. Loss also sits with you. That is the trade, not a slogan."
+        ) +
+        callout(
+          "done",
+          "You hold",
+          "Seed on your device or paper = you can spend and you can lose it. An exchange app with no seed is not this."
+        ) +
+        pauseBtn("I can spend and I can lose it", false)
+      );
+    }
+    if (step === 2) {
+      return quiz("An exchange app that never showed recovery words is:", [
+        {
+          k: "ok",
+          t: "Custodial — they hold the keys; the balance is an IOU.",
+          okwhy: "Correct. No seed on your side means they can freeze or lose it."
+        },
+        {
+          k: "bad",
+          t: "A BIP-39 wallet you can restore in any other app.",
+          why: "Wrong. You cannot restore an exchange IOU from a seed you never received."
+        },
+        {
+          k: "bad",
+          t: "Self-custody because you have a password and 2FA.",
+          why: "Wrong. Login and 2FA control an account. They are not recovery words."
+        }
+      ]);
+    }
+    return finishHtml(11);
+  }
+
+  async function uc12(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Hot software</h2>" +
+        doDont(
+          "Treat a phone or laptop wallet that goes online as hot: keys sit next to the internet.",
+          "Do not type a funded seed into a general-purpose computer just because the app looks official."
+        ) +
+        desc(
+          "Hot software keeps the seed or keys on a machine that talks to the network. Same recovery words as a hardware device, different where they live. Malware on that phone or laptop can reach them."
+        ) +
+        callout(
+          "done",
+          "Phone is hot",
+          "Software on a phone or laptop that goes online keeps keys near the internet."
+        ) +
+        pauseBtn("Phone keys are hot", false)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Hardware signer</h2>" +
+        doDont(
+          "Keep the seed on the dedicated device. The computer should see a public key or a PSBT, not the words.",
+          "Do not treat a USB cable as an air-gap. Do not type the seed into the computer to “set up” the device."
+        ) +
+        desc(
+          "A hardware signer keeps keys on a small device built to sign. USB to a laptop is convenient, not automatically air-gap. Air-gap means the seed never touches an online machine. Typing the words into a computer still kills the vault."
+        ) +
+        callout(
+          "done",
+          "USB is not air-gap",
+          "Hardware keeps keys on the device. A cable is not automatically air-gap. Typing the seed into a computer still kills the vault."
+        ) +
+        pauseBtn("Keys stay on the device", false)
+      );
+    }
+    if (step === 2) {
+      return quiz("Same recovery words on a phone app versus a hardware signer:", [
+        {
+          k: "ok",
+          t: "Same words, different where they live — phone is hot; hardware should keep keys on the device.",
+          okwhy: "Correct. The words are the same secret. Placement is the lesson."
+        },
+        {
+          k: "bad",
+          t: "USB to a laptop is automatically an air-gap.",
+          why: "Wrong. A cable to an online computer is not an air-gap."
+        },
+        {
+          k: "bad",
+          t: "Typing the seed into the computer is the safe way to set up hardware.",
+          why: "Wrong. Typing the seed into a computer still kills the vault."
+        }
+      ]);
+    }
+    return finishHtml(12);
+  }
+
+  async function uc13(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Hot versus cold</h2>" +
+        doDont(
+          "Ask whether the keys sit on a machine that talks to the internet. That is the split.",
+          "Do not use brand names as the split. A “hardware” app on a phone can still be hot."
+        ) +
+        desc(
+          "Hot means the keys sit on a machine that talks to the internet. Cold means they do not. Brand is not the split. A steel plate with words is backup of a secret, not by itself a cold signer."
+        ) +
+        callout(
+          "done",
+          "Brand is not the split",
+          "Online keys vs offline keys. A logo on a box does not make the keys cold."
+        ) +
+        pauseBtn("Hot is online keys", false)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Daily spend versus savings</h2>" +
+        doDont(
+          "A small hot balance for daily spend can be a choice. Keep savings on cold keys or watch-only.",
+          "Do not mix four objects: exchange account, phone app, hardware signer, watch-only xpub."
+        ) +
+        desc(
+          "Daily spend can be hot. Savings stay cold or watch-only. An exchange is custodial. A phone app is hot software. Hardware can keep keys cold if the seed never hits the computer. Watch-only is public keys only — it cannot spend."
+        ) +
+        callout(
+          "done",
+          "Four objects",
+          "Exchange · phone · hardware · watch-only. Sort them. Do not treat them as one wallet."
+        ) +
+        pauseBtn("Daily can be hot; savings stay cold", false)
+      );
+    }
+    if (step === 2) {
+      return quiz("Hot versus cold is:", [
+        {
+          k: "ok",
+          t: "Whether keys are on a machine that talks to the internet — brand is not the split.",
+          okwhy: "Correct. Daily spend can be hot. Savings stay cold or watch-only."
+        },
+        {
+          k: "bad",
+          t: "Whatever the box says “hardware”, even if you typed the seed into a laptop.",
+          why: "Wrong. Brand is not the split. Keys on an online machine are hot."
+        },
+        {
+          k: "bad",
+          t: "The same as custodial versus self-custody.",
+          why: "Wrong. An exchange is custodial. Hot vs cold is about whether *your* keys are online."
+        }
+      ]);
+    }
+    return finishHtml(13);
+  }
+
   function attrEsc(s) {
     return String(s || "")
       .replace(/&/g, "&amp;")
@@ -1283,6 +1498,7 @@
       title +
       "</strong>" +
       (short ? " — " + short : "") +
+      ". " +
       (body
         ? '<span class="control-help" style="display:block;margin-top:0.35rem">' + body + "</span>"
         : "") +
@@ -1297,11 +1513,11 @@
       tag +
       ' class="label-row' +
       (inline ? " v2-mn-inline" : "") +
-      '" id="v2MnemonicLine">This phrase is a BIP-39 mnemonic: English wordlist words only.' +
+      '" id="v2MnemonicLine">This phrase is a BIP-39 mnemonic. English wordlist words only. ' +
       '<span class="help-tip action-hover" id="wrapMnemonicI">' +
       '<button type="button" class="help-tip-btn" aria-label="About the BIP-39 mnemonic">i</button>' +
       '<span class="help-tip-panel action-hover-panel" id="overlayMnemonic" hidden>' +
-      "<strong>BIP-39 mnemonic (English words only)</strong>" +
+      "<strong>BIP-39 mnemonic (English words only)</strong>. " +
       '<span class="control-help" style="display:block;margin-top:0.35rem">' +
       "A mnemonic in this lab is a BIP-39 recovery phrase: a checksummed list of words from the official English wordlist " +
       "(12, 15, 18, 21, or 24 words). The list is English only. This is practice material in this browser tab. " +
@@ -1606,7 +1822,7 @@
         var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 0 });
         var row = r.rows[i] || r.rows[r.rows.length - 1];
         var a = (row && row.bip84_p2wpkh) || "";
-        $("v2Tail").textContent = "Index " + i + "  ·  " + a + "  ·  last 8: " + a.slice(-8);
+        $("v2Tail").textContent = "Index " + i + "  ·  " + a;
         if (pause && i > 0) pause.disabled = false;
       }
       applyPathIndex(0).catch(console.error);
@@ -1828,7 +2044,7 @@
     renderPicker();
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 10) openUc(n);
+      if (n >= 1 && n <= 13) openUc(n);
     }
   }
 

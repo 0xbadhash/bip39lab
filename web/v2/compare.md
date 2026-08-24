@@ -4,7 +4,7 @@
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-23 (after UC1 compact/entropy, UC2 colour + two-check quiz, all-track Do/Do-not)
 - **v1:** `/` · stamp `v0.16.36`
-- **v2:** `/v2/` · footer `0.17.0-v2`
+- **v2:** `/v2/` · footer `0.17.17-v2`
 
 **Missing** = classic Lab or a sibling room has a real control V2 does not yet wire **in-track**. Linking out to `/multisig.html` is Partial, not Yes.
 

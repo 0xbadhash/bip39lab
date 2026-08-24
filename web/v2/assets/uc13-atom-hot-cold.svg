@@ -1,0 +1,8 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hot versus cold is about whether keys are online">
+  <title>Hot versus cold</title>
+  <rect x="8" y="16" width="92" height="44" rx="8" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="54" y="42" text-anchor="middle" fill="#e8eef7" font-size="10" font-family="system-ui,sans-serif">hot</text>
+  <rect x="120" y="16" width="92" height="44" rx="8" fill="#1a2330" stroke="#3ecf8e"/>
+  <text x="166" y="42" text-anchor="middle" fill="#e8eef7" font-size="10" font-family="system-ui,sans-serif">cold</text>
+  <text x="110" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">about the keys, not the brand</text>
+</svg>

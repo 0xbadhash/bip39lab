@@ -220,11 +220,17 @@
 .v2-mn-inline {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
   margin: 0;
   font-size: 0.82rem;
   color: var(--muted);
   max-width: 36rem;
+}
+.v2-mn-inline .help-tip {
+  margin-left: 0.15rem;
+}
+.v2-app .help-tip {
+  margin-left: 0.3em;
 }
 @media (max-width: 720px) {
   .concept-strip .uc-viz { grid-template-columns: 1fr; }

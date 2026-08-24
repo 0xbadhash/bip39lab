@@ -1,0 +1,12 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Exchange, phone, hardware, watch-only are four different objects">
+  <title>Four objects</title>
+  <rect x="6" y="18" width="48" height="36" rx="5" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="30" y="40" text-anchor="middle" fill="#e8eef7" font-size="7" font-family="system-ui,sans-serif">exchange</text>
+  <rect x="58" y="18" width="48" height="36" rx="5" fill="#1a2330" stroke="#e85d5d"/>
+  <text x="82" y="40" text-anchor="middle" fill="#e8eef7" font-size="7" font-family="system-ui,sans-serif">phone</text>
+  <rect x="110" y="18" width="48" height="36" rx="5" fill="#1a2330" stroke="#3ecf8e"/>
+  <text x="134" y="40" text-anchor="middle" fill="#e8eef7" font-size="7" font-family="system-ui,sans-serif">hardware</text>
+  <rect x="162" y="18" width="52" height="36" rx="5" fill="#1a2330" stroke="#3d8bfd"/>
+  <text x="188" y="40" text-anchor="middle" fill="#e8eef7" font-size="7" font-family="system-ui,sans-serif">watch</text>
+  <text x="110" y="72" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">four objects, four jobs</text>
+</svg>
