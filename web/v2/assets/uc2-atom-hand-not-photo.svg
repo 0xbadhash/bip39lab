@@ -1,0 +1,15 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hand copy is not the same as a photo or a print">
+  <title>Hand copy is not photo</title>
+  <rect x="8" y="12" width="86" height="52" rx="8" fill="#1a2330" stroke="#3ecf8e" stroke-width="1.5"/>
+  <path d="M28 48c0-8 6-14 14-14h8v22H36c-4 0-8-3-8-8z" fill="none" stroke="#3ecf8e" stroke-width="1.5"/>
+  <rect x="48" y="22" width="36" height="28" rx="3" fill="none" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="51" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">hand copy</text>
+  <text x="51" y="56" text-anchor="middle" fill="#e8eef7" font-size="8" font-family="system-ui,sans-serif">offline</text>
+  <circle cx="110" cy="38" r="12" fill="none" stroke="#e85d5d" stroke-width="1.5"/>
+  <text x="110" y="42" text-anchor="middle" fill="#e85d5d" font-size="12" font-weight="700" font-family="system-ui,sans-serif">≠</text>
+  <rect x="126" y="12" width="86" height="52" rx="8" fill="#1a2330" stroke="#e85d5d" stroke-width="1.5"/>
+  <rect x="148" y="22" width="42" height="28" rx="4" fill="none" stroke="#e85d5d" stroke-width="1.5"/>
+  <circle cx="169" cy="32" r="6" fill="none" stroke="#e85d5d" stroke-width="1.5"/>
+  <circle cx="169" cy="32" r="2" fill="#e85d5d"/>
+  <text x="169" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">photo / print</text>
+</svg>

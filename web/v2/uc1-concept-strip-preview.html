@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UC1 concept strip — Catalyxt App Shell atoms</title>
+<style>
+:root{--bg:#0b0f14;--el:#121821;--panel:#161d27;--p2:#1a2330;--bd:#243044;--tx:#e8eef7;--mu:#8b9bb4;--ac:#3d8bfd;--ok:#3ecf8e;--bad:#e85d5d;--f:Segoe UI,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f);padding:1.25rem;max-width:920px}
+h1{font-size:1.1rem;margin:0 0 .35rem}.muted{color:var(--mu);font-size:.85rem;margin:0 0 1rem}
+.card{background:var(--el);border:1px solid var(--bd);border-radius:12px;padding:1rem}
+.uc1-viz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin:.6rem 0 .75rem}
+.uc1-viz .atom{border:1px solid var(--bd);border-radius:12px;background:var(--panel);padding:.55rem .6rem .5rem;min-height:132px;transition:border-color .15s,opacity .15s}
+.uc1-viz .atom.hi{border-color:var(--ac);box-shadow:0 0 0 1px rgba(61,139,253,.25)}
+.uc1-viz .atom.dim{opacity:.42}
+.uc1-viz .atom .cap{font-size:.72rem;color:var(--mu);margin:.35rem 0 0;line-height:1.35}
+.uc1-viz .atom .cap strong{color:var(--tx);font-weight:600}
+.uc1-viz svg{display:block;width:100%;height:auto}
+.row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem}
+button{border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:8px;padding:.4rem .7rem;font:inherit;cursor:pointer}
+button.primary{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+@media(max-width:720px){.uc1-viz{grid-template-columns:1fr}.uc1-viz .atom.dim{opacity:.7}}
+</style>
+</head>
+<body>
+<h1>UC1 concept strip</h1>
+<p class="muted">Catalyxt App Shell · Gap-kit Plan / Practice / Review. Toggle step to preview hi/dim.</p>
+<div class="card">
+<div class="uc1-viz" id="viz">
+<div class="atom dim" data-atom="1">
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Random bits become numbered recovery words"><title>Entropy to words</title><rect x="8" y="28" width="70" height="22" rx="6" fill="none" stroke="#243044" stroke-width="1.5"/><g fill="#3d8bfd"><rect x="12" y="32" width="5" height="14" rx="1"/><rect x="19" y="32" width="5" height="14" rx="1" opacity=".35"/><rect x="26" y="32" width="5" height="14" rx="1"/><rect x="33" y="32" width="5" height="14" rx="1"/><rect x="40" y="32" width="5" height="14" rx="1" opacity=".35"/><rect x="47" y="32" width="5" height="14" rx="1"/><rect x="54" y="32" width="5" height="14" rx="1"/><rect x="61" y="32" width="5" height="14" rx="1" opacity=".35"/></g><text x="43" y="64" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">random bits</text><path d="M86 39h22" stroke="#3d8bfd" stroke-width="1.5" fill="none"/><path d="M104 35l6 4-6 4" fill="#3d8bfd"/><g font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8"><rect x="116" y="18" width="42" height="16" rx="4" fill="#1a2330" stroke="#243044"/><text x="122" y="29" fill="#8b9bb4">1</text><text x="132" y="29" fill="#e8eef7">word</text><rect x="162" y="18" width="42" height="16" rx="4" fill="#1a2330" stroke="#243044"/><text x="168" y="29" fill="#8b9bb4">2</text><text x="178" y="29" fill="#e8eef7">word</text><rect x="116" y="40" width="42" height="16" rx="4" fill="#1a2330" stroke="#243044"/><text x="122" y="51" fill="#8b9bb4">3</text><text x="132" y="51" fill="#e8eef7">word</text><rect x="162" y="40" width="42" height="16" rx="4" fill="#1a2330" stroke="#243044"/><text x="168" y="51" fill="#8b9bb4">…</text><text x="180" y="51" fill="#e8eef7">N</text></g><text x="160" y="72" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">recovery phrase</text></svg>
+<p class="cap"><strong>Plan · Entropy to words</strong><br/>Random bits become a numbered recovery phrase. That phrase is the secret.</p>
+</div>
+<div class="atom hi" data-atom="2">
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Recovery phrase is not the same as a receive address"><title>Phrase is not address</title><rect x="8" y="14" width="86" height="52" rx="8" fill="#1a2330" stroke="#243044" stroke-width="1.5"/><rect x="40" y="28" width="22" height="16" rx="3" fill="none" stroke="#3ecf8e" stroke-width="1.5"/><path d="M44 28v-5a7 7 0 0 1 14 0v5" fill="none" stroke="#3ecf8e" stroke-width="1.5"/><text x="51" y="56" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">12 words</text><text x="51" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">keep secret</text><circle cx="110" cy="40" r="12" fill="none" stroke="#e85d5d" stroke-width="1.5"/><text x="110" y="44" text-anchor="middle" fill="#e85d5d" font-size="12" font-weight="700" font-family="system-ui,sans-serif">≠</text><rect x="126" y="14" width="86" height="52" rx="8" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/><circle cx="169" cy="32" r="7" fill="none" stroke="#3d8bfd" stroke-width="1.5"/><circle cx="169" cy="32" r="2.5" fill="#3d8bfd"/><text x="169" y="56" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace">bc1q…</text><text x="169" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">safe to share</text></svg>
+<p class="cap"><strong>Practice · Phrase is not address</strong><br/>The words stay secret. The receive address is public and safe to share.</p>
+</div>
+<div class="atom dim" data-atom="3">
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One recovery phrase can derive many receive addresses"><title>One phrase many addresses</title><rect x="70" y="6" width="80" height="22" rx="6" fill="#1a2330" stroke="#3ecf8e" stroke-width="1.5"/><text x="110" y="21" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">phrase</text><path d="M110 28v10" stroke="#243044" stroke-width="1.5"/><path d="M50 38h120" stroke="#243044" stroke-width="1.5"/><path d="M50 38v8M110 38v8M170 38v8" stroke="#243044" stroke-width="1.5"/><g font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8"><rect x="18" y="48" width="64" height="28" rx="6" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/><text x="50" y="60" text-anchor="middle" fill="#8b9bb4">/0/0</text><text x="50" y="71" text-anchor="middle" fill="#e8eef7">bc1q…</text><rect x="88" y="48" width="64" height="28" rx="6" fill="#1a2330" stroke="#243044" stroke-width="1.5"/><text x="120" y="60" text-anchor="middle" fill="#8b9bb4">/0/1</text><text x="120" y="71" text-anchor="middle" fill="#e8eef7">bc1q…</text><rect x="158" y="48" width="54" height="28" rx="6" fill="#1a2330" stroke="#243044" stroke-width="1.5"/><text x="185" y="60" text-anchor="middle" fill="#8b9bb4">/0/2</text><text x="185" y="71" text-anchor="middle" fill="#e8eef7">…</text></g></svg>
+<p class="cap"><strong>Review · One phrase, many addresses</strong><br/>The same phrase can derive many receive addresses (different path index).</p>
+</div>
+</div>
+<div class="row">
+<button type="button" data-step="1">Step · Idea / Generate</button>
+<button type="button" class="primary" data-step="2">Step · Validate / address</button>
+<button type="button" data-step="3">Step · Exercise / many</button>
+</div>
+</div>
+<script>
+document.querySelectorAll("[data-step]").forEach(function(btn){
+  btn.onclick=function(){
+    var s=btn.getAttribute("data-step");
+    document.querySelectorAll("[data-step]").forEach(function(b){b.classList.toggle("primary",b===btn)});
+    document.querySelectorAll("[data-atom]").forEach(function(el){
+      var n=el.getAttribute("data-atom");
+      el.classList.toggle("hi", n===s);
+      el.classList.toggle("dim", n!==s);
+    });
+  };
+});
+</script>
+</body>
+</html>

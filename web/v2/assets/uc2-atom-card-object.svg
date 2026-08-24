@@ -1,0 +1,19 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The numbered card is the backup object">
+  <title>Card is the backup</title>
+  <rect x="48" y="10" width="124" height="58" rx="8" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+  <g font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8">
+    <rect x="56" y="18" width="50" height="16" rx="4" fill="#121821" stroke="#243044"/>
+    <text x="62" y="29" fill="#8b9bb4">1</text>
+    <text x="74" y="29" fill="#e8eef7">word</text>
+    <rect x="112" y="18" width="50" height="16" rx="4" fill="#121821" stroke="#243044"/>
+    <text x="118" y="29" fill="#8b9bb4">2</text>
+    <text x="130" y="29" fill="#e8eef7">word</text>
+    <rect x="56" y="40" width="50" height="16" rx="4" fill="#121821" stroke="#243044"/>
+    <text x="62" y="51" fill="#8b9bb4">3</text>
+    <text x="74" y="51" fill="#e8eef7">word</text>
+    <rect x="112" y="40" width="50" height="16" rx="4" fill="#121821" stroke="#243044"/>
+    <text x="118" y="51" fill="#8b9bb4">…</text>
+    <text x="132" y="51" fill="#e8eef7">N</text>
+  </g>
+  <text x="110" y="82" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">numbered card</text>
+</svg>

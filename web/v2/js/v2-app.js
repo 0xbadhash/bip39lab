@@ -204,7 +204,143 @@
     return html;
   }
 
+  function uc1VizForStep(step) {
+    if (step <= 1) return 1;
+    if (step === 3) return 3;
+    return 2;
+  }
+
+  function uc1SetViz(n) {
+    n = String(n | 0);
+    window.uc1SetViz = uc1SetViz;
+    document.querySelectorAll("#uc1Viz [data-atom]").forEach(function (el) {
+      var on = el.getAttribute("data-atom") === n;
+      el.classList.toggle("hi", on);
+      el.classList.toggle("dim", !on);
+    });
+  }
+
+  function uc1VizHtml() {
+    var maxS = Math.max(0, mem.maxStep || 0);
+    var atoms = [
+      {
+        n: 1,
+        jump: 0,
+        src: "assets/uc1-atom-entropy-words.svg",
+        alt: "Random bits become numbered recovery words",
+        cap: "<strong>Plan · Entropy to words</strong><br/>Random bits become a numbered recovery phrase. That phrase is the secret."
+      },
+      {
+        n: 2,
+        jump: 2,
+        src: "assets/uc1-atom-phrase-ne-address.svg",
+        alt: "Recovery phrase is not the same as a receive address",
+        cap: "<strong>Practice · Phrase is not address</strong><br/>The words stay secret. The receive address is public and safe to share."
+      },
+      {
+        n: 3,
+        jump: 3,
+        src: "assets/uc1-atom-one-to-many.svg",
+        alt: "One recovery phrase can derive many receive addresses",
+        cap: "<strong>Review · One phrase, many addresses</strong><br/>The same phrase can derive many receive addresses (different path index)."
+      }
+    ];
+    return (
+      '<div class="uc-viz" id="uc1Viz">' +
+      atoms
+        .map(function (a) {
+          var can = a.jump <= maxS;
+          return (
+            '<button type="button" class="atom dim" data-atom="' +
+            a.n +
+            '" data-concept-step="' +
+            a.jump +
+            '"' +
+            (can ? "" : " disabled") +
+            '><img src="' +
+            a.src +
+            '" alt="' +
+            a.alt +
+            '"><p class="cap">' +
+            a.cap +
+            "</p></button>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  function uc2VizForStep(step) {
+    if (step <= 0) return 1;
+    if (step === 2) return 3;
+    return 2;
+  }
+
+  function uc2SetViz(n) {
+    n = String(n | 0);
+    window.uc2SetViz = uc2SetViz;
+    document.querySelectorAll("#uc2Viz [data-atom]").forEach(function (el) {
+      var on = el.getAttribute("data-atom") === n;
+      el.classList.toggle("hi", on);
+      el.classList.toggle("dim", !on);
+    });
+  }
+
+  function uc2VizHtml() {
+    var maxS = Math.max(0, mem.maxStep || 0);
+    var atoms = [
+      {
+        n: 1,
+        jump: 0,
+        src: "assets/uc2-atom-card-object.svg",
+        alt: "The numbered card is the backup object",
+        cap: "<strong>Plan · Card is the backup</strong><br/>The numbered cells are the backup object. A textarea on a screen is not."
+      },
+      {
+        n: 2,
+        jump: 1,
+        src: "assets/uc2-atom-hand-not-photo.svg",
+        alt: "Hand copy is not the same as a photo or a print",
+        cap: "<strong>Practice · Hand copy is not a photo</strong><br/>Write the cells by hand while the computer is offline. Photograph and print are not an air-gap."
+      },
+      {
+        n: 3,
+        jump: 2,
+        src: "assets/uc2-atom-passphrase-apart.svg",
+        alt: "Keep the passphrase in a different place from the word sheet",
+        cap: "<strong>Review · Passphrase stored apart</strong><br/>If there is a passphrase, store it in a different place from this sheet."
+      }
+    ];
+    return (
+      '<div class="uc-viz" id="uc2Viz">' +
+      atoms
+        .map(function (a) {
+          var can = a.jump <= maxS;
+          return (
+            '<button type="button" class="atom dim" data-atom="' +
+            a.n +
+            '" data-concept-step="' +
+            a.jump +
+            '"' +
+            (can ? "" : " disabled") +
+            '><img src="' +
+            a.src +
+            '" alt="' +
+            a.alt +
+            '"><p class="cap">' +
+            a.cap +
+            "</p></button>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
   function renderConcepts(id, step, nSteps) {
+    if (id === 1) return uc1VizHtml();
+    if (id === 2) return uc2VizHtml();
     var cs = conceptsFor(id);
     var maxS = Math.max(0, mem.maxStep || 0);
     return cs
@@ -293,6 +429,8 @@
     if (window.Bip39Glossary && typeof Bip39Glossary.enhance === "function") {
       Bip39Glossary.enhance();
     }
+    if (current.id === 1) uc1SetViz(uc1VizForStep(current.step));
+    if (current.id === 2) uc2SetViz(uc2VizForStep(current.step));
   }
 
   async function stepHtml(id, step) {
@@ -319,10 +457,12 @@
         ) +
         generateExplainerHtml() +
         entropyHtml() +
-        mnemonicHelpHtml() +
         wordCountSelectHtml() +
-        '<div class="row" id="v2GenRow">' +
+        '<div class="row v2-gen-bar" id="v2GenRow">' +
+        '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Generate">Generate</button>' +
+        mnemonicHelpHtml(true) +
+        "</div>" +
         clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
@@ -349,15 +489,19 @@
       var gated = !mem.cardAck;
       var derived = !!(mem.lastRows && mem.lastRows.length);
       return pad(
-        "<h2>Validate &amp; derive</h2>" +
+        '<h2 class="label-row">Validate &amp; derive' +
+        '<span class="help-tip help-tip-safety" id="wrapDeriveI">' +
+        '<button type="button" class="help-tip-btn" aria-label="What is not the same">i</button>' +
+        '<span class="help-tip-panel" hidden><strong>What is not the same</strong>' +
+        '<span class="control-help" style="display:block;margin-top:0.35rem">' +
+        "The seed is not the card. The seed is not the address. Click Validate and derive. This is not a wallet." +
+        "</span></span></span></h2>" +
         doDont(
           "Keep the numbered card in view so you see the source of the addresses.",
           "Do not send coins to these practice addresses."
         ) +
         '<p class="control-help" id="v2DeriveHelp"><strong>Where addresses come from.</strong> ' +
         "The numbered card (words) is stretched into a <em>seed</em>. Receive addresses are derived from that seed.</p>" +
-        '<div class="v2-callout done"><strong>What is not the same</strong>' +
-        "The seed is not the card. The seed is not the address. Click Validate and derive. This is not a wallet.</div>" +
         entropyHtml() +
         pipeHtml(true, derived, derived) +
         '<div id="v2Card">' +
@@ -369,6 +513,12 @@
         '<div class="row"><button type="button" class="btn" id="v2Derive" ' +
         (gated ? "disabled" : "") +
         ">Validate &amp; derive</button>" +
+        '<span class="help-tip help-tip-safety">' +
+        '<button type="button" class="help-tip-btn" aria-label="What is not the same">i</button>' +
+        '<span class="help-tip-panel" hidden><strong>What is not the same</strong>' +
+        '<span class="control-help" style="display:block;margin-top:0.35rem">' +
+        "The seed is not the card. The seed is not the address. Click Validate and derive. This is not a wallet." +
+        "</span></span></span>" +
         clearBtnHtml() +
         "</div>" +
         '<div id="v2AddrWrap">' +
@@ -392,12 +542,14 @@
         ) +
         generateExplainerHtml() +
         entropyHtml() +
-        mnemonicHelpHtml() +
         wordCountSelectHtml() +
-        '<div class="row">' +
+        '<div class="row v2-gen-bar">' +
+        '<div class="v2-gen-left">' +
         '<button type="button" class="btn secondary" id="v2Regen">Regenerate ' +
         n +
         "-word phrase</button>" +
+        mnemonicHelpHtml(true) +
+        "</div>" +
         clearBtnHtml() +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
@@ -437,24 +589,17 @@
           "Treat the numbered cells as the backup object.",
           "Do not treat a textarea on a screen as the backup."
         ) +
-        mnemonicHelpHtml() +
-        callout(
-          "is",
-          "What the card is",
-          "A paper backup is the numbered cells: index plus word. That object is what you would write by hand. A textarea on a screen is not the backup. This card is practice only. It is not a funded wallet."
-        ) +
-        (mem.mnemonic
-          ? ""
-          : wordCountSelectHtml() +
-            '<div class="row"><button type="button" class="btn" id="v2Generate">Generate practice card</button>' +
-            clearBtnHtml() +
-            "</div>") +
+        wordCountSelectHtml() +
+        '<div class="row v2-gen-bar" id="v2GenRow">' +
+        '<div class="v2-gen-left">' +
+        '<button type="button" class="btn" id="v2Generate">Generate practice card</button>' +
+        mnemonicHelpHtml(true) +
+        "</div>" +
+        clearBtnHtml() +
+        "</div>" +
         '<div id="v2Card">' +
         wordGridHtml(mem.mnemonic) +
         "</div>" +
-        (mem.mnemonic
-          ? '<div class="row">' + clearBtnHtml() + "</div>"
-          : "") +
         '<label class="check"><input type="checkbox" id="v2CardAck" ' +
         (mem.cardAck ? "checked" : "") +
         "/> I looked at the backup card (indexes and words). The card is the backup.</label>" +
@@ -470,11 +615,13 @@
           "Do not photograph the sheet. Do not store it in a cloud drive, chat, or email. Do not keep it on a networked phone if the phrase is funded.",
           "v2DoNotList"
         ) +
-        mnemonicHelpHtml() +
-        '<p class="control-help">These rules apply to a funded recovery phrase. This lab card is practice. Treat the discipline as if coins were at risk, then do the real backup in a wallet you trust.</p>' +
-        '<div class="row">' +
+        '<div class="row v2-gen-bar">' +
+        '<div class="v2-gen-left">' +
+        mnemonicHelpHtml(true) +
+        "</div>" +
         clearBtnHtml() +
         "</div>" +
+        '<p class="control-help">These rules apply to a funded recovery phrase. This lab card is practice.</p>' +
         pauseBtn("I can state what to do and what not to do", false)
       );
     }
@@ -486,12 +633,7 @@
           "If you print, treat it as classroom layout only.",
           "Do not use a printed practice sheet for real funds. Print is not an air-gap."
         ) +
-        '<div class="v2-callout warn" id="v2PrintHelp">' +
-        "<strong>Print is not the safest backup</strong>" +
-        "Printing from this lab means the words are already on a computer, so this is not an air-gap. " +
-        "The safer practice is to copy the numbered cells by hand with the computer offline, and not to print. " +
-        "Print is optional for classroom layout only. Do not use a printed practice sheet for real funds." +
-        "</div>" +
+        '<p class="control-help" id="v2PrintHelp">Print from this lab is not an air-gap. Prefer a hand copy offline, and not to print, if the phrase is funded.</p>' +
         '<label class="check"><input type="checkbox" id="v2PrintAck"/> I am printing a practice sheet only. I will not photograph a funded phrase on a networked phone.</label>' +
         '<div class="row" style="margin-top:0.65rem">' +
         '<button type="button" class="btn secondary" id="v2Print" disabled>Print practice sheet</button>' +
@@ -1105,9 +1247,14 @@
     );
   }
 
-  function mnemonicHelpHtml() {
+  function mnemonicHelpHtml(inline) {
+    var tag = inline ? "span" : "p";
     return (
-      '<p class="label-row" id="v2MnemonicLine">This phrase is a BIP-39 mnemonic: English wordlist words only.' +
+      "<" +
+      tag +
+      ' class="label-row' +
+      (inline ? " v2-mn-inline" : "") +
+      '" id="v2MnemonicLine">This phrase is a BIP-39 mnemonic: English wordlist words only.' +
       '<span class="help-tip action-hover" id="wrapMnemonicI">' +
       '<button type="button" class="help-tip-btn" aria-label="About the BIP-39 mnemonic">i</button>' +
       '<span class="help-tip-panel action-hover-panel" id="overlayMnemonic" hidden>' +
@@ -1116,7 +1263,9 @@
       "A mnemonic in this lab is a BIP-39 recovery phrase: a checksummed list of words from the official English wordlist " +
       "(12, 15, 18, 21, or 24 words). The list is English only. This is practice material in this browser tab. " +
       "It is not a funded wallet. Do not import these words into a wallet you use for real money." +
-      "</span></span></span></p>"
+      "</span></span></span></" +
+      tag +
+      ">"
     );
   }
 
@@ -1516,7 +1665,7 @@
             box.textContent =
               (whyEl && whyEl.textContent) ||
               btn.getAttribute("data-why") ||
-              "Wrong. Select the two right sentences (hand copy, and print is not the most secure).";
+              "Wrong.";
             if (pause) pause.disabled = true;
             return;
           }
@@ -1527,8 +1676,8 @@
             box.textContent = "Correct. Both right sentences are selected.";
             if (pause) pause.disabled = false;
           } else {
-            box.className = "msg-bad";
-            box.textContent = "Select both right sentences (2 and 3).";
+            box.className = "";
+            box.textContent = "";
             if (pause) pause.disabled = true;
           }
         });

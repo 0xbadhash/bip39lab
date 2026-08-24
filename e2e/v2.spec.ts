@@ -173,6 +173,8 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     await expect(page.locator("#v2Card")).toContainText(/practice backup/i);
     await expect(page.locator("#v2Clear")).toHaveClass(/danger/);
+    await expect(page.locator("#uc2Viz .atom")).toHaveCount(3);
+    await expect(page.locator('#uc2Viz [data-atom="1"]')).toHaveClass(/hi/);
     await page.locator("#wrapMnemonicI").hover();
     await expect(page.locator("#overlayMnemonic")).toContainText(/English wordlist/);
     await page.locator("#v2CardAck").check();
@@ -184,6 +186,7 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#v2DoNotList")).toContainText(/photograph/i);
     await expect(page.locator("#v2Clear")).toBeVisible();
     await page.locator("#v2Pause").click();
+    await expect(page.locator('#uc2Viz [data-atom="3"]')).toHaveClass(/hi/);
     await expect(page.locator("#v2PrintHelp")).toContainText(/not an air-gap/i);
     await expect(page.locator("#v2PrintHelp")).toContainText(/not to print/i);
     await expect(page.locator("#v2Print")).toBeDisabled();
@@ -195,7 +198,8 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2Uc2Quiz [data-quiz]")).toHaveCount(4);
     await page.locator("#v2Qhand").click();
-    await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-bad/);
+    await expect(page.locator("#v2QuizMsg")).not.toContainText(/Select both right sentences/i);
+    await expect(page.locator("#v2Pause")).toBeDisabled();
     await page.locator("#v2Qprint").click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
     await expect(page.locator("#v2Qhand")).toContainText(/Write the numbered cells by hand/);
@@ -285,9 +289,11 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#v2QuizMsg")).not.toContainText(/Not that one/i);
     await page.locator('#conceptStrip [data-concept-step="0"]').click();
     await expect(page.locator("#v2Generate")).toBeVisible();
-    await page.locator('#conceptStrip [data-concept-step="1"]').click();
-    await expect(page.locator("#v2CardAck")).toBeVisible();
+    await expect(page.locator('#uc1Viz [data-atom="1"]')).toHaveClass(/hi/);
     await page.locator('#conceptStrip [data-concept-step="2"]').click();
     await expect(page.locator("#v2Derive")).toBeVisible();
+    await expect(page.locator('#uc1Viz [data-atom="2"]')).toHaveClass(/hi/);
+    await expect(page.locator("#uc1Viz .atom")).toHaveCount(3);
+    await expect(page.locator("#v2WordGrid, #v2Card .ww").first()).toBeVisible();
   });
 });

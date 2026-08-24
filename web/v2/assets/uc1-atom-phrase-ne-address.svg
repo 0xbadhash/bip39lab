@@ -1,0 +1,15 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Recovery phrase is not the same as a receive address">
+  <title>Phrase is not address</title>
+  <rect x="8" y="14" width="86" height="52" rx="8" fill="#1a2330" stroke="#243044" stroke-width="1.5"/>
+  <rect x="40" y="28" width="22" height="16" rx="3" fill="none" stroke="#3ecf8e" stroke-width="1.5"/>
+  <path d="M44 28v-5a7 7 0 0 1 14 0v5" fill="none" stroke="#3ecf8e" stroke-width="1.5"/>
+  <text x="51" y="56" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="system-ui,sans-serif">12 words</text>
+  <text x="51" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">keep secret</text>
+  <circle cx="110" cy="40" r="12" fill="none" stroke="#e85d5d" stroke-width="1.5"/>
+  <text x="110" y="44" text-anchor="middle" fill="#e85d5d" font-size="12" font-weight="700" font-family="system-ui,sans-serif">≠</text>
+  <rect x="126" y="14" width="86" height="52" rx="8" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+  <circle cx="169" cy="32" r="7" fill="none" stroke="#3d8bfd" stroke-width="1.5"/>
+  <circle cx="169" cy="32" r="2.5" fill="#3d8bfd"/>
+  <text x="169" y="56" text-anchor="middle" fill="#e8eef7" font-size="9" font-family="ui-monospace,Menlo,Consolas,monospace">bc1q…</text>
+  <text x="169" y="78" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">safe to share</text>
+</svg>
