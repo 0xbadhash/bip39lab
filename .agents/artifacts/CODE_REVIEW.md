@@ -1,18 +1,30 @@
 # CODE-REVIEW
 
-**Scope:** V2 UC1 compact grid + entropy (`.agents/specs/2026-08-23-v2-uc1-compact-entropy.md`)
-**Date:** 2026-08-23
+- **command:** `/code_review` working tree vs `origin/master` (HEAD still 0.16.36; product files uncommitted)
+- **base:** origin/master (`8279176`)
+- **head:** working tree (`web/v2/`, `e2e/v2.spec.ts`, spec, comet, plugin)
+- **secrets:** `python3 scripts/check_secrets_diff.py --base origin/master --head HEAD` → gitleaks clean. Working-tree v2-app.js: sessionStorage only `completed` / gate flags, not mnemonics.
+- **engine:** same session as implementer (CODE_REVIEW_MODEL unset)
 
-## P0
-None.
+## Accepted P0 / blockers
 
-## In scope
-- Word grid: 4/line narrow, 8/line ≥1100px (24 words = 3 lines at 1920)
-- Address grid: 3 per line
-- Entropy 128/160/192/224/256 bits by word count
-- Seed strip kept on Validate
+**none**
+
+## Rejected
+
+- Cosigner phrases on one pad: practice-only, labeled, not persisted — not a secret-wall break.
+- Hidden `.v2-quiz-why` spans: teaching copy, not secrets.
+
+## Follow-ups (not ship-blockers)
+
+- `GET /v2/js/lab-strip.js?v=0.16.35` 404 (relative URL from classic CSS/help-ui when page is `/v2/`).
+- Unused `.v2-callout.one-line` CSS after Validate copy became a `<p>`.
+- Harness `scripts/*.py` dirty — do not commit (standing hold).
 
 ## Tests
-`npx playwright test e2e/v2.spec.ts` — 9 passed (V2-S9)
 
-p0=0 follow_ups=0
+`npx playwright test e2e/v2.spec.ts` → **12 passed** (V2-S0…S4, S6–S12).
+
+## Counts
+
+p0=0  follow_ups=3

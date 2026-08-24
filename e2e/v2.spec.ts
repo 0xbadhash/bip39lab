@@ -20,6 +20,8 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#gateScope")).toContainText(/Done when/i);
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2Generate")).toBeVisible();
+    await expect(page.locator(".v2-donot .do")).toBeVisible();
+    await expect(page.locator(".v2-donot .dont")).toContainText(/Do not import/i);
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2Card .ww").first()).not.toHaveText("—");
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
@@ -114,10 +116,12 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto("/v2/?uc=1");
     await page.locator("#btnGateStart").click();
-    await expect(page.locator("#v2Entropy")).toContainText(/128 bits \(12-word/);
+    await expect(page.locator("#v2Entropy")).toContainText(/128 bits/);
+    await expect(page.locator("#v2Entropy")).toContainText(/12-word BIP-39/);
     await page.locator("#v2WordCount").selectOption("24");
     await page.locator("#v2Generate").click();
-    await expect(page.locator("#v2Entropy")).toContainText(/256 bits \(24-word/);
+    await expect(page.locator("#v2Entropy")).toContainText(/256 bits/);
+    await expect(page.locator("#v2Entropy")).toContainText(/24-word BIP-39/);
     await expect(page.locator("#v2WordGrid .ww")).toHaveCount(24);
     const cols = await page.locator("#v2WordGrid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
     expect(cols).toBe(8);
@@ -189,15 +193,101 @@ test.describe("V2 use-case tracks (0.17.0-v2)", () => {
     await expect(page.locator("#printWordList li")).toHaveCount(12);
     await expect(page.locator("#printBackup")).toContainText(/Practice only/);
     await page.locator("#v2Pause").click();
-    await page.locator('[data-quiz="ok"]').click();
+    await expect(page.locator("#v2Uc2Quiz [data-quiz]")).toHaveCount(4);
+    await page.locator("#v2Qhand").click();
+    await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-bad/);
+    await page.locator("#v2Qprint").click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
-    await expect(page.locator('[data-quiz="ok"]')).toContainText(/not the most secure/i);
+    await expect(page.locator("#v2Qhand")).toContainText(/Write the numbered cells by hand/);
+    await expect(page.locator("#v2Qprint")).toContainText(/not the most secure/);
   });
 
   test("V2-S3 deep link uc=3 opens passphrase gate", async ({ page }) => {
     await page.goto("/v2/?uc=3");
     await expect(page.locator("#gateTitle")).toContainText(/UC3/);
+    await expect(page.locator("#gateIs")).toHaveClass(/is/);
+    await expect(page.locator("#gateIsnt")).toHaveClass(/isnt/);
+    await expect(page.locator("#gateDone")).toHaveClass(/done/);
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#panelTitle")).toContainText(/Passphrase/);
+    await expect(page.locator(".v2-donot .do")).toBeVisible();
+    await expect(page.locator(".v2-donot .dont")).toBeVisible();
+    await expect(page.locator("#v2WordCount option")).toHaveCount(5);
+    await page.locator("#v2WordCount").selectOption("24");
+    await page.locator("#v2Generate").click();
+    await expect(page.locator("#v2Card .ww")).toHaveCount(24);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Cmp").click();
+    await expect(page.locator(".v2-verdict")).toContainText(/two wallets/i);
+    await expect(page.locator("#v2CmpOut")).not.toContainText(/empty vs empty/i);
+  });
+
+  test("V2-S10 UC4 index increments; Back to index 0", async ({ page }) => {
+    await page.goto("/v2/?uc=4");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2PathDemo")).toContainText("m/84'/1'/0'/0/0");
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/0");
+    await expect(page.locator("#v2Idx")).toHaveText(/Show index 1 \(next receive address\)/);
+    const t0 = await page.locator("#v2Tail").textContent();
+    await page.locator("#v2Idx").click();
+    await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/1");
+    await expect(page.locator("#v2Idx")).toHaveText(/Show index 2/);
+    const t1 = await page.locator("#v2Tail").textContent();
+    expect(t1).not.toEqual(t0);
+    await page.locator("#v2Idx").click();
+    await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/2");
+    await page.locator("#v2IdxZero").click();
+    await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/0");
+    await expect(page.locator("#v2Idx")).toHaveText(/Show index 1 \(next receive address\)/);
+  });
+
+  test("V2-S11 UC6 three cosigner zpubs; rail back to M-of-N", async ({ page }) => {
+    await page.goto("/v2/?uc=6");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2MofnPic")).toContainText(/M = 2/);
+    await expect(page.locator("#v2MofnPic")).toContainText(/N = 3/);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator(".v2-cosigner")).toHaveCount(3);
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    for (let i = 0; i < 3; i++) {
+      await page.locator(`[data-cs-gen="${i}"]`).click();
+      await expect(page.locator(".v2-cosigner").nth(i).locator(".ww").first()).not.toHaveText("—");
+      await page.locator(`[data-cs-zpub="${i}"]`).click();
+      await expect(page.locator(`#v2CsZpub${i}`)).toHaveText(/^zpub/);
+    }
+    await expect(page.locator("#v2CsReady")).toBeVisible();
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-quiz="bad"]').first().click();
+    await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
+    await expect(page.locator("#v2QuizMsg")).toContainText(/Shamir/i);
+    await page.locator('.rail-jump[data-step="0"]').click();
+    await expect(page.locator("#v2MofnPic")).toBeVisible();
+    await page.locator('[data-concept-step="1"]').click();
+    await expect(page.locator(".v2-cosigner")).toHaveCount(3);
+  });
+
+  test("V2-S12 quiz wrong answer explains why", async ({ page }) => {
+    await page.goto("/v2/?uc=1");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Generate").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2CardAck").check();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Derive").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-quiz="bad"]').first().click();
+    await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-bad/);
+    await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
+    await expect(page.locator("#v2QuizMsg")).toContainText(/refund/i);
+    await expect(page.locator("#v2QuizMsg")).not.toContainText(/Not that one/i);
+    await page.locator('#conceptStrip [data-concept-step="0"]').click();
+    await expect(page.locator("#v2Generate")).toBeVisible();
+    await page.locator('#conceptStrip [data-concept-step="1"]').click();
+    await expect(page.locator("#v2CardAck")).toBeVisible();
+    await page.locator('#conceptStrip [data-concept-step="2"]').click();
+    await expect(page.locator("#v2Derive")).toBeVisible();
   });
 });

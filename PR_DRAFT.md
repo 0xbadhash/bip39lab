@@ -1,56 +1,60 @@
-# PR Draft: v0.16.36 V2 UC1 compact/entropy + UC2 colour callouts
+# PR Draft: v0.16.37 V2 UC4–UC7 curriculum, quiz why, rail back-nav
 
-**Spec:** `.agents/specs/2026-08-23-v2-uc1-compact-entropy.md`
-**Plan:** `.agents/specs/2026-08-23-v2-uc1-generate-chrome-plan.md`
-**Also:** UC2 paper-backup readability (gate + do/do-not colour; print is not air-gap)
+**Spec:** `.agents/specs/2026-08-24-v2-uc6-uc7-fsm.md`
+**Also:** UC1–UC10 Do/Do not first; quiz why; UC4 index increment; UC5 export why; address index chips
 
 ## What Problem This Solves
 
-UC1 24-word cards and stacked addresses forced scroll on 1920px laptops, and entropy bits were invisible. UC2 gate and Do/Do-not were a grey wall of text; print looked as safe as an air-gap.
+UC6 hid three seeds behind “throwaway xpubs” (actually zpub) and did not teach M-of-N. Quizzes said “Not that one.” Concept chips could not go back. Validate put Do/Do not under other callouts. Index `#n` sat on the same line as `tb1q`.
 
 ## Why This Change Was Made
 
-Operator asked compact grids, entropy by word count, coloured UC2 callouts, and a quiz that print+photo are not the most secure.
+Operator asked a full FSM: three visible cosigner phrases → BIP-84 zpub, Shamir room as footer, wrong-quiz explanations, rail/chip back-nav, Do/Do not on top, Catalyxt number chips for receive indexes.
 
 ## User Impact
 
-V2 UC1: 8 words per line at laptop width (24 = 3 lines), 3 addresses per row, entropy 128–256 bits. UC2: green/red/blue callouts; print warning; quiz prefers handwritten offline copy.
+Learners can mint three practice phrases, see zpub origin, increment path index, jump back via rail and concept chips, and read why a quiz answer is wrong.
 
 ## Traceability
 
 | AC | Test / smoke |
 |----|----------------|
-| AC-1 24-word card three lines at 1920px | Playwright V2-S9 |
-| AC-2 at least three addresses on one line | Playwright V2-S9 `#v2AddrGrid` |
-| AC-3 entropy 128 vs 256 bits | Playwright V2-S9 `#v2Entropy` |
-| AC-4 UC2 coloured What this is / is not / Done when | Playwright V2-S8 `#gateIs` `#gateIsnt` `#gateDone` |
-| AC-5 Do / Do not colour panels, no contractions | Playwright V2-S8 `#v2DoNotList` |
-| AC-6 print is not air-gap | Playwright V2-S8 `#v2PrintHelp` |
-| AC-7 quiz: print and photo not most secure | Playwright V2-S8 `[data-quiz=ok]` |
-| AC-8 classic `/` still Generate | Playwright V2-S0 |
+| AC-1 UC4 index increments and resets to 0 | Playwright V2-S10 |
+| AC-2 UC6 three BIP-84 zpubs from three phrases | Playwright V2-S11 |
+| AC-3 rail / concept back-nav visited steps | Playwright V2-S11, V2-S12 |
+| AC-4 quiz wrong answer explains why | Playwright V2-S12 |
+| AC-5 UC1 Validate Do/Do not first; where-addresses is prose | V2-S1 `#v2DeriveHelp` |
+| AC-6 receive `#n` is nav-step above address | V2-S9 cells still 3-up |
+| AC-7 secret-wall no mnemonic in sessionStorage | V2-S6 |
+| AC-8 classic `/` still Lab | V2-S0 |
 | AC-9 pytest smoke | `python -m pytest -q` |
 
 ## Red-proof
 
 - red_cmd: `false`
 - green_cmd: `npx playwright test e2e/v2.spec.ts`
-- TDD: V2-S9 and V2-S8 went green after layout and callout HTML.
+- TDD: V2-S10–S12 written with the UI; 12 passed.
 
 ## Threat notes
 
-- secrets: no mnemonic in sessionStorage
+- secrets: no mnemonic in sessionStorage; cosigners RAM-only
 - xss: CSP connect-src none on /v2/
 - csrf: none
 
 ## Evidence pack
 
-- hard_gates / pr_validator
-- smoke: `npx playwright test e2e/v2.spec.ts` (9 passed)
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT in `.agents/artifacts/`
+- smoke: `npx playwright test e2e/v2.spec.ts` (12 passed)
 - pytest: `python -m pytest -q`
 
 ## Things that look bad but are actually fine
 
 1. Full classic Playwright suite is still not all-green (pre-existing).
 2. Harness `scripts/*.py` stay uncommitted.
-3. Tag is `v0.16.36` because `v0.16.35` already shipped.
-4. V2 footer remains `0.17.0-v2` (parallel surface stamp).
+3. V2 footer remains `0.17.0-v2` (parallel surface stamp).
+4. Three practice seeds on UC6 is the pedagogy, not a funded 2-of-3.
+5. `/v2/js/lab-strip.js` 404 is classic CSS relative URL; follow-up.
+
+## Cross-review
+
+Blockers 0. Obsolete Tier A 0. See `.agents/artifacts/CROSS_REVIEW.md`.

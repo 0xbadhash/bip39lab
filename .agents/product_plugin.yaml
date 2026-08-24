@@ -98,6 +98,10 @@ web_e2e:
         - { id: quiz, name: "V2-S2 quiz+exit", steps: ["msg-ok", "force ack"] }
         - { id: deeplink, name: "V2-S3 ?uc=3", steps: ["gate UC3"] }
         - { id: chrome, name: "V2-S4 generate chrome", steps: ["12-24", "clear beside generate"] }
+        - { id: compact, name: "V2-S9 compact", steps: ["24-word 3 lines", "entropy", "3 addr"] }
+        - { id: pathidx, name: "V2-S10 path index", steps: ["increment", "reset 0"] }
+        - { id: uc6, name: "V2-S11 three zpubs", steps: ["cosigners", "rail back"] }
+        - { id: quizwhy, name: "V2-S12 quiz why", steps: ["Wrong.", "concept chips"] }
     - id: chrome
       order: 6
       path: /
