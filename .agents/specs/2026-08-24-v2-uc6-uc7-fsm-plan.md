@@ -16,8 +16,6 @@ Keep classic `/` frozen. Teach on `/v2/` only. UC6 is M-of-N **keys** (three ind
 
 ## Implementation
 
-1. `web/v2/js/v2-app.js` — pads, `doDont`, `cosignerCardHtml`, `applyPathIndex` increment + zero, `wireStep`.
-2. `web/v2/css/v2.css` — `.v2-cosigners`, `.v2-addr-grid .idx.nav-step`, rail-jump, first `.v2-donot`.
-3. `e2e/v2.spec.ts` — V2-S10, V2-S11, V2-S12.
-4. `docs/E2E_COMET_SCENARIOS.md` + `product_plugin.yaml` S-id sync.
-5. Stamp `VERSION` 0.16.37 lockstep; V2 footer stays `0.17.0-v2`.
+1. `web/v2/js/v2-app.js` + `web/v2/css/v2.css` — pads, `doDont` first, three cosigner zpubs, path index, quiz why, `jumpTo` rail/chips, nav-step address indexes.
+2. `e2e/v2.spec.ts` V2-S10–S12 plus Comet/`product_plugin.yaml` S-id sync.
+3. Stamp `VERSION` 0.16.37 lockstep; V2 footer stays `0.17.0-v2`.
