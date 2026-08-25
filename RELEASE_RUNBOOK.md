@@ -1,30 +1,34 @@
-# Release v0.16.49
+# Release v0.16.50
 
-Dual stamp: product **0.16.49** · V2 chip **0.17.54-v2**
+Dual stamp: product **0.16.50** · V2 chip **0.17.62-v2**
+
+V2 path language: per-track gates, verb+object buttons, Continue in-path, Hard refresh beside Clear secrets. Classic `/` unchanged.
 
 ## Smoke
 
-| Step | Exit |
-|------|------|
-| pytest | 0 (116) |
-| V2-S0 + V2-S8 | 0 |
-| check_web_e2e | 0 |
-| pr_validator | 100 |
+| Step | Command | Exit |
+|------|---------|------|
+| unit | `python -m pytest -q` | 0 after pyproject stamp |
+| e2e | `npx playwright test e2e/v2.spec.ts` | 0 |
+| hard_gates | origin/master...HEAD | ok |
+| pr_validator | score 100 | approved |
 
-Infra: none. Classic full e2e not the V2 gate.
+## Infra
+
+None (static web + nginx). No INFRA_RUNBOOK this product.
 
 ## Evidence pack
 
-hard_gates; Playwright; pytest; CODE-REVIEW p0=0; BEHAVIOR fail=0.
+hard_gates; Playwright v2.spec; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
 
 ## Rollback
 
-Tag `v0.16.48`.
+Checkout previous tag `v0.16.49`. Do not force-push.
 
-## §9
+## Things that look bad but are actually fine
 
 1. leftover scripts stash
-2. lab-strip 404
-3. Example is four mnemonic words joined with `-`
-4. Dual stamp
-5. (i) stays on Generate only
+2. Dual stamp
+3. lab-strip 404 under /v2/js
+4. Finish “will not send coins” on non-address tracks
+5. `wantRail = true` on All paths
