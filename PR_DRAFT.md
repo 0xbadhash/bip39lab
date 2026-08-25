@@ -1,6 +1,7 @@
 # PR Draft: v0.16.50 V2 path language (gates, buttons, Continue in-path)
 
 **Spec:** `.agents/specs/2026-08-25-v2-uc-path-language.md`
+**Plan:** `.agents/specs/2026-08-25-v2-uc-path-language-plan.md`
 
 ## What Problem This Solves
 

@@ -4,6 +4,7 @@
 - **Created:** 2026-08-25
 - **Status:** ready-for-agent
 - **Priority:** P0
+- **Plan:** `.agents/specs/2026-08-25-v2-uc-path-language-plan.md`
 - **Surface:** `web/v2/` UC1–UC31 gates + in-track pause/primary labels; picker Continue
 
 ## Problem Statement
