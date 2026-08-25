@@ -2,10 +2,8 @@
 
 | Clause | Result | Evidence |
 |--------|--------|----------|
-| Start here 3 cards | pass | V2-S0 |
-| All paths 31 | pass | V2-S0 |
-| Copy+QR UC1 | pass | V2-S1 |
-| Done + Next up UC2 | pass | V2-S2 |
-| Hard refresh + Clear secrets | pass | V2-S0 / V2-S2 |
+| Example + generate | pass | V2-S8 |
+| No real-money repeat | pass | V2-S8 |
+| Clear secrets | pass | V2-S8 |
 
 fail=0 blocked=0

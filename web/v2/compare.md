@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-25
-- **v1:** `/` · product stamp `v0.16.48`
-- **v2:** `/v2/` · chip `v0.17.53-v2` (`data-v2-version`; not the classic footer stamp)
+- **v1:** `/` · product stamp `v0.16.49`
+- **v2:** `/v2/` · chip `v0.17.54-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -13,6 +13,12 @@ Live compare.md lags until deploy. This repo file is source of truth.
 V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a second crypto stack. Classic `/` is unchanged.
 
 ---
+
+## What landed since 0.16.48 / chip 0.17.53
+
+- **UC2 do/do-not pad:** one Do / Do not block. No repeated “real money” paragraph, no extra BIP-39 (i) line on that step, no third “practice” reminder.
+- **Key row:** same 0.82rem type as the body; caption **Something you know**.
+- **Passphrase example:** four practice words (`word-word-word-word`) + **Generate another**. Practice only.
 
 ## What landed since 0.16.47 / chip 0.17.47
 
@@ -101,7 +107,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | UC | v1 home | v2 now | Still Lab-only |
 |----|---------|--------|----------------|
 | **1** First wallet | `#card-mnemonic` | Generate 12–24, OS entropy, copy/QR, Test/Mainnet | Paste mnemonic; full 44/49/84/86 matrix |
-| **2** Paper backup | Strip + print | Card ack, two-check quiz, print not-air-gap | — |
+| **2** Paper backup | Strip + print | Card ack, do/do-not + PP example + generate, print not-air-gap | — |
 | **3** Passphrase | `#cardCmpPp` | A/B + verdict + estimate table; key still | Masked PP strength bar |
 | **4** Path | `#cardPathPlay` | Index, **change 0/1**, BIP 44/49/84/86 SVG | Live Lab table bind |
 | **5 / 9** Watch / xpub | Tabs + QR | Labelled export + **copy/QR rows** | Full purpose tabs |

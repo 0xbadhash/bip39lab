@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.53-v2)", () => {
+test.describe("V2 use-case tracks (0.17.54-v2)", () => {
   // AC-1: Start here 3 cards; AC-3: chip + About Hard refresh
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -19,7 +19,7 @@ test.describe("V2 use-case tracks (0.17.53-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(31);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.53-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.54-v2/);
     await page.locator(".v2-about > summary").click();
     await expect(page.locator("#v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -193,6 +193,7 @@ test.describe("V2 use-case tracks (0.17.53-v2)", () => {
     await expect(page.locator("#viewGate")).toBeHidden();
   });
 
+  // AC-1 AC-2: PP example + no repeated real-money copy
   test("V2-S8 UC2 paper backup: card, (i), Clear secrets, do-not copy, print sheet", async ({
     page,
   }) => {
@@ -219,6 +220,13 @@ test.describe("V2 use-case tracks (0.17.53-v2)", () => {
     await expect(page.locator("#v2DoNotList")).toContainText(/photograph/i);
     await expect(page.locator("#trackBody .v2-pp-key-img")).toBeVisible();
     await expect(page.locator("#trackBody .v2-pp-key-img")).toHaveAttribute("src", /beginner-key\.png/);
+    await expect(page.locator("#v2PpEx")).toBeVisible();
+    const ex1 = (await page.locator("#v2PpEx").innerText()).trim();
+    expect(ex1.split("-").length).toBeGreaterThanOrEqual(4);
+    await page.locator("#v2PpExGen").click();
+    await expect(page.locator("#v2PpEx")).not.toHaveText(ex1);
+    await expect(page.locator("#trackBody")).not.toContainText(/If these words were real money/i);
+    await expect(page.locator("#v2MnemonicLine")).toHaveCount(0);
     await expect(page.locator("#v2Clear")).toBeVisible();
     await page.locator("#v2Pause").click();
     await expect(page.locator('#uc2Viz [data-atom="3"]')).toHaveClass(/hi/);

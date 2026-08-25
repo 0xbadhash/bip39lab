@@ -583,13 +583,45 @@
 .v2-pp-hero {
   display: flex;
   flex-wrap: wrap;
-  align-items: stretch;
+  align-items: center;
   gap: 0.75rem 1rem;
   margin: 0.45rem 0 0.7rem;
 }
 .v2-pp-hero-body {
   flex: 1 1 14rem;
   min-width: 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--muted);
+  font-family: inherit;
+}
+.v2-pp-copy {
+  margin: 0 0 0.4rem;
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--muted);
+  font-weight: 650;
+}
+.v2-pp-copy:last-child { margin-bottom: 0; }
+.v2-pp-ex-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.6rem;
+  margin: 0.45rem 0;
+}
+.v2-pp-ex-row code {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-word;
+}
+.v2-pp-key figcaption {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--muted);
+  font-family: inherit;
 }
 .v2-print-pp {
   display: flex;

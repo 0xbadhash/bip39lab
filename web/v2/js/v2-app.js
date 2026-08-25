@@ -1533,6 +1533,7 @@
     }
     if (step === 1) {
       await ensurePhrase();
+      await ensurePpExample();
       return pad(
         "<h2>Do this. Do not do that.</h2>" +
         doDont(
@@ -1540,15 +1541,7 @@
           "Do not photograph the sheet. Do not store it in a cloud drive, chat, or email. Do not keep it on a networked phone if the phrase is funded.",
           "v2DoNotList"
         ) +
-        desc(
-          "If these words were real money, you would copy them by hand while the computer is offline. Do not photograph the sheet. Do not keep a passphrase on the same paper as the words."
-        ) +
-        ppKeyHeroHtml(
-          '<p class="control-help" style="margin:0">The key is the optional extra secret (passphrase). Store it in a different place from this word sheet.</p>',
-          "v2PpKeyUc2"
-        ) +
-        mnemonicHelpHtml(true) +
-        '<p class="control-help">These rules apply to a funded recovery phrase. This lab card is practice.</p>' +
+        ppKeyHeroHtml(ppExampleHtml(), "v2PpKeyUc2") +
         pauseBtn("I can state what to do and what not to do", false)
       );
     }
@@ -3018,6 +3011,40 @@
     );
   }
 
+  async function refreshPpExample() {
+    var words = ["correct", "horse", "battery", "staple"];
+    try {
+      if (window.BIP39Lab && typeof BIP39Lab.generateMnemonic === "function") {
+        var m = await BIP39Lab.generateMnemonic(12);
+        var w = String(m || "").split(/\s+/).filter(Boolean);
+        if (w.length >= 4) words = w.slice(0, 4);
+      }
+    } catch (e) { /* keep fallback */ }
+    mem.ppExample = words.join("-");
+    return mem.ppExample;
+  }
+
+  async function ensurePpExample() {
+    if (mem.ppExample) return mem.ppExample;
+    return refreshPpExample();
+  }
+
+  function ppExampleHtml() {
+    return (
+      '<div class="v2-pp-ex">' +
+      '<p class="v2-pp-copy">Optional extra secret. Store it apart from the numbered card.</p>' +
+      '<div class="v2-pp-ex-row">' +
+      '<span class="v2-pp-copy">Example</span>' +
+      '<code id="v2PpEx">' +
+      attrEsc(mem.ppExample || "") +
+      "</code>" +
+      '<button type="button" class="btn secondary btn-sm" id="v2PpExGen">Generate another</button>' +
+      "</div>" +
+      '<p class="v2-pp-copy">Practice only. Do not reuse this on a funded wallet.</p>' +
+      "</div>"
+    );
+  }
+
   function ppKeyHeroHtml(inner, figId) {
     return (
       '<div class="v2-pp-hero">' +
@@ -3792,6 +3819,13 @@
         var regenBtn = $("v2Regen");
         if (regenBtn) regenBtn.textContent = "Regenerate " + mem.wordCount + "-word phrase";
         if (!mem.mnemonic && ($("v2OsEnt") || $("v2Entropy"))) replaceOsEntropy();
+      });
+    }
+    if ($("v2PpExGen")) {
+      $("v2PpExGen").addEventListener("click", async function () {
+        var v = await refreshPpExample();
+        var el = $("v2PpEx");
+        if (el) el.textContent = v;
       });
     }
     var gen = $("v2Generate");

@@ -1,54 +1,50 @@
-# PR Draft: v0.16.48 V2 path picker + visual sprint
+# PR Draft: v0.16.49 UC2 passphrase pad copy + example
 
-**Spec:** `.agents/specs/2026-08-25-v2-picker-visual.md`
-**Plan:** `.agents/specs/2026-08-25-v2-picker-visual-plan.md`
+**Spec:** `.agents/specs/2026-08-25-v2-uc2-pp-example.md`
+**Plan:** `.agents/specs/2026-08-25-v2-uc2-pp-example-plan.md`
 
 ## What Problem This Solves
 
-The UC16–31 catalog was a wall of equal cards. Forensic reviews asked for a path product, then visual hierarchy (hero Start here, atoms on picker, progress dots, no blank first paint) without leaving App Shell.
+UC2 stacked the same backup lesson three times in mismatched type, with no passphrase example.
 
 ## Why This Change Was Made
 
-Operator asked for `/code-review` through `/sync-docs` and a compare.md refresh after the visual sprint (chip 0.17.53-v2).
+Operator asked to align fonts, drop repetition, and provide a generated practice example.
 
 ## User Impact
 
-Chip **v0.17.53-v2**. First paint shows Start here (3 cards + ghost Keys teasers). Finish UC1 marks done and Continue becomes Next up · UC2. Hard refresh under About V2 wipes progress. Clear secrets stays. Classic `/` unchanged.
+Chip **v0.17.54-v2**. Do / Do not stay. Example four-word PP + Generate another. Classic `/` unchanged.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1: Start here 3 / All 31 | V2-S0 |
-| AC-2: done + Next up UC2 + Hard refresh | V2-S2 |
-| AC-3: chip + About Hard refresh + Clear secrets | V2-S0 |
-| AC-4: UC1 Copy and QR | V2-S1 |
-| AC-5: N/A — compare.md docs stamp |
+| AC-1: example + generate | V2-S8 |
+| AC-2: no real-money repeat, no mnemonic line | V2-S8 |
+| AC-3: N/A — chip + compare.md docs |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S0"`
-
-TDD: picker count and chip assertions updated with the chrome; green V2-S0/S1/S2.
+- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S8"`
 
 ## Threat notes
 
-- secrets: Hard refresh only drops progress store `bip39lab.v2`, not a funded phrase
-- xss: CSP `connect-src 'none'`
+- secrets: example is practice words in DOM/`mem.ppExample` only; not sessionStorage
+- xss: CSP connect-src none
 - csrf: none
 
 ## Evidence pack
 
-hard_gates; Playwright V2; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
+hard_gates; Playwright V2-S8; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
 
 ## Things that look bad but are actually fine
 
-1. leftover `scripts/*.py` stash — not this ship
-2. Dual stamp 0.16.48 vs 0.17.53-v2
-3. `/v2/js/lab-strip.js` 404
-4. Hard refresh under About, not the top bar
-5. Ghost Keys cards are teasers (`uc-ghost`), not extra `.uc-card` count
+1. leftover scripts stash
+2. Dual stamp 0.16.49 vs 0.17.54-v2
+3. lab-strip 404
+4. Example uses first four words of a generated mnemonic joined with `-`
+5. (i) BIP-39 help remains on Generate, not this pad
 
 ## Cross-review
 
