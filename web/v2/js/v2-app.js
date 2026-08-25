@@ -12,6 +12,23 @@
       return { mnemonic: "", wordCount: 12, zpub: "" };
     });
   }
+  function emptyTax() {
+    return {
+      restore: false,
+      freeze: false,
+      seedAsk: false,
+      spend: false,
+      lose: false,
+      who: {},
+      phone: false,
+      malware: false,
+      hw: false,
+      usb: false,
+      typed: false,
+      sort: { exchange: "", phone: "", hardware: "", watch: "" },
+      trap: ""
+    };
+  }
   var ENT_BITS = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 };
   var PSBT_MIN = "cHNidP8A";
 
@@ -26,8 +43,8 @@
     { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Inspect a partial transaction offline.", done: "Inspect → offline sign (elsewhere) → online broadcast; never paste seed." },
     { id: 9, level: "Intermediate", title: "xpub privacy", job: "Account xpub is watch-only and privacy-sensitive.", done: "xpub ≠ spend; do not publish casually." },
     { id: 10, level: "Advanced", title: "Network leak", job: "Default offline; balances only after opt-in.", done: "Unknown ≠ 0; explicit Network page only." },
-    { id: 11, level: "Beginner", title: "Custodial vs you hold the keys", job: "An exchange app is not a BIP-39 wallet.", done: "No seed on the exchange = they can freeze or lose it; seed on your device = you can spend and you can lose it." },
-    { id: 12, level: "Beginner", title: "Hot software vs hardware signer", job: "Same words, different where they live.", done: "Phone is hot. Hardware keeps keys on the device. USB is not automatically air-gap. Typing the seed into a computer still kills the vault." },
+    { id: 11, level: "Beginner", title: "They hold the keys", job: "An exchange or login-only app keeps the keys. You only have an account.", done: "If you never got recovery words, a company can freeze or lose the coins. If you have the words, you can spend and you can lose them." },
+    { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys = hot wallet. Hardware keeps the seed on the device. USB is not an air-gap. Typing the seed into a computer still kills the vault." },
     { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
     { id: 14, level: "Beginner", title: "Dice and coin entropy", job: "Word count is not entropy. A few rolls can still print twelve words.", done: "Few d6 = TOO LOW. Minted words can still be weak. ~50 d6 ≈ 128 bits. Coin = 1 bit; 128 flips is the hard path." }
   ];
@@ -127,8 +144,8 @@
       8: ["Air-gap model", "Inspect PSBT", "Quiz", "Finish"],
       9: ["xpub ≠ spend", "Export xpub", "Quiz", "Finish"],
       10: ["Offline default", "Opt-in Network", "Quiz", "Finish"],
-      11: ["They hold keys", "You hold keys", "Quiz", "Finish"],
-      12: ["Hot phone", "Hardware signer", "Quiz", "Finish"],
+      11: ["Who is they", "Company app", "You hold", "Quiz", "Finish"],
+      12: ["Hot wallet on phone", "Hardware signer", "Quiz", "Finish"],
       13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"],
       14: ["Few dice", "Words still weak", "Coin / 50 d6", "Quiz", "Finish"]
     };
@@ -164,6 +181,17 @@
       mem.entEvents = [];
       mem.entMnemonic = "";
     }
+    if (id === 11 || id === 12 || id === 13) {
+      if (mem.exLockTimer) {
+        clearInterval(mem.exLockTimer);
+        mem.exLockTimer = 0;
+      }
+      if (mem.drainTimer) {
+        clearInterval(mem.drainTimer);
+        mem.drainTimer = 0;
+      }
+      mem.tax = emptyTax();
+    }
     renderTrack();
     show("viewTrack");
   }
@@ -180,7 +208,7 @@
       8: [0, 1, 2],
       9: [0, 1, 2],
       10: [0, 1, 2],
-      11: [0, 1, 2],
+      11: [0, 2, 3],
       12: [0, 1, 2],
       13: [0, 1, 2],
       14: [0, 1, 2]
@@ -303,15 +331,16 @@
       ]
     },
     11: {
+      forStep: function (s) { if (s <= 1) return 1; if (s === 2) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc11-atom-they-hold.svg", "An exchange holds the keys", "<strong>Plan · They hold</strong><br/>If you have no recovery words, the service holds the keys. They can freeze or lose the coins."),
-        atom(2, 1, "assets/uc11-atom-you-hold.svg", "You hold the recovery words", "<strong>Practice · You hold</strong><br/>If you have the words, you can spend. You can also lose them. That is the trade."),
-        atom(3, 2, "assets/uc11-atom-not-a-wallet.svg", "A custodial app is not a BIP-39 wallet", "<strong>Review · Not a BIP-39 wallet</strong><br/>An exchange balance is an IOU. It is not a seed you can restore in another wallet.")
+        atom(1, 0, "assets/uc11-atom-they-hold.svg", "A company holds the keys", "<strong>Plan · They hold</strong><br/>They is a company: an exchange, a login-only app, sometimes a bank bitcoin balance."),
+        atom(2, 2, "assets/uc11-atom-you-hold.svg", "You hold the recovery words", "<strong>Practice · You hold</strong><br/>If you have the words, you can spend. You can also lose them."),
+        atom(3, 3, "assets/uc11-atom-not-a-wallet.svg", "A company app is not your wallet", "<strong>Review · Not your wallet</strong><br/>A login is not 12 words. You cannot open that balance in another wallet.")
       ]
     },
     12: {
       atoms: [
-        atom(1, 0, "assets/uc12-atom-hot-phone.svg", "A phone app keeps keys next to the internet", "<strong>Plan · Hot phone</strong><br/>Software on a phone or laptop that goes online keeps keys near the internet."),
+        atom(1, 0, "assets/uc12-atom-hot-phone.svg", "A phone app is a hot wallet", "<strong>Plan · Hot wallet on phone</strong><br/>Seed, private key, and public key sit on a phone that goes online."),
         atom(2, 1, "assets/uc12-atom-hardware.svg", "A hardware signer keeps keys on a dedicated device", "<strong>Practice · Hardware signer</strong><br/>The device signs. The words should never be typed into the computer."),
         atom(3, 2, "assets/uc12-atom-usb-not-airgap.svg", "USB to a laptop is not automatically air-gap", "<strong>Review · USB is not air-gap</strong><br/>A cable to a laptop is not the same as an air-gap. Typing the seed into a computer still kills the vault.")
       ]
@@ -1289,59 +1318,203 @@
     return finishHtml(10);
   }
 
+  function tax() {
+    if (!mem.tax) mem.tax = emptyTax();
+    return mem.tax;
+  }
+
+  function sortSelect(obj, label) {
+    var v = (tax().sort && tax().sort[obj]) || "";
+    function opt(val, t) {
+      return '<option value="' + val + '"' + (v === val ? " selected" : "") + ">" + t + "</option>";
+    }
+    return (
+      '<label class="v2-sort-row" data-sort-row="' +
+      obj +
+      '"><span>' +
+      label +
+      "</span>" +
+      '<select id="v2Sort-' +
+      obj +
+      '" data-sort="' +
+      obj +
+      '">' +
+      opt("", "Place…") +
+      opt("custodial", "Custodial — they hold") +
+      opt("hot", "Hot — keys online") +
+      opt("cold", "Cold — seed stays on device") +
+      opt("watch", "Watch-only — cannot spend") +
+      "</select></label>"
+    );
+  }
+
+  function sortAllOk() {
+    var s = tax().sort || {};
+    return s.exchange === "custodial" && s.phone === "hot" && s.hardware === "cold" && s.watch === "watch";
+  }
+
+  function whoAllOk() {
+    var w = tax().who || {};
+    return w.ex === "they" && w.app === "they" && w.paper === "you" && w.bank === "they";
+  }
+
+  function whoRow(id, ans, label) {
+    var got = (tax().who || {})[id];
+    function b(pick, txt) {
+      var cls = "btn secondary btn-sm";
+      if (got === pick && pick === ans) cls = "btn btn-sm v2-who-ok";
+      if (got === pick && pick !== ans) cls = "btn btn-sm v2-who-bad";
+      return (
+        '<button type="button" class="' +
+        cls +
+        '" id="v2Who-' +
+        id +
+        "-" +
+        pick +
+        '" data-who="' +
+        id +
+        '" data-pick="' +
+        pick +
+        '" data-ans="' +
+        ans +
+        '">' +
+        txt +
+        "</button>"
+      );
+    }
+    return (
+      '<div class="v2-who-row" data-who-row="' +
+      id +
+      '"><span>' +
+      label +
+      "</span><span class=\"v2-who-picks\">" +
+      b("they", "They") +
+      b("you", "You") +
+      "</span></div>"
+    );
+  }
+
   async function uc11(step) {
+    var t = tax();
     if (step === 0) {
       return pad(
-        "<h2>They hold the keys</h2>" +
+        "<h2>Who is they?</h2>" +
         doDont(
-          "Treat an exchange balance as an IOU. If you cannot export recovery words, the service holds the keys.",
-          "Do not call a custodial app a BIP-39 wallet. You cannot restore that balance in Sparrow or Electrum from a seed you never had."
+          "Tap each row. They means a company that never gave you 12 words.",
+          "Do not mix this up with paper words you wrote yourself."
         ) +
         desc(
-          "If the app never showed you recovery words, the company can freeze, delay, or lose the coins. A login and 2FA are not a seed. The balance is a claim on their books."
+          "They is usually an exchange (Coinbase, Binance, Kraken), or a phone app that only has email and a password. Sometimes a bank or PayPal-style bitcoin number. You have a login. They have the keys."
         ) +
-        callout(
-          "done",
-          "They hold",
-          "No recovery words on your paper = they can freeze or lose it. That is custodial, not self-custody."
-        ) +
-        pauseBtn("I have no seed on the exchange", false)
+        '<p class="control-help">Who holds the keys? Tap They or You on each line.</p>' +
+        '<div class="v2-who" id="v2Who">' +
+        whoRow("ex", "they", "Coinbase, Binance, or Kraken account") +
+        whoRow("app", "they", "Phone app with only email and a password") +
+        whoRow("paper", "you", "Paper with 12 words I wrote down") +
+        whoRow("bank", "they", "Bank or PayPal bitcoin number") +
+        "</div>" +
+        '<p class="control-help" id="v2WhoOut">' +
+        (whoAllOk() ? "Yes. They is the company. You is only when you have the words." : "Tap all four. Wrong taps stay red until you pick the other button.") +
+        "</p>" +
+        pauseBtn("They is a company", !whoAllOk())
       );
     }
     if (step === 1) {
+      var frozen = t.freeze;
+      var asked = t.seedAsk;
       return pad(
-        "<h2>You hold the recovery words</h2>" +
+        "<h2>The company app</h2>" +
         doDont(
-          "If you have the words (or a hardware device that does), you can spend. You can also lose them.",
-          "Do not assume self-custody is safer in every accident. Lost words, a bad photo, or a typed seed into a phishing site are your loss, not the exchange’s."
+          "Ask for the seed phrase. Then try to open the same coins in another wallet.",
+          "Do not call a login your wallet. You cannot move this to Sparrow or Electrum without the phrase."
         ) +
-        desc(
-          "Self-custody means the recovery words (or the device that holds the seed) sit with you. Spend works without asking a company. Loss also sits with you. That is the trade, not a slogan."
-        ) +
-        callout(
-          "done",
-          "You hold",
-          "Seed on your device or paper = you can spend and you can lose it. An exchange app with no seed is not this."
-        ) +
-        pauseBtn("I can spend and I can lose it", false)
+        '<div class="v2-ex' +
+        (frozen ? " is-locked" : "") +
+        '" id="v2Ex">' +
+        '<p class="v2-ex-bar">Practice company app · email login</p>' +
+        '<p class="v2-ex-bal' +
+        (frozen ? " is-frozen" : "") +
+        '" id="v2ExBal">' +
+        (frozen
+          ? "Locked out. You cannot send, export, or open this anywhere else."
+          : "Your balance: 0.184 bitcoin — on their books") +
+        "</p>" +
+        '<div class="row v2-gen-left">' +
+        '<button type="button" class="btn' +
+        (asked || frozen ? " secondary" : "") +
+        '" id="v2ExExport"' +
+        (frozen ? " disabled" : "") +
+        ">Give me my seed phrase</button>" +
+        '<button type="button" class="btn" id="v2ExRestore"' +
+        (frozen ? " disabled" : "") +
+        ">Open this in another wallet</button>" +
+        "</div>" +
+        '<p class="control-help" id="v2ExExportNote">' +
+        (asked
+          ? "They never gave you a seed phrase. There is nothing to copy."
+          : "Try it. A real wallet would show recovery words here.") +
+        "</p>" +
+        '<p class="control-help" id="v2ExRestoreOut">' +
+        (t.restore
+          ? "You cannot open it somewhere else. You do not have the seed phrase."
+          : "") +
+        "</p>" +
+        '<p class="control-help' +
+        (frozen ? " v2-who-bad-msg" : "") +
+        '" id="v2ExTimer">' +
+        (frozen
+          ? "You are locked out. You cannot do anything. The company still has the keys."
+          : "") +
+        "</p>" +
+        "</div>" +
+        pauseBtn("I have no seed on the exchange", !frozen)
       );
     }
     if (step === 2) {
-      return quiz("An exchange app that never showed recovery words is:", [
+      await ensurePhrase();
+      return pad(
+        "<h2>You hold the recovery words</h2>" +
+        doDont(
+          "Press both buttons. This is not the exchange. This is your own wallet.",
+          "Do not mix this with the last screen. An exchange never gave you this phrase."
+        ) +
+        desc(
+          "The last screen was a company (Coinbase-style). They have the keys. This screen is the other case: you withdrew the coins to a wallet that showed you a seed phrase. You wrote it on paper. Now two things are true at once."
+        ) +
+        '<div id="v2HoldCard">' +
+        (t.lose
+          ? '<p class="msg-bad">The paper is gone. There is no “forgot password” at an exchange. The coins are stuck.</p>'
+          : wordGridHtml(mem.mnemonic)) +
+        "</div>" +
+        '<p class="control-help">1. You can send without asking the company.</p>' +
+        '<button type="button" class="btn" id="v2HoldSpend">Send bitcoin myself</button>' +
+        '<p class="control-help" id="v2HoldSpendOut">' +
+        (t.spend ? "It sent. No support ticket. No freeze. You held the keys." : "") +
+        "</p>" +
+        '<p class="control-help">2. If you lose the paper, the company cannot help you. They never had this phrase.</p>' +
+        '<button type="button" class="btn danger" id="v2HoldLose">I lost the paper</button>' +
+        '<p class="control-help" id="v2HoldLoseOut">' +
+        (t.lose ? "Nobody can reset this. That is the cost of holding the keys yourself." : "") +
+        "</p>" +
+        pauseBtn("I can spend and I can lose it", !(t.spend && t.lose))
+      );
+    }
+    if (step === 3) {
+      return quiz("Who usually holds the keys on Coinbase, Binance, or a login-only bitcoin app?", [
         {
           k: "ok",
-          t: "Custodial — they hold the keys; the balance is an IOU.",
-          okwhy: "Correct. No seed on your side means they can freeze or lose it."
+          t: "The company. You only have a login. You never got 12 words.",
+          okwhy: "Correct. They can freeze or lose it. That is not your wallet."
         },
         {
           k: "bad",
-          t: "A BIP-39 wallet you can restore in any other app.",
-          why: "Wrong. You cannot restore an exchange IOU from a seed you never received."
+          t: "You, because you have a password and an extra login code.",
+          why: "Wrong. A password opens their website. It is not 12 words."
         },
         {
           k: "bad",
-          t: "Self-custody because you have a password and 2FA.",
-          why: "Wrong. Login and 2FA control an account. They are not recovery words."
+          t: "You, because you can open the same balance in any other wallet.",
+          why: "Wrong. There are no words to type into another wallet."
         }
       ]);
     }
@@ -1349,40 +1522,104 @@
   }
 
   async function uc12(step) {
+    var t = tax();
+    await ensurePhrase();
     if (step === 0) {
       return pad(
-        "<h2>Hot software</h2>" +
+        "<h2>Hot wallet on phone</h2>" +
         doDont(
-          "Treat a phone or laptop wallet that goes online as hot: keys sit next to the internet.",
-          "Do not type a funded seed into a general-purpose computer just because the app looks official."
+          "Put the practice phrase on the phone. Watch the balance appear. Then run malware.",
+          "Do not keep a funded seed on a phone that goes online."
         ) +
-        desc(
-          "Hot software keeps the seed or keys on a machine that talks to the network. Same recovery words as a hardware device, different where they live. Malware on that phone or laptop can reach them."
-        ) +
-        callout(
-          "done",
-          "Phone is hot",
-          "Software on a phone or laptop that goes online keeps keys near the internet."
-        ) +
-        pauseBtn("Phone keys are hot", false)
+        '<div id="v2PlaceCard">' +
+        wordGridHtml(mem.mnemonic) +
+        "</div>" +
+        '<button type="button" class="btn' +
+        (t.phone ? " secondary" : "") +
+        '" id="v2PlacePhone">Place on phone</button>' +
+        '<div class="v2-hotface' +
+        (t.phone ? "" : " v2-hidden") +
+        '" id="v2PhoneFace">' +
+        '<p class="v2-ex-bar">Phone hot wallet · internet on</p>' +
+        '<p class="v2-ex-bal" id="v2PhoneAmt">' +
+        (t.malware ? "0.000 BTC" : "0.184 BTC") +
+        "</p>" +
+        '<div class="v2-drain" id="v2PhoneDrainWrap"' +
+        (t.phone ? "" : " hidden") +
+        '><span class="v2-drain-bar" id="v2PhoneDrain" style="width:' +
+        (t.malware ? "0" : "100") +
+        '%"></span></div>' +
+        '<p class="control-help" id="v2PlacePhoneOut">' +
+        (t.phone
+          ? "Seed phrase, private key, and public key all live on this phone. The phone talks to the internet. All of that can leak."
+          : "") +
+        "</p>" +
+        '<p class="v2-leak" id="v2PhoneLeak"' +
+        (t.phone ? "" : " hidden") +
+        ">On this phone: seed phrase · private key · public key · receive address</p>" +
+        "</div>" +
+        '<button type="button" class="btn danger" id="v2Malware"' +
+        (t.phone && !t.malware ? "" : " disabled") +
+        ">Malware on the phone</button>" +
+        '<p class="control-help" id="v2MalwareOut">' +
+        (t.malware ? "Malware copied the seed and the private key. Balance went to 0." : "") +
+        "</p>" +
+        pauseBtn("Phone keys = Hot wallet", !t.malware)
       );
     }
     if (step === 1) {
       return pad(
         "<h2>Hardware signer</h2>" +
         doDont(
-          "Keep the seed on the dedicated device. The computer should see a public key or a PSBT, not the words.",
-          "Do not treat a USB cable as an air-gap. Do not type the seed into the computer to “set up” the device."
+          "Put the same phrase on the device. Plug USB. Then type the seed into the laptop — that is the kill.",
+          "Do not treat a USB cable as an air-gap."
         ) +
-        desc(
-          "A hardware signer keeps keys on a small device built to sign. USB to a laptop is convenient, not automatically air-gap. Air-gap means the seed never touches an online machine. Typing the words into a computer still kills the vault."
-        ) +
-        callout(
-          "done",
-          "USB is not air-gap",
-          "Hardware keeps keys on the device. A cable is not automatically air-gap. Typing the seed into a computer still kills the vault."
-        ) +
-        pauseBtn("Keys stay on the device", false)
+        '<div class="v2-hw-grid">' +
+        '<div class="v2-hotface" id="v2HwDevice">' +
+        '<p class="v2-ex-bar">Hardware device</p>' +
+        '<p class="v2-ex-bal" id="v2HwAmt">' +
+        (t.typed ? "0.000 BTC" : t.hw ? "0.184 BTC" : "—") +
+        "</p>" +
+        '<p class="control-help" id="v2PlaceHwOut">' +
+        (t.hw
+          ? "Seed stays in the chip. The laptop should only see a public key or a PSBT to sign."
+          : "Empty until you place the phrase here.") +
+        "</p>" +
+        "</div>" +
+        '<div class="v2-hotface" id="v2HwLaptop">' +
+        '<p class="v2-ex-bar">Laptop</p>' +
+        '<p class="v2-ex-bal" id="v2LaptopAmt">' +
+        (t.typed ? "0.000 BTC stolen" : t.usb ? "watch-only · 0.184 BTC seen" : "not connected") +
+        "</p>" +
+        '<div class="v2-drain" id="v2LaptopDrainWrap"' +
+        (t.typed ? "" : " hidden") +
+        '><span class="v2-drain-bar" id="v2LaptopDrain" style="width:' +
+        (t.typed ? "0" : "100") +
+        '%"></span></div>' +
+        '<p class="control-help" id="v2UsbOut">' +
+        (t.typed
+          ? "You typed the seed into the laptop. The laptop is hot. The vault is dead."
+          : t.usb
+            ? "USB is a cable to an online machine. That is not an air-gap. Laptop still should not have the words."
+            : "No cable yet.") +
+        "</p>" +
+        "</div>" +
+        "</div>" +
+        '<div class="row v2-slots">' +
+        '<button type="button" class="btn' +
+        (t.hw ? " secondary" : "") +
+        '" id="v2PlaceHw">Place on hardware device</button>' +
+        '<button type="button" class="btn secondary" id="v2Usb"' +
+        (t.hw && !t.typed ? "" : " disabled") +
+        ">USB to laptop</button>" +
+        '<button type="button" class="btn danger" id="v2TypeSeed"' +
+        (t.usb && !t.typed ? "" : " disabled") +
+        ">Type seed into computer</button>" +
+        "</div>" +
+        '<p class="control-help" id="v2TypeSeedOut">' +
+        (t.typed ? "Vault killed. Typing the seed into a computer still kills the vault." : "") +
+        "</p>" +
+        pauseBtn("Keys stay on the device", !t.typed)
       );
     }
     if (step === 2) {
@@ -1390,7 +1627,7 @@
         {
           k: "ok",
           t: "Same words, different where they live — phone is hot; hardware should keep keys on the device.",
-          okwhy: "Correct. The words are the same secret. Placement is the lesson."
+          okwhy: "Correct. Placement is the lesson. USB is not an air-gap."
         },
         {
           k: "bad",
@@ -1408,40 +1645,51 @@
   }
 
   async function uc13(step) {
+    var t = tax();
     if (step === 0) {
       return pad(
         "<h2>Hot versus cold</h2>" +
         doDont(
-          "Ask whether the keys sit on a machine that talks to the internet. That is the split.",
-          "Do not use brand names as the split. A “hardware” app on a phone can still be hot."
+          "Sort each object. Brand is not a bin.",
+          "Do not put a hardware app on a phone in Cold."
         ) +
-        desc(
-          "Hot means the keys sit on a machine that talks to the internet. Cold means they do not. Brand is not the split. A steel plate with words is backup of a secret, not by itself a cold signer."
-        ) +
-        callout(
-          "done",
-          "Brand is not the split",
-          "Online keys vs offline keys. A logo on a box does not make the keys cold."
-        ) +
-        pauseBtn("Hot is online keys", false)
+        '<div class="v2-sort" id="v2Sort">' +
+        sortSelect("exchange", "Exchange account") +
+        sortSelect("phone", "Phone app") +
+        sortSelect("hardware", "Hardware signer (seed never typed into the computer)") +
+        sortSelect("watch", "Watch-only xpub") +
+        "</div>" +
+        '<p class="control-help" id="v2SortOut">' +
+        (sortAllOk() ? "All four sit in different bins. Do not mix them." : "Place all four. Continue unlocks when they match.") +
+        "</p>" +
+        pauseBtn("Hot is online keys", !sortAllOk())
       );
     }
     if (step === 1) {
       return pad(
         "<h2>Daily spend versus savings</h2>" +
         doDont(
-          "A small hot balance for daily spend can be a choice. Keep savings on cold keys or watch-only.",
-          "Do not mix four objects: exchange account, phone app, hardware signer, watch-only xpub."
-        ) +
-        desc(
-          "Daily spend can be hot. Savings stay cold or watch-only. An exchange is custodial. A phone app is hot software. Hardware can keep keys cold if the seed never hits the computer. Watch-only is public keys only — it cannot spend."
+          "A small hot balance for coffee can be a choice. Savings stay cold or watch-only.",
+          "Do not call a hardware app on a phone cold."
         ) +
         callout(
           "done",
           "Four objects",
-          "Exchange · phone · hardware · watch-only. Sort them. Do not treat them as one wallet."
+          "Exchange · phone · hardware · watch-only. You just sorted them."
         ) +
-        pauseBtn("Daily can be hot; savings stay cold", false)
+        '<p class="control-help">Trap: where do you put “hardware wallet” software running on a phone?</p>' +
+        '<div class="row v2-slots">' +
+        '<button type="button" class="btn secondary" id="v2TrapHot" data-trap="hot">Hot — keys on the phone</button>' +
+        '<button type="button" class="btn secondary" id="v2TrapCold" data-trap="cold">Cold — the box said hardware</button>' +
+        "</div>" +
+        '<p class="control-help" id="v2TrapOut">' +
+        (t.trap === "hot"
+          ? "Correct. Brand is not the split. Keys on a phone are hot."
+          : t.trap === "cold"
+            ? "Wrong. Brand is not the split. Try Hot."
+            : "") +
+        "</p>" +
+        pauseBtn("Daily can be hot; savings stay cold", t.trap !== "hot")
       );
     }
     if (step === 2) {
@@ -1958,6 +2206,220 @@
         if (pause && current.step === 2) pause.disabled = false;
       });
     }
+    function pauseOn(ok) {
+      if (pause) pause.disabled = !ok;
+    }
+    document.querySelectorAll("[data-who][data-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-who");
+        var pick = btn.getAttribute("data-pick");
+        var ans = btn.getAttribute("data-ans");
+        tax().who[id] = pick;
+        var row = btn.closest("[data-who-row]");
+        if (row) {
+          row.querySelectorAll("[data-pick]").forEach(function (b) {
+            var p = b.getAttribute("data-pick");
+            b.className = "btn secondary btn-sm";
+            if (p === pick && pick === ans) b.className = "btn btn-sm v2-who-ok";
+            if (p === pick && pick !== ans) b.className = "btn btn-sm v2-who-bad";
+          });
+        }
+        var out = $("v2WhoOut");
+        if (out) {
+          out.textContent = whoAllOk()
+            ? "Yes. They is the company. You is only when you have the words."
+            : pick === ans
+              ? "Right for this line. Finish the other lines."
+              : "Not that one. They is the company. You is the paper words.";
+        }
+        pauseOn(whoAllOk());
+      });
+    });
+    if ($("v2ExExport")) {
+      $("v2ExExport").addEventListener("click", function () {
+        if (tax().freeze) return;
+        tax().seedAsk = true;
+        $("v2ExExportNote").textContent = "They never gave you a seed phrase. There is nothing to copy.";
+        $("v2ExExport").className = "btn secondary";
+      });
+    }
+    if ($("v2ExRestore")) {
+      $("v2ExRestore").addEventListener("click", function () {
+        if (tax().freeze) return;
+        tax().restore = true;
+        $("v2ExRestoreOut").textContent =
+          "You cannot open it somewhere else. You do not have the seed phrase.";
+        var box = $("v2ExTimer");
+        if (box && !mem.exLockTimer && !tax().freeze) {
+          var n = 5;
+          box.textContent = "Company can lock you out in " + n + " seconds…";
+          mem.exLockTimer = setInterval(function () {
+            if (!$("v2ExTimer")) {
+              clearInterval(mem.exLockTimer);
+              mem.exLockTimer = 0;
+              return;
+            }
+            n -= 1;
+            if (n > 0) {
+              $("v2ExTimer").textContent = "Company can lock you out in " + n + " seconds…";
+              return;
+            }
+            clearInterval(mem.exLockTimer);
+            mem.exLockTimer = 0;
+            tax().freeze = true;
+            var bal = $("v2ExBal");
+            if (bal) {
+              bal.textContent = "Locked out. You cannot send, export, or open this anywhere else.";
+              bal.classList.add("is-frozen");
+            }
+            var ex = $("v2Ex");
+            if (ex) ex.classList.add("is-locked");
+            if ($("v2ExExport")) $("v2ExExport").disabled = true;
+            if ($("v2ExRestore")) $("v2ExRestore").disabled = true;
+            $("v2ExTimer").textContent =
+              "You are locked out. You cannot do anything. The company still has the keys.";
+            pauseOn(true);
+          }, 1000);
+        }
+      });
+    }
+    if ($("v2HoldSpend")) {
+      $("v2HoldSpend").addEventListener("click", function () {
+        tax().spend = true;
+        $("v2HoldSpendOut").textContent = "It sent. No support ticket. No freeze. You held the keys.";
+        pauseOn(tax().spend && tax().lose);
+      });
+    }
+    if ($("v2HoldLose")) {
+      $("v2HoldLose").addEventListener("click", function () {
+        tax().lose = true;
+        $("v2HoldLoseOut").textContent = "Nobody can reset this. That is the cost of holding the keys yourself.";
+        var card = $("v2HoldCard");
+        if (card) {
+          card.innerHTML =
+            '<p class="msg-bad">The paper is gone. There is no “forgot password” at an exchange. The coins are stuck.</p>';
+        }
+        pauseOn(tax().spend && tax().lose);
+      });
+    }
+    function drainToZero(bar, amt, labelZero, onDone) {
+      if (mem.drainTimer) clearInterval(mem.drainTimer);
+      var pct = 100;
+      var btc = 0.184;
+      mem.drainTimer = setInterval(function () {
+        pct -= 20;
+        btc = Math.max(0, +(btc - 0.037).toFixed(3));
+        if (pct <= 0) {
+          pct = 0;
+          btc = 0;
+          clearInterval(mem.drainTimer);
+          mem.drainTimer = 0;
+          if (typeof onDone === "function") onDone();
+        }
+        if (bar) bar.style.width = pct + "%";
+        if (amt) amt.textContent = btc.toFixed(3) + (labelZero && btc === 0 ? " BTC" : " BTC");
+      }, 160);
+    }
+    if ($("v2PlacePhone")) {
+      $("v2PlacePhone").addEventListener("click", function () {
+        tax().phone = true;
+        var face = $("v2PhoneFace");
+        if (face) face.classList.remove("v2-hidden");
+        var amt = $("v2PhoneAmt");
+        if (amt) amt.textContent = "0.184 BTC";
+        var leak = $("v2PhoneLeak");
+        if (leak) leak.hidden = false;
+        $("v2PlacePhoneOut").textContent =
+          "Seed phrase, private key, and public key all live on this phone. The phone talks to the internet. All of that can leak.";
+        if ($("v2Malware")) $("v2Malware").disabled = false;
+        var dw = $("v2PhoneDrainWrap");
+        if (dw) dw.hidden = false;
+        $("v2PlacePhone").className = "btn secondary";
+      });
+    }
+    if ($("v2Malware")) {
+      $("v2Malware").addEventListener("click", function () {
+        if (!tax().phone || tax().malware) return;
+        $("v2Malware").disabled = true;
+        var bar = $("v2PhoneDrain");
+        if (bar) bar.style.background = "var(--bad)";
+        var amt = $("v2PhoneAmt");
+        $("v2MalwareOut").textContent = "Malware is copying the seed and the private key…";
+        drainToZero(bar, amt, true, function () {
+          tax().malware = true;
+          if (amt) amt.textContent = "0.000 BTC";
+          $("v2MalwareOut").textContent = "Malware copied the seed and the private key. Balance went to 0.";
+          pauseOn(true);
+        });
+      });
+    }
+    if ($("v2PlaceHw")) {
+      $("v2PlaceHw").addEventListener("click", function () {
+        tax().hw = true;
+        $("v2HwAmt").textContent = "0.184 BTC";
+        $("v2PlaceHwOut").textContent =
+          "Seed stays in the chip. The laptop should only see a public key or a PSBT to sign.";
+        if ($("v2Usb")) $("v2Usb").disabled = false;
+        $("v2PlaceHw").className = "btn secondary";
+      });
+    }
+    if ($("v2Usb")) {
+      $("v2Usb").addEventListener("click", function () {
+        if (!tax().hw) return;
+        tax().usb = true;
+        $("v2LaptopAmt").textContent = "watch-only · 0.184 BTC seen";
+        $("v2UsbOut").textContent =
+          "USB is a cable to an online machine. That is not an air-gap. Laptop still should not have the words.";
+        if ($("v2TypeSeed")) $("v2TypeSeed").disabled = false;
+      });
+    }
+    if ($("v2TypeSeed")) {
+      $("v2TypeSeed").addEventListener("click", function () {
+        if (!tax().usb || tax().typed) return;
+        $("v2TypeSeed").disabled = true;
+        var wrap = $("v2LaptopDrainWrap");
+        if (wrap) wrap.hidden = false;
+        var lbar = $("v2LaptopDrain");
+        if (lbar) lbar.style.background = "var(--bad)";
+        $("v2UsbOut").textContent = "The seed is on the laptop now. The laptop is a hot wallet.";
+        $("v2TypeSeedOut").textContent = "Thief on the laptop can spend…";
+        drainToZero($("v2LaptopDrain"), $("v2HwAmt"), true, function () {
+          tax().typed = true;
+          if ($("v2HwAmt")) $("v2HwAmt").textContent = "0.000 BTC";
+          if ($("v2LaptopAmt")) $("v2LaptopAmt").textContent = "0.000 BTC stolen";
+          $("v2TypeSeedOut").textContent =
+            "Vault killed. Typing the seed into a computer still kills the vault.";
+          pauseOn(true);
+        });
+      });
+    }
+    document.querySelectorAll("[data-sort]").forEach(function (sel) {
+      sel.addEventListener("change", function () {
+        var k = sel.getAttribute("data-sort");
+        tax().sort[k] = sel.value;
+        var out = $("v2SortOut");
+        var ok = sortAllOk();
+        if (out) {
+          out.textContent = ok
+            ? "All four sit in different bins. Do not mix them."
+            : "Place all four. Continue unlocks when they match.";
+        }
+        pauseOn(ok);
+      });
+    });
+    function trapPick(which) {
+      tax().trap = which;
+      var out = $("v2TrapOut");
+      if (out) {
+        out.textContent =
+          which === "hot"
+            ? "Correct. Brand is not the split. Keys on a phone are hot."
+            : "Wrong. Brand is not the split. Try Hot.";
+      }
+      pauseOn(which === "hot");
+    }
+    if ($("v2TrapHot")) $("v2TrapHot").addEventListener("click", function () { trapPick("hot"); });
+    if ($("v2TrapCold")) $("v2TrapCold").addEventListener("click", function () { trapPick("cold"); });
     if ($("v2EntMint")) {
       $("v2EntMint").addEventListener("click", async function () {
         if (!(mem.entEvents && mem.entEvents.length)) {

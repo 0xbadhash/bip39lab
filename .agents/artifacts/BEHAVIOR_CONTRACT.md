@@ -1,14 +1,16 @@
-# Behavior contract — V2 UC14 dice/coin
+# Behavior contract — UC11–13 interactive
 
-- **Target:** `/v2/?uc=14`
+- **Target:** `/v2/?uc=11` … `13`
 
 ## User tasks
 
-1. Three d6 → TOO LOW vs 128 bits.
-2. Mint 12 words still TOO LOW.
-3. Coin = 1 bit; ~50 d6 (via +10) reaches enough; no TOO LOW.
-4. Classic Generate still on `/`.
+1. They/You: green correct, red wrong. All four then continue.
+2. Company app: seed phrase fails; open elsewhere fails; auto lock; buttons die.
+3. You-hold: send then lose paper (not the exchange).
+4. Phone: 0.184 then malware to 0.000.
+5. Hardware: USB air-gap copy; type seed vault killed.
+6. Sort four objects; trap cold is wrong, hot is right.
 
 ## Must not
 
-Fund pad words. Treat Math.random as CSPRNG.
+Fund practice. Persist seed. `#v2ExFreeze` button.

@@ -1,6 +1,6 @@
 # CODE-REVIEW
 
-- **command:** `/code_review` UC14 vs origin/master
+- **command:** `/code_review` vs origin/master (pre-commit working tree)
 - **secrets:** re-run after commit
 - **engine:** same session
 
@@ -8,7 +8,7 @@
 
 **none**
 
-Simulated Math.random labelled. Minted words stay PRACTICE / TOO LOW when short. CSP unchanged. No seed in sessionStorage.
+Practice balances and drains are fake. Timers cleared on track start. No mnemonic in sessionStorage. CSP unchanged.
 
 ## Follow-ups
 
