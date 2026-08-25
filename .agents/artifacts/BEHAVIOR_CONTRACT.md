@@ -1,16 +1,23 @@
-# Behavior contract — UC11–13 interactive
+# Behavior contract — V2 UC14–UC15 stills + UC11 hold
 
-- **Target:** `/v2/?uc=11` … `13`
+- **Product:** bip39lab
+- **Target:** `http://127.0.0.1:4173/v2/`
+- **Setup:** `python3 -m http.server 4173 --directory web`
 
 ## User tasks
 
-1. They/You: green correct, red wrong. All four then continue.
-2. Company app: seed phrase fails; open elsewhere fails; auto lock; buttons die.
-3. You-hold: send then lose paper (not the exchange).
-4. Phone: 0.184 then malware to 0.000.
-5. Hardware: USB air-gap copy; type seed vault killed.
-6. Sort four objects; trap cold is wrong, hot is right.
+1. Picker shows 15 tracks; classic `/` still Lab Generate.
+   - **Expect:** 15 cards, chip 0.17.41-v2, `#btnGenerate` on `/`
+2. UC14: few d6 TOO LOW; mint 12 then 24; roll until sufficient; lock tints.
+3. UC15: pad words + passphrase stack; key still; long PP does not clear TOO LOW pad.
+4. UC11: 0.184 bitcoin visible; freeze keeps 0.184; you-hold two columns.
 
 ## Must not
 
-Fund practice. Persist seed. `#v2ExFreeze` button.
+- Persist mnemonic in sessionStorage
+- `connect-src` on `/v2/`
+- Fund practice words
+
+## Evidence
+
+- [x] Playwright e2e/v2.spec.ts 16 passed

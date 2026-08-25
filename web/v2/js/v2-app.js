@@ -4,9 +4,10 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", entEvents: [], entMnemonic: "" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
   var D6_BITS = 2.58;
-  var ENT_PAD_MAX = 128;
+  var ENT_PAD_MAX = 200;
+  var lastEntDelta = 0;
   function emptyCosigners() {
     return [0, 1, 2].map(function () {
       return { mnemonic: "", wordCount: 12, zpub: "" };
@@ -19,6 +20,9 @@
       seedAsk: false,
       spend: false,
       lose: false,
+      msAlone: false,
+      msSend: false,
+      msPaper: false,
       who: {},
       phone: false,
       malware: false,
@@ -30,6 +34,7 @@
     };
   }
   var ENT_BITS = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 };
+  var ENT_BYTES = { 12: 16, 15: 20, 18: 24, 21: 28, 24: 32 };
   var PSBT_MIN = "cHNidP8A";
 
   var TRACKS = [
@@ -46,7 +51,8 @@
     { id: 11, level: "Beginner", title: "They hold the keys", job: "An exchange or login-only app keeps the keys. You only have an account.", done: "If you never got recovery words, a company can freeze or lose the coins. If you have the words, you can spend and you can lose them." },
     { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys = hot wallet. Hardware keeps the seed on the device. USB is not an air-gap. Typing the seed into a computer still kills the vault." },
     { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
-    { id: 14, level: "Beginner", title: "Dice and coin entropy", job: "Word count is not entropy. A few rolls can still print twelve words.", done: "Few d6 = TOO LOW. Minted words can still be weak. ~50 d6 ≈ 128 bits. Coin = 1 bit; 128 flips is the hard path." }
+    { id: 14, level: "Beginner", title: "Dice and coin entropy", job: "Word count is not entropy. A few rolls can still print 12 or 24 words.", done: "Few d6 = TOO LOW. Minted words can still be weak. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Coin = 1 bit." },
+    { id: 15, level: "Beginner", title: "Pad plus passphrase", job: "Dice pad + phrase length + passphrase estimate. A longer 25th word does not fix a short pad.", done: "Pad bits are the source. 12-word wants 128; 24-word wants 256. Passphrase is an extra secret (weak / fair / stronger) — not a substitute for rolling." }
   ];
 
   function $(id) { return document.getElementById(id); }
@@ -147,7 +153,8 @@
       11: ["Who is they", "Company app", "You hold", "Quiz", "Finish"],
       12: ["Hot wallet on phone", "Hardware signer", "Quiz", "Finish"],
       13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"],
-      14: ["Few dice", "Words still weak", "Coin / 50 d6", "Quiz", "Finish"]
+      14: ["Few dice", "Words still weak", "Roll until enough", "Quiz", "Finish"],
+      15: ["Pad + words", "Add passphrase", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
   }
@@ -167,7 +174,8 @@
       11: ["They hold", "You hold", "Not BIP-39"],
       12: ["Hot software", "Hardware", "USB ≠ air-gap"],
       13: ["Hot vs cold", "Daily vs savings", "Four objects"],
-      14: ["Few dice TOO LOW", "Words still weak", "Coin is 1 bit"]
+      14: ["Few dice TOO LOW", "Words still weak", "Roll until enough"],
+      15: ["Pad is the source", "Passphrase extra", "Does not fix pad"]
     };
     return c[id] || ["A", "B", "C"];
   }
@@ -180,6 +188,9 @@
     if (id === 14) {
       mem.entEvents = [];
       mem.entMnemonic = "";
+      mem.entWordCount = 12;
+      mem.entPp = "";
+      lastEntDelta = 0;
     }
     if (id === 11 || id === 12 || id === 13) {
       if (mem.exLockTimer) {
@@ -354,9 +365,16 @@
     },
     14: {
       atoms: [
-        atom(1, 0, "assets/uc14-atom-few-dice.svg", "A few dice rolls are too little randomness", "<strong>Plan · Few dice</strong><br/>Each d6 is about 2.58 bits. Three rolls are nowhere near 128 bits."),
-        atom(2, 1, "assets/uc14-atom-words-weak.svg", "Twelve words from a short pad are still TOO LOW", "<strong>Practice · Words still weak</strong><br/>Hashing a short roll log can still print 12 words. Word count is not entropy."),
-        atom(3, 2, "assets/uc14-atom-coin-tedious.svg", "A coin flip is one bit; 128 flips is the hard path", "<strong>Review · Coin is 1 bit</strong><br/>One flip = 1 bit. You need about 128 flips, or about 50 d6, for 12-word ENT.")
+        atom(1, 0, "assets/uc14-atom-few-dice.svg", "A few dice rolls are too little randomness", "<strong>Plan · Few dice</strong><br/>Each d6 is about 2.58 bits. Three rolls are nowhere near 128 bits, let alone 256."),
+        atom(2, 1, "assets/uc14-atom-words-weak.svg", "12 or 24 words from a short pad are still TOO LOW", "<strong>Practice · Words still weak</strong><br/>Hashing a short roll log can still print 12 or 24 words. Word count is not entropy."),
+        atom(3, 2, "assets/uc14-atom-coin-tedious.svg", "Keep rolling until the pad meets 128 or 256 bits", "<strong>Review · Until enough</strong><br/>12-word wants ~128 bits (~50 d6 or 128 flips). 24-word wants ~256 (~100 d6 or 256 flips). Coin = 1 bit.")
+      ]
+    },
+    15: {
+      atoms: [
+        atom(1, 0, "assets/uc14-atom-few-dice.svg", "The dice pad is the entropy source", "<strong>Plan · Pad first</strong><br/>Roll until the pad meets the phrase length. The 25th word comes after."),
+        atom(2, 1, "assets/uc3-atom-same-words.svg", "A passphrase is an extra secret on the same words", "<strong>Practice · Extra secret</strong><br/>Same pad words + different passphrase = different vault. Estimate is teaching-only."),
+        atom(3, 2, "assets/uc3-atom-forgotten-loss.svg", "A longer passphrase does not fix a short pad", "<strong>Review · Does not fix pad</strong><br/>Weak pad + strong-looking passphrase is still a weak source. Forgotten PP still loses that vault.")
       ]
     }
   };
@@ -450,6 +468,8 @@
     }
     var bits = ENT_BITS[n] || 128;
     return (
+      '<div class="v2-os-ent" id="v2OsEnt">' +
+      lockHtml("os") +
       '<p class="v2-entropy" id="v2Entropy">' +
       "<strong>Entropy</strong>" +
       '<span class="bits">' +
@@ -458,8 +478,15 @@
       "<span> · " +
       n +
       "-word BIP-39 English. Longer phrase = more random bits from the operating system. Practice only. Do not fund it.</span>" +
-      "</p>"
+      "</p></div>"
     );
+  }
+
+  function replaceOsEntropy() {
+    var wrap = $("v2OsEnt");
+    var html = entropyHtml();
+    if (wrap) wrap.outerHTML = html;
+    else if ($("v2Entropy")) $("v2Entropy").outerHTML = html;
   }
 
   function wordGridHtml(m, gridId) {
@@ -523,6 +550,7 @@
     if (id === 12) return uc12(step);
     if (id === 13) return uc13(step);
     if (id === 14) return uc14(step);
+    if (id === 15) return uc15(step);
     return "";
   }
 
@@ -690,6 +718,10 @@
         desc(
           "If these words were real money, you would copy them by hand while the computer is offline. Do not photograph the sheet. Do not keep a passphrase on the same paper as the words."
         ) +
+        ppKeyHeroHtml(
+          '<p class="control-help" style="margin:0">The key is the optional extra secret (passphrase). Store it in a different place from this word sheet.</p>',
+          "v2PpKeyUc2"
+        ) +
         mnemonicHelpHtml(true) +
         '<p class="control-help">These rules apply to a funded recovery phrase. This lab card is practice.</p>' +
         pauseBtn("I can state what to do and what not to do", false)
@@ -740,6 +772,7 @@
         desc(
           "The optional extra secret (sometimes called the 25th word) is mixed with the recovery words. Same words plus a different extra secret make a different wallet. Forgetting that extra secret means that wallet cannot be opened from the words alone."
         ) +
+        ppKeyHtml("v2PpKeyUc3a") +
         entropyHtml() +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar">' +
@@ -765,10 +798,13 @@
           "Type two extra secrets (A and B) against the same words. Compare the first receive address. If the addresses differ, you have two wallets. If they match, you typed the same extra secret twice."
         ) +
         callout("is", "What you are comparing", "Same BIP-39 words. Different optional passphrase. Different receive addresses. Public addresses only.") +
-        '<label class="field">Passphrase A <input id="ppA" type="text" placeholder="(empty = no passphrase)" autocomplete="off"/></label>' +
-        '<label class="field">Passphrase B <input id="ppB" type="text" value="test" autocomplete="off"/></label>' +
-        '<button type="button" class="btn" id="v2Cmp">Compare A vs B at index 0</button>' +
-        '<div id="v2CmpOut" class="control-help">Click Compare. The verdict names the passphrases you typed. It does not say empty when a field has text.</div>' +
+        ppKeyHeroHtml(
+          '<label class="field">Passphrase A <input id="ppA" type="text" placeholder="(empty = no passphrase)" autocomplete="off"/></label>' +
+          '<label class="field">Passphrase B <input id="ppB" type="text" value="test" autocomplete="off"/></label>' +
+          '<button type="button" class="btn" id="v2Cmp">Compare A vs B at index 0</button>' +
+          '<div id="v2CmpOut" class="control-help">Click Compare. The verdict names the passphrases you typed. It does not say empty when a field has text.</div>',
+          "v2PpKeyUc3b"
+        ) +
         pauseBtn("I compared two passphrases", true)
       );
     }
@@ -1394,6 +1430,34 @@
     );
   }
 
+  var TEACH_BTC = "0.184";
+
+  function btcFaceHtml(opts) {
+    opts = opts || {};
+    var frozen = !!opts.frozen;
+    var note =
+      opts.note ||
+      (frozen
+        ? "Locked out. They still hold this " + TEACH_BTC + " bitcoin. You cannot send it."
+        : "On their books · practice only");
+    return (
+      '<div class="v2-btc' +
+      (frozen ? " is-frozen" : "") +
+      '" id="' +
+      (opts.id || "v2ExBal") +
+      '">' +
+      '<p class="v2-btc-label">' +
+      (opts.label || "Practice balance") +
+      "</p>" +
+      '<p class="v2-btc-amt"><span class="v2-btc-num">' +
+      TEACH_BTC +
+      '</span> <span class="v2-btc-unit">bitcoin</span></p>' +
+      '<p class="v2-btc-note">' +
+      note +
+      "</p></div>"
+    );
+  }
+
   async function uc11(step) {
     var t = tax();
     if (step === 0) {
@@ -1432,13 +1496,11 @@
         (frozen ? " is-locked" : "") +
         '" id="v2Ex">' +
         '<p class="v2-ex-bar">Practice company app · email login</p>' +
-        '<p class="v2-ex-bal' +
-        (frozen ? " is-frozen" : "") +
-        '" id="v2ExBal">' +
-        (frozen
-          ? "Locked out. You cannot send, export, or open this anywhere else."
-          : "Your balance: 0.184 bitcoin — on their books") +
-        "</p>" +
+        btcFaceHtml({
+          frozen: frozen,
+          label: "What the app shows you",
+          note: "On their books — not a seed you hold"
+        }) +
         '<div class="row v2-gen-left">' +
         '<button type="button" class="btn' +
         (asked || frozen ? " secondary" : "") +
@@ -1449,16 +1511,12 @@
         (frozen ? " disabled" : "") +
         ">Open this in another wallet</button>" +
         "</div>" +
-        '<p class="control-help" id="v2ExExportNote">' +
         (asked
-          ? "They never gave you a seed phrase. There is nothing to copy."
-          : "Try it. A real wallet would show recovery words here.") +
-        "</p>" +
-        '<p class="control-help" id="v2ExRestoreOut">' +
+          ? '<div class="v2-callout done" id="v2ExExportNote">They never gave you a seed phrase. There is nothing to copy.</div>'
+          : '<p class="control-help" id="v2ExExportNote">Try it. A real wallet would show a seed phrase here.</p>') +
         (t.restore
-          ? "You cannot open it somewhere else. You do not have the seed phrase."
-          : "") +
-        "</p>" +
+          ? '<div class="v2-callout done" id="v2ExRestoreOut">You cannot open it somewhere else. You do not have the seed phrase.</div>'
+          : '<p class="control-help" id="v2ExRestoreOut" hidden></p>') +
         '<p class="control-help' +
         (frozen ? " v2-who-bad-msg" : "") +
         '" id="v2ExTimer">' +
@@ -1472,44 +1530,107 @@
     }
     if (step === 2) {
       await ensurePhrase();
+      function box(id, on, text) {
+        return on
+          ? '<div class="v2-callout done" id="' + id + '">' + text + "</div>"
+          : '<div id="' + id + '" hidden></div>';
+      }
       return pad(
         "<h2>You hold the recovery words</h2>" +
         doDont(
-          "Press both buttons. This is not the exchange. This is your own wallet.",
-          "Do not mix this with the last screen. An exchange never gave you this phrase."
+          "This is not the exchange. You withdrew to a wallet that showed a seed phrase. Try one signer, then a co-signer.",
+          "Do not think the company can reset a seed you hold. They never had it."
         ) +
         desc(
-          "The last screen was a company (Coinbase-style). They have the keys. This screen is the other case: you withdrew the coins to a wallet that showed you a seed phrase. You wrote it on paper. Now two things are true at once."
+          "One signer means you alone can send, and you alone can lose everything. Multisig means two people must sign. Losing one paper is not the end if the others still have their keys."
         ) +
+        btcFaceHtml({
+          id: "v2HoldBal",
+          frozen: !!t.lose,
+          label: "Same " + TEACH_BTC + " bitcoin — now you hold the keys",
+          note: t.lose
+            ? "One-signer paper gone. This " + TEACH_BTC + " bitcoin cannot move on the left. 2-of-3 on the right can still send."
+            : "You withdrew it. The company does not have this seed."
+        }) +
+        '<div class="v2-hold-split">' +
+        '<section class="v2-hold-col" aria-labelledby="v2HoldOneH">' +
+        '<h3 id="v2HoldOneH">One signer</h3>' +
+        '<p class="control-help">You alone hold the seed. You can send. You can also lose everything.</p>' +
         '<div id="v2HoldCard">' +
         (t.lose
-          ? '<p class="msg-bad">The paper is gone. There is no “forgot password” at an exchange. The coins are stuck.</p>'
+          ? '<p class="msg-bad">Your only paper is gone. With one signer there is no reset. The coins are stuck.</p>'
           : wordGridHtml(mem.mnemonic)) +
         "</div>" +
-        '<p class="control-help">1. You can send without asking the company.</p>' +
+        '<div class="v2-hold-act">' +
+        '<p class="control-help">1. Send yourself. No company. ' +
+        inlineI(
+          "One signer",
+          "One seed, one person. You can send without asking anyone. If that seed is gone, nobody else can sign."
+        ) +
+        "</p>" +
+        '<div class="v2-hold-act-row">' +
         '<button type="button" class="btn" id="v2HoldSpend">Send bitcoin myself</button>' +
-        '<p class="control-help" id="v2HoldSpendOut">' +
-        (t.spend ? "It sent. No support ticket. No freeze. You held the keys." : "") +
+        inlineI(
+          "Send myself",
+          "No company. No second signer. Your seed is enough to move the coins."
+        ) +
+        "</div>" +
+        box("v2HoldSpendOut", t.spend, "It sent. No support ticket. No freeze. You held the keys.") +
+        "</div>" +
+        '<div class="v2-hold-act">' +
+        '<p class="control-help">2. Lose the only paper. No-one can help. ' +
+        inlineI(
+          "Lost paper",
+          "The company never had this phrase. A friend cannot sign for you. There is no forgot-password."
+        ) +
         "</p>" +
-        '<p class="control-help">2. If you lose the paper, the company cannot help you. They never had this phrase.</p>' +
+        '<div class="v2-hold-act-row">' +
         '<button type="button" class="btn danger" id="v2HoldLose">I lost the paper</button>' +
-        '<p class="control-help" id="v2HoldLoseOut">' +
-        (t.lose ? "Nobody can reset this. That is the cost of holding the keys yourself." : "") +
-        "</p>" +
-        pauseBtn("I can spend and I can lose it", !(t.spend && t.lose))
+        inlineI(
+          "I lost the paper",
+          "With one signer, losing the only copy of the seed means the coins cannot move."
+        ) +
+        "</div>" +
+        box("v2HoldLoseOut", t.lose, "Nobody can reset this. That is the cost of holding the keys yourself.") +
+        "</div>" +
+        "</section>" +
+        '<section class="v2-hold-col v2-hold-col-ms" aria-labelledby="v2HoldMsH">' +
+        '<h3 id="v2HoldMsH">Co-signer · 2-of-3 ' +
+        termI("MULTISIG") +
+        " " +
+        termI("COSIGNER") +
+        "</h3>" +
+        '<p class="control-help">Two signatures to send. You are one signer. Two friends hold the other keys. You cannot send alone. If you lose only your paper, the other two can still send.</p>' +
+        '<div class="v2-hold-act">' +
+        '<div class="v2-hold-act-row"><button type="button" class="btn secondary" id="v2HoldMsAlone">Try to send alone</button></div>' +
+        box("v2HoldMsAloneOut", t.msAlone, "Need a second signature. One signer is not enough.") +
+        "</div>" +
+        '<div class="v2-hold-act">' +
+        '<div class="v2-hold-act-row"><button type="button" class="btn secondary" id="v2HoldMsPaper">Lose only my paper</button></div>' +
+        box("v2HoldMsPaperOut", t.msPaper, "2-of-3 still works. The other two keys can send. Your lost paper did not kill the vault.") +
+        "</div>" +
+        '<div class="v2-hold-act">' +
+        '<div class="v2-hold-act-row"><button type="button" class="btn" id="v2HoldMsSend">Send with a co-signer</button></div>' +
+        box("v2HoldMsSendOut", t.msSend, "Sent. Two people signed. No company in the middle.") +
+        "</div>" +
+        "</section></div>" +
+        pauseBtn(
+          "I can spend and I can lose it",
+          !(t.spend && t.lose && t.msAlone && t.msPaper && t.msSend)
+        )
       );
     }
     if (step === 3) {
       return quiz("Who usually holds the keys on Coinbase, Binance, or a login-only bitcoin app?", [
         {
           k: "ok",
-          t: "The company. You only have a login. You never got 12 words.",
+          t: "The company. You only have a login. You never got a seed phrase.",
           okwhy: "Correct. They can freeze or lose it. That is not your wallet."
         },
         {
           k: "bad",
           t: "You, because you have a password and an extra login code.",
-          why: "Wrong. A password opens their website. It is not 12 words."
+          why: "Wrong. A password opens their website. It is not a seed phrase."
         },
         {
           k: "bad",
@@ -1733,8 +1854,96 @@
 
   function pushEnt(ev) {
     mem.entEvents = mem.entEvents || [];
+    lastEntDelta = String(ev).indexOf("d6:") === 0 ? D6_BITS : 1;
     mem.entEvents.push(ev);
     if (mem.entEvents.length > ENT_PAD_MAX) mem.entEvents.shift();
+  }
+
+  function entNeed() {
+    return ENT_BITS[mem.entWordCount || 12] || 128;
+  }
+
+  function padIsLow() {
+    return entBits() + 0.001 < entNeed();
+  }
+
+  function entLockRatio() {
+    if (!(mem.entEvents || []).length) return null;
+    var need = entNeed();
+    if (!need) return null;
+    return Math.max(0, Math.min(1, entBits() / need));
+  }
+
+  function lockHue(ratio) {
+    if (ratio == null) return 0;
+    if (ratio <= 0.5) return -145 * (1 - ratio / 0.5);
+    return 100 * ((ratio - 0.5) / 0.5);
+  }
+
+  function lockFilter(ratio) {
+    if (ratio == null) return "";
+    return "hue-rotate(" + lockHue(ratio).toFixed(1) + "deg) saturate(1.25)";
+  }
+
+  function lockCap(ratio) {
+    if (ratio == null) return "Seed strength";
+    if (ratio < 0.35) return "Weak seed";
+    if (ratio < 0.85) return "Building strength";
+    return "Stronger seed";
+  }
+
+  function lockToneClass(ratio) {
+    if (ratio == null) return "idle";
+    if (ratio < 0.35) return "low";
+    if (ratio < 0.85) return "mid";
+    return "ok";
+  }
+
+  function lockHtml(kind) {
+    var ratio = kind === "os" ? (mem.mnemonic ? 1 : null) : entLockRatio();
+    var id = kind === "os" ? "v2OsLock" : "v2EntLock";
+    var filt = lockFilter(ratio);
+    return (
+      '<figure class="v2-lock ' +
+      lockToneClass(ratio) +
+      '" id="' +
+      id +
+      '" data-lock="' +
+      kind +
+      '">' +
+      '<img class="v2-lock-img" src="../assets/ds/faces/beginner-lock.png" width="640" height="640" alt="Seed strength" style="' +
+      (filt ? "filter:" + filt : "") +
+      '" />' +
+      "<figcaption>" +
+      lockCap(ratio) +
+      "</figcaption>" +
+      "</figure>"
+    );
+  }
+
+  function applyLockTint() {
+    document.querySelectorAll(".v2-lock").forEach(function (el) {
+      var kind = el.getAttribute("data-lock");
+      var ratio = kind === "os" ? (mem.mnemonic ? 1 : null) : entLockRatio();
+      el.className = "v2-lock " + lockToneClass(ratio);
+      var img = el.querySelector("img");
+      if (img) img.style.filter = lockFilter(ratio);
+      var cap = el.querySelector("figcaption");
+      if (cap) cap.textContent = lockCap(ratio);
+    });
+  }
+
+  function entVerdictText(bits) {
+    var n = mem.entWordCount || 12;
+    var need = entNeed();
+    if (!(mem.entEvents || []).length) return "No rolls yet · 12-word wants 128 · 24-word wants 256";
+    if (bits + 0.001 < need) {
+      return "TOO LOW for " + n + "-word ENT (needs ~" + need + "). 12-word = 128 · 24-word = 256.";
+    }
+    if (need < 256) {
+      return "enough on paper for " + n + "-word (~" + need + "). 24-word still wants ~256.";
+    }
+    return "enough on paper for 24-word ENT (~256). Keep going — the total still climbs.";
   }
 
   function entMetaInner() {
@@ -1751,23 +1960,198 @@
       d6n +
       " d6 · " +
       cn +
-      " coin. 12-word wants 128 bits ≈ 50 d6 or 128 flips. " +
+      " coin. 12-word wants 128 ≈ 50 d6 or 128 flips. 24-word wants 256 ≈ 100 d6 or 256 flips. " +
       verdict
     );
   }
 
+  function entFaceHtml() {
+    var bits = entBits();
+    var rounded = Math.round(bits);
+    var scale = Math.max(256, bits);
+    var fill = scale ? Math.min(100, (bits / scale) * 100) : 0;
+    var t128 = (128 / scale) * 100;
+    var t256 = (256 / scale) * 100;
+    var low = bits + 0.001 < 128;
+    var delta =
+      lastEntDelta > 0
+        ? "Last event +" + (lastEntDelta === 1 ? "1" : "2.58") + " bit" + (lastEntDelta === 1 ? "" : "s")
+        : "Each d6 ≈ +2.58 bits · each coin = +1 bit";
+    return (
+      '<div class="v2-ent-face' +
+      (low ? " low" : " ok") +
+      '" id="v2EntFace" role="status" aria-live="polite">' +
+      '<div class="v2-ent-bits-row">' +
+      '<span class="v2-ent-tilde">~</span>' +
+      '<span class="v2-ent-bits" id="v2EntBits">' +
+      rounded +
+      "</span>" +
+      '<span class="v2-ent-unit">bits</span>' +
+      '<span class="v2-ent-verdict" id="v2EntVerdict">' +
+      entVerdictText(bits) +
+      "</span>" +
+      "</div>" +
+      '<div class="v2-ent-bar" id="v2EntBar" aria-hidden="true">' +
+      '<div class="v2-ent-bar-fill" id="v2EntFill" style="width:' +
+      fill.toFixed(2) +
+      '%"></div>' +
+      '<span class="v2-ent-tick t128" id="v2EntTick128" style="left:' +
+      t128.toFixed(2) +
+      '%" title="128 bits · 12-word"></span>' +
+      '<span class="v2-ent-tick t256" id="v2EntTick256" style="left:' +
+      t256.toFixed(2) +
+      '%" title="256 bits · 24-word"></span>' +
+      "</div>" +
+      '<p class="v2-ent-scale" id="v2EntScale">' +
+      delta +
+      " · markers at <strong>128</strong> (12-word) and <strong>256</strong> (24-word). The big number is the running estimate — it can pass 256 (for example ~317).</p>" +
+      "</div>"
+    );
+  }
+
   function refreshEntDom() {
+    var bits = entBits();
+    var rounded = Math.round(bits);
+    var scale = Math.max(256, bits);
+    var fill = scale ? Math.min(100, (bits / scale) * 100) : 0;
+    var t128 = (128 / scale) * 100;
+    var t256 = (256 / scale) * 100;
+    var low = bits + 0.001 < 128;
+    var face = $("v2EntFace");
+    if (face) {
+      face.classList.toggle("low", low);
+      face.classList.toggle("ok", !low);
+    }
+    if ($("v2EntBits")) $("v2EntBits").textContent = String(rounded);
+    if ($("v2EntVerdict")) $("v2EntVerdict").textContent = entVerdictText(bits);
+    if ($("v2EntFill")) $("v2EntFill").style.width = fill.toFixed(2) + "%";
+    if ($("v2EntTick128")) $("v2EntTick128").style.left = t128.toFixed(2) + "%";
+    if ($("v2EntTick256")) $("v2EntTick256").style.left = t256.toFixed(2) + "%";
+    if ($("v2EntScale")) {
+      var delta =
+        lastEntDelta > 0
+          ? "Last event +" + (lastEntDelta === 1 ? "1" : "2.58") + " bit" + (lastEntDelta === 1 ? "" : "s")
+          : "Each d6 ≈ +2.58 bits · each coin = +1 bit";
+      $("v2EntScale").innerHTML =
+        delta +
+        " · markers at <strong>128</strong> (12-word) and <strong>256</strong> (24-word). The big number is the running estimate — it can pass 256 (for example ~317).";
+    }
     var meta = $("v2EntMeta");
     if (meta) meta.textContent = entMetaInner();
     var log = $("v2EntLog");
     if (log) log.textContent = (mem.entEvents || []).length ? mem.entEvents.join(" ") : "—";
     var pause = $("v2Pause");
     if (pause && current.id === 14 && current.step === 0 && countEnt("d6:") >= 3) pause.disabled = false;
-    if (pause && current.id === 14 && current.step === 2 && entBits() + 0.001 >= 128) pause.disabled = false;
+    if (pause && current.id === 14 && current.step === 2 && !padIsLow()) pause.disabled = false;
+    applyLockTint();
+    var suff = $("v2EntSuff");
+    if (suff) {
+      suff.className = "v2-ent-suff " + (padIsLow() ? "low" : "ok");
+      suff.textContent = entSuffText();
+    }
+  }
+
+  function entSuffText() {
+    var bits = Math.round(entBits());
+    var need = entNeed();
+    var n = mem.entWordCount || 12;
+    if (!(mem.entEvents || []).length) {
+      return "Roll first. Then generate " + n + " words. The indicator turns green only when the pad meets ~" + need + " bits.";
+    }
+    if (padIsLow()) {
+      return (
+        "TOO LOW — pad ~" +
+        bits +
+        " bits vs " +
+        need +
+        " wanted for " +
+        n +
+        " words. Keep rolling, then generate again. A " +
+        n +
+        "-word phrase can still look complete."
+      );
+    }
+    return (
+      "Sufficient on paper — pad ~" +
+      bits +
+      " bits meets " +
+      n +
+      "-word ENT (" +
+      need +
+      "). Still simulated Math.random. Do not fund."
+    );
+  }
+
+  function entSuffHtml() {
+    return (
+      '<p class="v2-ent-suff ' +
+      (padIsLow() ? "low" : "ok") +
+      '" id="v2EntSuff" role="status" aria-live="polite">' +
+      entSuffText() +
+      "</p>"
+    );
+  }
+
+  function entMintBarHtml() {
+    var n = mem.entWordCount || 12;
+    return (
+      '<div class="row v2-gen-bar v2-ent-mintbar">' +
+      wordCountSelectHtml("v2EntWc", n) +
+      '<button type="button" class="btn" id="v2EntMint">Build ' +
+      n +
+      " practice words from this pad</button>" +
+      "</div>" +
+      entSuffHtml() +
+      '<p class="control-help" id="v2EntMintNote">' +
+      (mem.entMnemonic
+        ? (padIsLow() ? "TOO LOW — " : "") +
+          mem.entMnemonic.trim().split(/\s+/).length +
+          " practice words from the pad. Do not fund."
+        : "Pick 12–24, generate from the roll log, then keep rolling until the indicator is sufficient.") +
+      "</p>" +
+      '<div id="v2EntWords">' +
+      (mem.entMnemonic ? wordGridHtml(mem.entMnemonic) : "") +
+      "</div>"
+    );
+  }
+
+  function entDieHtml() {
+    return (
+      '<figure class="v2-ent-die" id="v2EntDie">' +
+      '<img id="v2EntDice" src="../assets/ds/faces/beginner-dice.png" width="640" height="640" alt="Randomness (entropy) — six-sided die" />' +
+      "<figcaption>Randomness (entropy)</figcaption>" +
+      "</figure>"
+    );
+  }
+
+  function ppKeyHtml(figId) {
+    return (
+      '<figure class="v2-pp-key" id="' +
+      (figId || "v2PpKey") +
+      '">' +
+      '<img class="v2-pp-key-img" src="../assets/ds/faces/beginner-key.png" width="640" height="640" alt="Something you know — optional passphrase" />' +
+      "<figcaption>Something you know</figcaption>" +
+      "</figure>"
+    );
+  }
+
+  function ppKeyHeroHtml(inner, figId) {
+    return (
+      '<div class="v2-pp-hero">' +
+      ppKeyHtml(figId) +
+      '<div class="v2-pp-hero-body">' +
+      inner +
+      "</div></div>"
+    );
+  }
+
+  function entHeroHtml() {
+    return '<div class="v2-ent-hero">' + entDieHtml() + entFaceHtml() + lockHtml("pad") + "</div>";
   }
 
   function entButtonsHtml() {
     return (
+      entHeroHtml() +
       '<div class="row v2-gen-bar">' +
       '<div class="v2-gen-left">' +
       '<button type="button" class="btn" id="v2Dice">Roll d6 (simulated)</button>' +
@@ -1789,13 +2173,13 @@
       return pad(
         "<h2>A few dice rolls</h2>" +
         doDont(
-          "Roll a simulated d6 a few times and read the bit estimate against 128 bits.",
+          "Roll a simulated d6 a few times and read the bit estimate against 128 and 256.",
           "Do not treat three rolls as a wallet. Buttons use Math.random. They are not physical dice and not OS CSPRNG."
         ) +
         desc(
-          "Each six-sided die is about 2.58 bits. A real 12-word BIP-39 phrase wants 128 bits of good randomness, about 50 rolls. Three rolls are still TOO LOW. This pad is a classroom demo."
+          "Each six-sided die is about 2.58 bits. A 12-word BIP-39 phrase wants 128 bits of good randomness (~50 d6). A 24-word phrase wants 256 bits (~100 d6). Three rolls are still TOO LOW. This pad is a classroom demo — not a strong algorithm."
         ) +
-        callout("done", "Word count is not entropy", "You can print words from a short pad. That does not mean you had 128 bits.") +
+        callout("done", "Word count is not entropy", "You can print 12 or 24 words from a short pad. That does not mean you had 128 or 256 bits.") +
         entButtonsHtml() +
         pauseBtn("I saw TOO LOW after a few rolls", !few)
       );
@@ -1804,60 +2188,193 @@
       return pad(
         "<h2>Words from a short pad</h2>" +
         doDont(
-          "Build practice words from the roll log. Read TOO LOW next to the twelve words.",
-          "Do not fund these words. A complete-looking phrase can still be weak if the pad was short."
+          "Pick 12 to 24 words, generate from the roll log, and read TOO LOW next to a complete-looking phrase.",
+          "Do not fund these words. A 24-word phrase can still be weak if the pad is short."
         ) +
         desc(
-          "The lab hashes the roll log and turns that hash into BIP-39 words so you can see a phrase. That is not the same as having 128 bits of real entropy. If the estimate is TOO LOW, an attacker has a smaller guess space than a proper 12-word wallet."
+          "The lab hashes the roll log and turns that hash into BIP-39 words so you can see a phrase. That is not the same as having real entropy. 12 words want 128 bits; 24 words want 256 bits. If the estimate is TOO LOW, an attacker has a smaller guess space than a proper wallet of that length."
         ) +
-        '<button type="button" class="btn" id="v2EntMint">Build 12 practice words from this pad</button>' +
-        '<p class="control-help" id="v2EntMintNote">' +
-        (mem.entMnemonic
-          ? (entBits() + 0.001 < 128 ? "TOO LOW — " : "") +
-            "Practice words from the pad. Do not fund."
-          : "Click to mint words. A short pad stays TOO LOW.") +
-        "</p>" +
-        '<div id="v2EntWords">' +
-        (mem.entMnemonic ? wordGridHtml(mem.entMnemonic) : "") +
-        "</div>" +
+        entButtonsHtml() +
+        entMintBarHtml() +
         pauseBtn("I saw words that were still TOO LOW", !mem.entMnemonic)
       );
     }
     if (step === 2) {
       return pad(
-        "<h2>Fifty dice, or 128 coin flips</h2>" +
+        "<h2>Roll until the pad is enough</h2>" +
         doDont(
-          "Keep rolling d6 (use +10) until the estimate reaches 128 bits, or flip a coin and see 1 bit each.",
-          "Do not treat a coin as an easy 12-word wallet. One flip is one bit. You would need about 128 flips."
+          "Keep rolling (use +10) and generate again until the indicator is sufficient for the length you picked. Flip a coin to see 1 bit each.",
+          "Do not treat a coin as an easy 24-word wallet. One flip is one bit. 24 words want about 256 flips."
         ) +
         desc(
-          "About 50 d6 rolls reach the 12-word ENT estimate. A coin flip is 1 bit, so 128 flips is the hard path. Even then these buttons are simulated. Use Lab Generate (OS randomness) for a proper practice phrase, and never fund pad words."
+          "Without a cryptographically strong generator (Lab Generate uses the OS), you practise rolling until the pad estimate meets the phrase. ~50 d6 ≈ 128 bits (12-word). ~100 d6 ≈ 256 bits (24-word). Coin = 1 bit. These buttons stay simulated. Never fund pad words."
         ) +
-        callout("done", "Coin is 1 bit", "128 flips for 128 bits. Dice reach it faster (~50). Brand of RNG theatre does not skip the bits.") +
+        callout("done", "Coin is 1 bit", "128 flips for 12-word. 256 flips for 24-word. Dice reach it faster. Brand of RNG theatre does not skip the bits.") +
         entButtonsHtml() +
-        pauseBtn("I saw 50 d6 or the coin cost", entBits() + 0.001 < 128)
+        entMintBarHtml() +
+        pauseBtn("The indicator is sufficient for this length", padIsLow())
       );
     }
     if (step === 3) {
-      return quiz("A few dice rolls that still print 12 recovery words mean:", [
+      return quiz("A few dice rolls that still print 12 or 24 recovery words mean:", [
         {
           k: "ok",
           t: "The pad can be TOO LOW — word count is not entropy.",
-          okwhy: "Correct. You need about 50 d6 (~128 bits) or 128 coin flips. Words from a short pad are still weak."
+          okwhy: "Correct. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Words from a short pad are still weak."
         },
         {
           k: "bad",
-          t: "Twelve words always means 128 bits of good randomness.",
-          why: "Wrong. The format can look complete while the pad estimate is still TOO LOW."
+          t: "Twenty-four words always means 256 bits of good randomness.",
+          why: "Wrong. The format can look complete while the pad estimate is still TOO LOW versus 256."
         },
         {
           k: "bad",
           t: "Three coin flips are enough because each flip is 128 bits.",
-          why: "Wrong. Each coin flip is 1 bit. You would need about 128 flips."
+          why: "Wrong. Each coin flip is 1 bit. You would need about 128 flips for 12-word, 256 for 24-word."
         }
       ]);
     }
     return finishHtml(14);
+  }
+
+  function charsetPoolSize(pp) {
+    var pool = 0;
+    if (/[a-z]/.test(pp)) pool += 26;
+    if (/[A-Z]/.test(pp)) pool += 26;
+    if (/[0-9]/.test(pp)) pool += 10;
+    if (/[^a-zA-Z0-9]/.test(pp)) pool += 33;
+    return Math.max(pool, 2);
+  }
+
+  function estimatePassphraseBits(pp) {
+    if (!pp) return null;
+    var n = pp.length;
+    if (!n) return null;
+    var counts = Object.create(null);
+    var i;
+    for (i = 0; i < n; i++) counts[pp[i]] = (counts[pp[i]] || 0) + 1;
+    var h = 0;
+    Object.keys(counts).forEach(function (k) {
+      var p = counts[k] / n;
+      h -= p * (Math.log(p) / Math.LN2);
+    });
+    var charsetBits = (Math.log(charsetPoolSize(pp)) / Math.LN2) * n;
+    return Math.min(h * n, charsetBits, 256);
+  }
+
+  function ppTier(bits) {
+    if (bits == null) return "empty";
+    if (bits < 40) return "weak";
+    if (bits < 80) return "fair";
+    return "stronger";
+  }
+
+  function ppBitsLabel(pp) {
+    var est = estimatePassphraseBits(pp);
+    if (est == null) return "Empty — 0 extra bits (not the 512-bit PBKDF2 seed size)";
+    var shown = est < 0.5 ? "<1" : String(Math.round(est));
+    return "~" + shown + " bits · " + ppTier(est) + " (estimate only)";
+  }
+
+  function entStackHtml() {
+    var bits = Math.round(entBits());
+    var n = mem.entWordCount || 12;
+    var need = entNeed();
+    var low = padIsLow();
+    var pp = mem.entPp || "";
+    var pest = estimatePassphraseBits(pp);
+    var whole = low
+      ? "Whole picture: pad is still TOO LOW. A longer passphrase does not fix a short pad."
+      : pest == null
+        ? "Whole picture: pad meets " + n + "-word ENT on paper. Empty passphrase adds no extra secret."
+        : "Whole picture: pad meets " +
+          n +
+          "-word on paper; passphrase is an extra vault secret (~" +
+          (pest < 0.5 ? "<1" : Math.round(pest)) +
+          " bits estimate). Still do not fund.";
+    return (
+      '<table class="v2-ent-stack" id="v2EntStack">' +
+      "<tr><th>Layer</th><th>Estimate</th></tr>" +
+      "<tr><td>Dice / coin pad</td><td>~" +
+      bits +
+      " bits" +
+      (low ? ' <strong class="v2-ent-stack-low">TOO LOW</strong>' : ' <strong class="v2-ent-stack-ok">meets ' + n + "-word</strong>") +
+      "</td></tr>" +
+      "<tr><td>" +
+      n +
+      "-word BIP-39 wants</td><td>" +
+      need +
+      " bits (12→128 · 24→256)</td></tr>" +
+      "<tr><td>Passphrase (25th)</td><td>" +
+      ppBitsLabel(pp) +
+      "</td></tr>" +
+      '<tr><td colspan="2">' +
+      whole +
+      "</td></tr>" +
+      "</table>"
+    );
+  }
+
+  async function uc15(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Same pad, then a passphrase</h2>" +
+        doDont(
+          "Bring the UC14 pad forward. Roll and generate 12–24 until you remember the indicator.",
+          "Do not add a passphrase to paper over a TOO LOW pad."
+        ) +
+        desc(
+          "This track stacks three numbers: pad bits from dice or coin, BIP-39 ENT for the word count you pick, and a teaching estimate of the optional 25th word. They are not one magic total. The pad is the source."
+        ) +
+        ppKeyHtml("v2PpKeyUc15a") +
+        entButtonsHtml() +
+        entMintBarHtml() +
+        pauseBtn("I have pad words in view", !mem.entMnemonic)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Add a passphrase of a different length</h2>" +
+        doDont(
+          "Type a short passphrase, then a longer one. Watch weak / fair / stronger next to the pad.",
+          "Do not treat a long passphrase as extra dice. Forgotten PP still loses that vault."
+        ) +
+        desc(
+          "Same recovery words + a different passphrase = a different wallet. The Lab estimate uses character mix and length (capped, teaching-only). PBKDF2 always outputs 512 bits — that is not “your passphrase has 512 bits of entropy.”"
+        ) +
+        entHeroHtml() +
+        entStackHtml() +
+        ppKeyHeroHtml(
+          '<label class="field" for="v2EntPp"><span class="label-row">Practice passphrase</span>' +
+          '<input id="v2EntPp" type="text" autocomplete="off" spellcheck="false" value="' +
+          attrEsc(mem.entPp) +
+          '" placeholder="try 1 character, then a longer phrase" /></label>' +
+          '<p class="control-help" id="v2EntPpHint">Try a single letter (weak), then several mixed characters (fair / stronger).</p>',
+          "v2PpKeyUc15"
+        ) +
+        pauseBtn("I saw the stack change with length", !(mem.entPp && mem.entPp.length))
+      );
+    }
+    if (step === 2) {
+      return quiz("A strong-looking passphrase on a TOO LOW dice pad means:", [
+        {
+          k: "ok",
+          t: "The pad is still the weak source. The 25th word does not replace rolling.",
+          okwhy: "Correct. Pad bits must meet 128 (12-word) or 256 (24-word). Passphrase is an extra secret, not extra dice."
+        },
+        {
+          k: "bad",
+          t: "Add the passphrase bits to the pad and you have a 24-word wallet.",
+          why: "Wrong. You do not add estimates into one BIP-39 ENT. A short pad stays a short pad."
+        },
+        {
+          k: "bad",
+          t: "PBKDF2 outputs 512 bits so the pad no longer matters.",
+          why: "Wrong. 512 bits is the seed output size, not the entropy of a short roll log."
+        }
+      ]);
+    }
+    return finishHtml(15);
   }
 
   function attrEsc(s) {
@@ -1884,6 +2401,20 @@
       '">' +
       opts +
       "</select></label>"
+    );
+  }
+
+  function inlineI(title, body) {
+    return (
+      '<span class="help-tip help-tip-safety">' +
+      '<button type="button" class="help-tip-btn" aria-label="' +
+      attrEsc(title) +
+      '">i</button>' +
+      '<span class="help-tip-panel" hidden><strong>' +
+      title +
+      "</strong> " +
+      body +
+      "</span></span>"
     );
   }
 
@@ -2141,10 +2672,7 @@
         mem.wordCount = parseInt(wc.value, 10) || 12;
         var regenBtn = $("v2Regen");
         if (regenBtn) regenBtn.textContent = "Regenerate " + mem.wordCount + "-word phrase";
-        var ent = $("v2Entropy");
-        if (ent && !mem.mnemonic) {
-          ent.outerHTML = entropyHtml();
-        }
+        if (!mem.mnemonic && ($("v2OsEnt") || $("v2Entropy"))) replaceOsEntropy();
       });
     }
     var gen = $("v2Generate");
@@ -2155,7 +2683,7 @@
       mem.lastRows = null;
       mem.cardAck = false;
       $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);
-      if ($("v2Entropy")) $("v2Entropy").outerHTML = entropyHtml();
+      replaceOsEntropy();
       var aw = $("v2AddrWrap");
       if (aw) {
         aw.innerHTML = "";
@@ -2203,7 +2731,6 @@
       $("v2Coin").addEventListener("click", function () {
         pushEnt("coin:" + (Math.random() < 0.5 ? "H" : "T"));
         refreshEntDom();
-        if (pause && current.step === 2) pause.disabled = false;
       });
     }
     function pauseOn(ok) {
@@ -2239,7 +2766,12 @@
       $("v2ExExport").addEventListener("click", function () {
         if (tax().freeze) return;
         tax().seedAsk = true;
-        $("v2ExExportNote").textContent = "They never gave you a seed phrase. There is nothing to copy.";
+        var note = $("v2ExExportNote");
+        if (note) {
+          note.className = "v2-callout done";
+          note.textContent = "They never gave you a seed phrase. There is nothing to copy.";
+          note.hidden = false;
+        }
         $("v2ExExport").className = "btn secondary";
       });
     }
@@ -2247,8 +2779,12 @@
       $("v2ExRestore").addEventListener("click", function () {
         if (tax().freeze) return;
         tax().restore = true;
-        $("v2ExRestoreOut").textContent =
-          "You cannot open it somewhere else. You do not have the seed phrase.";
+        var rest = $("v2ExRestoreOut");
+        if (rest) {
+          rest.className = "v2-callout done";
+          rest.hidden = false;
+          rest.textContent = "You cannot open it somewhere else. You do not have the seed phrase.";
+        }
         var box = $("v2ExTimer");
         if (box && !mem.exLockTimer && !tax().freeze) {
           var n = 5;
@@ -2269,8 +2805,12 @@
             tax().freeze = true;
             var bal = $("v2ExBal");
             if (bal) {
-              bal.textContent = "Locked out. You cannot send, export, or open this anywhere else.";
               bal.classList.add("is-frozen");
+              var note = bal.querySelector(".v2-btc-note");
+              if (note) {
+                note.textContent =
+                  "Locked out. They still hold this " + TEACH_BTC + " bitcoin. You cannot send it.";
+              }
             }
             var ex = $("v2Ex");
             if (ex) ex.classList.add("is-locked");
@@ -2283,23 +2823,64 @@
         }
       });
     }
+    function holdReady() {
+      var x = tax();
+      return !!(x.spend && x.lose && x.msAlone && x.msPaper && x.msSend);
+    }
+    function showBlue(id, text) {
+      var el = $(id);
+      if (!el) return;
+      el.className = "v2-callout done";
+      el.hidden = false;
+      el.textContent = text;
+    }
     if ($("v2HoldSpend")) {
       $("v2HoldSpend").addEventListener("click", function () {
         tax().spend = true;
-        $("v2HoldSpendOut").textContent = "It sent. No support ticket. No freeze. You held the keys.";
-        pauseOn(tax().spend && tax().lose);
+        showBlue("v2HoldSpendOut", "It sent. No support ticket. No freeze. You held the keys.");
+        pauseOn(holdReady());
       });
     }
     if ($("v2HoldLose")) {
       $("v2HoldLose").addEventListener("click", function () {
         tax().lose = true;
-        $("v2HoldLoseOut").textContent = "Nobody can reset this. That is the cost of holding the keys yourself.";
+        showBlue("v2HoldLoseOut", "Nobody can reset this. That is the cost of holding the keys yourself.");
         var card = $("v2HoldCard");
         if (card) {
           card.innerHTML =
-            '<p class="msg-bad">The paper is gone. There is no “forgot password” at an exchange. The coins are stuck.</p>';
+            '<p class="msg-bad">Your only paper is gone. With one signer there is no reset. The coins are stuck.</p>';
         }
-        pauseOn(tax().spend && tax().lose);
+        var holdBal = $("v2HoldBal");
+        if (holdBal) {
+          holdBal.classList.add("is-frozen");
+          var hn = holdBal.querySelector(".v2-btc-note");
+          if (hn) {
+            hn.textContent =
+              "Paper gone. This " + TEACH_BTC + " bitcoin cannot move. No company reset.";
+          }
+        }
+        pauseOn(holdReady());
+      });
+    }
+    if ($("v2HoldMsAlone")) {
+      $("v2HoldMsAlone").addEventListener("click", function () {
+        tax().msAlone = true;
+        showBlue("v2HoldMsAloneOut", "Need a second signature. One signer is not enough.");
+        pauseOn(holdReady());
+      });
+    }
+    if ($("v2HoldMsPaper")) {
+      $("v2HoldMsPaper").addEventListener("click", function () {
+        tax().msPaper = true;
+        showBlue("v2HoldMsPaperOut", "2-of-3 still works. The other two keys can send. Your lost paper did not kill the vault.");
+        pauseOn(holdReady());
+      });
+    }
+    if ($("v2HoldMsSend")) {
+      $("v2HoldMsSend").addEventListener("click", function () {
+        tax().msSend = true;
+        showBlue("v2HoldMsSendOut", "Sent. Two people signed. No company in the middle.");
+        pauseOn(holdReady());
       });
     }
     function drainToZero(bar, amt, labelZero, onDone) {
@@ -2420,29 +3001,64 @@
     }
     if ($("v2TrapHot")) $("v2TrapHot").addEventListener("click", function () { trapPick("hot"); });
     if ($("v2TrapCold")) $("v2TrapCold").addEventListener("click", function () { trapPick("cold"); });
-    if ($("v2EntMint")) {
-      $("v2EntMint").addEventListener("click", async function () {
-        if (!(mem.entEvents && mem.entEvents.length)) {
-          $("v2EntMintNote").textContent = "Roll first, then mint. A short pad stays TOO LOW.";
-          return;
-        }
-        var B = window.BIP39Lab;
-        if (!B || typeof B.mnemonicFromEntropyBytes !== "function") {
-          $("v2EntMintNote").textContent = "Could not build pad words. Hard-refresh this page.";
-          return;
-        }
-        var data = new TextEncoder().encode(mem.entEvents.join("|"));
-        var dig = await crypto.subtle.digest("SHA-256", data);
-        var ent = new Uint8Array(dig).slice(0, 16);
-        mem.entMnemonic = B.mnemonicFromEntropyBytes(ent);
-        var low = entBits() + 0.001 < 128;
-        $("v2EntMintNote").textContent = low
+    async function mintFromPad() {
+      var note = $("v2EntMintNote");
+      if (!(mem.entEvents && mem.entEvents.length)) {
+        if (note) note.textContent = "Roll first, then generate. A short pad stays TOO LOW.";
+        return false;
+      }
+      var B = window.BIP39Lab;
+      if (!B || typeof B.mnemonicFromEntropyBytes !== "function") {
+        if (note) note.textContent = "Could not build pad words. Hard-refresh this page.";
+        return false;
+      }
+      var n = mem.entWordCount || 12;
+      var bytes = ENT_BYTES[n] || 16;
+      var data = new TextEncoder().encode(mem.entEvents.join("|"));
+      var dig = await crypto.subtle.digest("SHA-256", data);
+      var ent = new Uint8Array(dig).slice(0, bytes);
+      mem.entMnemonic = B.mnemonicFromEntropyBytes(ent);
+      var wc = mem.entMnemonic.trim().split(/\s+/).filter(Boolean).length;
+      if (note) {
+        note.textContent = padIsLow()
           ? "TOO LOW — ~" +
             Math.round(entBits()) +
-            " bits from the pad, but these 12 words look complete. Do not fund."
-          : "Practice words from the pad. Still do not fund (simulated rolls).";
-        $("v2EntWords").innerHTML = wordGridHtml(mem.entMnemonic);
-        if (pause) pause.disabled = false;
+            " bits from the pad, but these " +
+            wc +
+            " words look complete. Do not fund."
+          : wc +
+            " practice words from the pad. Sufficient on paper for " +
+            n +
+            "-word ENT. Still do not fund.";
+      }
+      if ($("v2EntWords")) $("v2EntWords").innerHTML = wordGridHtml(mem.entMnemonic);
+      var mintBtn = $("v2EntMint");
+      if (mintBtn) mintBtn.textContent = "Build " + n + " practice words from this pad";
+      refreshEntDom();
+      if (pause && current.id === 14 && current.step === 1) pause.disabled = false;
+      if (pause && current.id === 14 && current.step === 2) pause.disabled = padIsLow();
+      if (pause && current.id === 15 && current.step === 0) pause.disabled = !mem.entMnemonic;
+      return true;
+    }
+    if ($("v2EntMint")) $("v2EntMint").addEventListener("click", function () { mintFromPad(); });
+    var entWc = $("v2EntWc");
+    if (entWc) {
+      entWc.addEventListener("change", function () {
+        mem.entWordCount = parseInt(entWc.value, 10) || 12;
+        var mintBtn = $("v2EntMint");
+        if (mintBtn) mintBtn.textContent = "Build " + mem.entWordCount + " practice words from this pad";
+        refreshEntDom();
+        if (mem.entEvents && mem.entEvents.length && mem.entMnemonic) mintFromPad();
+        else if (pause && current.id === 14 && current.step === 2) pause.disabled = padIsLow();
+      });
+    }
+    var ppIn = $("v2EntPp");
+    if (ppIn) {
+      ppIn.addEventListener("input", function () {
+        mem.entPp = ppIn.value || "";
+        var stack = $("v2EntStack");
+        if (stack) stack.outerHTML = entStackHtml();
+        if (pause) pause.disabled = !mem.entPp.length;
       });
     }
     var regen = $("v2Regen");
@@ -2453,7 +3069,7 @@
       mem.lastRows = null;
       mem.cardAck = false;
       $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);
-      if ($("v2Entropy")) $("v2Entropy").outerHTML = entropyHtml();
+      replaceOsEntropy();
       regen.textContent = "Regenerate " + n + "-word phrase";
     });
 
@@ -2716,6 +3332,9 @@
     mem.shamirDone = false;
     mem.entEvents = [];
     mem.entMnemonic = "";
+    mem.entWordCount = 12;
+    mem.entPp = "";
+    lastEntDelta = 0;
     if (current && (current.id === 1 || current.id === 2 || current.id === 6 || current.id === 14)) {
       if (current.id === 1 || current.id === 2 || current.id === 14) current.step = 0;
       renderTrack();
@@ -2747,7 +3366,7 @@
     renderPicker();
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 14) openUc(n);
+      if (n >= 1 && n <= 15) openUc(n);
     }
   }
 

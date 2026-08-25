@@ -1,11 +1,15 @@
 # BEHAVIOR-REPORT
 
-`npx playwright test e2e/v2.spec.ts -g V2-S14` passed after UC12 drain (then full suite at score time).
+- **Surface:** `/v2/` via Playwright webServer `:4173`
+- **Contract:** `.agents/artifacts/BEHAVIOR_CONTRACT.md`
 
-| Clause | Result |
-|--------|--------|
-| They/You ok/bad | pass V2-S14 |
-| Lock timer / no freeze button | pass V2-S14 |
-| Phone 0.184 → 0.000 | pass V2-S14 |
-| USB air-gap; vault killed | pass V2-S14 |
-| Sort + trap | pass V2-S14 |
+| Clause | Result | Evidence |
+|--------|--------|----------|
+| 15 tracks + classic Lab | pass | V2-S0 |
+| UC14 pad 12–24 + lock | pass | V2-S15 |
+| UC15 PP stack + key | pass | V2-S16 |
+| UC11 0.184 + two columns | pass | V2-S14 |
+| No seed in sessionStorage | pass | V2-S6 (suite) |
+| Must not fund / CSP | pass | copy + meta connect-src none |
+
+fail=0 blocked=0

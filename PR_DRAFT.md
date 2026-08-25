@@ -1,36 +1,36 @@
-# PR Draft: v0.16.43 V2 UC11–UC13 interactive labs
+# PR Draft: v0.16.44 V2 UC14–UC15 stills, 12–24 pad, UC11 hold split
 
-**Spec:** `.agents/specs/2026-08-25-v2-uc11-13-interactive.md`
-**Plan:** `.agents/specs/2026-08-25-v2-uc11-13-interactive-plan.md`
+**Spec:** `.agents/specs/2026-08-25-v2-uc14-15-stills.md`
+**Plan:** `.agents/specs/2026-08-25-v2-uc14-15-stills-plan.md`
 
 ## What Problem This Solves
 
-UC11–13 were unblocked lectures. Learners did not practice they-vs-you, exchange lock-out, or a hot-wallet steal.
+UC14 hid bit totals and only minted 12 words. Learners could not see 256-bit / 24-word need, Lab stills, or pad+passphrase. UC11 buried 0.184 bitcoin and mixed one-signer with 2-of-3.
 
 ## Why This Change Was Made
 
-Operator called UC11–13 slop, then iterated: They/You colours, seed phrase + timer lock, you-hold contrast, phone drain, hardware two-pane.
+Operator asked to refresh compare.md, make entropy visible (~317), reuse Lab dice/key/lock, 12–24 generate until sufficient, then a passphrase stack, then UC11 0.184 and two-column you-hold.
 
 ## User Impact
 
-UC11: tap They/You (green/red); company lock after 5s. UC12: phone balance then malware to 0; USB then type-seed drain. UC13: sort + trap. Chip v0.17.30-v2.
+Picker UC1–UC15. Chip **v0.17.41-v2**. UC14 live bits + stills. UC15 pad+PP. UC11 huge 0.184; freeze keeps the number; one signer | co-signer columns.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 they/you + lock | V2-S14 |
-| AC-2 phone drain + hardware | V2-S14 |
-| AC-3 sort/trap | V2-S14 |
-| AC-4 classic `/` | V2-S0 |
-| AC-5 pytest | `.venv/bin/python -m pytest -q` |
+| AC-1 15 tracks | V2-S0 |
+| AC-2 0.184 + hold split | V2-S14 |
+| AC-3 12–24 pad + lock | V2-S15 |
+| AC-4 UC15 PP stack | V2-S16 |
+| AC-5 classic `/` | V2-S0 |
 
 ## Red-proof
 
 - red_cmd: `false`
 - green_cmd: `npx playwright test e2e/v2.spec.ts`
 
-TDD N/A on green tree: V2-S14 was extended in-place.
+TDD N/A on green tree: V2-S15 extended in-place; V2-S16 added green.
 
 ## Threat notes
 
@@ -40,15 +40,15 @@ TDD N/A on green tree: V2-S14 was extended in-place.
 
 ## Evidence pack
 
-CODE-REVIEW / CROSS-REVIEW / BEHAVIOR-REPORT; V2 Playwright; pytest; hard_gates.
+hard_gates; smoke Playwright V2 16 passed; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
 
 ## Things that look bad but are actually fine
 
-1. Fake 0.184 BTC drains — teaching only.
-2. leftover `scripts/*.py` uncommitted.
+1. Fake 0.184 BTC.
+2. leftover `scripts/*.py` stashed.
 3. lab-strip 404 on `/v2/`.
-4. Dual stamp 0.16.43 vs 0.17.30-v2.
-5. 5s lock and drain bars make S14 slower on purpose.
+4. Dual stamp 0.16.44 vs 0.17.41-v2.
+5. Lock “red/green” is hue-rotate on the blue Lab PNG.
 
 ## Cross-review
 
