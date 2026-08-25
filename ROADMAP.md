@@ -72,6 +72,13 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 picker path chrome + visual sprint
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-25-v2-picker-visual.md`
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g "V2-S0"`
+- **Notes:** chip 0.17.53-v2; product 0.16.48
+
 ### [DONE] V2 P0–P2 forensic tracks UC16–UC31
 - **Status:** done
 - **Priority:** P0

@@ -2,11 +2,10 @@
 
 | Clause | Result | Evidence |
 |--------|--------|----------|
-| 31 cards + chip | pass | V2-S0 |
-| Restore same address | pass | V2-S17 |
-| Amount traps / place | pass | V2-S18 |
-| Sim tBTC + never fund | pass | V2-S19 |
-| Air-gap loop never signs | pass | V2-S20 |
-| Classic Lab Generate | pass | V2-S0 `/index.html` |
+| Start here 3 cards | pass | V2-S0 |
+| All paths 31 | pass | V2-S0 |
+| Copy+QR UC1 | pass | V2-S1 |
+| Done + Next up UC2 | pass | V2-S2 |
+| Hard refresh + Clear secrets | pass | V2-S0 / V2-S2 |
 
 fail=0 blocked=0

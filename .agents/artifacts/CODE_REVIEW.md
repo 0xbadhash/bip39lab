@@ -1,27 +1,26 @@
 # CODE-REVIEW
 
-- **command:** `/code_review` vs origin/master (working tree)
-- **secrets:** restore typed words not written to sessionStorage; dock is id+step only
+- **command:** `/code_review` vs origin/master (working tree → 0.16.48)
+- **secrets:** Hard refresh removes `bip39lab.v2` progress only; no mnemonic in sessionStorage
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-- New tracks reuse existing atoms; no new connect-src.
-- Restore uses BIP39Lab.validateMnemonic + deriveAddresses; practice phrase only.
-- UC19 simulated credit is DOM text, not a network call.
-- UC23 explicitly never signs.
+- CSP unchanged (`connect-src 'none'`).
+- Progress store vs Clear secrets are separate controls.
+- Copy on practice addresses is in-tab only (execCommand), not a network leak.
 
 ## Follow-ups
 
 - leftover `scripts/*.py` stashed
 - lab-strip 404
 - classic full e2e not V2 gate
-- UC17–31 quizzes are 3 questions, not 5
+- cookie wipe on Hard refresh is best-effort path=/ and /v2/
 
 p0=0 follow_ups=4
 
 ## Smoke
 
-`npx playwright test e2e/v2.spec.ts` — 20 passed
+`npx playwright test e2e/v2.spec.ts -g "V2-S0|V2-S1|V2-S2"`

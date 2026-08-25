@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 173 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.47 · Contract: 2 · Last aligned: 2026-08-25 · Scenarios: S0–S183 · Playwright S-ids: 173`
+`Product: 0.16.48 · Contract: 2 · Last aligned: 2026-08-25 · Scenarios: S0–S183 · Playwright S-ids: 173`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -1022,7 +1022,7 @@ Chrome/Extra help: coherent=Y|N  makes_sense=Y|N  intuitive=Y|N  —
 Cross-product story (secrets offline / addresses online / shares≠keys / Shamir≠SLIP-39): PASS|FAIL —
 
 ### V2 tracks (`/v2/`)
-V2-S0 picker + classic `/` still Lab: PASS|FAIL —
+V2-S0 picker Start here (3) then All paths (31); classic `/` still Lab: PASS|FAIL —
 V2-S1 UC1 generate words before addresses; Validate gated: PASS|FAIL —
 V2-S2 quiz colors + force exit: PASS|FAIL —
 V2-S3 deep link `?uc=3`: PASS|FAIL —

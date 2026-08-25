@@ -8,25 +8,25 @@ Personas: Security, Maintainability, Domain.
 
 ## Security Guru
 
-none. `/v2/` CSP unchanged (`connect-src 'none'`). No seed in sessionStorage. Hard-no copy on fund/sign/paste-real-seed.
+none. Hard refresh does not persist seeds. Cookie expire is opportunistic. CSP intact.
 
 ## Maintainability Expert
 
-none as blocker. `ucJob` + per-id pads is large but local to `v2-app.js`. Obsolete scan on touched V2 paths: no Tier A dead exports.
+none as blocker. Picker HTML skeleton duplicates JS `renderPicker` output — intentional first paint.
 
 ### Obsolete / cleanup (scoped)
 
 - Tier A: 0
-- lab-strip 404 is pre-existing (follow-up)
+- lab-strip 404 pre-existing
 
 ## Domain Specialist
 
-none as blocker. Restore address match is the UC16 done-when. Simulated tBTC is labeled teaching. Inheritance is not counsel. UC7 hex vs UC31 Suite dock is explicit.
+none as blocker. Start here is UC1–2–16. Practice-only banner. Restore/copy still practice phrases.
 
 ## §9
 
 1. Dual stamp
-2. Fake balances
+2. Ghost cards not counted as `.uc-card`
 3. Stashed leftover scripts
 
 blocker_count=0 obsolete_tier_a=0

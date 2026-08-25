@@ -8,7 +8,7 @@
   <meta name="description" content="bip39lab V2 use-case tracks — practice custody offline." />
   <title>BIP39 Lab V2 · use-case tracks</title>
   <link rel="stylesheet" href="../css/app.css" />
-  <link rel="stylesheet" href="css/v2.css?v=0.17.47-v2" />
+  <link rel="stylesheet" href="css/v2.css?v=0.17.53-v2" />
 </head>
 <body>
   <div class="app v2-app">
@@ -22,7 +22,7 @@
       </div>
       <p class="v2-mission">Practice the custody decision offline, then do the real thing in a wallet you trust.</p>
       <nav class="nav" aria-label="Rooms">
-        <a class="nav-item active" href="index.html"><span class="nav-step">0</span><span class="nav-label"><strong>Tracks</strong><small>UC1–UC31 picker</small></span></a>
+        <a class="nav-item active" href="index.html"><span class="nav-step">0</span><span class="nav-label"><strong>Tracks</strong><small>Start here · a path, not a catalog</small></span></a>
         <a class="nav-item" href="../index.html"><span class="nav-step">1</span><span class="nav-label"><strong>Lab</strong><small>Classic generate / derive</small></span></a>
         <a class="nav-item" href="../multisig.html"><span class="nav-step">2</span><span class="nav-label"><strong>Multisig</strong><small>Public keys · M-of-N</small></span></a>
         <a class="nav-item" href="../shamir.html"><span class="nav-step">3</span><span class="nav-label"><strong>Shamir</strong><small>Edu shares · not SLIP-39 Suite</small></span></a>
@@ -31,43 +31,108 @@
         <a class="nav-item" href="../index.html#glossary"><span class="nav-step">6</span><span class="nav-label"><strong>Glossary</strong><small>Terms</small></span></a>
       </nav>
       <div class="sidebar-foot">
-        <span class="site-version-chip" data-v2-version>v0.17.47-v2</span>
-        <p class="sidebar-note"><a href="../index.html">Classic lab</a> stays at <code>/</code>. This surface is V2 only.</p>
-        <p class="sidebar-note"><a href="compare.md">v1 vs v2 compare</a> (markdown deeplink)</p>
+        <span class="site-version-chip" data-v2-version>v0.17.53-v2</span>
+        <p class="sidebar-note">Rooms below are the full instruments. Tracks teach the jobs.</p>
       </div>
     </aside>
     <div class="main-wrap">
       <header class="topbar">
         <div>
           <h1 id="panelTitle">Use-case tracks</h1>
-          <p class="sub" id="panelSub">Pick a job. Tracks teach; rooms stay in the sidebar.</p>
+          <p class="sub" id="panelSub">Follow the path. Tracks teach; rooms stay in the sidebar.</p>
         </div>
         <div class="topbar-actions">
-          <span class="chip">V2 · not production root</span>
-          <a class="btn secondary btn-sm" href="compare.md">v1 vs v2</a>
-          <a class="btn secondary btn-sm" href="../index.html">Classic lab</a>
+          <details class="v2-about">
+            <summary class="btn secondary btn-sm">About V2</summary>
+            <div class="v2-about-pop">
+              <p>This is not the production Lab at <code>/</code>. Progress (never the phrase) can sit in session storage for this tab only.</p>
+              <p><a href="compare.md">v1 vs v2</a> · <a href="../index.html">Classic lab</a></p>
+              <p><button type="button" class="btn secondary btn-sm" id="v2HardRefresh" title="Wipe progress so you can retake tracks. Does not keep check marks.">Hard refresh</button></p>
+            </div>
+          </details>
           <button type="button" class="btn danger btn-sm" id="v2Clear">Clear secrets</button>
         </div>
       </header>
       <main class="content">
         <div class="main-work" id="v2Work">
           <div class="warn v2-banner" id="labSafetyBanner" role="note">
-            <strong>Air-gap recommended.</strong>
-            Crypto stays in this tab. Progress (not secrets) may be saved in sessionStorage under <code>bip39lab.v2</code>.
-            Do not fund practice phrases or addresses.
+            <strong>Practice only.</strong>
+            Prefer an air-gapped machine. Do not fund words or addresses from this tab.
           </div>
 
           <section id="viewPicker" class="v2-picker">
-            <div class="v2-picker-grid" id="pickerGrid"></div>
+            <div id="pickerHead">
+              <div class="v2-picker-lead">
+                <button type="button" class="btn v2-continue" id="v2Continue" data-uc="1">Continue · UC1 First wallet</button>
+                <div class="v2-start-prog">
+                  <ol class="v2-start-dots" aria-label="Start here progress">
+                    <li class="current"></li><li class="locked"></li><li class="locked"></li>
+                  </ol>
+                  <p class="v2-start-frac">0 of 3 in Start here</p>
+                  <p class="control-help v2-picker-count">0 / 31 all paths</p>
+                </div>
+              </div>
+              <div class="v2-path-filters" role="tablist">
+                <button type="button" class="v2-filter" data-path-filter="all">All paths</button>
+                <button type="button" class="v2-filter is-on" data-path-filter="start" aria-pressed="true">Start here</button>
+                <button type="button" class="v2-filter" data-path-filter="keys">Keys</button>
+                <button type="button" class="v2-filter" data-path-filter="watch">Watch</button>
+                <button type="button" class="v2-filter" data-path-filter="custody">Custody</button>
+                <button type="button" class="v2-filter" data-path-filter="shared">Shared</button>
+                <button type="button" class="v2-filter" data-path-filter="life">Over time</button>
+                <button type="button" class="v2-filter" data-path-filter="adv">Advanced</button>
+              </div>
+            </div>
+            <div id="pickerGrid">
+              <section class="v2-path v2-path-hero" data-path="start">
+                <header class="v2-path-h">
+                  <h2>Start here</h2>
+                  <p>Make a phrase, treat the card as backup, then prove it.</p>
+                </header>
+                <div class="v2-picker-grid">
+                  <button type="button" class="uc-card lvl-Starter first-step" data-uc="1">
+                    <div class="uc-card-top"><span class="uc-step">1</span><img class="uc-atom" src="assets/uc1-atom-entropy-words.svg" alt="" width="72" height="48"></div>
+                    <div class="uc-id"><span class="uc-num">UC1</span><span class="uc-lvl">Starter</span><span class="uc-first">Start</span></div>
+                    <h3>First wallet</h3>
+                    <p class="uc-job">Make a practice phrase and one receive address.</p>
+                  </button>
+                  <button type="button" class="uc-card lvl-Starter" data-uc="2">
+                    <div class="uc-card-top"><span class="uc-step">2</span><img class="uc-atom" src="assets/uc2-atom-card-object.svg" alt="" width="72" height="48"></div>
+                    <div class="uc-id"><span class="uc-num">UC2</span><span class="uc-lvl">Starter</span></div>
+                    <h3>Paper backup</h3>
+                    <p class="uc-job">Treat the numbered card as the backup object.</p>
+                  </button>
+                  <button type="button" class="uc-card lvl-Starter" data-uc="16">
+                    <div class="uc-card-top"><span class="uc-step">3</span><img class="uc-atom" src="assets/uc1-atom-phrase-ne-address.svg" alt="" width="72" height="48"></div>
+                    <div class="uc-id"><span class="uc-num">UC16</span><span class="uc-lvl">Starter</span></div>
+                    <h3>Prove the backup works</h3>
+                    <p class="uc-job">Wipe the screen and recover only from the numbered card.</p>
+                  </button>
+                </div>
+              </section>
+              <div class="v2-path-next">
+                <p>Next · Keys and backup</p>
+                <div class="v2-ghost-row">
+                  <button type="button" class="uc-ghost" data-path-filter="keys"><span>UC3</span><strong>Passphrase (25th word)</strong></button>
+                  <button type="button" class="uc-ghost" data-path-filter="keys"><span>UC14</span><strong>A few dice are not enough</strong></button>
+                  <button type="button" class="uc-ghost" data-path-filter="keys"><span>UC15</span><strong>Dice pad and a 25th word</strong></button>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section id="viewGate" class="v2-gate v2-hidden">
-            <div class="card v2-pad">
+            <div class="card v2-pad v2-gate-pad">
               <h2 id="gateTitle">Track gate</h2>
-              <div id="gateScope"></div>
-              <div class="row">
-                <button type="button" class="btn" id="btnGateStart">Start</button>
-                <button type="button" class="btn secondary" id="btnBackPicker">Back to picker</button>
+              <div class="v2-gate-layout">
+                <div>
+                  <div id="gateScope"></div>
+                  <div class="row v2-gate-cta">
+                    <button type="button" class="btn v2-gate-start" id="btnGateStart">Start this track</button>
+                    <button type="button" class="btn secondary" id="btnBackPicker">Back to picker</button>
+                  </div>
+                </div>
+                <div id="gateViz" class="v2-gate-viz"></div>
               </div>
             </div>
           </section>
@@ -109,6 +174,6 @@
   <script src="../js/shamir-core.js"></script>
   <script src="../js/glossary.js"></script>
   <script src="../js/help-ui.js"></script>
-  <script src="js/v2-app.js?v=0.17.47-v2"></script>
+  <script src="js/v2-app.js?v=0.17.53-v2"></script>
 </body>
 </html>

@@ -46,22 +46,22 @@
     { id: 4, level: "Beginner", title: "Path folders", job: "A path is a folder; words do not change.", done: "Toggle receive/change or index; words stay." },
     { id: 5, level: "Beginner", title: "Watch-only", job: "Export public descriptors / zpub — never the seed.", done: "Never paste seed into a watch-only app." },
     { id: 6, level: "Intermediate", title: "Shared custody multisig", job: "M-of-N from public keys.", done: "Keys ≠ BIP-39 word shares." },
-    { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Educational GF(256) shares — not SLIP-39 Suite.", done: "Shares ≠ multisig cosigners." },
+    { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Edu shares — not SLIP-39 Suite.", done: "Shares ≠ multisig cosigners." },
     { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Inspect a partial transaction offline.", done: "Inspect → offline sign (elsewhere) → online broadcast; never paste seed." },
     { id: 9, level: "Intermediate", title: "xpub privacy", job: "Account xpub is watch-only and privacy-sensitive.", done: "xpub ≠ spend; do not publish casually." },
     { id: 10, level: "Advanced", title: "Network leak", job: "Default offline; balances only after opt-in.", done: "Unknown ≠ 0; explicit Network page only." },
-    { id: 11, level: "Beginner", title: "They hold the keys", job: "An exchange or login-only app keeps the keys. You only have an account.", done: "If you never got recovery words, a company can freeze or lose the coins. If you have the words, you can spend and you can lose them." },
+    { id: 11, level: "Beginner", title: "They hold the keys", job: "A company keeps the keys. You only have a login.", done: "If you never got recovery words, a company can freeze or lose the coins. If you have the words, you can spend and you can lose them." },
     { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys = hot wallet. Hardware keeps the seed on the device. USB is not an air-gap. Typing the seed into a computer still kills the vault." },
     { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
-    { id: 14, level: "Beginner", title: "Dice and coin entropy", job: "Word count is not entropy. A few rolls can still print 12 or 24 words.", done: "Few d6 = TOO LOW. Minted words can still be weak. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Coin = 1 bit." },
-    { id: 15, level: "Beginner", title: "Pad plus passphrase", job: "Dice pad + phrase length + passphrase estimate. A longer 25th word does not fix a short pad.", done: "Pad bits are the source. 12-word wants 128; 24-word wants 256. Passphrase is an extra secret (weak / fair / stronger) — not a substitute for rolling." },
-    { id: 16, level: "Starter", title: "Restore drill", job: "Wipe the screen and recover only from the numbered card.", done: "Same receive address from typed words. No photo. Practice phrase only." },
-    { id: 17, level: "Beginner", title: "Amount-tiered setup", job: "Pick an object for how much.", done: "Daily / mid / large sit in hot · HWW · 2-of-3. Not all on an exchange." },
-    { id: 18, level: "Intermediate", title: "Inheritance / incapacity", job: "What happens if you cannot speak.", done: "Named holders. Open-while-alive rehearsal. No seed in chat. Not legal counsel." },
-    { id: 19, level: "Beginner", title: "First receive (testnet)", job: "See a test credit on an address you control, and again watch-only.", done: "Same address on two views. Unknown ≠ 0. Never fund the practice mainnet phrase." },
+    { id: 14, level: "Beginner", title: "A few dice are not enough", job: "Word count is not entropy. A short pad can still print words.", done: "Few d6 = TOO LOW. Minted words can still be weak. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Coin = 1 bit." },
+    { id: 15, level: "Beginner", title: "Dice pad and a 25th word", job: "Roll the pad first. A longer passphrase does not fix a short pad.", done: "Pad bits are the source. 12-word wants 128; 24-word wants 256. Passphrase is an extra secret (weak / fair / stronger) — not a substitute for rolling." },
+    { id: 16, level: "Starter", title: "Prove the backup works", job: "Wipe the screen and recover only from the numbered card.", done: "Same receive address from typed words. No photo. Practice phrase only." },
+    { id: 17, level: "Beginner", title: "Choose setup by amount", job: "Pick an object for how much.", done: "Daily / mid / large sit in hot · HWW · 2-of-3. Not all on an exchange." },
+    { id: 18, level: "Intermediate", title: "If I cannot speak", job: "What happens if you cannot speak.", done: "Named holders. Open-while-alive rehearsal. No seed in chat. Not legal counsel." },
+    { id: 19, level: "Beginner", title: "See a first receive", job: "A test credit on an address you control, then watch-only.", done: "Same address on two views. Unknown ≠ 0. Never fund the practice mainnet phrase." },
     { id: 20, level: "Beginner", title: "Metal backup", job: "Paper vs steel for a funded seed.", done: "Metal for fire/flood. Still no photo of the plate." },
     { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold 2; a partner or service holds 1.", done: "I can say who can freeze vs who can steal vs DIY 2-of-3." },
-    { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Device setup: firmware, supply chain, PIN vs passphrase.", done: "Seed never on the computer. USB is not an air-gap." },
+    { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Firmware and PIN before a seed. USB is not an air-gap.", done: "Seed never on the computer. USB is not an air-gap." },
     { id: 23, level: "Intermediate", title: "Air-gap signing loop", job: "Online builds PSBT → offline signs → online broadcasts.", done: "Four steps in order. This tab never signs." },
     { id: 24, level: "Intermediate", title: "Geographic keys", job: "Home / elsewhere / a person or institution.", done: "Three keys not clustered in one building." },
     { id: 25, level: "Beginner", title: "Annual rehearsal", job: "Plans go stale. Schedule the drills.", done: "Restore (UC16) and open-while-alive (UC18) are on a calendar." },
@@ -70,8 +70,20 @@
     { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Break trivial common-input heuristics. Brand-agnostic.", done: "I know mixing is optional, not a custody substitute." },
     { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second vault as a decoy — high safety bar.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
     { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child mnemonics. Classic Lab is SoT.", done: "Child ≠ backup of the parent. Do not fund practice children." },
-    { id: 31, level: "Advanced", title: "SLIP-39 operational inheritance", job: "Threshold mnemonic shares for people, not edu hex.", done: "V2 UC7 stays educational hex. Suite lives in the SLIP-39 room." }
+    { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "Threshold shares for people. UC7 stays edu hex.", done: "V2 UC7 stays educational hex. Suite lives in the SLIP-39 room." }
   ];
+
+  var PATHS = [
+    { id: "start", title: "Start here", blurb: "Make a phrase, treat the card as backup, then prove it.", ids: [1, 2, 16] },
+    { id: "keys", title: "Keys and backup", blurb: "Passphrase, dice pad, metal, hardware ceremony.", ids: [3, 14, 15, 20, 22] },
+    { id: "watch", title: "Addresses and watch", blurb: "Folders, viewing keys, first receive.", ids: [4, 5, 9, 19] },
+    { id: "custody", title: "Who holds the keys", blurb: "They vs you, hot vs cold, how much.", ids: [11, 12, 13, 17] },
+    { id: "shared", title: "Shared and air-gap", blurb: "Multisig, Shamir, PSBT, network.", ids: [6, 7, 8, 10, 21, 23] },
+    { id: "life", title: "Over time", blurb: "Inheritance, geography, yearly drill.", ids: [18, 24, 25] },
+    { id: "adv", title: "Advanced", blurb: "Node, UTXO, privacy, BIP-85, SLIP-39. Soft — after Starter.", ids: [26, 27, 28, 29, 30, 31] }
+  ];
+  var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+  var pickerFilter = "start";
 
   function $(id) { return document.getElementById(id); }
   function loadState() {
@@ -108,27 +120,224 @@
     });
   }
 
+  function pathFor(id) {
+    var i;
+    for (i = 0; i < PATHS.length; i++) {
+      if (PATHS[i].ids.indexOf(id) >= 0) return PATHS[i].id;
+    }
+    return "all";
+  }
+
+  function nextSuggested() {
+    var done = completedSet();
+    var i;
+    for (i = 0; i < SUGGESTED.length; i++) {
+      if (done.indexOf(SUGGESTED[i]) < 0) return SUGGESTED[i];
+    }
+    return null;
+  }
+
+  function starterReady() {
+    var done = completedSet();
+    return [1, 2, 16].every(function (id) { return done.indexOf(id) >= 0; });
+  }
+
+  var START_IDS = [1, 2, 16];
+  var CARD_ATOM = {
+    1: "assets/uc1-atom-entropy-words.svg",
+    2: "assets/uc2-atom-card-object.svg",
+    16: "assets/uc1-atom-phrase-ne-address.svg"
+  };
+
+  function startDotClass(id, done, currentId) {
+    if (done.indexOf(id) >= 0) return "done";
+    if (id === currentId) return "current";
+    var ci = START_IDS.indexOf(currentId);
+    var ii = START_IDS.indexOf(id);
+    if (ci >= 0 && ii > ci) return "locked";
+    return "empty";
+  }
+
+  function cardHtml(t, done, later, opts) {
+    opts = opts || {};
+    var isDone = done.indexOf(t.id) >= 0;
+    var first = !!opts.current && !isDone;
+    var atom = opts.atom || CARD_ATOM[t.id];
+    var step = opts.step;
+    return (
+      '<button type="button" class="uc-card lvl-' +
+      t.level +
+      (isDone ? " done" : "") +
+      (later && !isDone ? " later" : "") +
+      (first ? " first-step" : "") +
+      '" data-uc="' +
+      t.id +
+      '">' +
+      '<div class="uc-card-top">' +
+      (step ? '<span class="uc-step">' + step + "</span>" : "") +
+      (atom
+        ? '<img class="uc-atom" src="' + atom + '" alt="" width="72" height="48">'
+        : "") +
+      "</div>" +
+      '<div class="uc-id"><span class="uc-num">UC' +
+      t.id +
+      "</span><span class=\"uc-lvl\">" +
+      t.level +
+      "</span>" +
+      (first ? '<span class="uc-first">Start</span>' : "") +
+      (isDone ? '<span class="uc-check" aria-label="done">✓</span>' : "") +
+      "</div>" +
+      "<h3>" +
+      t.title +
+      "</h3>" +
+      '<p class="uc-job">' +
+      t.job +
+      "</p>" +
+      "</button>"
+    );
+  }
+
   function renderPicker() {
     var grid = $("pickerGrid");
+    var head = $("pickerHead");
     if (!grid) return;
     var done = completedSet();
-    grid.innerHTML = TRACKS.map(function (t) {
-      var isDone = done.indexOf(t.id) >= 0;
-      return (
-        '<button type="button" class="uc-card' + (isDone ? " done" : "") + '" data-uc="' + t.id + '">' +
-        '<div class="uc-id">UC' + t.id + " · " + t.level + (isDone ? " · done" : "") + "</div>" +
-        "<h3>" + t.title + "</h3>" +
-        '<p class="uc-job">' + t.job + "</p>" +
-        '<p class="uc-done"><strong>Done when:</strong> ' + t.done + "</p>" +
-        "</button>"
-      );
-    }).join("");
-    grid.querySelectorAll("[data-uc]").forEach(function (btn) {
-      btn.addEventListener("click", function () { openUc(parseInt(btn.getAttribute("data-uc"), 10)); });
+    var nxt = nextSuggested();
+    var nxtT = nxt ? TRACKS.filter(function (x) { return x.id === nxt; })[0] : null;
+    var laterAdv = !starterReady();
+    var startDoneN = START_IDS.filter(function (id) { return done.indexOf(id) >= 0; }).length;
+    var startCurrent = null;
+    START_IDS.forEach(function (id) {
+      if (startCurrent == null && done.indexOf(id) < 0) startCurrent = id;
+    });
+    if (head) {
+      var filters = [
+        { id: "all", lab: "All paths" },
+        { id: "start", lab: "Start here" },
+        { id: "keys", lab: "Keys" },
+        { id: "watch", lab: "Watch" },
+        { id: "custody", lab: "Custody" },
+        { id: "shared", lab: "Shared" },
+        { id: "life", lab: "Over time" },
+        { id: "adv", lab: "Advanced" }
+      ];
+      head.innerHTML =
+        '<div class="v2-picker-lead">' +
+        (nxtT
+          ? '<button type="button" class="btn v2-continue" id="v2Continue" data-uc="' +
+            nxtT.id +
+            '">' +
+            (done.length ? "Next up" : "Continue") +
+            " · UC" +
+            nxtT.id +
+            " " +
+            nxtT.title +
+            "</button>"
+          : '<p class="v2-picker-done-all">All listed tracks marked done.</p>') +
+        '<div class="v2-start-prog">' +
+        '<ol class="v2-start-dots" aria-label="Start here progress">' +
+        START_IDS.map(function (id) {
+          return '<li class="' + startDotClass(id, done, startCurrent) + '"></li>';
+        }).join("") +
+        "</ol>" +
+        '<p class="v2-start-frac">' +
+        startDoneN +
+        " of 3 in Start here</p>" +
+        '<p class="control-help v2-picker-count">' +
+        done.length +
+        " / " +
+        TRACKS.length +
+        " all paths</p></div></div>" +
+        '<div class="v2-path-filters" role="tablist">' +
+        filters
+          .map(function (f) {
+            return (
+              '<button type="button" class="v2-filter' +
+              (pickerFilter === f.id ? " is-on" : "") +
+              '" data-path-filter="' +
+              f.id +
+              '" aria-pressed="' +
+              (pickerFilter === f.id ? "true" : "false") +
+              '">' +
+              f.lab +
+              "</button>"
+            );
+          })
+          .join("") +
+        "</div>";
+    }
+    var showPaths = PATHS.filter(function (p) {
+      return pickerFilter === "all" || pickerFilter === p.id;
+    });
+    grid.innerHTML = showPaths
+      .map(function (p) {
+        var cards = p.ids
+          .map(function (id, ix) {
+            var t = TRACKS.filter(function (x) { return x.id === id; })[0];
+            if (!t) return "";
+            var startish = p.id === "start";
+            return cardHtml(t, done, p.id === "adv" && laterAdv, {
+              step: startish ? ix + 1 : 0,
+              current: startish && id === startCurrent,
+              atom: startish ? CARD_ATOM[id] : ""
+            });
+          })
+          .join("");
+        return (
+          '<section class="v2-path' +
+          (p.id === "start" ? " v2-path-hero" : "") +
+          '" data-path="' +
+          p.id +
+          '"><header class="v2-path-h"><h2>' +
+          p.title +
+          "</h2><p>" +
+          p.blurb +
+          "</p></header><div class=\"v2-picker-grid\">" +
+          cards +
+          "</div></section>"
+        );
+      })
+      .join("");
+    if (pickerFilter === "start") {
+      var keys = PATHS.filter(function (p) { return p.id === "keys"; })[0];
+      var ghosts = (keys ? keys.ids : []).slice(0, 3).map(function (id) {
+        var t = TRACKS.filter(function (x) { return x.id === id; })[0];
+        if (!t) return "";
+        return (
+          '<button type="button" class="uc-ghost" data-path-filter="keys">' +
+          "<span>UC" +
+          t.id +
+          "</span><strong>" +
+          t.title +
+          "</strong></button>"
+        );
+      }).join("");
+      grid.innerHTML +=
+        '<div class="v2-path-next">' +
+        "<p>Next · Keys and backup</p>" +
+        '<div class="v2-ghost-row">' +
+        ghosts +
+        "</div></div>";
+    }
+    function bindOpen(root) {
+      if (!root) return;
+      root.querySelectorAll("[data-uc]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          openUc(parseInt(btn.getAttribute("data-uc"), 10));
+        });
+      });
+    }
+    bindOpen(grid);
+    bindOpen(head);
+    document.querySelectorAll("[data-path-filter]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        pickerFilter = btn.getAttribute("data-path-filter") || "all";
+        renderPicker();
+      });
     });
     show("viewPicker");
     $("panelTitle").textContent = "Use-case tracks";
-    $("panelSub").textContent = "Pick a job. Tracks teach; rooms stay in the sidebar.";
+    $("panelSub").textContent = "Follow the path. Tracks teach; rooms stay in the sidebar.";
   }
 
   function openUc(id) {
@@ -137,18 +346,21 @@
     if (!gated(id)) {
       $("gateTitle").textContent = "UC" + t.id + " — " + t.title;
       $("gateScope").innerHTML =
-        '<div class="v2-callout is" id="gateIs"><strong>What this is</strong>' +
-        "An offline practice track. Not a funded wallet, not a signer, not a broadcaster.</div>" +
-        '<div class="v2-callout isnt" id="gateIsnt"><strong>What this is not</strong>' +
-        "Do not import these words into a real wallet. Do not send coins to practice addresses.</div>" +
+        '<div class="v2-gate-tight">' +
+        '<div class="v2-callout is" id="gateIs"><strong>Is</strong> Offline practice. Not a funded wallet or a signer.</div>' +
+        '<div class="v2-callout isnt" id="gateIsnt"><strong>Is not</strong> Do not import these words. Do not send coins here.</div>' +
+        "</div>" +
         '<div class="v2-callout done" id="gateDone"><strong>Done when</strong>' +
         t.done +
         "</div>";
+      var gv = $("gateViz");
+      if (gv) gv.innerHTML = vizHtml(id, { allDim: true, suffix: "Gate" });
       $("btnGateStart").onclick = function () {
         setGated(id);
         startTrack(id);
       };
       show("viewGate");
+      applyViz(id, 0, "Gate");
       return;
     }
     startTrack(id);
@@ -231,6 +443,8 @@
   }
 
   function startTrack(id) {
+    var gv = $("gateViz");
+    if (gv) gv.innerHTML = "";
     current = { id: id, step: 0 };
     mem.cardAck = false;
     mem.maxStep = 0;
@@ -571,17 +785,19 @@
     return 3;
   }
 
-  function vizHtml(id) {
+  function vizHtml(id, opts) {
     var spec = VIZ[id];
     if (!spec) return "";
+    opts = opts || {};
     var maxS = Math.max(0, mem.maxStep || 0);
     return (
       '<div class="uc-viz" id="uc' +
       id +
+      (opts.suffix || "") +
       'Viz">' +
       spec.atoms
         .map(function (a) {
-          var can = a.jump <= maxS;
+          var can = !opts.allDim && a.jump <= maxS;
           return (
             '<button type="button" class="atom dim" data-atom="' +
             a.n +
@@ -603,13 +819,14 @@
     );
   }
 
-  function applyViz(id, step) {
+  function applyViz(id, step, suffix) {
     var spec = VIZ[id];
     if (!spec) return;
     var n = String((spec.forStep || defaultVizStep)(step));
+    var sel = "#uc" + id + (suffix || "") + "Viz [data-atom]";
     var fn = function (k) {
       k = String(k | 0);
-      document.querySelectorAll("#uc" + id + "Viz [data-atom]").forEach(function (el) {
+      document.querySelectorAll(sel).forEach(function (el) {
         var on = el.getAttribute("data-atom") === k;
         el.classList.toggle("hi", on);
         el.classList.toggle("dim", !on);
@@ -2534,7 +2751,7 @@
     if (ratio == null) return "Seed strength";
     var n = mem.entWordCount || 12;
     var need = entNeed();
-    if (ratio >= 0.999) return "Stronger seed · " + n + "-word";
+    if (ratio >= 0.999) return "Stronger seed";
     if (entBits() + 0.001 >= 128 && padIsLow()) {
       return "Not enough for " + n + "-word (~" + need + ")";
     }
@@ -4492,6 +4709,7 @@
       fin.addEventListener("click", function () {
         if (!ex.checked) return;
         markComplete(current.id);
+        pickerFilter = pathFor(current.id);
         renderPicker();
       });
     }
@@ -4516,6 +4734,27 @@
     }
   }
 
+  function wipeProgressStore() {
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* ignore */ }
+    try { localStorage.removeItem(STORE); } catch (e2) { /* ignore */ }
+    try {
+      document.cookie.split(";").forEach(function (c) {
+        var n = c.split("=")[0].trim();
+        if (!n) return;
+        document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+        document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/v2/";
+      });
+    } catch (e3) { /* ignore */ }
+  }
+
+  function hardRefresh() {
+    wipeProgressStore();
+    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+    pickerFilter = "start";
+    current = { id: 1, step: 0 };
+    renderPicker();
+  }
+
   function clearSecrets() {
     mem.mnemonic = "";
     mem.lastRows = null;
@@ -4537,6 +4776,7 @@
 
   function boot() {
     if ($("v2Clear")) $("v2Clear").addEventListener("click", clearSecrets);
+    if ($("v2HardRefresh")) $("v2HardRefresh").addEventListener("click", hardRefresh);
     if ($("btnBackPicker")) $("btnBackPicker").addEventListener("click", renderPicker);
     var rail = $("trackRail");
     if (rail) {

@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-25
-- **v1:** `/` · product stamp `v0.16.47`
-- **v2:** `/v2/` · chip `v0.17.47-v2` (`data-v2-version`; not the classic footer stamp)
+- **v1:** `/` · product stamp `v0.16.48`
+- **v2:** `/v2/` · chip `v0.17.53-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -13,6 +13,17 @@ Live compare.md lags until deploy. This repo file is source of truth.
 V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a second crypto stack. Classic `/` is unchanged.
 
 ---
+
+## What landed since 0.16.47 / chip 0.17.47
+
+- **Picker is a path, not a catalog.** Default **Start here** (UC1, UC2, UC16). All paths is one click.
+- **Hero cards:** step 1/2/3, Gap-kit atoms on the picker, START pill on the current first step, hover lift.
+- **Progress geometry:** three dots + “N of 3 in Start here”; global N/31 is secondary. Finish → green ✓; **Next up · UC2**.
+- **First paint:** Start here HTML skeleton (no blank main while JS boots).
+- **Next · Keys and backup:** three ghost title cards (not a void, not the full grid).
+- **About V2** holds Hard refresh (wipes `bip39lab.v2` progress). **Clear secrets** stays red in the top bar.
+- **UC1 lock:** caption **Stronger seed** (no `· 12-word`). Receive rows **Copy + QR**.
+- Rooms in the sidebar stay dim vs Tracks.
 
 ## What landed since 0.16.46 / chip 0.17.46
 
@@ -36,7 +47,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 
 ## Pedagogy / chrome (all tracks)
 
-- Picker **UC1–UC31**.
+- Picker **path**: Start here default; filters; UC1–UC31 behind All paths.
 - **Clear secrets** — red, top-right header, every view.
 - **Do / Do not** then `desc()`. Blue `done` callouts. Green = Do.
 - Force-exit on every Finish. Rail + concept chips jump back.
@@ -76,7 +87,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 
 | Job | v1 | v2 | Still missing on v2 |
 |-----|----|----|---------------------|
-| Entry | Rooms + First hour | **Picker UC1–UC31** | — |
+| Entry | Rooms + First hour | **Start here path (UC1–2–16)** | Full 31 behind All paths |
 | Gate | One ack | **Is / is not / Done when** | — |
 | Clear secrets | Mnemonic row | **Topbar** | — |
 | Network on derive | Lab select | **UC1 Test / Mainnet** | UC4 test; watch zpub main — on purpose |

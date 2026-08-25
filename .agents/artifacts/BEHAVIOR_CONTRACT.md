@@ -1,7 +1,7 @@
-# BEHAVIOR-CONTRACT V2 P0–P2
+# BEHAVIOR-CONTRACT V2 picker visual
 
-1. Picker shows 31 UC cards; chip contains 0.17.47-v2; classic `/` still has Generate.
-2. UC16: after generate, hide card, type the 12 words, message says same receive address.
-3. UC17: coffee→2-of-3 is a trap; coffee/phone + mid/hww + large/mofn unlocks continue.
-4. UC19: simulate credit shows 0.000184; copy forbids funding mainnet; Network dock present.
-5. UC23: four steps in order; copy says tab never signs.
+1. First view shows 3 Start here cards, Continue UC1, Start here filter selected.
+2. All paths shows 31 cards.
+3. UC1 derive has 5 Copy and 5 QR.
+4. After finishing UC1, card 1 is done and Continue mentions UC2.
+5. About V2 contains Hard refresh; Clear secrets remains in the top bar.
