@@ -40,50 +40,83 @@
   var PSBT_PARTIAL = "cHNidP8AIgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA";
 
   var TRACKS = [
-    { id: 1, level: "Starter", title: "First wallet", job: "Make a practice phrase and one receive address.", done: "Phrase, numbered card, address ≠ phrase; will not fund practice." },
-    { id: 2, level: "Starter", title: "Paper backup", job: "Treat the numbered card as the backup object.", done: "Card = backup; no photo/cloud of a funded phrase." },
-    { id: 3, level: "Beginner", title: "Passphrase (25th word)", job: "Same words + different passphrase = different wallet.", done: "Compare A vs B; forgotten PP = loss of that vault." },
-    { id: 4, level: "Beginner", title: "Path folders", job: "A path is a folder; words do not change.", done: "Toggle receive/change or index; words stay." },
-    { id: 5, level: "Beginner", title: "Watch-only", job: "Export public descriptors / zpub — never the seed.", done: "Never paste seed into a watch-only app." },
-    { id: 6, level: "Intermediate", title: "Shared custody multisig", job: "M-of-N from public keys.", done: "Keys ≠ BIP-39 word shares." },
-    { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Edu shares — not SLIP-39 Suite.", done: "Shares ≠ multisig cosigners." },
-    { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Inspect a partial transaction offline.", done: "Inspect → offline sign (elsewhere) → online broadcast; never paste seed." },
-    { id: 9, level: "Intermediate", title: "xpub privacy", job: "Account xpub is watch-only and privacy-sensitive.", done: "xpub ≠ spend; do not publish casually." },
-    { id: 10, level: "Advanced", title: "Network leak", job: "Default offline; balances only after opt-in.", done: "Unknown ≠ 0; explicit Network page only." },
-    { id: 11, level: "Beginner", title: "They hold the keys", job: "A company keeps the keys. You only have a login.", done: "If you never got recovery words, a company can freeze or lose the coins. If you have the words, you can spend and you can lose them." },
-    { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys = hot wallet. Hardware keeps the seed on the device. USB is not an air-gap. Typing the seed into a computer still kills the vault." },
+    { id: 1, level: "Starter", title: "First wallet", job: "Make a practice phrase and one receive address.", done: "You made words, saw the card, and know the address is not the secret. You will not send coins here." },
+    { id: 2, level: "Starter", title: "Paper backup", job: "Write it on paper. Do not photo it.", done: "The numbered card is the backup. No photo or cloud of a funded phrase." },
+    { id: 3, level: "Beginner", title: "Add a hidden 25th word", job: "Same words + a different extra secret = a different wallet.", done: "Empty extra secret and a test secret make two addresses. Forget the test secret and that vault is gone." },
+    { id: 4, level: "Beginner", title: "Path folders", job: "A path is a folder; words do not change.", done: "You changed folder or index. The words stayed the same." },
+    { id: 5, level: "Beginner", title: "Watch-only", job: "Show a public viewing key. Never paste the words.", done: "You saw a viewing key, not the words. Watch apps never get the seed." },
+    { id: 6, level: "Intermediate", title: "Shared custody multisig", job: "Two of three people can spend. Each keeps their own words.", done: "These are separate keys. They are not pieces of one phrase." },
+    { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Cut one secret into pieces. Pieces are not cosigners.", done: "Shares rebuild one secret. They are not cosigner keys." },
+    { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Read a half-built payment here. Sign and send elsewhere.", done: "You inspect the package here. You sign offline elsewhere. You broadcast from a hot machine. Never paste the seed." },
+    { id: 9, level: "Intermediate", title: "xpub privacy", job: "A viewing key cannot spend. It can still leak history.", done: "You saw a public key, not spend words. Do not post it casually." },
+    { id: 10, level: "Advanced", title: "Network leak", job: "This tab stays offline. Balances only if you opt in.", done: "Unknown is not zero. Lookups live on Network, address-only." },
+    { id: 11, level: "Beginner", title: "They hold the keys", job: "A company keeps the keys. You only have a login.", done: "You sorted who holds the keys. A login is not recovery words." },
+    { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys are hot. Hardware keeps the seed on the device. Typing the seed into a computer still kills the vault." },
     { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
-    { id: 14, level: "Beginner", title: "A few dice are not enough", job: "Word count is not entropy. A short pad can still print words.", done: "Few d6 = TOO LOW. Minted words can still be weak. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Coin = 1 bit." },
-    { id: 15, level: "Beginner", title: "Dice pad and a 25th word", job: "Roll the pad first. A longer passphrase does not fix a short pad.", done: "Pad bits are the source. 12-word wants 128; 24-word wants 256. Passphrase is an extra secret (weak / fair / stronger) — not a substitute for rolling." },
-    { id: 16, level: "Starter", title: "Prove the backup works", job: "Wipe the screen and recover only from the numbered card.", done: "Same receive address from typed words. No photo. Practice phrase only." },
-    { id: 17, level: "Beginner", title: "Choose setup by amount", job: "Pick an object for how much.", done: "Daily / mid / large sit in hot · HWW · 2-of-3. Not all on an exchange." },
-    { id: 18, level: "Intermediate", title: "If I cannot speak", job: "What happens if you cannot speak.", done: "Named holders. Open-while-alive rehearsal. No seed in chat. Not legal counsel." },
-    { id: 19, level: "Beginner", title: "See a first receive", job: "A test credit on an address you control, then watch-only.", done: "Same address on two views. Unknown ≠ 0. Never fund the practice mainnet phrase." },
-    { id: 20, level: "Beginner", title: "Metal backup", job: "Paper vs steel for a funded seed.", done: "Metal for fire/flood. Still no photo of the plate." },
-    { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold 2; a partner or service holds 1.", done: "I can say who can freeze vs who can steal vs DIY 2-of-3." },
-    { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Firmware and PIN before a seed. USB is not an air-gap.", done: "Seed never on the computer. USB is not an air-gap." },
-    { id: 23, level: "Intermediate", title: "Air-gap signing loop", job: "Online builds PSBT → offline signs → online broadcasts.", done: "Four steps in order. This tab never signs." },
-    { id: 24, level: "Intermediate", title: "Geographic keys", job: "Home / elsewhere / a person or institution.", done: "Three keys not clustered in one building." },
-    { id: 25, level: "Beginner", title: "Annual rehearsal", job: "Plans go stale. Schedule the drills.", done: "Restore (UC16) and open-while-alive (UC18) are on a calendar." },
-    { id: 26, level: "Advanced", title: "Own node", job: "Do not treat a public explorer as your source of truth.", done: "This tab does not run a node. Lookups stay opt-in Network." },
-    { id: 27, level: "Advanced", title: "UTXO / coin control", job: "Change is a folder; coins are pieces, not a single balance.", done: "I can point at receive vs change and say why mixing UTXOs leaks." },
-    { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Break trivial common-input heuristics. Brand-agnostic.", done: "I know mixing is optional, not a custody substitute." },
-    { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second vault as a decoy — high safety bar.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
-    { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child mnemonics. Classic Lab is SoT.", done: "Child ≠ backup of the parent. Do not fund practice children." },
-    { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "Threshold shares for people. UC7 stays edu hex.", done: "V2 UC7 stays educational hex. Suite lives in the SLIP-39 room." }
+    { id: 14, level: "Beginner", title: "Weak dice still make words", job: "A short pad can still print 12 or 24 words. Word count is not enough randomness.", done: "A few rolls can still print words. Those words can still be too weak. Word count is not enough." },
+    { id: 15, level: "Beginner", title: "Pad then a 25th word", job: "Roll the pad first. A longer extra secret does not fix a short pad.", done: "You rolled the pad first, then added a 25th word. A longer extra secret does not fix a weak pad." },
+    { id: 16, level: "Starter", title: "Prove the backup works", job: "Hide the card. Type from paper. Same receive address.", done: "Same receive address from typed words. No photo. Practice phrase only." },
+    { id: 17, level: "Beginner", title: "Choose setup by amount", job: "Match daily, mid, and large to different objects.", done: "Daily on a hot spend. Mid on hardware. Large as 2-of-3. Not all on an exchange." },
+    { id: 18, level: "Intermediate", title: "If I cannot speak", job: "Name who holds what if you cannot speak.", done: "Holders named. You practiced opening while alive. No seed in chat. Not legal advice." },
+    { id: 19, level: "Beginner", title: "See a first receive", job: "Show a practice receive, then a second watch view.", done: "Same address on two views. Unknown is not zero. Never fund this practice phrase." },
+    { id: 20, level: "Beginner", title: "Metal backup", job: "Paper burns. Steel is the object for a funded seed.", done: "You chose metal for fire and flood. Still no photo of the plate." },
+    { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold two keys. A partner holds one.", done: "You can say who can freeze, who can steal, and how that differs from friends 2-of-3." },
+    { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Check the device before a seed is born. Do not type words into the laptop.", done: "Seed stays on the device. A USB cable is not an air-gap." },
+    { id: 23, level: "Intermediate", title: "Air-gap signing loop", job: "Build online, sign offline, send from hot.", done: "Four steps in order. This tab never signs." },
+    { id: 24, level: "Intermediate", title: "Geographic keys", job: "Home, elsewhere, a person — not two keys in one building.", done: "Three keys not clustered in one building." },
+    { id: 25, level: "Beginner", title: "Annual rehearsal", job: "Put restore and inheritance drills on a calendar.", done: "Prove-the-backup and open-while-alive are scheduled this year." },
+    { id: 26, level: "Advanced", title: "Own node", job: "A public explorer is someone else’s view, not your node.", done: "This tab does not run a node. Lookups stay opt-in Network." },
+    { id: 27, level: "Advanced", title: "UTXO / coin control", job: "Coins are pieces. Change is another folder.", done: "You can point at receive vs change and say why mixing pieces leaks." },
+    { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Mixing is optional. It does not replace backup.", done: "You know mixing is extra privacy, not a custody substitute." },
+    { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second extra secret opens a real second vault.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
+    { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child phrases. Classic Lab is the full card.", done: "A child is not a backup of the parent. Do not fund practice children." },
+    { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "People hold word shares. UC7 hex stays educational.", done: "Suite lives in the SLIP-39 room. Combine is recovery, not a cosign." }
   ];
 
   var PATHS = [
-    { id: "start", title: "Start here", blurb: "Make a phrase, treat the card as backup, then prove it.", ids: [1, 2, 16] },
-    { id: "keys", title: "Keys and backup", blurb: "Passphrase, dice pad, metal, hardware ceremony.", ids: [3, 14, 15, 20, 22] },
-    { id: "watch", title: "Addresses and watch", blurb: "Folders, viewing keys, first receive.", ids: [4, 5, 9, 19] },
-    { id: "custody", title: "Who holds the keys", blurb: "They vs you, hot vs cold, how much.", ids: [11, 12, 13, 17] },
-    { id: "shared", title: "Shared and air-gap", blurb: "Multisig, Shamir, PSBT, network.", ids: [6, 7, 8, 10, 21, 23] },
-    { id: "life", title: "Over time", blurb: "Inheritance, geography, yearly drill.", ids: [18, 24, 25] },
-    { id: "adv", title: "Advanced", blurb: "Node, UTXO, privacy, BIP-85, SLIP-39. Soft — after Starter.", ids: [26, 27, 28, 29, 30, 31] }
+    { id: "start", title: "Start here", blurb: "1 Make words · 2 The card is the backup · 3 Prove it works.", ids: [1, 2, 16] },
+    { id: "keys", title: "Keys and backup", blurb: "1 Add a hidden 25th word · 2 Weak dice still make words · 3 Pad then a 25th word.", ids: [3, 14, 15, 20, 22] },
+    { id: "watch", title: "Addresses and watch", blurb: "1 Folders · 2 Watch only · 3 Viewing-key privacy · 4 First receive.", ids: [4, 5, 9, 19] },
+    { id: "custody", title: "Who holds the keys", blurb: "1 They hold · 2 Hot vs hardware · 3 Hot vs cold · 4 How much.", ids: [11, 12, 13, 17] },
+    { id: "shared", title: "Shared and air-gap", blurb: "1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap.", ids: [6, 7, 8, 10, 21, 23] },
+    { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys · 3 Yearly drill.", ids: [18, 24, 25] },
+    { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] }
   ];
   var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
   var pickerFilter = "start";
+  var GATES = {
+    1: { is: "Make practice words and look at the numbered card before any address.", isnt: "Do not import these words. Do not send coins here." },
+    2: { is: "The numbered card is the backup. Write it by hand.", isnt: "A photo, print, or cloud copy is not the backup discipline." },
+    3: { is: "Same words plus a different extra secret make a different wallet.", isnt: "The extra secret is not a PIN. Forgetting it is not a reset." },
+    4: { is: "A path is a folder. The words stay put.", isnt: "A new folder is not a new backup." },
+    5: { is: "Give a watch app a public viewing key.", isnt: "Do not paste the recovery words into a watch-only app." },
+    6: { is: "Two of three people sign. Each has a full phrase.", isnt: "This is not cutting one phrase into pieces (that is Shamir)." },
+    7: { is: "One secret cut into practice pieces. Combine to recover.", isnt: "Not Trezor Suite words. A piece cannot sign a spend." },
+    8: { is: "Read a half-built payment package offline.", isnt: "This tab never signs and never broadcasts. Never paste the seed." },
+    9: { is: "A viewing key lists addresses. It cannot spend.", isnt: "Do not publish it casually. It is not the recovery words." },
+    10: { is: "This page stays offline unless you open Network on purpose.", isnt: "A missing lookup is unknown, not zero coins." },
+    11: { is: "A company keeps the keys. You have a login.", isnt: "If you never got recovery words, you cannot spend on your own." },
+    12: { is: "Same words. Phone keys vs a hardware device.", isnt: "USB is not an air-gap. Typing the seed into a computer still kills the vault." },
+    13: { is: "Hot means keys can touch the internet. Cold means they do not.", isnt: "Brand name is not the split. Sort the four objects." },
+    14: { is: "Few dice can still print 12 or 24 words. Word count is not enough.", isnt: "Minted words can still be weak. Do not fund a short pad." },
+    15: { is: "Roll the pad first. Then maybe an extra secret.", isnt: "A longer extra secret does not fix a short pad." },
+    16: { is: "Hide the card. Type from paper. Same receive address.", isnt: "Do not photograph the card. Do not use a funded phrase." },
+    17: { is: "Match how much to which object.", isnt: "Do not put daily, mid, and large all on an exchange." },
+    18: { is: "Name who holds what if you cannot speak.", isnt: "Do not put a seed in chat. This is not legal counsel." },
+    19: { is: "A practice receive, then a second watch view.", isnt: "Do not fund this practice phrase on mainnet." },
+    20: { is: "Steel for fire and flood. Paper still burns.", isnt: "Do not photograph the plate." },
+    21: { is: "You hold two keys. A partner or service holds one.", isnt: "Not the same threat model as three friends DIY." },
+    22: { is: "Check firmware before a seed is born. Words stay on the device.", isnt: "Do not type the seed into the laptop. USB is not an air-gap." },
+    23: { is: "Build online, sign offline, broadcast from hot.", isnt: "This tab never signs." },
+    24: { is: "Home, elsewhere, a person — three sites.", isnt: "Do not put two keys in one building." },
+    25: { is: "Schedule restore and inheritance drills this year.", isnt: "A document you never run is a hope." },
+    26: { is: "A public explorer is someone else’s view.", isnt: "This tab does not run your node." },
+    27: { is: "Coins are pieces. Change is another folder.", isnt: "The total is not one coin." },
+    28: { is: "Inputs spent together can look like one owner.", isnt: "Mixing does not replace backup. No mixer brand here." },
+    29: { is: "A second extra secret opens a real second vault.", isnt: "Not legal or personal-safety advice." },
+    30: { is: "One master can mint child phrases. Classic Lab is the full card.", isnt: "A child is not a backup of the parent. Do not fund practice children." },
+    31: { is: "People hold product word shares. Dock the SLIP-39 room.", isnt: "UC7 hex is educational, not Suite." }
+  };
 
   function $(id) { return document.getElementById(id); }
   function loadState() {
@@ -128,9 +161,23 @@
     return "all";
   }
 
+  function nextInPath(pid) {
+    var p = PATHS.filter(function (x) { return x.id === pid; })[0];
+    var done = completedSet();
+    var i;
+    if (!p) return null;
+    for (i = 0; i < p.ids.length; i++) {
+      if (done.indexOf(p.ids[i]) < 0) return p.ids[i];
+    }
+    return null;
+  }
   function nextSuggested() {
     var done = completedSet();
     var i;
+    if (pickerFilter && pickerFilter !== "all") {
+      var n = nextInPath(pickerFilter);
+      if (n != null) return n;
+    }
     for (i = 0; i < SUGGESTED.length; i++) {
       if (done.indexOf(SUGGESTED[i]) < 0) return SUGGESTED[i];
     }
@@ -170,29 +217,34 @@
       (isDone ? " done" : "") +
       (later && !isDone ? " later" : "") +
       (first ? " first-step" : "") +
+      (step ? " uc-chapter" : "") +
+      (step ? " step-" + step : "") +
       '" data-uc="' +
       t.id +
       '">' +
-      '<div class="uc-card-top">' +
-      (step ? '<span class="uc-step">' + step + "</span>" : "") +
       (atom
-        ? '<img class="uc-atom" src="' + atom + '" alt="" width="72" height="48">'
+        ? '<img class="uc-atom" src="' + atom + '" alt="" width="96" height="96">'
         : "") +
-      "</div>" +
-      '<div class="uc-id"><span class="uc-num">UC' +
-      t.id +
-      "</span><span class=\"uc-lvl\">" +
-      t.level +
-      "</span>" +
+      '<div class="uc-card-body">' +
+      (step
+        ? '<span class="uc-step' +
+          (isDone ? " is-done" : first ? " is-now" : "") +
+          '">' +
+          (isDone ? "✓" : step) +
+          "</span>"
+        : "") +
       (first ? '<span class="uc-first">Start</span>' : "") +
-      (isDone ? '<span class="uc-check" aria-label="done">✓</span>' : "") +
-      "</div>" +
       "<h3>" +
       t.title +
       "</h3>" +
       '<p class="uc-job">' +
       t.job +
       "</p>" +
+      '<div class="uc-id"><span class="uc-num">UC' +
+      t.id +
+      "</span><span class=\"uc-lvl\">" +
+      t.level +
+      "</span></div></div>" +
       "</button>"
     );
   }
@@ -224,13 +276,12 @@
       head.innerHTML =
         '<div class="v2-picker-lead">' +
         (nxtT
-          ? '<button type="button" class="btn v2-continue" id="v2Continue" data-uc="' +
+          ? '<button type="button" class="btn v2-continue' +
+            (done.length ? "" : " pulse") +
+            '" id="v2Continue" data-uc="' +
             nxtT.id +
             '">' +
-            (done.length ? "Next up" : "Continue") +
-            " · UC" +
-            nxtT.id +
-            " " +
+            (done.length ? "Continue · " : "Start · ") +
             nxtT.title +
             "</button>"
           : '<p class="v2-picker-done-all">All listed tracks marked done.</p>') +
@@ -283,6 +334,24 @@
             });
           })
           .join("");
+        var pathCurrent = null;
+        p.ids.forEach(function (id) {
+          if (pathCurrent == null && done.indexOf(id) < 0) pathCurrent = id;
+        });
+        var wantRail = true;
+        var rail = wantRail
+          ? '<ol class="v2-step-path" aria-hidden="true">' +
+            p.ids.map(function (id, ix) {
+              return (
+                '<li class="' +
+                startDotClass(id, done, pathCurrent) +
+                '"><span>' +
+                (done.indexOf(id) >= 0 ? "✓" : ix + 1) +
+                "</span></li>"
+              );
+            }).join("") +
+            "</ol>"
+          : "";
         return (
           '<section class="v2-path' +
           (p.id === "start" ? " v2-path-hero" : "") +
@@ -292,7 +361,9 @@
           p.title +
           "</h2><p>" +
           p.blurb +
-          "</p></header><div class=\"v2-picker-grid\">" +
+          "</p></header>" +
+          rail +
+          '<div class="v2-picker-grid">' +
           cards +
           "</div></section>"
         );
@@ -305,9 +376,7 @@
         if (!t) return "";
         return (
           '<button type="button" class="uc-ghost" data-path-filter="keys">' +
-          "<span>UC" +
-          t.id +
-          "</span><strong>" +
+          '<span class="uc-next-lab">Next</span><strong>' +
           t.title +
           "</strong></button>"
         );
@@ -344,13 +413,17 @@
     var t = TRACKS.filter(function (x) { return x.id === id; })[0];
     if (!t) return;
     if (!gated(id)) {
+      var g = GATES[id] || {
+        is: "Offline practice. Not a funded wallet or a signer.",
+        isnt: "Do not import these words. Do not send coins here."
+      };
       $("gateTitle").textContent = "UC" + t.id + " — " + t.title;
       $("gateScope").innerHTML =
         '<div class="v2-gate-tight">' +
-        '<div class="v2-callout is" id="gateIs"><strong>Is</strong> Offline practice. Not a funded wallet or a signer.</div>' +
-        '<div class="v2-callout isnt" id="gateIsnt"><strong>Is not</strong> Do not import these words. Do not send coins here.</div>' +
+        '<div class="v2-callout is" id="gateIs"><strong>Is</strong> ' + g.is + "</div>" +
+        '<div class="v2-callout isnt" id="gateIsnt"><strong>Is not</strong> ' + g.isnt + "</div>" +
         "</div>" +
-        '<div class="v2-callout done" id="gateDone"><strong>Done when</strong>' +
+        '<div class="v2-callout done" id="gateDone"><strong>Done when</strong> ' +
         t.done +
         "</div>";
       var gv = $("gateViz");
@@ -370,32 +443,32 @@
 
   function stepsFor(id) {
     var map = {
-      1: ["Generate", "Backup card", "Validate", "Exercise", "Quiz", "Finish"],
-      2: ["Card is backup", "Do and do not", "Print sheet", "Quiz", "Finish"],
+      1: ["Generate", "Numbered card", "Receive address", "Try length", "Quiz", "Finish"],
+      2: ["Card is backup", "Hand copy", "Print optional", "Quiz", "Finish"],
       3: ["Same words", "Compare A/B", "Quiz", "Finish"],
       4: ["Folders", "Toggle path", "Quiz", "Finish"],
       5: ["Public only", "Export", "Quiz", "Finish"],
-      6: ["M-of-N", "Three cosigners", "Quiz", "Finish"],
+      6: ["Show 2-of-3", "Three full seeds", "Quiz", "Finish"],
       7: ["What a share is", "Split / combine", "Quiz", "Finish"],
-      8: ["Air-gap model", "Inspect PSBT", "Quiz", "Finish"],
-      9: ["xpub ≠ spend", "Export xpub", "Quiz", "Finish"],
-      10: ["Offline default", "Opt-in Network", "Quiz", "Finish"],
+      8: ["Air-gap model", "Inspect sample", "Quiz", "Finish"],
+      9: ["Cannot spend", "Export viewing key", "Quiz", "Finish"],
+      10: ["Stay offline", "Opt-in Network", "Quiz", "Finish"],
       11: ["Who is they", "Company app", "You hold", "Quiz", "Finish"],
       12: ["Hot wallet on phone", "Hardware signer", "Quiz", "Finish"],
       13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"],
       14: ["Few dice", "Words still weak", "Roll until enough", "Quiz", "Finish"],
       15: ["Pad + words", "Add passphrase", "Quiz", "Finish"],
-      16: ["Write then hide", "Type from paper", "Quiz", "Finish"],
+      16: ["Hide the card", "Type from paper", "Quiz", "Finish"],
       17: ["How much", "Place amounts", "Quiz", "Finish"],
-      18: ["Who holds", "Open while alive", "Quiz", "Finish"],
+      18: ["Name holders", "Open while alive", "Quiz", "Finish"],
       19: ["Receive address", "Watch + credit", "Quiz", "Finish"],
       20: ["Paper vs steel", "Choose metal", "Quiz", "Finish"],
-      21: ["You hold 2", "Freeze vs steal", "Quiz", "Finish"],
-      22: ["Unbox", "Refuse laptop seed", "Quiz", "Finish"],
-      23: ["Four steps", "Order the loop", "Quiz", "Finish"],
-      24: ["Three sites", "Place keys", "Quiz", "Finish"],
-      25: ["Stale plans", "Schedule drills", "Quiz", "Finish"],
-      26: ["Explorer is not a node", "Opt-in lookup", "Quiz", "Finish"],
+      21: ["You hold two", "Name freeze vs steal", "Quiz", "Finish"],
+      22: ["Check firmware", "Keep seed off laptop", "Quiz", "Finish"],
+      23: ["Four steps", "Tap the loop", "Quiz", "Finish"],
+      24: ["Three sites", "Place three keys", "Quiz", "Finish"],
+      25: ["Plans go stale", "Schedule drills", "Quiz", "Finish"],
+      26: ["Not your node", "Opt-in lookup", "Quiz", "Finish"],
       27: ["Coins are pieces", "Change folder", "Quiz", "Finish"],
       28: ["Common input", "Mixing is not custody", "Quiz", "Finish"],
       29: ["Second vault", "Decoy is real", "Quiz", "Finish"],
@@ -407,7 +480,7 @@
 
   function conceptsFor(id) {
     var c = {
-      1: ["Entropy → words", "Backup card", "Address ≠ phrase"],
+      1: ["Random bits → words", "Backup card", "Address is not the secret"],
       2: ["Card object", "Hand copy only", "Passphrase stored apart"],
       3: ["Optional 25th", "New wallet", "Forgotten = loss"],
       4: ["Path = folder", "BIP purpose", "Index / change"],
@@ -415,24 +488,24 @@
       6: ["M-of-N", "Public keys", "Not Shamir"],
       7: ["Threshold shares", "Not cosigners", "Edu hex only"],
       8: ["PSBT package", "Never sign here", "Broadcast elsewhere"],
-      9: ["Account xpub", "Privacy leak", "Cannot spend"],
-      10: ["connect-src none", "Address only", "unknown ≠ 0"],
+      9: ["Viewing key", "Cannot spend", "Still leaks history"],
+      10: ["Page stays offline", "Address only", "Unknown is not zero"],
       11: ["They hold", "You hold", "Not BIP-39"],
-      12: ["Hot software", "Hardware", "USB ≠ air-gap"],
+      12: ["Hot software", "Hardware", "USB is not air-gap"],
       13: ["Hot vs cold", "Daily vs savings", "Four objects"],
       14: ["Few dice TOO LOW", "Words still weak", "Roll until enough"],
       15: ["Pad is the source", "Passphrase extra", "Does not fix pad"],
       16: ["Hide the screen", "Checksum", "Same address"],
       17: ["Daily hot", "Mid hardware", "Large 2-of-3"],
       18: ["Sealed packet", "2-of-3 people", "Not legal counsel"],
-      19: ["Test address", "Second view", "Never fund practice"],
+      19: ["Test address", "Second view", "Unknown is not zero"],
       20: ["Fire/flood", "No photo", "Steel object"],
       21: ["You hold 2", "Service can freeze", "Not DIY same threat"],
       22: ["Firmware", "PIN vs PP", "Seed off computer"],
       23: ["Build PSBT", "Offline sign", "Broadcast elsewhere"],
       24: ["Home", "Elsewhere", "Not one building"],
       25: ["Calendar", "UC16 restore", "UC18 open-alive"],
-      26: ["No node in-tab", "Unknown ≠ 0", "Network dock"],
+      26: ["No node in this tab", "Unknown is not zero", "Network dock"],
       27: ["UTXO pieces", "Change chain", "Do not mix casually"],
       28: ["Heuristics", "Optional mix", "Still need keys"],
       29: ["Two vaults", "Duress copy", "Not advice"],
@@ -454,6 +527,10 @@
     mem.tier = {};
     mem.simRecv = false;
     mem.loopClicks = [];
+    mem.pathTouched = false;
+    mem.shamirShares = null;
+    mem.shamirSecret = "";
+    mem.shamirDone = false;
     mem.geo = {};
     if (id === 6) mem.cosigners = emptyCosigners();
     if (id === 14) {
@@ -558,11 +635,11 @@
   }
   var VIZ = {
     1: {
-      forStep: function (s) { if (s <= 1) return 1; if (s === 3) return 3; return 2; },
+      forStep: function (s) { if (s <= 0) return 1; if (s === 1) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Random bits become numbered recovery words", "<strong>Plan · Entropy to words</strong><br/>Random bits become a numbered recovery phrase. That phrase is the secret."),
-        atom(2, 2, "assets/uc1-atom-phrase-ne-address.svg", "Recovery phrase is not the same as a receive address", "<strong>Practice · Phrase is not address</strong><br/>The words stay secret. The receive address is public and safe to share."),
-        atom(3, 3, "assets/uc1-atom-one-to-many.svg", "One recovery phrase can derive many receive addresses", "<strong>Review · One phrase, many addresses</strong><br/>The same phrase can derive many receive addresses (different path index).")
+        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Random bits become numbered recovery words", "<strong>Plan · Random bits to words</strong><br/>Random bits become a numbered recovery phrase. That phrase is the secret."),
+        atom(2, 1, "assets/uc1-atom-phrase-ne-address.svg", "Recovery phrase is not the same as a receive address", "<strong>Practice · Words are not the address</strong><br/>The words stay secret. The receive address is public and safe to share."),
+        atom(3, 2, "assets/uc1-atom-one-to-many.svg", "One recovery phrase can make many receive addresses", "<strong>Review · One phrase, many addresses</strong><br/>The same words can make many receive addresses (different folder numbers).")
       ]
     },
     2: {
@@ -576,7 +653,7 @@
     3: {
       atoms: [
         atom(1, 0, "assets/uc3-atom-same-words.svg", "Same recovery words on both sides", "<strong>Plan · Same words</strong><br/>Both vaults start from the same numbered card."),
-        atom(2, 1, "assets/uc3-atom-new-vault.svg", "A different passphrase makes a different vault", "<strong>Practice · 25th word, new vault</strong><br/>Same words plus a different passphrase derive a different receive address."),
+        atom(2, 1, "assets/uc3-atom-new-vault.svg", "A different extra secret makes a different vault", "<strong>Practice · Empty vs a test secret</strong><br/>Same words plus a different extra secret make a different receive address."),
         atom(3, 2, "assets/uc3-atom-forgotten-loss.svg", "A forgotten passphrase cannot be reset", "<strong>Review · Forgotten is loss</strong><br/>The lab cannot reset a forgotten passphrase. That vault is gone.")
       ]
     },
@@ -653,7 +730,7 @@
     },
     14: {
       atoms: [
-        atom(1, 0, "assets/uc14-atom-few-dice.svg", "A few dice rolls are too little randomness", "<strong>Plan · Few dice</strong><br/>Each d6 is about 2.58 bits. Three rolls are nowhere near 128 bits, let alone 256."),
+        atom(1, 0, "assets/uc14-atom-few-dice.svg", "A few dice rolls are too little randomness", "<strong>Plan · Few dice</strong><br/>Roll a few times. You can still get words. Those words can still be too weak."),
         atom(2, 1, "assets/uc14-atom-words-weak.svg", "12 or 24 words from a short pad are still TOO LOW", "<strong>Practice · Words still weak</strong><br/>Hashing a short roll log can still print 12 or 24 words. Word count is not entropy."),
         atom(3, 2, "assets/uc14-atom-coin-tedious.svg", "Keep rolling until the pad meets 128 or 256 bits", "<strong>Review · Until enough</strong><br/>12-word wants ~128 bits (~50 d6 or 128 flips). 24-word wants ~256 (~100 d6 or 256 flips). Coin = 1 bit.")
       ]
@@ -1072,11 +1149,11 @@
   async function uc16(step) {
     if (step === 0) {
       return pad(
-        "<h2>Write the practice card, then hide it</h2>" +
-        doDont("Generate a practice phrase and treat the numbered card as paper.", "Do not photograph the card. Do not use a funded phrase.") +
-        '<button type="button" class="btn" id="v2Generate">Generate</button>' +
+        "<h2>Look at the card, then hide it</h2>" +
+        doDont("Treat the numbered card as paper. Next you will type from that paper.", "Do not photograph the card. Do not use a funded phrase.") +
+        '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
-        pauseBtn("I wrote it. Hide the screen next.", !mem.mnemonic)
+        pauseBtn("Next: hide the card", !mem.mnemonic)
       );
     }
     var words = (mem.mnemonic || "").split(/\s+/).filter(Boolean);
@@ -1085,14 +1162,14 @@
       inputs += '<label class="v2-restore-cell">#' + (i + 1) + '<input id="v2RestoreW' + i + '" autocomplete="off" spellcheck="false"/></label>';
     }
     return pad(
-      "<h2>Type from paper</h2>" +
-      doDont("Type the twelve words from the paper copy.", "Do not peek at a screenshot.") +
+      "<h2>Type from paper — prove it works</h2>" +
+      doDont("Type the twelve words from the paper copy. Same address means the backup works.", "Do not peek at a screenshot.") +
       '<button type="button" class="btn secondary" id="v2RestoreHide">Hide the on-screen card</button>' +
       '<div id="v2Card" class="' + (mem.restoreHidden ? "v2-hidden" : "") + '">' + wordGridHtml(mem.mnemonic) + "</div>" +
       '<div class="v2-restore-grid">' + inputs + "</div>" +
-      '<button type="button" class="btn" id="v2RestoreCheck">Check checksum and address</button>' +
+      '<button type="button" class="btn" id="v2RestoreCheck">Check typed words</button>' +
       '<div id="v2RestoreMsg"></div>' +
-      pauseBtn("Addresses match", !mem.restoreOk)
+      pauseBtn("Same address. The backup works.", !mem.restoreOk)
     );
   }
 
@@ -1117,14 +1194,14 @@
         doDont("Put daily / mid / large on different objects.", "Do not put all three on an exchange or all on a phone.") +
         "<p class=\"control-help\">Teaching amounts: <strong>0.001</strong> coffee · <strong>0.184</strong> mid · <strong>2.0</strong> large. Not real balances.</p>" +
         rows +
-        pauseBtn("Amounts placed", true)
+        pauseBtn("I placed daily, mid, and large", true)
       );
     }
     return pad(
       "<h2>Place amounts</h2>" +
       doDont("Coffee → phone. Mid → hardware. Large → 2-of-3.", "2-of-3 for coffee money. All on exchange.") +
       rows +
-      pauseBtn("Amounts placed", true)
+      pauseBtn("I placed daily, mid, and large", true)
     );
   }
 
@@ -1132,14 +1209,14 @@
     if (step === 0) {
       return pad(
         "<h2>Who holds what</h2>" +
-        doDont("Name heir + you + lawyer/safe. Keep a descriptor with the keys.", "Do not put a seed in WhatsApp or email.") +
+        doDont("Name you, an heir, and a lawyer or safe. Keep instructions with the keys, not a live seed.", "Do not put a seed in chat or email.") +
         '<div class="v2-hold-split">' +
         '<div class="v2-hold-col v2-hold-col-one"><h3>Sealed packet</h3><p>Paper instructions, not the live seed in chat.</p></div>' +
         '<div class="v2-hold-col v2-hold-col-ms"><h3>2-of-3 people</h3><p>You · heir · lawyer/safe. Independent keys.</p></div>' +
         "</div>" +
-        '<button type="button" class="btn secondary" id="v2InhChat">Email the seed</button>' +
+        '<button type="button" class="btn secondary" id="v2InhChat">Try sending the seed in email</button>' +
         '<div id="v2InhOut"></div>' +
-        pauseBtn("Holders named — not chat", false)
+        pauseBtn("Name the holders. Next: open while alive.", false)
       );
     }
     return pad(
@@ -1147,7 +1224,7 @@
       doDont("Dry-run reconstruction now.", "Do not wait until nobody can debug it. This is not legal counsel.") +
       '<label class="check"><input type="checkbox" id="v2InhLive"/> We opened the packet / combined 2-of-3 while I am alive (practice).</label>' +
       '<div id="v2InhLiveOut"></div>' +
-      pauseBtn("Rehearsed", true)
+      pauseBtn("I rehearsed opening while alive", true)
     );
   }
 
@@ -1157,10 +1234,10 @@
       return pad(
         "<h2>Practice receive address (test)</h2>" +
         doDont("Show a tb1 practice address and QR.", "Do not fund a practice mainnet phrase from this tab.") +
-        '<button type="button" class="btn" id="v2Generate">Generate</button>' +
+        '<button type="button" class="btn" id="v2Generate">Show receive address</button>' +
         netSelectHtml() +
         '<div id="v2AddrWrap">' + (mem.lastRows ? addrHtml() : "") + "</div>" +
-        pauseBtn("I have a receive address", !(mem.lastRows && mem.lastRows.length))
+        pauseBtn("Next: watch-only second view", !(mem.lastRows && mem.lastRows.length))
       );
     }
     var addr = "";
@@ -1170,7 +1247,7 @@
       doDont("Same address on a watch list. Simulate 0.000184 tBTC if you stay offline.", "Do not fund the practice mainnet phrase. Real lookup = Network dock.") +
       '<p id="v2WatchSame">Watch-only list: <code>' + (addr || "generate first") + "</code></p>" +
       '<p id="v2SimBal" class="control-help">Balance: unknown (not 0)</p>' +
-      '<button type="button" class="btn" id="v2SimRecv">Simulate 0.000184 tBTC received</button>' +
+      '<button type="button" class="btn" id="v2SimRecv">Simulate a test credit</button>' +
       '<a class="btn secondary" href="../network.html" data-v2-dock="19">Open Network (opt-in test lookup)</a>' +
       pauseBtn("Two views, no mainnet fund", !mem.simRecv)
     );
@@ -1181,15 +1258,15 @@
       return pad(
         "<h2>Paper vs steel</h2>" +
         doDont("Treat metal as the object for a funded seed.", "Do not photograph the plate. Paper still burns.") +
-        pauseBtn("Choose an object", false)
+        pauseBtn("Next: choose paper or steel", false)
       );
     }
     return pad(
       "<h2>Choose metal</h2>" +
-      '<button type="button" class="btn secondary" data-metal="paper">Paper only</button>' +
-      '<button type="button" class="btn" data-metal="steel">Steel plate</button>' +
+      '<button type="button" class="btn secondary" data-metal="paper">Choose paper only</button>' +
+      '<button type="button" class="btn" data-metal="steel">Choose a steel plate</button>' +
       '<div id="v2MetalOut"></div>' +
-      pauseBtn("Metal, no photo", true)
+      pauseBtn("I chose an object. No photo.", true)
     );
   }
 
@@ -1198,7 +1275,7 @@
       return pad(
         "<h2>You hold 2</h2>" +
         doDont("Keep two keys. Partner or service holds one.", "Do not confuse this with DIY 2-of-3 among three friends.") +
-        pauseBtn("Contrast freeze vs steal", false)
+        pauseBtn("Next: name freeze vs steal", false)
       );
     }
     return pad(
@@ -1206,7 +1283,7 @@
       '<button type="button" class="btn secondary" data-collab="freeze">Service can freeze</button>' +
       '<button type="button" class="btn secondary" data-collab="steal">Service can steal alone</button>' +
       '<div id="v2CollabOut"></div>' +
-      pauseBtn("Threat named", true)
+      pauseBtn("I named the threat", true)
     );
   }
 
@@ -1216,15 +1293,15 @@
         "<h2>Unbox ceremony</h2>" +
         doDont("Check firmware and bag seals before a seed is born.", "No vendor driver in this browser. Do not type the seed into the laptop.") +
         '<label class="check"><input type="checkbox" id="v2Fw"/> Firmware hash checked (practice tick)</label>' +
-        pauseBtn("Firmware ticked", true)
+        pauseBtn("Next: keep the seed off the laptop", true)
       );
     }
     return pad(
       "<h2>Refuse laptop seed</h2>" +
-      doDont("PIN unlocks the device. Passphrase is another vault. USB ≠ air-gap.", "Typing the seed into a computer still kills the vault.") +
+      doDont("A PIN unlocks the device. An extra secret is another vault. A USB cable is not an air-gap.", "Typing the seed into a computer still kills the vault.") +
       '<button type="button" class="btn secondary" id="v2RefuseSeed">I will not type the seed into the laptop</button>' +
       '<div id="v2CerOut"></div>' +
-      pauseBtn("Seed stays on device", true)
+      pauseBtn("Seed stays on the device", true)
     );
   }
 
@@ -1232,11 +1309,11 @@
     if (step === 0) {
       return pad(
         "<h2>Four steps</h2>" +
-        doDont("Online builds PSBT → QR/SD to offline signer → signed PSBT back → broadcast elsewhere.", "This tab never signs and never broadcasts a real transaction.") +
-        pauseBtn("Order the loop", false)
+        doDont("Build the payment online. Move it to an offline signer. Bring the signed package back. Broadcast from a hot machine.", "This tab never signs and never broadcasts a real transaction.") +
+        pauseBtn("Next: tap the four steps", false)
       );
     }
-    var labels = ["1 · Online builds PSBT", "2 · QR/SD to offline signer", "3 · Signed PSBT back", "4 · Broadcast elsewhere"];
+    var labels = ["1 · Build the payment online", "2 · Move it to an offline signer", "3 · Bring the signed package back", "4 · Broadcast elsewhere"];
     var btns = labels.map(function (t, i) {
       return '<button type="button" class="btn secondary" data-loop="' + i + '">' + t + "</button>";
     }).join("");
@@ -1244,7 +1321,7 @@
       "<h2>Tap the four steps in order</h2>" +
       btns +
       '<div id="v2LoopOut" class="control-help">This tab never signs.</div>' +
-      pauseBtn("Loop ordered", true)
+      pauseBtn("I tapped the loop in order", true)
     );
   }
 
@@ -1253,19 +1330,19 @@
       return pad(
         "<h2>Three sites</h2>" +
         doDont("Home, elsewhere, a person or institution.", "Do not cluster two keys in one building.") +
-        pauseBtn("Place three keys", false)
+        pauseBtn("Next: place three keys", false)
       );
     }
     return pad(
       "<h2>Place keys</h2>" +
       '<div class="v2-map">' +
-      '<button type="button" class="btn secondary" data-geo="home">Home</button>' +
-      '<button type="button" class="btn secondary" data-geo="else">Elsewhere</button>' +
-      '<button type="button" class="btn secondary" data-geo="person">Person / institution</button>' +
-      '<button type="button" class="btn secondary" data-geo="garage">Garage (same building)</button>' +
+      '<button type="button" class="btn secondary" data-geo="home">Place at home</button>' +
+      '<button type="button" class="btn secondary" data-geo="else">Place elsewhere</button>' +
+      '<button type="button" class="btn secondary" data-geo="person">Place with a person</button>' +
+      '<button type="button" class="btn secondary" data-geo="garage">Place in the garage (same building)</button>' +
       "</div>" +
       '<div id="v2GeoOut"></div>' +
-      pauseBtn("Not clustered", true)
+      pauseBtn("Keys are not clustered", true)
     );
   }
 
@@ -1274,15 +1351,15 @@
       return pad(
         "<h2>Plans go stale</h2>" +
         doDont("Put restore and inheritance dry-run on a calendar.", "A document you never run is a hope.") +
-        pauseBtn("Schedule the two drills", false)
+        pauseBtn("Next: schedule the two drills", false)
       );
     }
     return pad(
       "<h2>Schedule drills</h2>" +
-      '<label class="check"><input type="checkbox" data-cal="16"/> UC16 restore this year</label>' +
-      '<label class="check"><input type="checkbox" data-cal="18"/> UC18 open-while-alive this year</label>' +
+      '<label class="check"><input type="checkbox" data-cal="16"/> Prove the backup this year</label>' +
+      '<label class="check"><input type="checkbox" data-cal="18"/> Open while alive this year</label>' +
       '<div id="v2CalOut"></div>' +
-      pauseBtn("Both scheduled", true)
+      pauseBtn("I scheduled both drills", true)
     );
   }
 
@@ -1290,15 +1367,15 @@
     if (step === 0) {
       return pad(
         "<h2>No node in this tab</h2>" +
-        doDont("Treat a public explorer as someone else's view.", "Do not assume /v2/ talks to bitcoind. CSP connect-src is none.") +
-        pauseBtn("Use Network only if I opt in", false)
+        doDont("Treat a public explorer as someone else's view, not your own node.", "This tab does not run Bitcoin software in the background.") +
+        pauseBtn("Next: open Network only if I opt in", false)
       );
     }
     return pad(
       "<h2>Opt-in lookup</h2>" +
-      "<p>Failed balance = <strong>unknown</strong>, never silent 0.</p>" +
-      '<a class="btn" href="../network.html" data-v2-dock="26">Open Network</a>' +
-      pauseBtn("Unknown ≠ 0", false)
+      "<p>If a lookup fails, show <strong>unknown</strong>. Never a silent zero.</p>" +
+      '<a class="btn" href="../network.html" data-v2-dock="26">Open Network (opt-in)</a>' +
+      pauseBtn("Unknown is not zero", false)
     );
   }
 
@@ -1306,15 +1383,15 @@
     if (step === 0) {
       return pad(
         "<h2>Coins are pieces</h2>" +
-        doDont("A total hides UTXOs. Spending two inputs can link them.", "Do not treat the number in the corner as one coin.") +
-        pauseBtn("Look at change", false)
+        doDont("A total hides separate coin pieces. Spending two pieces together can link them.", "Do not treat the number in the corner as one coin.") +
+        pauseBtn("Next: look at the change folder", false)
       );
     }
     return pad(
       "<h2>Change folder</h2>" +
       pathBipSvgHtml() +
-      "<p class=\"control-help\">Receive <code>…/0/n</code> · change <code>…/1/n</code>. Words do not change. Deep coin control stays on classic Lab.</p>" +
-      pauseBtn("I can name change", false)
+      "<p class=\"control-help\">Receive is one folder. Change is another. The words stay put. Deep coin control stays on classic Lab.</p>" +
+      pauseBtn("I can name receive vs change", false)
     );
   }
 
@@ -1322,14 +1399,14 @@
     if (step === 0) {
       return pad(
         "<h2>Common-input heuristic</h2>" +
-        doDont("Know that inputs spent together often look like one owner.", "Do not treat a mixer brand as this lab's recommendation.") +
-        pauseBtn("Mixing is optional", false)
+        doDont("Coins spent together often look like one owner.", "This lab does not recommend a mixer brand.") +
+        pauseBtn("Next: mixing is not custody", false)
       );
     }
     return pad(
       "<h2>Mixing is not custody</h2>" +
-      doDont("Backup and keys still come first.", "Do not skip UC2/UC16 because you mixed.") +
-      pauseBtn("Custody first", false)
+      doDont("Backup and keys still come first.", "Do not skip paper backup or prove-the-backup because you mixed.") +
+      pauseBtn("Backup still comes first", false)
     );
   }
 
@@ -1337,14 +1414,14 @@
     if (step === 0) {
       return pad(
         "<h2>Second vault</h2>" +
-        doDont("A decoy passphrase opens a real (usually smaller) vault.", "This is not legal, law-enforcement, or personal-safety advice.") +
-        pauseBtn("Both vaults are real", false)
+        doDont("A decoy extra secret opens a real (usually smaller) vault.", "This is not legal, law-enforcement, or personal-safety advice.") +
+        pauseBtn("Next: both vaults are real", false)
       );
     }
     return pad(
       "<h2>Decoy is real</h2>" +
-      doDont("Empty decoy is obvious. Forgotten PP still loses that vault (UC3).", "Do not ask this tab what to do under threat.") +
-      pauseBtn("Not advice — objects only", false)
+      doDont("An empty decoy is obvious. A forgotten extra secret still loses that vault.", "Do not ask this tab what to do under threat.") +
+      pauseBtn("Objects only — not advice", false)
     );
   }
 
@@ -1352,14 +1429,14 @@
     if (step === 0) {
       return pad(
         "<h2>Parent vs child</h2>" +
-        doDont("BIP-85 mints child mnemonics from one master. Classic Lab #cardBip85 is SoT.", "A child is not a backup of the parent. Do not fund practice children.") +
-        pauseBtn("Open classic only if I need the card", false)
+        doDont("One master can mint child practice phrases. The full card lives on classic Lab.", "A child is not a backup of the parent. Do not fund practice children.") +
+        pauseBtn("Next: open classic BIP-85 if I need it", false)
       );
     }
     return pad(
       "<h2>Classic BIP-85</h2>" +
-      '<a class="btn secondary" href="../index.html#cardBip85">Open classic #cardBip85</a>' +
-      pauseBtn("Child ≠ parent backup", false)
+      '<a class="btn" href="../index.html#cardBip85">Open classic child-seed card</a>' +
+      pauseBtn("Child is not the parent backup", false)
     );
   }
 
@@ -1367,24 +1444,24 @@
     if (step === 0) {
       return pad(
         "<h2>People + threshold</h2>" +
-        doDont("Operational inheritance uses SLIP-39 shares held by people.", "Do not treat UC7 educational hex as Suite.") +
-        pauseBtn("Dock the SLIP-39 room", false)
+        doDont("People hold product word shares at a threshold.", "Do not treat the educational hex split (UC7) as the product room.") +
+        pauseBtn("Next: open the SLIP-39 room", false)
       );
     }
     return pad(
-      "<h2>Dock Suite</h2>" +
+      "<h2>Open the product room</h2>" +
       '<a class="btn" href="../slip39.html" data-v2-dock="31">Open SLIP-39 room</a>' +
-      "<p class=\"control-help\">V2 UC7 stays edu hex. Combine is recovery, not a cosign.</p>" +
-      pauseBtn("Room is SoT", false)
+      "<p class=\"control-help\">The hex split in UC7 stays educational. Combine is recovery, not a second signer.</p>" +
+      pauseBtn("The room is the source of truth", false)
     );
   }
 
   async function uc1(step) {
     if (step === 0) {
       return pad(
-        "<h2>Generate a practice phrase</h2>" +
+        "<h2>Make practice words</h2>" +
         doDont(
-          "Generate a practice phrase in this tab and look at the numbered card first.",
+          "Make practice words in this tab and look at the numbered card first.",
           "Do not import these words into a funded wallet. Do not send coins to addresses from this phrase."
         ) +
         generateExplainerHtml() +
@@ -1392,13 +1469,13 @@
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
         '<div class="v2-gen-left">' +
-        '<button type="button" class="btn" id="v2Generate">Generate</button>' +
+        '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
         mnemonicHelpHtml(true) +
         "</div>" +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         '<div id="v2AddrWrap" class="v2-hidden"></div>' +
-        pauseBtn("I generated a practice phrase", !mem.mnemonic)
+        pauseBtn("I have the numbered card", !mem.mnemonic)
       );
     }
     if (step === 1) {
@@ -1414,8 +1491,8 @@
         ) +
         entropyHtml() +
         wordGridHtml(mem.mnemonic) +
-        '<label class="check"><input type="checkbox" id="v2CardAck" ' + (mem.cardAck ? "checked" : "") + "/> I looked at the backup card (indexes + words).</label>" +
-        pauseBtn("Continue to Validate", !mem.cardAck)
+        '<label class="check"><input type="checkbox" id="v2CardAck" ' + (mem.cardAck ? "checked" : "") + "/> I have looked at the card</label>" +
+        pauseBtn("Next: show receive addresses", !mem.cardAck)
       );
     }
     if (step === 2) {
@@ -1423,13 +1500,13 @@
       var gated = !mem.cardAck;
       var derived = !!(mem.lastRows && mem.lastRows.length);
       return pad(
-        "<h2>Validate &amp; derive</h2>" +
+        "<h2>Show receive addresses</h2>" +
         doDont(
-          "Keep the numbered card in view so you see the source of the addresses.",
+          "Keep the numbered card in view. Same words; different numbers make different addresses.",
           "Do not send coins to these practice addresses."
         ) +
         desc(
-          "The numbered list of words is your backup. The computer turns those words into a hidden number called a seed. From that seed it can make payment addresses. Test uses tb1… strings. Mainnet uses bc1… strings. The words are not the seed. The seed is not the address. They are three different things. Click Validate and derive to see addresses. This is not a wallet you should fund.",
+          "The numbered card is the secret. The receive string is public. They are not the same thing. Test uses tb1… Mainnet uses bc1… Click Show receive addresses. This is not a wallet you should fund.",
           "v2DeriveHelp"
         ) +
         entropyHtml() +
@@ -1438,28 +1515,28 @@
         wordGridHtml(mem.mnemonic) +
         "</div>" +
         (gated
-          ? '<p class="msg-bad">Validate is locked until you ack the backup card (previous step).</p>'
+          ? '<p class="msg-bad">Look at the card first (previous step).</p>'
           : "") +
         '<div class="row v2-gen-bar" id="v2DeriveRow">' +
         '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Derive" ' +
         (gated ? "disabled" : "") +
-        ">Validate &amp; derive</button>" +
+        ">Show receive addresses</button>" +
         netSelectHtml() +
         "</div>" +
         "</div>" +
         '<div id="v2AddrWrap">' +
-        (derived ? addrHtml() : '<p class="control-help">Addresses stay hidden until you click Validate and derive.</p>') +
+        (derived ? addrHtml() : '<p class="control-help">Addresses stay hidden until you click Show receive addresses.</p>') +
         "</div>" +
-        pauseBtn("I see an address that is not the phrase", !derived)
+        pauseBtn("I see an address that is not the secret", !derived)
       );
     }
     if (step === 3) {
       var n = mem.wordCount || 12;
       return pad(
-        "<h2>Exercise</h2>" +
+        "<h2>Try another length</h2>" +
         doDont(
-          "Try another word count. Entropy bits change with length.",
+          "Try another word count. More words means more random bits.",
           "Do not fund any of these practice phrases or their addresses."
         ) +
         desc(
@@ -1476,7 +1553,7 @@
         "</div>" +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
-        pauseBtn("I tried regenerating", false)
+        pauseBtn("I tried another length", false)
       );
     }
     if (step === 4) {
@@ -1518,7 +1595,7 @@
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
         '<div class="v2-gen-left">' +
-        '<button type="button" class="btn" id="v2Generate">Generate practice card</button>' +
+        '<button type="button" class="btn" id="v2Generate">Make practice card</button>' +
         mnemonicHelpHtml(true) +
         "</div>" +
         "</div>" +
@@ -1528,21 +1605,21 @@
         '<label class="check"><input type="checkbox" id="v2CardAck" ' +
         (mem.cardAck ? "checked" : "") +
         "/> I looked at the backup card (indexes and words). The card is the backup.</label>" +
-        pauseBtn("The card is the backup", !mem.mnemonic || !mem.cardAck)
+        pauseBtn("Next: hand-copy the card", !mem.mnemonic || !mem.cardAck)
       );
     }
     if (step === 1) {
       await ensurePhrase();
       await ensurePpExample();
       return pad(
-        "<h2>Do this. Do not do that.</h2>" +
+        "<h2>Hand copy. Keep a passphrase apart.</h2>" +
         doDont(
           "Copy the numbered cells by hand onto paper you control. Keep any passphrase in a different place from this sheet.",
           "Do not photograph the sheet. Do not store it in a cloud drive, chat, or email. Do not keep it on a networked phone if the phrase is funded.",
           "v2DoNotList"
         ) +
         ppKeyHeroHtml(ppExampleHtml(), "v2PpKeyUc2") +
-        pauseBtn("I can state what to do and what not to do", false)
+        pauseBtn("Next: print is optional", false)
       );
     }
     if (step === 2) {
@@ -1558,7 +1635,7 @@
         '<div class="row" style="margin-top:0.65rem">' +
         '<button type="button" class="btn secondary" id="v2Print" disabled>Print practice sheet</button>' +
         "</div>" +
-        pauseBtn("Print is optional after I confirm", false)
+        pauseBtn("I treated print as optional", false)
       );
     }
     if (step === 3) {
@@ -1584,46 +1661,46 @@
       return pad(
         "<h2>Same words</h2>" +
         doDont(
-          "Leave passphrase A empty and put a practice word in B (for example test) to see two wallets from one card.",
-          "Do not treat the passphrase as a PIN on the same wallet. Forgotten passphrase means that vault is gone."
+          "Make one numbered card. Next you will keep these words and add an extra secret on one side only.",
+          "Do not treat the extra secret as a PIN on the same wallet."
         ) +
         desc(
-          "The optional extra secret (sometimes called the 25th word) is mixed with the recovery words. Same words plus a different extra secret make a different wallet. Forgetting that extra secret means that wallet cannot be opened from the words alone."
+          "Both vaults start from this same numbered card. The extra secret comes on the next step."
         ) +
         ppKeyHtml("v2PpKeyUc3a") +
         entropyHtml() +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar">' +
         '<div class="v2-gen-left">' +
-        '<button type="button" class="btn" id="v2Generate">Generate</button>' +
-        '<button type="button" class="btn secondary" id="v2Regen">Regenerate ' + n + "-word phrase</button>" +
+        '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
+        '<button type="button" class="btn secondary" id="v2Regen">Make a new ' + n + "-word card</button>" +
         mnemonicHelpHtml(true) +
         "</div>" +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
-        pauseBtn("Same words, two vaults", !mem.mnemonic)
+        pauseBtn("Next: compare empty vs a test secret", !mem.mnemonic)
       );
     }
     if (step === 1) {
       await ensurePhrase();
       return pad(
-        "<h2>Compare A vs B</h2>" +
+        "<h2>Compare empty vs a test secret</h2>" +
         doDont(
-          "Compare two passphrases against the same words. Read the verdict.",
+          "Leave A empty. Keep B as a practice secret (test). Show both receive addresses.",
           "Do not fund either practice address."
         ) +
         desc(
-          "Type two extra secrets (A and B) against the same words. Compare the first receive address. If the addresses differ, you have two wallets. If they match, you typed the same extra secret twice."
+          "Same words. A has no extra secret. B has a test secret. Two different receive addresses means two wallets. Forget B and that second vault is gone — there is no reset."
         ) +
-        callout("is", "What you are comparing", "Same BIP-39 words. Different optional passphrase. Different receive addresses. Public addresses only.") +
+        callout("is", "What you are comparing", "Same words. Empty extra secret vs a test secret. Public addresses only.") +
         ppKeyHeroHtml(
-          '<label class="field">Passphrase A <input id="ppA" type="text" placeholder="(empty = no passphrase)" autocomplete="off"/></label>' +
-          '<label class="field">Passphrase B <input id="ppB" type="text" value="test" autocomplete="off"/></label>' +
-          '<button type="button" class="btn" id="v2Cmp">Compare A vs B at index 0</button>' +
-          '<div id="v2CmpOut" class="control-help">Click Compare. The verdict names the passphrases you typed. It does not say empty when a field has text.</div>',
+          '<label class="field">A · empty extra secret <input id="ppA" type="text" placeholder="(leave empty)" autocomplete="off"/></label>' +
+          '<label class="field">B · test secret <input id="ppB" type="text" value="test" autocomplete="off"/></label>' +
+          '<button type="button" class="btn" id="v2Cmp">Compare empty vs test secret</button>' +
+          '<div id="v2CmpOut" class="control-help">Click Compare empty vs test secret. You should see two different receive strings. Forget B and that vault is gone.</div>',
           "v2PpKeyUc3b"
         ) +
-        pauseBtn("I compared two passphrases", true)
+        pauseBtn("Forget B and that vault is gone", true)
       );
     }
     if (step === 2) {
@@ -1652,56 +1729,45 @@
     await ensurePhrase();
     if (step === 0) {
       return pad(
-        "<h2>Path = folder</h2>" +
+        "<h2>Path is a folder</h2>" +
         doDont(
-          "A derivation path is a folder inside the seed tree. Change the folder, the address changes. The recovery words do not change.",
-          "Do not think a new path makes a new recovery phrase. The path is not the seed."
+          "Change the folder number. The receive address should change. The words stay put.",
+          "Do not think a new folder makes a new backup."
         ) +
         desc(
-          "Think of a path as a folder inside the backup. The words stay the same. Changing the folder changes which payment address you get. The path is not a new backup."
+          "Think of a path as a folder inside the backup. Click Change folder to see the next receive address. The numbered card does not change."
         ) +
-        callout(
-          "done",
-          "What each piece means (this lab, BIP84 test)",
-          "<code>m</code> = master (from the words). " +
-          "<code>84'</code> = native segwit purpose (addresses start with tb1q / bc1q). " +
-          "<code>1'</code> = test network coin type (0' would be mainnet). " +
-          "<code>0'</code> = first account slot. " +
-          "<code>0</code> = receive (1 would be change). " +
-          "<code>0</code> at the end = first address in that folder (index)."
-        ) +
-        pathBipSvgHtml() +
-        '<p class="v2-path-big" id="v2PathDemo">m/84\'/1\'/0\'/0/0</p>' +
-        "<p class=\"control-help\">Hardened levels use an apostrophe (purpose, coin, account). Same words. Different BIP purpose = different address shape. This track uses BIP84.</p>" +
-        pauseBtn("Path is a folder", false)
+        '<p class="v2-path-big" id="v2PathLine">m/84\'/1\'/0\'/0/0</p>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
+        '<button type="button" class="btn" id="v2Idx">Change folder</button>' +
+        '<button type="button" class="btn secondary" id="v2IdxZero">Back to first folder</button>' +
+        "</div>" +
+        '<p class="control-help">Words stay on the card below. Only the address string should move.</p>' +
+        '<code class="v2-preview-big" id="v2Tail">Click Change folder. Watch the address, not the words.</code>' +
+        '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
+        pauseBtn("Next: receive vs change folder", !mem.pathTouched)
       );
     }
     if (step === 1) {
       var p0 = window.BIP39Lab ? BIP39Lab.formatPath(84, "test", 0, 0, 0) : "m/84'/1'/0'/0/0";
       return pad(
-        "<h2>Why toggle the index?</h2>" +
+        "<h2>Receive vs change</h2>" +
         doDont(
-          "Click to raise the last path number so you see the next receive address.",
-          "Do not think a new index is a new recovery phrase. The words stay the same."
+          "Toggle receive vs change. The address changes. The words stay the same.",
+          "Do not think a new folder is a new recovery phrase."
         ) +
         desc(
-          "Index 0 is the first payment address in this folder. Index 1 is the next. Wallets ask for a new address so you do not reuse the first one. The words stay the same. Only the last number in the path changes."
+          "Receive is the folder for money coming in. Change is another folder the wallet uses when you spend. Same words. Different address."
         ) +
-        callout(
-          "done",
-          "Index is which receive address in this folder",
-          "Wallets ask for a new address so you do not reuse the first one. Index 0 is the first receive address. Index 1 is the next. The words stay the same. Only the last number in the path changes. Click to see the address string change while the card does not."
-        ) +
-        pathBipSvgHtml() +
         '<p class="v2-path-big" id="v2PathLine">' + p0 + "</p>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
-        '<button type="button" class="btn" id="v2Idx">Show index 1 (next receive address)</button>' +
-        '<button type="button" class="btn secondary" id="v2IdxZero">Back to index 0</button>' +
-        '<button type="button" class="btn secondary" id="v2Change" data-change="0">Change chain: receive (0)</button>' +
+        '<button type="button" class="btn" id="v2Idx">Change folder</button>' +
+        '<button type="button" class="btn secondary" id="v2IdxZero">Back to first folder</button>' +
+        '<button type="button" class="btn secondary" id="v2Change" data-change="0">Show change folder</button>' +
         "</div>" +
-        '<p class="control-help">Full receive address at this index (BIP84 test)</p>' +
-        '<code class="v2-preview-big" id="v2Tail">Index 0 loads first. Each Next click adds 1 to the last path number.</code>' +
-        pauseBtn("I changed the folder index", true)
+        '<code class="v2-preview-big" id="v2Tail">Click Change folder or Show change folder. The card does not rewrite.</code>' +
+        '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
+        pauseBtn("The words stayed the same", true)
       );
     }
     if (step === 2) {
@@ -1737,7 +1803,7 @@
         desc(
           "A watch-only app can list payment addresses and incoming payments. It should receive a public viewing key, not the recovery words. If you type the words into that app, it becomes a full wallet that can spend."
         ) +
-        pauseBtn("Seed stays out of watch apps", false)
+        pauseBtn("Next: show a public viewing key", false)
       );
     }
     if (step === 1) {
@@ -1768,10 +1834,10 @@
           "Public only",
           "Refresh to show watch-only keys from this practice phrase. You should see xpub or zpub, not the twelve words. Lines under --- output descriptors --- are the same public material as an import string (wpkh / tr / sh / pkh) — click (i) on descriptor."
         ) +
-        '<button type="button" class="btn" id="v2Wo">Refresh watch-only</button>' +
+        '<button type="button" class="btn" id="v2Wo">Show public viewing key</button>' +
         '<div id="v2WoList" class="v2-copy-list"></div>' +
-        '<pre class="out" id="v2WoOut">Click refresh — public keys only.</pre>' +
-        pauseBtn("I saw a zpub/xpub, not the seed", false)
+        '<pre class="out" id="v2WoOut">Click Show public viewing key — public keys only.</pre>' +
+        pauseBtn("I saw a viewing key, not the words", false)
       );
     }
     if (step === 2) {
@@ -1811,12 +1877,12 @@
       '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
       '<button type="button" class="btn" data-cs-gen="' +
       i +
-      '">Generate phrase</button>' +
+      '">Make practice words</button>' +
       '<button type="button" class="btn secondary" data-cs-zpub="' +
       i +
       '"' +
       (c.mnemonic ? "" : " disabled") +
-      ">Show BIP84 zpub</button>" +
+      ">Show viewing key</button>" +
       '<button type="button" class="btn danger" data-cs-clear="' +
       i +
       '">Clear this</button>' +
@@ -1838,8 +1904,8 @@
       return pad(
         "<h2>M-of-N is a spend rule</h2>" +
         doDont(
-          "Read M as how many signatures are required, N as how many independent keys exist. 2-of-3 means any two of three people can spend. Each person keeps a full recovery phrase.",
-          "Do not read M-of-N as cutting one BIP-39 phrase into N pieces. That is Shamir (UC7), not this track."
+          "2-of-3 means any two of three people can spend. Each person keeps a full recovery phrase.",
+          "This is not Shamir. Do not cut one phrase into pieces. That is the next track (UC7)."
         ) +
         desc(
           "Here N is how many people have a key (three). M is how many of them must sign to move coins (two). Each person keeps a full recovery phrase. You share public keys, not the words."
@@ -1873,7 +1939,7 @@
             "."
         ) +
         '<p class="control-help">Next pad: three practice phrases so you see where the three public keys come from.</p>' +
-        pauseBtn("I can say what M and N are", false)
+        pauseBtn("Show 2-of-3", false)
       );
     }
     if (step === 1) {
@@ -1917,7 +1983,7 @@
         (ready
           ? '<p class="msg-ok" id="v2CsReady">Three zpubs ready. Those are what a 2-of-3 coordinator would see — not the words.</p>'
           : '<p class="control-help">Pause stays locked until each cosigner shows a zpub.</p>') +
-        pauseBtn("I saw three zpubs from three phrases", !ready)
+        pauseBtn("Each keeps a full seed", !ready)
       );
     }
     if (step === 2) {
@@ -1947,8 +2013,8 @@
       return pad(
         "<h2>What a share is</h2>" +
         doDont(
-          "Treat this demo as an educational split of one secret into hex shares. M shares rebuild that same secret.",
-          "Do not treat these shares as Trezor Suite / SLIP-39 word lists. Do not treat them as multisig cosigner keys (that was UC6)."
+          "One secret is cut into practice hex pieces. Any two of three rebuild that same secret. A piece cannot sign.",
+          "This is not multisig (that was UC6). These are not Trezor Suite / SLIP-39 word lists."
         ) +
         desc(
           "This is one secret cut into pieces. Any two of three pieces rebuild the same secret. A piece cannot sign a bitcoin spend. That is different from UC6, where each person has a whole key."
@@ -1969,7 +2035,7 @@
             termI("SLIP39") +
             "."
         ) +
-        pauseBtn("Shares are not multisig keys", false)
+        pauseBtn("Next: split a practice secret", false)
       );
     }
     if (step === 1) {
@@ -1984,14 +2050,19 @@
           "Click to split a throwaway hex secret into three pieces and rebuild it from two of them. These hex shares are educational. They are not Trezor Suite word shares. Do not fund them."
         ) +
         callout("warn", "Never fund", "Hex shares in this lab are practice. Do not use them for real funds. They are not Trezor SLIP-39.") +
-        '<button type="button" class="btn" id="v2Sh">Split practice secret 2-of-3</button>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        '<button type="button" class="btn" id="v2Sh">Split into shares</button>' +
+        '<button type="button" class="btn secondary" id="v2ShCombine"' +
+        (mem.shamirShares ? "" : " disabled") +
+        ">Combine any 2 of 3</button>" +
+        "</div>" +
         '<pre class="out" id="v2ShOut">' +
-        (did ? "Already split once this session. Click again to make a new practice secret." : "Hex shares — never fund.") +
+        (did ? "Already split this session. Split again or combine two shares." : "Educational hex. Not SLIP-39 Suite. Never fund.") +
         "</pre>" +
         '<p class="control-help">Optional deeper lab (same idea, more controls): ' +
         '<a href="../shamir.html" data-v2-dock="7">Open Shamir room</a>' +
         " — educational GF(256) only, not Suite, not UC6 keys.</p>" +
-        pauseBtn("I split and recombined", !did)
+        pauseBtn("I split and combined any 2 of 3", !did)
       );
     }
     if (step === 2) {
@@ -2027,7 +2098,7 @@
         desc(
           "A PSBT is a package for an incomplete payment. You can inspect it here. You would sign it on a cold device you trust and broadcast it from a hot computer you choose. This page never signs and never sends it to the network."
         ) +
-        pauseBtn("I will not paste a seed to help a PSBT", false)
+        pauseBtn("Next: inspect the payment package", false)
       );
     }
     if (step === 1) {
@@ -2042,13 +2113,13 @@
         ) +
         callout("done", "Structure only", "A sample PSBT is parsed offline. No signature is added.") +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
-        '<button type="button" class="btn" id="v2Psbt" data-psbt="min">1 · Minimal</button>' +
-        '<button type="button" class="btn secondary" id="v2PsbtStory" data-psbt="story">2 · Multisig / HWW story</button>' +
-        '<button type="button" class="btn secondary" id="v2PsbtPartial" data-psbt="partial">3 · 1-of-2 partial</button>' +
+        '<button type="button" class="btn" id="v2Psbt" data-psbt="min">Inspect sample</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtStory" data-psbt="story">Inspect another sample</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtPartial" data-psbt="partial">Inspect a partial sample</button>' +
         "</div>" +
-        '<p class="control-help" id="v2PsbtStoryLine"></p>' +
-        '<pre class="out" id="v2PsbtOut">Structure only. Never sign here.</pre>' +
-        pauseBtn("Inspected structure, no sign", false)
+        '<p class="control-help" id="v2PsbtStoryLine">This tab never signs. There is no seed field.</p>' +
+        '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
+        pauseBtn("I inspected the package. No sign.", true)
       );
     }
     if (step === 2) {
@@ -2084,7 +2155,7 @@
         desc(
           "An account xpub or zpub can list future payment addresses. It cannot move coins. It is still private in another way: anyone with it can see activity. It is not the recovery words."
         ) +
-        pauseBtn("xpub is watch-only and leaky", false)
+        pauseBtn("Next: show the account viewing key", false)
       );
     }
     if (step === 1) {
@@ -2099,7 +2170,7 @@
           "Show the BIP-84 watch key for this practice phrase. You should see a zpub (or xpub). You should not see an xprv or the recovery words."
         ) +
         callout("is", "Public extended key", "You should see an xpub or zpub. You should not see an xprv " + termI("XPRV") + ", or the recovery words.") +
-        '<button type="button" class="btn" id="v2Xpub">Show BIP84 watch key</button>' +
+        '<button type="button" class="btn" id="v2Xpub">Show account viewing key</button>' +
         '<div id="v2XpubList" class="v2-copy-list"></div>' +
         '<pre class="out" id="v2XpubOut">Public extended key only.</pre>' +
         pauseBtn("I did not see an xprv", false)
@@ -2132,13 +2203,13 @@
       return pad(
         "<h2>Lab stays offline</h2>" +
         doDont(
-          "Keep this V2 page offline (CSP connect-src none). If a balance is unknown, treat it as unknown.",
+          "Keep this page offline. If a balance is unknown, treat it as unknown.",
           "Do not read a missing lookup as zero coins."
         ) +
         desc(
-          "This V2 page does not call the internet for balances. Crypto stays in this tab. If a later lookup fails, the honest answer is unknown, not zero coins."
+          "This page does not call the internet for balances. Crypto stays in this tab. If a later lookup fails, the honest answer is unknown, not zero coins."
         ) +
-        pauseBtn("Default is offline", false)
+        pauseBtn("Next: open Network only if I opt in", false)
       );
     }
     if (step === 1) {
@@ -2158,7 +2229,7 @@
         ) +
         '<a class="btn" href="../network.html" data-v2-dock="10">Open Network (opt-in)</a>' +
         '<p class="control-help">When you come back to /v2/, this track opens on Finish. Browser Back also works.</p>' +
-        pauseBtn("I will only look up addresses I chose", false)
+        pauseBtn("Lookups are address-only. Never the words.", false)
       );
     }
     if (step === 2) {
@@ -2309,7 +2380,7 @@
         '<p class="control-help" id="v2WhoOut">' +
         (whoAllOk() ? "Yes. They is the company. You is only when you have the words." : "Tap all four. Wrong taps stay red until you pick the other button.") +
         "</p>" +
-        pauseBtn("They is a company", !whoAllOk())
+        pauseBtn("Sort these four", !whoAllOk())
       );
     }
     if (step === 1) {
@@ -2354,7 +2425,7 @@
           : "") +
         "</p>" +
         "</div>" +
-        pauseBtn("I have no seed on the exchange", !frozen)
+        pauseBtn("Next: you hold the words", !frozen)
       );
     }
     if (step === 2) {
@@ -2539,7 +2610,7 @@
         '<p class="control-help" id="v2MalwareOut">' +
         (t.malware ? "Malware copied the seed and the private key. Balance went to 0." : "") +
         "</p>" +
-        pauseBtn("Phone keys = Hot wallet", !t.malware)
+        pauseBtn("Next: hardware keeps the seed on the device", !t.malware)
       );
     }
     if (step === 1) {
@@ -2594,7 +2665,7 @@
         '<p class="control-help" id="v2TypeSeedOut">' +
         (t.typed ? "Vault killed. Typing the seed into a computer still kills the vault." : "") +
         "</p>" +
-        pauseBtn("Keys stay on the device", !t.typed)
+        pauseBtn("I kept keys on the device (USB is not an air-gap)", !t.typed)
       );
     }
     if (step === 2) {
@@ -2637,7 +2708,7 @@
         '<p class="control-help" id="v2SortOut">' +
         (sortAllOk() ? "All four sit in different bins. Do not mix them." : "Place all four. Continue unlocks when they match.") +
         "</p>" +
-        pauseBtn("Hot is online keys", !sortAllOk())
+        pauseBtn("Sort these four objects", !sortAllOk())
       );
     }
     if (step === 1) {
@@ -3038,7 +3109,7 @@
       '<code id="v2PpEx">' +
       attrEsc(mem.ppExample || "") +
       "</code>" +
-      '<button type="button" class="btn secondary btn-sm" id="v2PpExGen">Generate another</button>' +
+      '<button type="button" class="btn secondary btn-sm" id="v2PpExGen">Make another example</button>' +
       "</div>" +
       '<p class="v2-pp-copy">Practice only. Do not reuse this on a funded wallet.</p>' +
       "</div>"
@@ -3093,15 +3164,15 @@
       return pad(
         "<h2>A few dice rolls</h2>" +
         doDont(
-          "Roll a simulated d6 a few times and read the bit estimate against 128 and 256.",
-          "Do not treat three rolls as a wallet. Buttons use Math.random. They are not physical dice and not OS CSPRNG."
+          "Roll a few simulated dice. Read TOO LOW. You can still get a full-looking phrase later.",
+          "Do not treat three rolls as a wallet. These buttons are a classroom demo, not a real dice ceremony."
         ) +
         desc(
-          "Each six-sided die is about 2.58 bits. A 12-word BIP-39 phrase wants 128 bits of good randomness (~50 d6). A 24-word phrase wants 256 bits (~100 d6). Three rolls are still TOO LOW. This pad is a classroom demo — not a strong algorithm."
+          "A short pad can still print words. Word count is not enough. How many rolls you need comes after you have seen TOO LOW."
         ) +
         callout("done", "Word count is not entropy", "You can print 12 or 24 words from a short pad. That does not mean you had 128 or 256 bits.") +
         entButtonsHtml() +
-        pauseBtn("I saw TOO LOW after a few rolls", !few)
+        pauseBtn("Next: see why the words are still weak", !few)
       );
     }
     if (step === 1) {
@@ -3116,7 +3187,7 @@
         ) +
         entButtonsHtml() +
         entMintBarHtml() +
-        pauseBtn("I saw words that were still TOO LOW", !mem.entMnemonic)
+        pauseBtn("Next: how many rolls for twelve words", !mem.entMnemonic)
       );
     }
     if (step === 2) {
@@ -3308,7 +3379,7 @@
         ) +
         entButtonsHtml({ key: true, keyId: "v2PpKeyUc15Start" }) +
         entMintBarHtml() +
-        pauseBtn("I have pad words in view", !mem.entMnemonic)
+        pauseBtn("Next: add a 25th word", !mem.entMnemonic)
       );
     }
     if (step === 1) {
@@ -3334,7 +3405,7 @@
           " / 128</p>",
           "v2PpKeyUc15"
         ) +
-        pauseBtn("I saw the stack change with length", !(mem.entPp && mem.entPp.length))
+        pauseBtn("I saw length change the extra secret", !(mem.entPp && mem.entPp.length))
       );
     }
     if (step === 2) {
@@ -3431,7 +3502,7 @@
       tag +
       ' class="label-row' +
       (inline ? " v2-mn-inline" : "") +
-      '" id="v2MnemonicLine">This phrase is a BIP-39 mnemonic. English wordlist words only. ' +
+      '" id="v2MnemonicLine">English words only. Practice only. ' +
       '<span class="help-tip action-hover" id="wrapMnemonicI">' +
       '<button type="button" class="help-tip-btn" aria-label="About the BIP-39 mnemonic">i</button>' +
       '<span class="help-tip-panel action-hover-panel" id="overlayMnemonic" hidden>' +
@@ -3460,7 +3531,7 @@
     return (
       '<p class="control-help v2-step-desc" id="v2GenHelp">' +
       "This tab asks the operating system for random bits (a cryptographically strong random number generator), " +
-      "then turns those bits into a BIP-39 practice recovery phrase. " +
+      "then turns those bits into practice recovery words. " +
       "Do not send money to these words or to addresses that come from them. " +
       "Nothing leaves this browser tab." +
       "</p>"
@@ -3528,7 +3599,7 @@
       '<div class="v2-pipe" id="v2Pipe" aria-label="Words to seed to address">' +
       st("words", "words", "Numbered backup card", !!litWords) +
       '<span class="arr" aria-hidden="true">→</span>' +
-      st("seed", "seed", "Phrase stretched into a seed (not the address)", !!litSeed) +
+      st("seed", "hidden number", "Words stretched into a hidden number (not the address)", !!litSeed) +
       '<span class="arr" aria-hidden="true">→</span>' +
       st("addr", "address", "Receive string from that seed", !!litAddr) +
       "</div>"
@@ -3625,7 +3696,7 @@
       "</code>" +
       '<button type="button" class="btn secondary btn-sm" data-copy="' +
       attrEsc(value) +
-      '">Copy</button>' +
+      '">Copy viewing key</button>' +
       '<button type="button" class="btn secondary btn-sm" data-qr="' +
       attrEsc(value) +
       '" data-qr-label="' +
@@ -3674,13 +3745,32 @@
   }
 
   function finishHtml(id) {
-    var next = TRACKS.filter(function (x) { return x.id === id + 1; })[0];
+    var t = TRACKS.filter(function (x) { return x.id === id; })[0];
+    var pid = pathFor(id);
+    var nid = nextInPath(pid);
+    if (nid === id) {
+      var p = PATHS.filter(function (x) { return x.id === pid; })[0];
+      var done = completedSet().concat([id]);
+      nid = null;
+      if (p) {
+        var i;
+        for (i = 0; i < p.ids.length; i++) {
+          if (done.indexOf(p.ids[i]) < 0) {
+            nid = p.ids[i];
+            break;
+          }
+        }
+      }
+    }
+    var next = nid ? TRACKS.filter(function (x) { return x.id === nid; })[0] : null;
     return pad(
       "<h2>Finish</h2>" +
-      callout("isnt", "Force exit", "Confirm you will not fund the practice phrase or practice addresses. Then you may open the next track.") +
-      '<label class="check"><input type="checkbox" id="v2Exit"/> I will not fund practice addresses / practice phrase.</label>' +
-      '<div class="row"><button type="button" class="btn" id="v2Finish" disabled>Finish track</button></div>' +
-      (next ? '<p class="control-help">Next tease: UC' + next.id + " — " + next.title + "</p>" : "<p>All listed tracks done.</p>")
+      callout("isnt", "Do not send coins", "This is practice. Then you may open the next track.") +
+      '<label class="check"><input type="checkbox" id="v2Exit"/> I will not send coins to these addresses</label>' +
+      '<div class="row"><button type="button" class="btn" id="v2Finish" disabled>Mark ' +
+      (t ? t.title : "track") +
+      " done</button></div>" +
+      (next ? '<p class="control-help">Next: ' + next.title + "</p>" : "<p>All listed tracks done.</p>")
     );
   }
   function addrHtml() {
@@ -3702,7 +3792,7 @@
         '<span class="v2-cell-act">' +
         '<button type="button" class="btn secondary btn-sm" data-copy="' +
         attrEsc(addr) +
-        '">Copy</button>' +
+        '">Copy address</button>' +
         '<button type="button" class="btn secondary btn-sm" data-qr="' +
         attrEsc(addr) +
         '" data-qr-label="Receive #' +
@@ -4311,16 +4401,17 @@
         if (ch !== 0 && ch !== 1) ch = 0;
         var path = BIP39Lab.formatPath(84, "test", 0, ch, i);
         $("v2PathLine").textContent = path;
+        mem.pathTouched = i > 0 || ch === 1;
         idx.textContent =
           i >= 19
-            ? "Index 19 is the last in this demo"
-            : "Show index " + (i + 1) + " (next receive address)";
+            ? "Last folder in this demo"
+            : "Change folder · next address";
         var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: ch });
         var row = r.rows[i] || r.rows[r.rows.length - 1];
         var a = (row && row.bip84_p2wpkh) || "";
         $("v2Tail").textContent =
           (ch ? "Change" : "Receive") + " index " + i + "  ·  " + a;
-        if (pause && (i > 0 || ch === 1)) pause.disabled = false;
+        if (pause && mem.pathTouched) pause.disabled = false;
       }
       applyPathIndex(0).catch(console.error);
       idx.addEventListener("click", function () {
@@ -4338,8 +4429,8 @@
           var ch = parseInt(chBtn.getAttribute("data-change") || "0", 10) ? 0 : 1;
           chBtn.setAttribute("data-change", String(ch));
           chBtn.textContent = ch
-            ? "Change chain: change (1)"
-            : "Change chain: receive (0)";
+            ? "Show receive folder"
+            : "Show change folder";
           var cur = parseInt(idx.getAttribute("data-i") || "0", 10);
           applyPathIndex(cur).catch(console.error);
         });
@@ -4431,12 +4522,28 @@
       var secret = ShamirLab.generatePracticeSecret(16);
       var u8 = ShamirLab.fromHex(secret);
       var shares = ShamirLab.splitSecret(u8, 2, 3);
-      var rec = ShamirLab.combineShares(shares.slice(0, 2));
+      mem.shamirSecret = secret;
+      mem.shamirShares = shares;
+      mem.shamirDone = false;
       $("v2ShOut").textContent =
-        "secret (practice hex): " + secret + "\n" +
+        "practice hex (one secret): " + secret + "\n" +
         shares.map(ShamirLab.encodeShare).join("\n") +
-        "\nrecombined: " + ShamirLab.toHex(rec) +
-        "\nmatch: " + (ShamirLab.toHex(rec) === secret);
+        "\nA share cannot sign. Next: combine any 2 of 3.";
+      var comb = $("v2ShCombine");
+      if (comb) comb.disabled = false;
+      if (pause) pause.disabled = true;
+    });
+    var shc = $("v2ShCombine");
+    if (shc) shc.addEventListener("click", function () {
+      if (!window.ShamirLab || !mem.shamirShares || !mem.shamirSecret) {
+        $("v2ShOut").textContent = "Split into shares first.";
+        return;
+      }
+      var rec = ShamirLab.combineShares(mem.shamirShares.slice(0, 2));
+      $("v2ShOut").textContent =
+        "combined from 2 of 3: " + ShamirLab.toHex(rec) +
+        "\nmatch original: " + (ShamirLab.toHex(rec) === mem.shamirSecret) +
+        "\nEducational hex. Not SLIP-39 Suite. A share cannot sign.";
       mem.shamirDone = true;
       if (pause) pause.disabled = false;
     });

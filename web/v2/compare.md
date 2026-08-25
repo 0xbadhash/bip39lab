@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-25
-- **v1:** `/` · product stamp `v0.16.49`
-- **v2:** `/v2/` · chip `v0.17.54-v2` (`data-v2-version`; not the classic footer stamp)
+- **v1:** `/` · product stamp `v0.16.50`
+- **v2:** `/v2/` · chip `v0.17.62-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -14,11 +14,22 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 
 ---
 
+## What landed since 0.16.49 / chip 0.17.54
+
+- **Path language pass (UC1–UC31):** each gate has its own Is / Is not / Done when (full sentences, no `≠`). In-track primaries are verb+object. Pause says the next job.
+- **Continue** after Mark done is the next incomplete card **in the current path** (Start here: First wallet → Paper backup; Keys: UC3 → UC14).
+- **Hard refresh** is in the top bar next to **Clear secrets** (not inside About).
+- **UC3:** words first; **Compare empty vs test secret**; forget-B beat.
+- **UC4:** **Change folder** is the action (pause until you click). Receive vs change on the next step.
+- **UC5/UC9:** **Copy viewing key** on export rows.
+- **UC6/UC7/UC8:** separate keys vs Shamir shares vs inspect-only PSBT (**Inspect sample**; never Sign). Split then **Combine any 2 of 3**.
+- **Shared / Over time / Advanced** section rails; Shared blurb `1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap`.
+
 ## What landed since 0.16.48 / chip 0.17.53
 
 - **UC2 do/do-not pad:** one Do / Do not block. No repeated “real money” paragraph, no extra BIP-39 (i) line on that step, no third “practice” reminder.
 - **Key row:** same 0.82rem type as the body; caption **Something you know**.
-- **Passphrase example:** four practice words (`word-word-word-word`) + **Generate another**. Practice only.
+- **Passphrase example:** four practice words (`word-word-word-word`) + **Make another example**. Practice only.
 
 ## What landed since 0.16.47 / chip 0.17.47
 
@@ -27,7 +38,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 - **Progress geometry:** three dots + “N of 3 in Start here”; global N/31 is secondary. Finish → green ✓; **Next up · UC2**.
 - **First paint:** Start here HTML skeleton (no blank main while JS boots).
 - **Next · Keys and backup:** three ghost title cards (not a void, not the full grid).
-- **About V2** holds Hard refresh (wipes `bip39lab.v2` progress). **Clear secrets** stays red in the top bar.
+- **Hard refresh** sits next to **Clear secrets** in the top bar (wipes `bip39lab.v2` progress). About V2 explains it. Clear secrets stays red.
 - **UC1 lock:** caption **Stronger seed** (no `· 12-word`). Receive rows **Copy + QR**.
 - Rooms in the sidebar stay dim vs Tracks.
 
