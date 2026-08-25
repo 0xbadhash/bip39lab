@@ -1,6 +1,6 @@
-# Release runbook — v0.16.42
+# Release runbook — v0.16.43
 
-**Phase:** approved (100) → tag `v0.16.42`
+**Phase:** approved (100) → tag `v0.16.43`
 
 ## Smoke
 
@@ -17,16 +17,16 @@ None.
 
 ## Evidence pack
 
-hard_gates ok; pr_validator 100; CODE/CROSS/BEHAVIOR; pytest; V2 Playwright 15 including V2-S15.
+hard_gates ok; pr_validator 100; CODE/CROSS/BEHAVIOR; pytest; V2 Playwright 15.
 
 ## Rollback
 
-`git checkout v0.16.41`.
+`git checkout v0.16.42`.
 
 ## §9
 
 1. leftover `scripts/*.py` uncommitted.
-2. Dual stamp 0.16.42 vs 0.17.24-v2.
+2. Dual stamp 0.16.43 vs 0.17.30-v2.
 3. Classic Playwright not all-green.
-4. lab-strip 404 on `/v2/`.
-5. Pad uses Math.random on purpose (simulated).
+4. Fake BTC drains are teaching only.
+5. lab-strip 404 on `/v2/`.
