@@ -1,32 +1,30 @@
-# Release runbook — v0.16.46
+# Release v0.16.48
 
-**Phase:** approved (100) → tag `v0.16.46`
+Dual stamp: product **0.16.48** · V2 chip **0.17.53-v2**
 
 ## Smoke
 
 | Step | Exit |
 |------|------|
-| `.venv/bin/python -m pytest -q` | 0 (105) |
-| `npx playwright test e2e/v2.spec.ts` | 0 (16) |
-| `python3 scripts/check_web_e2e.py --root .` | 0 |
-| full classic e2e | skipped |
+| `.venv/bin/pytest -q` | 0 (114) |
+| `npx playwright test e2e/v2.spec.ts` | 0 (20) |
+| `check_web_e2e.py` | 0 |
+| `hard_gates` / `pr_validator` | 100 |
 
-## Infra
-
-None.
+Infra: none (static lab). Classic full e2e not the V2 gate.
 
 ## Evidence pack
 
-hard_gates ok (gitleaks clean after id rename); pr_validator 100; CODE/CROSS/BEHAVIOR; pytest; V2 Playwright 16.
+hard_gates ok; Playwright V2; pytest 114; CODE-REVIEW p0=0; BEHAVIOR fail=0.
 
 ## Rollback
 
-`git checkout v0.16.45`.
+Tag `v0.16.47`. Revert picker HTML/JS/CSS. Dual stamp must stay paired.
 
 ## §9
 
 1. leftover scripts stash
-2. Dual stamp 0.16.46 vs 0.17.46-v2
-3. Classic Playwright not all-green
-4. lab-strip 404
-5. 128-char PP cap is UI only
+2. lab-strip 404
+3. Hard refresh under About
+4. Ghost cards excluded from `.uc-card` count
+5. Cookie wipe best-effort
