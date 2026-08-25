@@ -1,18 +1,7 @@
-# Behavior contract — 0.16.46 UC15 layout + PP
+# BEHAVIOR-CONTRACT V2 P0–P2
 
-- **Target:** `/v2/?uc=15`
-
-## User tasks
-
-1. First pad: dice, ~bits, lock, key on the right
-2. Type 64 characters; field keeps them; counter 64/128
-3. Estimate header does not require table rebuild (cells update)
-
-## Must not
-
-- Persist passphrase
-- Treat PP as pad bits
-
-## Evidence
-
-- [x] V2-S16
+1. Picker shows 31 UC cards; chip contains 0.17.47-v2; classic `/` still has Generate.
+2. UC16: after generate, hide card, type the 12 words, message says same receive address.
+3. UC17: coffee→2-of-3 is a trap; coffee/phone + mid/hww + large/mofn unlocks continue.
+4. UC19: simulate credit shows 0.000184; copy forbids funding mainnet; Network dock present.
+5. UC23: four steps in order; copy says tab never signs.

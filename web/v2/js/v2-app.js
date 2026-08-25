@@ -54,7 +54,23 @@
     { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys = hot wallet. Hardware keeps the seed on the device. USB is not an air-gap. Typing the seed into a computer still kills the vault." },
     { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
     { id: 14, level: "Beginner", title: "Dice and coin entropy", job: "Word count is not entropy. A few rolls can still print 12 or 24 words.", done: "Few d6 = TOO LOW. Minted words can still be weak. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Coin = 1 bit." },
-    { id: 15, level: "Beginner", title: "Pad plus passphrase", job: "Dice pad + phrase length + passphrase estimate. A longer 25th word does not fix a short pad.", done: "Pad bits are the source. 12-word wants 128; 24-word wants 256. Passphrase is an extra secret (weak / fair / stronger) — not a substitute for rolling." }
+    { id: 15, level: "Beginner", title: "Pad plus passphrase", job: "Dice pad + phrase length + passphrase estimate. A longer 25th word does not fix a short pad.", done: "Pad bits are the source. 12-word wants 128; 24-word wants 256. Passphrase is an extra secret (weak / fair / stronger) — not a substitute for rolling." },
+    { id: 16, level: "Starter", title: "Restore drill", job: "Wipe the screen and recover only from the numbered card.", done: "Same receive address from typed words. No photo. Practice phrase only." },
+    { id: 17, level: "Beginner", title: "Amount-tiered setup", job: "Pick an object for how much.", done: "Daily / mid / large sit in hot · HWW · 2-of-3. Not all on an exchange." },
+    { id: 18, level: "Intermediate", title: "Inheritance / incapacity", job: "What happens if you cannot speak.", done: "Named holders. Open-while-alive rehearsal. No seed in chat. Not legal counsel." },
+    { id: 19, level: "Beginner", title: "First receive (testnet)", job: "See a test credit on an address you control, and again watch-only.", done: "Same address on two views. Unknown ≠ 0. Never fund the practice mainnet phrase." },
+    { id: 20, level: "Beginner", title: "Metal backup", job: "Paper vs steel for a funded seed.", done: "Metal for fire/flood. Still no photo of the plate." },
+    { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold 2; a partner or service holds 1.", done: "I can say who can freeze vs who can steal vs DIY 2-of-3." },
+    { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Device setup: firmware, supply chain, PIN vs passphrase.", done: "Seed never on the computer. USB is not an air-gap." },
+    { id: 23, level: "Intermediate", title: "Air-gap signing loop", job: "Online builds PSBT → offline signs → online broadcasts.", done: "Four steps in order. This tab never signs." },
+    { id: 24, level: "Intermediate", title: "Geographic keys", job: "Home / elsewhere / a person or institution.", done: "Three keys not clustered in one building." },
+    { id: 25, level: "Beginner", title: "Annual rehearsal", job: "Plans go stale. Schedule the drills.", done: "Restore (UC16) and open-while-alive (UC18) are on a calendar." },
+    { id: 26, level: "Advanced", title: "Own node", job: "Do not treat a public explorer as your source of truth.", done: "This tab does not run a node. Lookups stay opt-in Network." },
+    { id: 27, level: "Advanced", title: "UTXO / coin control", job: "Change is a folder; coins are pieces, not a single balance.", done: "I can point at receive vs change and say why mixing UTXOs leaks." },
+    { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Break trivial common-input heuristics. Brand-agnostic.", done: "I know mixing is optional, not a custody substitute." },
+    { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second vault as a decoy — high safety bar.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
+    { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child mnemonics. Classic Lab is SoT.", done: "Child ≠ backup of the parent. Do not fund practice children." },
+    { id: 31, level: "Advanced", title: "SLIP-39 operational inheritance", job: "Threshold mnemonic shares for people, not edu hex.", done: "V2 UC7 stays educational hex. Suite lives in the SLIP-39 room." }
   ];
 
   function $(id) { return document.getElementById(id); }
@@ -156,7 +172,23 @@
       12: ["Hot wallet on phone", "Hardware signer", "Quiz", "Finish"],
       13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"],
       14: ["Few dice", "Words still weak", "Roll until enough", "Quiz", "Finish"],
-      15: ["Pad + words", "Add passphrase", "Quiz", "Finish"]
+      15: ["Pad + words", "Add passphrase", "Quiz", "Finish"],
+      16: ["Write then hide", "Type from paper", "Quiz", "Finish"],
+      17: ["How much", "Place amounts", "Quiz", "Finish"],
+      18: ["Who holds", "Open while alive", "Quiz", "Finish"],
+      19: ["Receive address", "Watch + credit", "Quiz", "Finish"],
+      20: ["Paper vs steel", "Choose metal", "Quiz", "Finish"],
+      21: ["You hold 2", "Freeze vs steal", "Quiz", "Finish"],
+      22: ["Unbox", "Refuse laptop seed", "Quiz", "Finish"],
+      23: ["Four steps", "Order the loop", "Quiz", "Finish"],
+      24: ["Three sites", "Place keys", "Quiz", "Finish"],
+      25: ["Stale plans", "Schedule drills", "Quiz", "Finish"],
+      26: ["Explorer is not a node", "Opt-in lookup", "Quiz", "Finish"],
+      27: ["Coins are pieces", "Change folder", "Quiz", "Finish"],
+      28: ["Common input", "Mixing is not custody", "Quiz", "Finish"],
+      29: ["Second vault", "Decoy is real", "Quiz", "Finish"],
+      30: ["Parent vs child", "Classic BIP-85", "Quiz", "Finish"],
+      31: ["People + threshold", "Dock Suite", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
   }
@@ -177,7 +209,23 @@
       12: ["Hot software", "Hardware", "USB ≠ air-gap"],
       13: ["Hot vs cold", "Daily vs savings", "Four objects"],
       14: ["Few dice TOO LOW", "Words still weak", "Roll until enough"],
-      15: ["Pad is the source", "Passphrase extra", "Does not fix pad"]
+      15: ["Pad is the source", "Passphrase extra", "Does not fix pad"],
+      16: ["Hide the screen", "Checksum", "Same address"],
+      17: ["Daily hot", "Mid hardware", "Large 2-of-3"],
+      18: ["Sealed packet", "2-of-3 people", "Not legal counsel"],
+      19: ["Test address", "Second view", "Never fund practice"],
+      20: ["Fire/flood", "No photo", "Steel object"],
+      21: ["You hold 2", "Service can freeze", "Not DIY same threat"],
+      22: ["Firmware", "PIN vs PP", "Seed off computer"],
+      23: ["Build PSBT", "Offline sign", "Broadcast elsewhere"],
+      24: ["Home", "Elsewhere", "Not one building"],
+      25: ["Calendar", "UC16 restore", "UC18 open-alive"],
+      26: ["No node in-tab", "Unknown ≠ 0", "Network dock"],
+      27: ["UTXO pieces", "Change chain", "Do not mix casually"],
+      28: ["Heuristics", "Optional mix", "Still need keys"],
+      29: ["Two vaults", "Duress copy", "Not advice"],
+      30: ["Child mnemonic", "Parent stays", "Lab #cardBip85"],
+      31: ["SLIP-39 words", "Not UC7 hex", "Room dock"]
     };
     return c[id] || ["A", "B", "C"];
   }
@@ -186,6 +234,13 @@
     current = { id: id, step: 0 };
     mem.cardAck = false;
     mem.maxStep = 0;
+    mem.restoreHidden = false;
+    mem.restoreOk = false;
+    mem.restoreAddr = "";
+    mem.tier = {};
+    mem.simRecv = false;
+    mem.loopClicks = [];
+    mem.geo = {};
     if (id === 6) mem.cosigners = emptyCosigners();
     if (id === 14) {
       mem.entEvents = [];
@@ -224,7 +279,24 @@
       11: [0, 2, 3],
       12: [0, 1, 2],
       13: [0, 1, 2],
-      14: [0, 1, 2]
+      14: [0, 1, 2],
+      15: [0, 1, 2],
+      16: [0, 1, 2],
+      17: [0, 1, 2],
+      18: [0, 1, 2],
+      19: [0, 1, 2],
+      20: [0, 1, 2],
+      21: [0, 1, 2],
+      22: [0, 1, 2],
+      23: [0, 1, 2],
+      24: [0, 1, 2],
+      25: [0, 1, 2],
+      26: [0, 1, 2],
+      27: [0, 1, 2],
+      28: [0, 1, 2],
+      29: [0, 1, 2],
+      30: [0, 1, 2],
+      31: [0, 1, 2]
     };
     var row = map[id] || [0, 1, 2];
     return row[chipIndex] != null ? row[chipIndex] : 0;
@@ -377,6 +449,118 @@
         atom(1, 0, "assets/uc14-atom-few-dice.svg", "The dice pad is the entropy source", "<strong>Plan · Pad first</strong><br/>Roll until the pad meets the phrase length. The 25th word comes after."),
         atom(2, 1, "assets/uc3-atom-same-words.svg", "A passphrase is an extra secret on the same words", "<strong>Practice · Extra secret</strong><br/>Same pad words + different passphrase = different vault. Estimate is teaching-only."),
         atom(3, 2, "assets/uc3-atom-forgotten-loss.svg", "A longer passphrase does not fix a short pad", "<strong>Review · Does not fix pad</strong><br/>Weak pad + strong-looking passphrase is still a weak source. Forgotten PP still loses that vault.")
+      ]
+    },
+    16: {
+      atoms: [
+        atom(1, 0, "assets/uc2-atom-card-object.svg", "The numbered card is what you restore from", "<strong>Plan · Card object</strong><br/>Hide the screen. The paper (or metal) is the only copy you type from."),
+        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Type from paper not a photo", "<strong>Practice · Type from paper</strong><br/>Checksum and the same receive address prove the backup works."),
+        atom(3, 2, "assets/uc1-atom-phrase-ne-address.svg", "Same words must yield the same address", "<strong>Review · Same address</strong><br/>A photo of the screen is not a restore drill.")
+      ]
+    },
+    17: {
+      atoms: [
+        atom(1, 0, "assets/uc13-atom-daily-savings.svg", "Daily spend can be hot", "<strong>Plan · How much</strong><br/>Coffee money is not a 2-of-3 ceremony."),
+        atom(2, 1, "assets/uc13-atom-four-objects.svg", "Four objects for three amounts", "<strong>Practice · Place amounts</strong><br/>0.001 phone · 0.184 hardware · 2.0 2-of-3. Exchange is a trap for savings."),
+        atom(3, 2, "assets/uc11-atom-they-hold.svg", "Exchange is they-hold", "<strong>Review · Not all on exchange</strong><br/>Putting every stack on a login is not amount-tiered setup.")
+      ]
+    },
+    18: {
+      atoms: [
+        atom(1, 0, "assets/uc6-atom-three-phrases.svg", "People hold keys or sealed packets", "<strong>Plan · Who holds</strong><br/>Heir + you + lawyer/safe. Descriptor travels with the keys."),
+        atom(2, 1, "assets/uc6-atom-mofn.svg", "Open the packet while you are alive", "<strong>Practice · Open while alive</strong><br/>A dry-run proves someone can reconstruct without a chat seed."),
+        atom(3, 2, "assets/uc11-atom-not-a-wallet.svg", "This is not legal counsel", "<strong>Review · Not counsel</strong><br/>The lab does not draft a will. It rehearses the objects.")
+      ]
+    },
+    19: {
+      atoms: [
+        atom(1, 0, "assets/uc1-atom-phrase-ne-address.svg", "A receive address you can show", "<strong>Plan · Test address</strong><br/>QR and text of a practice tb1 address."),
+        atom(2, 1, "assets/uc5-atom-viewing-key.svg", "Watch-only second view", "<strong>Practice · Same address twice</strong><br/>Simulated 0.000184 tBTC. Unknown is not zero."),
+        atom(3, 2, "assets/uc10-atom-unknown-not-zero.svg", "Never fund practice mainnet", "<strong>Review · Practice only</strong><br/>Real lookup is the Network room after opt-in. This tab stays offline.")
+      ]
+    },
+    20: {
+      atoms: [
+        atom(1, 0, "assets/uc2-atom-card-object.svg", "Paper burns and floods", "<strong>Plan · Paper vs steel</strong><br/>A funded seed wants a metal object."),
+        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Do not photograph the plate", "<strong>Practice · No photo</strong><br/>Steel is still a secret. A snapshot of it is not."),
+        atom(3, 2, "assets/uc2-atom-passphrase-apart.svg", "Split plates if you split secrets", "<strong>Review · Object</strong><br/>One plate vs split plates is an ops choice, not a photo.")
+      ]
+    },
+    21: {
+      atoms: [
+        atom(1, 0, "assets/uc6-atom-mofn.svg", "You keep two keys", "<strong>Plan · You hold 2</strong><br/>A partner or service holds the third."),
+        atom(2, 1, "assets/uc6-atom-three-phrases.svg", "Freeze vs steal", "<strong>Practice · Different threat</strong><br/>The service can often freeze. They should not spend alone."),
+        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Not the same as DIY 2-of-3", "<strong>Review · Not DIY</strong><br/>Collaborative custody is a product. DIY is three people you named.")
+      ]
+    },
+    22: {
+      atoms: [
+        atom(1, 0, "assets/uc12-atom-hardware.svg", "Check firmware before a seed", "<strong>Plan · Unbox</strong><br/>Supply chain and firmware are the ceremony, not a USB driver in this tab."),
+        atom(2, 1, "assets/uc12-atom-usb-not-airgap.svg", "USB is not air-gap", "<strong>Practice · Cable</strong><br/>PIN is not a passphrase. The seed stays on the device."),
+        atom(3, 2, "assets/uc12-atom-hot-phone.svg", "Typing the seed into a laptop kills the vault", "<strong>Review · Off computer</strong><br/>UC12 already showed the drain. This track is the setup job.")
+      ]
+    },
+    23: {
+      atoms: [
+        atom(1, 0, "assets/uc8-atom-package.svg", "Hot coordinator builds a PSBT", "<strong>Plan · Build</strong><br/>Online machine never sees the seed."),
+        atom(2, 1, "assets/uc8-atom-no-seed.svg", "QR or SD to the offline signer", "<strong>Practice · Hand-off</strong><br/>This tab may show a fake QR. It does not sign."),
+        atom(3, 2, "assets/uc8-atom-sign-elsewhere.svg", "Signed PSBT back, broadcast elsewhere", "<strong>Review · Broadcast</strong><br/>Inspect here. Sign cold. Broadcast hot. Four steps.")
+      ]
+    },
+    24: {
+      atoms: [
+        atom(1, 0, "assets/uc6-atom-three-phrases.svg", "Three keys, three places", "<strong>Plan · Sites</strong><br/>Home, elsewhere, a person or institution."),
+        atom(2, 1, "assets/uc6-atom-mofn.svg", "Do not cluster", "<strong>Practice · Map</strong><br/>Two keys in one building is a fire."),
+        atom(3, 2, "assets/uc13-atom-four-objects.svg", "Ops, not M-of-N math", "<strong>Review · Geography</strong><br/>The threshold already exists. This track places the objects.")
+      ]
+    },
+    25: {
+      atoms: [
+        atom(1, 0, "assets/uc2-atom-card-object.svg", "Plans go stale", "<strong>Plan · Calendar</strong><br/>A restore you never run is a hope."),
+        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Schedule UC16", "<strong>Practice · Restore drill</strong><br/>Pick a month. Hide the screen. Type from paper."),
+        atom(3, 2, "assets/uc6-atom-mofn.svg", "Schedule UC18 open-while-alive", "<strong>Review · Inheritance dry-run</strong><br/>Heirs should fail in front of you, not after.")
+      ]
+    },
+    26: {
+      atoms: [
+        atom(1, 0, "assets/uc10-atom-offline.svg", "This tab does not run a node", "<strong>Plan · No node in-tab</strong><br/>A public explorer is someone else's view."),
+        atom(2, 1, "assets/uc10-atom-address-only.svg", "Lookups are opt-in", "<strong>Practice · Network dock</strong><br/>Address-only after you leave /v2/."),
+        atom(3, 2, "assets/uc10-atom-unknown-not-zero.svg", "Unknown is not zero", "<strong>Review · Honesty</strong><br/>Failed lookup must not print 0.")
+      ]
+    },
+    27: {
+      atoms: [
+        atom(1, 0, "assets/uc4-atom-path-folder.svg", "UTXOs are pieces", "<strong>Plan · Pieces</strong><br/>A wallet total hides which coins you spend."),
+        atom(2, 1, "assets/uc4-atom-index.svg", "Change is a folder", "<strong>Practice · Change chain</strong><br/>Path …/1/n is change. Mixing inputs links history."),
+        atom(3, 2, "assets/uc4-atom-words-stay.svg", "Deep coin control stays in Lab", "<strong>Review · Thin pad</strong><br/>This track names the job. Full UTXO toys stay on /.")
+      ]
+    },
+    28: {
+      atoms: [
+        atom(1, 0, "assets/uc9-atom-leaks-history.svg", "Common-input heuristics", "<strong>Plan · Heuristics</strong><br/>Inputs spent together are often assumed same owner."),
+        atom(2, 1, "assets/uc9-atom-watch-only.svg", "Mixing is optional", "<strong>Practice · Brand-agnostic</strong><br/>No vendor name. Mixing does not replace a seed backup."),
+        atom(3, 2, "assets/uc9-atom-cannot-spend.svg", "Still need keys", "<strong>Review · Custody first</strong><br/>Privacy tools sit on top of keys you already control.")
+      ]
+    },
+    29: {
+      atoms: [
+        atom(1, 0, "assets/uc3-atom-same-words.svg", "Same words, second passphrase", "<strong>Plan · Second vault</strong><br/>A decoy passphrase opens a real smaller vault."),
+        atom(2, 1, "assets/uc3-atom-new-vault.svg", "Both vaults are real", "<strong>Practice · Real decoy</strong><br/>Empty decoy is obvious. This is not personal-safety training."),
+        atom(3, 2, "assets/uc3-atom-forgotten-loss.svg", "Not legal advice", "<strong>Review · Copy bar</strong><br/>Duress is a threat model, not a recommendation.")
+      ]
+    },
+    30: {
+      atoms: [
+        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Parent can mint children", "<strong>Plan · BIP-85</strong><br/>One master, many child mnemonics. Classic Lab #cardBip85."),
+        atom(2, 1, "assets/uc1-atom-one-to-many.svg", "Child is not the parent backup", "<strong>Practice · Child ≠ parent</strong><br/>Losing the parent loses the children."),
+        atom(3, 2, "assets/uc1-atom-phrase-ne-address.svg", "Do not fund practice children", "<strong>Review · Practice</strong><br/>SoT remains the classic card, not this track.")
+      ]
+    },
+    31: {
+      atoms: [
+        atom(1, 0, "assets/uc7-atom-one-secret.svg", "SLIP-39 is a product format", "<strong>Plan · Suite words</strong><br/>Operational inheritance uses SLIP-39 shares, not edu hex."),
+        atom(2, 1, "assets/uc7-atom-m-pieces.svg", "Threshold people", "<strong>Practice · People</strong><br/>M of N human holders. Combine is recovery."),
+        atom(3, 2, "assets/uc7-atom-share-no-sign.svg", "UC7 stays hex; dock the room", "<strong>Review · Dock</strong><br/>Open /slip39.html. This tab does not replace Suite.")
       ]
     }
   };
@@ -553,7 +737,429 @@
     if (id === 13) return uc13(step);
     if (id === 14) return uc14(step);
     if (id === 15) return uc15(step);
+    if (id >= 16 && id <= 31) return ucJob(id, step);
     return "";
+  }
+
+  function qOk(t, why) { return { k: "ok", t: t, okwhy: why || "Correct." }; }
+  function qBad(t, why) { return { k: "bad", t: t, why: why || "Wrong." }; }
+
+  function jobQuizzes(id) {
+    var m = {
+      16: [
+        { q: "A restore drill proves what?", opts: [qOk("The paper words rebuild the same address.", "The backup object works."), qBad("You photographed the screen.", "A photo is not the card.")] },
+        { q: "If checksum fails?", opts: [qOk("A word is wrong or out of order.", "Fix the paper copy."), qBad("Fund it anyway.", "Never.")] },
+        { q: "Practice phrase?", opts: [qOk("Do not fund it.", "Restore drill is practice."), qBad("Send mainnet coins to test restore.", "Hard no.")] }
+      ],
+      17: [
+        { q: "Coffee-size stack?", opts: [qOk("Hot phone (or similar).", "2-of-3 is overkill."), qBad("2-of-3 for 0.001.", "Trap.")] },
+        { q: "Large stack?", opts: [qOk("2-of-3 or collab.", "Not a login."), qBad("All on one exchange.", "They-hold.")] },
+        { q: "All three amounts on the phone?", opts: [qOk("Trap. Amount-tiered means different objects.", "Yes."), qBad("Fine if the brand is cold.", "Brand is not the split.")] }
+      ],
+      18: [
+        { q: "Seed in WhatsApp?", opts: [qOk("Fail. Sealed packet or key holders, not chat.", "Yes."), qBad("Fine if the group is family.", "Chat is not a vault.")] },
+        { q: "Open while alive?", opts: [qOk("Rehearse recovery now.", "Dry-run."), qBad("Wait until after death.", "Then you cannot debug.")] },
+        { q: "This track is legal counsel?", opts: [qOk("No. Objects only.", "Not a will."), qBad("Yes, follow it in court.", "Hard no.")] }
+      ],
+      19: [
+        { q: "Fund the practice mainnet phrase?", opts: [qOk("Never.", "Hard no."), qBad("Yes, small amount.", "No.")] },
+        { q: "Simulated 0.000184?", opts: [qOk("Teaching credit. Unknown ≠ 0 on a real lookup.", "Yes."), qBad("Proof the coins exist on-chain.", "This tab is offline.")] },
+        { q: "Second view?", opts: [qOk("Watch-only same address.", "UC5 job."), qBad("Paste the seed into a phone app.", "That is a hot wallet.")] }
+      ],
+      20: [
+        { q: "Funded seed backup?", opts: [qOk("Metal survives fire/flood better than paper.", "Yes."), qBad("A screenshot of steel is enough.", "No photo.")] },
+        { q: "Photograph the plate?", opts: [qOk("Do not.", "Steel is still secret."), qBad("Cloud backup of the photo.", "No.")] },
+        { q: "UC2 already covered photos?", opts: [qOk("This track is the object: paper vs steel.", "Yes."), qBad("Same as UC2.", "Separate job.")] }
+      ],
+      21: [
+        { q: "You hold 2, service holds 1.", opts: [qOk("Service can often freeze; should not spend alone.", "Yes."), qBad("Service can steal anytime.", "They lack your two keys.")] },
+        { q: "Same as DIY 2-of-3?", opts: [qOk("No. Product vs three people you named.", "Different threat."), qBad("Identical.", "No.")] },
+        { q: "Keys?", opts: [qOk("Whole seeds / devices, not Shamir pieces.", "UC6."), qBad("Word shares of one mnemonic.", "That's Shamir.")] }
+      ],
+      22: [
+        { q: "First job on a new device?", opts: [qOk("Firmware / supply chain before a seed.", "Ceremony."), qBad("Type the seed into the laptop to test.", "Kills the vault.")] },
+        { q: "USB cable?", opts: [qOk("Not an air-gap by itself.", "UC12."), qBad("Air-gap guaranteed.", "No.")] },
+        { q: "PIN vs passphrase?", opts: [qOk("PIN unlocks the device; PP is another vault.", "Different objects."), qBad("Same thing.", "No.")] }
+      ],
+      23: [
+        { q: "This tab signs?", opts: [qOk("Never. Inspect / story only.", "UC8 stays inspect-only."), qBad("Sign the sample PSBT here.", "No.")] },
+        { q: "Order?", opts: [qOk("Build → hand-off → sign offline → broadcast elsewhere.", "Four steps."), qBad("Broadcast then sign.", "No.")] },
+        { q: "Fake QR?", opts: [qOk("Teaching hand-off. Not a real signed tx.", "Yes."), qBad("Broadcast it on mainnet.", "Hard no.")] }
+      ],
+      24: [
+        { q: "Two keys in one house?", opts: [qOk("Cluster. Fire/theft takes M.", "Yes."), qBad("Convenient is fine.", "Ops fail.")] },
+        { q: "This is M-of-N math?", opts: [qOk("No. Geography of objects.", "Yes."), qBad("New threshold math.", "No.")] },
+        { q: "Third site?", opts: [qOk("Person or institution, not the same building.", "Yes."), qBad("The garage counts as elsewhere.", "Same building.")] }
+      ],
+      25: [
+        { q: "Stale plan?", opts: [qOk("Schedule UC16 and UC18.", "Maintenance."), qBad("Write once, never run.", "Hope.")] },
+        { q: "Heirs should first try after death?", opts: [qOk("No. Open while alive.", "UC18."), qBad("Yes.", "Too late to debug.")] },
+        { q: "Restore from a screenshot?", opts: [qOk("That fails UC16.", "Paper/metal."), qBad("Fine yearly.", "No.")] }
+      ],
+      26: [
+        { q: "Does /v2/ run bitcoind?", opts: [qOk("No. connect-src none.", "Yes."), qBad("Yes, in WASM.", "No.")] },
+        { q: "Explorer balance 0?", opts: [qOk("Unknown if the lookup failed.", "Honesty."), qBad("Definitely broke.", "No.")] },
+        { q: "Where to look up?", opts: [qOk("Opt-in Network room, address-only.", "Dock."), qBad("Paste seed into an explorer.", "No.")] }
+      ],
+      27: [
+        { q: "A wallet total is?", opts: [qOk("A sum of UTXOs (pieces).", "Yes."), qBad("One coin.", "No.")] },
+        { q: "Change path?", opts: [qOk("…/1/n folder. Words stay.", "UC4."), qBad("New mnemonic for change.", "No.")] },
+        { q: "Mix all inputs always?", opts: [qOk("Links history. Coin control is a choice.", "Yes."), qBad("Always mix.", "Leaks.")] }
+      ],
+      28: [
+        { q: "CoinJoin replaces backup?", opts: [qOk("No. Mixing is not custody.", "Yes."), qBad("Yes.", "No.")] },
+        { q: "Brand in this track?", opts: [qOk("None. Heuristic only.", "Agnostic."), qBad("Use this named mixer.", "No.")] },
+        { q: "Common-input?", opts: [qOk("Inputs spent together look like one owner.", "Yes."), qBad("Addresses cannot be linked that way.", "Heuristic exists.")] }
+      ],
+      29: [
+        { q: "Decoy passphrase?", opts: [qOk("Opens a real second vault.", "Yes."), qBad("A fake empty wallet is enough.", "Obvious.")] },
+        { q: "Legal / safety advice?", opts: [qOk("No. Teaching objects only.", "Copy bar."), qBad("Follow this under duress.", "Hard no.")] },
+        { q: "Forgotten decoy PP?", opts: [qOk("That vault is gone, same as UC3.", "Yes."), qBad("Lab can reset it.", "No.")] }
+      ],
+      30: [
+        { q: "BIP-85 child?", opts: [qOk("Derived mnemonic. Parent loss loses children.", "Yes."), qBad("Independent backup of the parent.", "No.")] },
+        { q: "SoT?", opts: [qOk("Classic #cardBip85.", "Yes."), qBad("This V2 track replaces Lab.", "No.")] },
+        { q: "Fund practice children?", opts: [qOk("Do not.", "Practice."), qBad("Yes, tiny amount.", "No.")] }
+      ],
+      31: [
+        { q: "UC7 hex vs SLIP-39?", opts: [qOk("UC7 is educational GF(256). Suite is the product.", "Yes."), qBad("Same words.", "No.")] },
+        { q: "Operational inheritance?", opts: [qOk("People hold SLIP-39 shares. Dock the room.", "Yes."), qBad("Email the hex.", "No.")] },
+        { q: "A share signs bitcoin?", opts: [qOk("No. Combine is recovery, not a cosign.", "UC7."), qBad("Yes, like multisig.", "No.")] }
+      ]
+    };
+    return m[id] || [];
+  }
+
+  async function ucJob(id, step) {
+    if (step === 2) return quizBank(jobQuizzes(id));
+    if (step === 3) return finishHtml(id);
+    if (id === 16) return uc16(step);
+    if (id === 17) return uc17(step);
+    if (id === 18) return uc18(step);
+    if (id === 19) return uc19(step);
+    if (id === 20) return uc20(step);
+    if (id === 21) return uc21(step);
+    if (id === 22) return uc22(step);
+    if (id === 23) return uc23(step);
+    if (id === 24) return uc24(step);
+    if (id === 25) return uc25(step);
+    if (id === 26) return uc26(step);
+    if (id === 27) return uc27(step);
+    if (id === 28) return uc28(step);
+    if (id === 29) return uc29(step);
+    if (id === 30) return uc30(step);
+    if (id === 31) return uc31(step);
+    return "";
+  }
+
+  async function uc16(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Write the practice card, then hide it</h2>" +
+        doDont("Generate a practice phrase and treat the numbered card as paper.", "Do not photograph the card. Do not use a funded phrase.") +
+        '<button type="button" class="btn" id="v2Generate">Generate</button>' +
+        '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
+        pauseBtn("I wrote it. Hide the screen next.", !mem.mnemonic)
+      );
+    }
+    var words = (mem.mnemonic || "").split(/\s+/).filter(Boolean);
+    var inputs = "";
+    for (var i = 0; i < 12; i++) {
+      inputs += '<label class="v2-restore-cell">#' + (i + 1) + '<input id="v2RestoreW' + i + '" autocomplete="off" spellcheck="false"/></label>';
+    }
+    return pad(
+      "<h2>Type from paper</h2>" +
+      doDont("Type the twelve words from the paper copy.", "Do not peek at a screenshot.") +
+      '<button type="button" class="btn secondary" id="v2RestoreHide">Hide the on-screen card</button>' +
+      '<div id="v2Card" class="' + (mem.restoreHidden ? "v2-hidden" : "") + '">' + wordGridHtml(mem.mnemonic) + "</div>" +
+      '<div class="v2-restore-grid">' + inputs + "</div>" +
+      '<button type="button" class="btn" id="v2RestoreCheck">Check checksum and address</button>' +
+      '<div id="v2RestoreMsg"></div>' +
+      pauseBtn("Addresses match", !mem.restoreOk)
+    );
+  }
+
+  function uc17(step) {
+    function row(amt, label, btc) {
+      return (
+        '<div class="v2-tier-row" data-amt="' + amt + '"><strong>' + label + " · " + btc + ' BTC</strong>' +
+        '<button type="button" class="btn secondary btn-sm" data-bin="exchange">Exchange</button>' +
+        '<button type="button" class="btn secondary btn-sm" data-bin="phone">Phone</button>' +
+        '<button type="button" class="btn secondary btn-sm" data-bin="hww">One HWW</button>' +
+        '<button type="button" class="btn secondary btn-sm" data-bin="mofn">2-of-3</button></div>'
+      );
+    }
+    var rows =
+      row("coffee", "Daily", "0.001") +
+      row("mid", "Mid", "0.184") +
+      row("large", "Large", "2.0") +
+      '<div id="v2TierOut"></div>';
+    if (step === 0) {
+      return pad(
+        "<h2>How much lives where</h2>" +
+        doDont("Put daily / mid / large on different objects.", "Do not put all three on an exchange or all on a phone.") +
+        "<p class=\"control-help\">Teaching amounts: <strong>0.001</strong> coffee · <strong>0.184</strong> mid · <strong>2.0</strong> large. Not real balances.</p>" +
+        rows +
+        pauseBtn("Amounts placed", true)
+      );
+    }
+    return pad(
+      "<h2>Place amounts</h2>" +
+      doDont("Coffee → phone. Mid → hardware. Large → 2-of-3.", "2-of-3 for coffee money. All on exchange.") +
+      rows +
+      pauseBtn("Amounts placed", true)
+    );
+  }
+
+  function uc18(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Who holds what</h2>" +
+        doDont("Name heir + you + lawyer/safe. Keep a descriptor with the keys.", "Do not put a seed in WhatsApp or email.") +
+        '<div class="v2-hold-split">' +
+        '<div class="v2-hold-col v2-hold-col-one"><h3>Sealed packet</h3><p>Paper instructions, not the live seed in chat.</p></div>' +
+        '<div class="v2-hold-col v2-hold-col-ms"><h3>2-of-3 people</h3><p>You · heir · lawyer/safe. Independent keys.</p></div>' +
+        "</div>" +
+        '<button type="button" class="btn secondary" id="v2InhChat">Email the seed</button>' +
+        '<div id="v2InhOut"></div>' +
+        pauseBtn("Holders named — not chat", false)
+      );
+    }
+    return pad(
+      "<h2>Open while alive</h2>" +
+      doDont("Dry-run reconstruction now.", "Do not wait until nobody can debug it. This is not legal counsel.") +
+      '<label class="check"><input type="checkbox" id="v2InhLive"/> We opened the packet / combined 2-of-3 while I am alive (practice).</label>' +
+      '<div id="v2InhLiveOut"></div>' +
+      pauseBtn("Rehearsed", true)
+    );
+  }
+
+  async function uc19(step) {
+    if (step === 0) {
+      if (mem.mnemonic && !mem.lastRows) await deriveNow();
+      return pad(
+        "<h2>Practice receive address (test)</h2>" +
+        doDont("Show a tb1 practice address and QR.", "Do not fund a practice mainnet phrase from this tab.") +
+        '<button type="button" class="btn" id="v2Generate">Generate</button>' +
+        netSelectHtml() +
+        '<div id="v2AddrWrap">' + (mem.lastRows ? addrHtml() : "") + "</div>" +
+        pauseBtn("I have a receive address", !(mem.lastRows && mem.lastRows.length))
+      );
+    }
+    var addr = "";
+    if (mem.lastRows && mem.lastRows[0]) addr = mem.lastRows[0].bip84_p2wpkh || "";
+    return pad(
+      "<h2>Watch-only second view + simulated credit</h2>" +
+      doDont("Same address on a watch list. Simulate 0.000184 tBTC if you stay offline.", "Do not fund the practice mainnet phrase. Real lookup = Network dock.") +
+      '<p id="v2WatchSame">Watch-only list: <code>' + (addr || "generate first") + "</code></p>" +
+      '<p id="v2SimBal" class="control-help">Balance: unknown (not 0)</p>' +
+      '<button type="button" class="btn" id="v2SimRecv">Simulate 0.000184 tBTC received</button>' +
+      '<a class="btn secondary" href="../network.html" data-v2-dock="19">Open Network (opt-in test lookup)</a>' +
+      pauseBtn("Two views, no mainnet fund", !mem.simRecv)
+    );
+  }
+
+  function uc20(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Paper vs steel</h2>" +
+        doDont("Treat metal as the object for a funded seed.", "Do not photograph the plate. Paper still burns.") +
+        pauseBtn("Choose an object", false)
+      );
+    }
+    return pad(
+      "<h2>Choose metal</h2>" +
+      '<button type="button" class="btn secondary" data-metal="paper">Paper only</button>' +
+      '<button type="button" class="btn" data-metal="steel">Steel plate</button>' +
+      '<div id="v2MetalOut"></div>' +
+      pauseBtn("Metal, no photo", true)
+    );
+  }
+
+  function uc21(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>You hold 2</h2>" +
+        doDont("Keep two keys. Partner or service holds one.", "Do not confuse this with DIY 2-of-3 among three friends.") +
+        pauseBtn("Contrast freeze vs steal", false)
+      );
+    }
+    return pad(
+      "<h2>Freeze vs steal</h2>" +
+      '<button type="button" class="btn secondary" data-collab="freeze">Service can freeze</button>' +
+      '<button type="button" class="btn secondary" data-collab="steal">Service can steal alone</button>' +
+      '<div id="v2CollabOut"></div>' +
+      pauseBtn("Threat named", true)
+    );
+  }
+
+  function uc22(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Unbox ceremony</h2>" +
+        doDont("Check firmware and bag seals before a seed is born.", "No vendor driver in this browser. Do not type the seed into the laptop.") +
+        '<label class="check"><input type="checkbox" id="v2Fw"/> Firmware hash checked (practice tick)</label>' +
+        pauseBtn("Firmware ticked", true)
+      );
+    }
+    return pad(
+      "<h2>Refuse laptop seed</h2>" +
+      doDont("PIN unlocks the device. Passphrase is another vault. USB ≠ air-gap.", "Typing the seed into a computer still kills the vault.") +
+      '<button type="button" class="btn secondary" id="v2RefuseSeed">I will not type the seed into the laptop</button>' +
+      '<div id="v2CerOut"></div>' +
+      pauseBtn("Seed stays on device", true)
+    );
+  }
+
+  function uc23(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Four steps</h2>" +
+        doDont("Online builds PSBT → QR/SD to offline signer → signed PSBT back → broadcast elsewhere.", "This tab never signs and never broadcasts a real transaction.") +
+        pauseBtn("Order the loop", false)
+      );
+    }
+    var labels = ["1 · Online builds PSBT", "2 · QR/SD to offline signer", "3 · Signed PSBT back", "4 · Broadcast elsewhere"];
+    var btns = labels.map(function (t, i) {
+      return '<button type="button" class="btn secondary" data-loop="' + i + '">' + t + "</button>";
+    }).join("");
+    return pad(
+      "<h2>Tap the four steps in order</h2>" +
+      btns +
+      '<div id="v2LoopOut" class="control-help">This tab never signs.</div>' +
+      pauseBtn("Loop ordered", true)
+    );
+  }
+
+  function uc24(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Three sites</h2>" +
+        doDont("Home, elsewhere, a person or institution.", "Do not cluster two keys in one building.") +
+        pauseBtn("Place three keys", false)
+      );
+    }
+    return pad(
+      "<h2>Place keys</h2>" +
+      '<div class="v2-map">' +
+      '<button type="button" class="btn secondary" data-geo="home">Home</button>' +
+      '<button type="button" class="btn secondary" data-geo="else">Elsewhere</button>' +
+      '<button type="button" class="btn secondary" data-geo="person">Person / institution</button>' +
+      '<button type="button" class="btn secondary" data-geo="garage">Garage (same building)</button>' +
+      "</div>" +
+      '<div id="v2GeoOut"></div>' +
+      pauseBtn("Not clustered", true)
+    );
+  }
+
+  function uc25(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Plans go stale</h2>" +
+        doDont("Put restore and inheritance dry-run on a calendar.", "A document you never run is a hope.") +
+        pauseBtn("Schedule the two drills", false)
+      );
+    }
+    return pad(
+      "<h2>Schedule drills</h2>" +
+      '<label class="check"><input type="checkbox" data-cal="16"/> UC16 restore this year</label>' +
+      '<label class="check"><input type="checkbox" data-cal="18"/> UC18 open-while-alive this year</label>' +
+      '<div id="v2CalOut"></div>' +
+      pauseBtn("Both scheduled", true)
+    );
+  }
+
+  function uc26(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>No node in this tab</h2>" +
+        doDont("Treat a public explorer as someone else's view.", "Do not assume /v2/ talks to bitcoind. CSP connect-src is none.") +
+        pauseBtn("Use Network only if I opt in", false)
+      );
+    }
+    return pad(
+      "<h2>Opt-in lookup</h2>" +
+      "<p>Failed balance = <strong>unknown</strong>, never silent 0.</p>" +
+      '<a class="btn" href="../network.html" data-v2-dock="26">Open Network</a>' +
+      pauseBtn("Unknown ≠ 0", false)
+    );
+  }
+
+  function uc27(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Coins are pieces</h2>" +
+        doDont("A total hides UTXOs. Spending two inputs can link them.", "Do not treat the number in the corner as one coin.") +
+        pauseBtn("Look at change", false)
+      );
+    }
+    return pad(
+      "<h2>Change folder</h2>" +
+      pathBipSvgHtml() +
+      "<p class=\"control-help\">Receive <code>…/0/n</code> · change <code>…/1/n</code>. Words do not change. Deep coin control stays on classic Lab.</p>" +
+      pauseBtn("I can name change", false)
+    );
+  }
+
+  function uc28(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Common-input heuristic</h2>" +
+        doDont("Know that inputs spent together often look like one owner.", "Do not treat a mixer brand as this lab's recommendation.") +
+        pauseBtn("Mixing is optional", false)
+      );
+    }
+    return pad(
+      "<h2>Mixing is not custody</h2>" +
+      doDont("Backup and keys still come first.", "Do not skip UC2/UC16 because you mixed.") +
+      pauseBtn("Custody first", false)
+    );
+  }
+
+  function uc29(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Second vault</h2>" +
+        doDont("A decoy passphrase opens a real (usually smaller) vault.", "This is not legal, law-enforcement, or personal-safety advice.") +
+        pauseBtn("Both vaults are real", false)
+      );
+    }
+    return pad(
+      "<h2>Decoy is real</h2>" +
+      doDont("Empty decoy is obvious. Forgotten PP still loses that vault (UC3).", "Do not ask this tab what to do under threat.") +
+      pauseBtn("Not advice — objects only", false)
+    );
+  }
+
+  function uc30(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Parent vs child</h2>" +
+        doDont("BIP-85 mints child mnemonics from one master. Classic Lab #cardBip85 is SoT.", "A child is not a backup of the parent. Do not fund practice children.") +
+        pauseBtn("Open classic only if I need the card", false)
+      );
+    }
+    return pad(
+      "<h2>Classic BIP-85</h2>" +
+      '<a class="btn secondary" href="../index.html#cardBip85">Open classic #cardBip85</a>' +
+      pauseBtn("Child ≠ parent backup", false)
+    );
+  }
+
+  function uc31(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>People + threshold</h2>" +
+        doDont("Operational inheritance uses SLIP-39 shares held by people.", "Do not treat UC7 educational hex as Suite.") +
+        pauseBtn("Dock the SLIP-39 room", false)
+      );
+    }
+    return pad(
+      "<h2>Dock Suite</h2>" +
+      '<a class="btn" href="../slip39.html" data-v2-dock="31">Open SLIP-39 room</a>' +
+      "<p class=\"control-help\">V2 UC7 stays edu hex. Combine is recovery, not a cosign.</p>" +
+      pauseBtn("Room is SoT", false)
+    );
   }
 
   async function uc1(step) {
@@ -2978,10 +3584,11 @@
       mem.mnemonic = await BIP39Lab.generateMnemonic(n);
       mem.lastRows = null;
       mem.cardAck = false;
-      $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);
-      replaceOsEntropy();
+      var cardEl = $("v2Card");
+      if (cardEl) cardEl.innerHTML = wordGridHtml(mem.mnemonic);
+      if (typeof replaceOsEntropy === "function") replaceOsEntropy();
       var aw = $("v2AddrWrap");
-      if (aw) {
+      if (aw && current.id !== 19) {
         aw.innerHTML = "";
         aw.classList.add("v2-hidden");
       }
@@ -2989,6 +3596,13 @@
         mem.cardAck = false;
         renderTrack();
         return;
+      }
+      if (current.id === 16 || current.id === 19) {
+        await deriveNow();
+        if (mem.lastRows && mem.lastRows[0]) {
+          mem.restoreAddr = mem.lastRows[0].bip84_p2wpkh || "";
+        }
+        if (aw && current.id === 19) aw.classList.remove("v2-hidden");
       }
       if (pause) pause.disabled = false;
     });
@@ -3672,6 +4286,196 @@
         });
       });
     }
+    if ($("v2RestoreHide")) {
+      $("v2RestoreHide").addEventListener("click", function () {
+        mem.restoreHidden = true;
+        var card = $("v2Card");
+        if (card) card.classList.add("v2-hidden");
+      });
+    }
+    if ($("v2RestoreCheck")) {
+      $("v2RestoreCheck").addEventListener("click", async function () {
+        var typed = [];
+        for (var i = 0; i < 12; i++) {
+          var inp = $("v2RestoreW" + i);
+          typed.push(inp ? String(inp.value || "").trim().toLowerCase() : "");
+        }
+        var m = typed.join(" ");
+        var box = $("v2RestoreMsg");
+        var valid = window.BIP39Lab && (await BIP39Lab.validateMnemonic(m));
+        if (!valid) {
+          mem.restoreOk = false;
+          if (box) {
+            box.className = "msg-bad";
+            box.textContent = "Checksum failed. A word is wrong or out of order. Do not fund.";
+          }
+          if (pause) pause.disabled = true;
+          return;
+        }
+        var r = await BIP39Lab.deriveAddresses(m, "", { network: currentNet(), count: 1, account: 0, change: 0 });
+        var addr = r.rows && r.rows[0] ? r.rows[0].bip84_p2wpkh : "";
+        var match = addr && addr === mem.restoreAddr;
+        mem.restoreOk = !!match;
+        if (box) {
+          box.className = match ? "msg-ok" : "msg-bad";
+          box.textContent = match
+            ? "Checksum ok. Same receive address as before. Restore from paper worked."
+            : "Words checksum, but address does not match the hidden card.";
+        }
+        if (pause) pause.disabled = !match;
+      });
+    }
+    document.querySelectorAll("[data-amt] [data-bin]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        mem.tier = mem.tier || {};
+        var row = btn.closest("[data-amt]");
+        var amt = row.getAttribute("data-amt");
+        var bin = btn.getAttribute("data-bin");
+        mem.tier[amt] = bin;
+        row.querySelectorAll("[data-bin]").forEach(function (b) {
+          b.className = "btn secondary btn-sm";
+        });
+        btn.className = "btn btn-sm";
+        var want = { coffee: "phone", mid: "hww", large: "mofn" };
+        var out = $("v2TierOut");
+        if (bin === "exchange") {
+          if (out) out.textContent = "Trap: savings on an exchange is they-hold, not amount-tiered self-custody.";
+          if (pause) pause.disabled = true;
+          return;
+        }
+        if (amt === "coffee" && bin === "mofn") {
+          if (out) out.textContent = "Trap: 2-of-3 for coffee money. Put daily on a phone hot wallet.";
+          if (pause) pause.disabled = true;
+          return;
+        }
+        var ok =
+          mem.tier.coffee === want.coffee &&
+          mem.tier.mid === want.mid &&
+          mem.tier.large === want.large;
+        if (out) {
+          out.textContent = ok
+            ? "Placed: 0.001 phone · 0.184 hardware · 2.0 2-of-3."
+            : "Keep placing. Coffee → phone. Mid → HWW. Large → 2-of-3.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    if ($("v2InhChat")) {
+      $("v2InhChat").addEventListener("click", function () {
+        var o = $("v2InhOut");
+        if (o) {
+          o.className = "msg-bad";
+          o.textContent = "Fail. Do not put a seed in email or chat. Use a sealed packet or key holders.";
+        }
+      });
+    }
+    if ($("v2InhLive")) {
+      $("v2InhLive").addEventListener("change", function () {
+        var o = $("v2InhLiveOut");
+        if ($("v2InhLive").checked) {
+          if (o) o.textContent = "Rehearsed while alive. Not legal counsel.";
+          if (pause) pause.disabled = false;
+        } else if (pause) pause.disabled = true;
+      });
+    }
+    if ($("v2SimRecv")) {
+      $("v2SimRecv").addEventListener("click", function () {
+        mem.simRecv = true;
+        var b = $("v2SimBal");
+        if (b) b.textContent = "Simulated credit: 0.000184 tBTC (teaching only; this tab did not talk to a network).";
+        if (pause) pause.disabled = false;
+      });
+    }
+    document.querySelectorAll("[data-metal]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-metal");
+        var o = $("v2MetalOut");
+        var ok = k === "steel";
+        if (o) {
+          o.className = ok ? "msg-ok" : "msg-bad";
+          o.textContent = ok
+            ? "Steel for a funded seed. Still do not photograph the plate."
+            : "Paper burns and floods. Pick steel for a funded seed.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    document.querySelectorAll("[data-collab]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-collab");
+        var o = $("v2CollabOut");
+        var ok = k === "freeze";
+        if (o) {
+          o.className = ok ? "msg-ok" : "msg-bad";
+          o.textContent = ok
+            ? "Service can often freeze. They should not steal alone if you hold two keys."
+            : "They lack your two keys, so they should not spend alone. Freeze is the usual lever.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    if ($("v2Fw")) {
+      $("v2Fw").addEventListener("change", function () {
+        if (pause) pause.disabled = !$("v2Fw").checked;
+      });
+    }
+    if ($("v2RefuseSeed")) {
+      $("v2RefuseSeed").addEventListener("click", function () {
+        var o = $("v2CerOut");
+        if (o) o.textContent = "Seed stays on the device. USB is not an air-gap.";
+        if (pause) pause.disabled = false;
+      });
+    }
+    mem.loopClicks = mem.loopClicks || [];
+    document.querySelectorAll("[data-loop]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var n = parseInt(btn.getAttribute("data-loop"), 10);
+        mem.loopClicks = mem.loopClicks || [];
+        mem.loopClicks.push(n);
+        var o = $("v2LoopOut");
+        var seq = mem.loopClicks.slice(-4);
+        var ok = seq.length >= 4 && seq[0] === 0 && seq[1] === 1 && seq[2] === 2 && seq[3] === 3;
+        if (o) {
+          o.textContent = ok
+            ? "Build → hand-off → sign offline → broadcast elsewhere. This tab never signs."
+            : "Tap 1 then 2 then 3 then 4. This tab never signs.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    document.querySelectorAll("[data-geo]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        mem.geo = mem.geo || {};
+        var k = btn.getAttribute("data-geo");
+        if (k === "garage") {
+          var o = $("v2GeoOut");
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = "Garage is the same building. Cluster.";
+          }
+          if (pause) pause.disabled = true;
+          return;
+        }
+        mem.geo[k] = true;
+        var ok = mem.geo.home && mem.geo.else && mem.geo.person;
+        var o2 = $("v2GeoOut");
+        if (o2) {
+          o2.className = ok ? "msg-ok" : "";
+          o2.textContent = ok ? "Three sites. Not clustered." : "Place home, elsewhere, and a person/institution.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    document.querySelectorAll("[data-cal]").forEach(function (box) {
+      box.addEventListener("change", function () {
+        var a = document.querySelector('[data-cal="16"]');
+        var b = document.querySelector('[data-cal="18"]');
+        var ok = a && a.checked && b && b.checked;
+        var o = $("v2CalOut");
+        if (o) o.textContent = ok ? "Both drills scheduled." : "Tick UC16 and UC18.";
+        if (pause) pause.disabled = !ok;
+      });
+    });
     wireCopyQr(document);
     document.querySelectorAll("[data-v2-dock]").forEach(function (a) {
       a.addEventListener("click", function () {
@@ -3761,7 +4565,7 @@
     var dock = loadState().dock;
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 15) openUc(n);
+      if (n >= 1 && n <= 31) openUc(n);
     } else if (dock && dock.id) {
       var s = loadState();
       delete s.dock;

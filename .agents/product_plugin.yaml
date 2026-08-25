@@ -93,7 +93,8 @@ web_e2e:
       title: V2 use-case tracks
       playwright: e2e/v2.spec.ts
       scenarios:
-        - { id: picker, name: "V2-S0 picker", steps: ["10 cards", "classic /"] }
+        - { id: picker, name: "V2-S0 picker", steps: ["31 cards", "classic /"] }
+        - { id: p0p2, name: "V2-S17–S20 forensic tracks", steps: ["restore", "tiers", "receive", "air-gap loop"] }
         - { id: uc1, name: "V2-S1 generate", steps: ["words first", "validate gated"] }
         - { id: quiz, name: "V2-S2 quiz+exit", steps: ["msg-ok", "force ack"] }
         - { id: deeplink, name: "V2-S3 ?uc=3", steps: ["gate UC3"] }

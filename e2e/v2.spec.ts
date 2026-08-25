@@ -1,14 +1,15 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.46-v2)", () => {
+test.describe("V2 use-case tracks (0.17.47-v2)", () => {
+  // AC-1: picker count 31 + chip 0.17.47-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
     await page.goto("/v2/");
     await expect(page.locator("#pickerGrid")).toBeVisible();
-    await expect(page.locator(".uc-card")).toHaveCount(15);
+    await expect(page.locator(".uc-card")).toHaveCount(31);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.46-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.47-v2/);
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
     await expect(page.locator(".sidebar")).not.toContainText(/Clear secrets/);
     await expect(page.locator(".topbar-actions #v2Clear")).toBeVisible();
@@ -518,5 +519,67 @@ test.describe("V2 use-case tracks (0.17.46-v2)", () => {
     await expect(page.locator("#v2EntPp")).toHaveValue(sixtyFour);
     await expect(page.locator("#v2EntPp")).toHaveAttribute("maxlength", "128");
     await expect(page.locator("#v2EntPpCount")).toContainText("64 / 128");
+  });
+
+  // AC-2: restore checksum + same address
+  test("V2-S17 UC16 restore drill: hide card, type words, same address", async ({ page }) => {
+    await page.goto("/v2/?uc=16");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Generate")).toBeVisible();
+    await page.locator("#v2Generate").click();
+    await expect(page.locator("#v2Card .ww")).toHaveCount(12);
+    const words = await page.locator("#v2Card .ww").allTextContents();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2RestoreHide").click();
+    await expect(page.locator("#v2Card")).toHaveClass(/v2-hidden/);
+    for (let i = 0; i < 12; i++) {
+      await page.locator(`#v2RestoreW${i}`).fill(words[i]);
+    }
+    await page.locator("#v2RestoreCheck").click();
+    await expect(page.locator("#v2RestoreMsg")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2RestoreMsg")).toContainText(/same receive address/i);
+  });
+
+  // AC-3: amount tiers
+  test("V2-S18 UC17 amount tiers: coffee not 2-of-3; large not exchange", async ({ page }) => {
+    await page.goto("/v2/?uc=17");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("[data-amt]")).toHaveCount(3);
+    await page.locator('[data-amt="coffee"] [data-bin="mofn"]').click();
+    await expect(page.locator("#v2TierOut")).toContainText(/trap|coffee|2-of-3/i);
+    await page.locator('[data-amt="coffee"] [data-bin="phone"]').click();
+    await page.locator('[data-amt="mid"] [data-bin="hww"]').click();
+    await page.locator('[data-amt="large"] [data-bin="mofn"]').click();
+    await expect(page.locator("#v2TierOut")).toContainText(/placed/i);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  // AC-4: first receive sim tBTC
+  test("V2-S19 UC19 first receive: simulated tBTC, never fund mainnet", async ({ page }) => {
+    await page.goto("/v2/?uc=19");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Generate").click();
+    await expect(page.locator("#v2AddrWrap .addr-text").first()).toBeVisible();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2WatchSame")).toBeVisible();
+    await page.locator("#v2SimRecv").click();
+    await expect(page.locator("#v2SimBal")).toContainText(/0\.000184/);
+    await expect(page.locator("#trackBody")).toContainText(/Do not fund/i);
+    await expect(page.locator("#trackBody")).toContainText(/mainnet/i);
+    await expect(page.locator("[data-v2-dock]")).toBeVisible();
+  });
+
+  // AC-5: air-gap loop never signs
+  test("V2-S20 UC23 air-gap loop order; tab never signs", async ({ page }) => {
+    await page.goto("/v2/?uc=23");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("[data-loop]")).toHaveCount(4);
+    await page.locator('[data-loop="0"]').click();
+    await page.locator('[data-loop="1"]').click();
+    await page.locator('[data-loop="2"]').click();
+    await page.locator('[data-loop="3"]').click();
+    await expect(page.locator("#v2LoopOut")).toContainText(/never signs/i);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
   });
 });

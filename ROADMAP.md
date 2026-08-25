@@ -72,6 +72,13 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 P0–P2 forensic tracks UC16–UC31
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-25-v2-p0-p2-tracks.md`
+- **Smoke:** `npx playwright test e2e/v2.spec.ts`
+- **Notes:** chip 0.17.47-v2; product 0.16.47
+
 ### [OPEN] V2 UC14 dice / coin entropy
 - **Status:** done
 - **Priority:** P0

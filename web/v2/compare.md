@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-25
-- **v1:** `/` · product stamp `v0.16.46`
-- **v2:** `/v2/` · chip `v0.17.46-v2` (`data-v2-version`; not the classic footer stamp)
+- **v1:** `/` · product stamp `v0.16.47`
+- **v2:** `/v2/` · chip `v0.17.47-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -13,6 +13,16 @@ Live compare.md lags until deploy. This repo file is source of truth.
 V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a second crypto stack. Classic `/` is unchanged.
 
 ---
+
+## What landed since 0.16.46 / chip 0.17.46
+
+- **P0–P2 tracks UC16–UC31** are interactive labs (not lectures). Picker **UC1–UC31**.
+- **UC16** restore drill: hide card, type words, checksum + same address.
+- **UC17** amount tiers: 0.001 phone · 0.184 HWW · 2.0 2-of-3; exchange/all-phone traps.
+- **UC18** inheritance: sealed packet vs chat; open-while-alive; not legal counsel.
+- **UC19** first receive: test address + watch second view + simulated **0.000184 tBTC**; Network dock; never fund practice mainnet.
+- **P1** UC20 metal · UC21 collab · UC22 ceremony · UC23 air-gap loop (tab never signs) · UC24 geo keys · UC25 annual rehearsal.
+- **P2** UC26 own node (no node in-tab) · UC27 UTXO/change · UC28 CoinJoin agnostic · UC29 decoy PP (not advice) · UC30 BIP-85 (classic SoT) · UC31 SLIP-39 dock (`/slip39.html`; UC7 stays hex).
 
 ## What landed since 0.16.45 / chip 0.17.44
 
@@ -26,12 +36,12 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 
 ## Pedagogy / chrome (all tracks)
 
-- Picker **UC1–UC15**.
+- Picker **UC1–UC31**.
 - **Clear secrets** — red, top-right header, every view.
 - **Do / Do not** then `desc()`. Blue `done` callouts. Green = Do.
 - Force-exit on every Finish. Rail + concept chips jump back.
 - Dual stamp: product `v0.16.x` · V2 chip `0.17.N-v2`.
-- Plan / Practice / Review atoms on UC1–UC15.
+- Plan / Practice / Review atoms on UC1–UC31.
 
 ---
 
@@ -53,6 +63,12 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | They/you + 0.184 + 2-col hold | UC11 |
 | Hot drain / hardware | UC12 |
 | Hot vs cold sort | UC13 |
+| Restore drill | UC16 |
+| Amount tiers | UC17 |
+| Inheritance dry-run | UC18 |
+| First receive (sim tBTC) | UC19 |
+| P1 metal…rehearsal | UC20–25 |
+| P2 node…SLIP-39 | UC26–31 |
 
 ---
 
@@ -60,7 +76,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 
 | Job | v1 | v2 | Still missing on v2 |
 |-----|----|----|---------------------|
-| Entry | Rooms + First hour | **Picker UC1–UC15** | — |
+| Entry | Rooms + First hour | **Picker UC1–UC31** | — |
 | Gate | One ack | **Is / is not / Done when** | — |
 | Clear secrets | Mnemonic row | **Topbar** | — |
 | Network on derive | Lab select | **UC1 Test / Mainnet** | UC4 test; watch zpub main — on purpose |
@@ -83,16 +99,32 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | **11–13** | Glossary only | Interactive labs (five-question UC11 quiz) | — |
 | **14** | `#cardEntPad` | Dice/coin, 12–24 mint, lock vs **this** length, 5-quiz | Extra RNG toys |
 | **15** | PP + pad split | Dice · bits · lock · **key**; PP 128 chars; stable Estimate | Not a substitute for OS CSPRNG |
+| **16** | Restore (gap) | Hide card, type from paper, checksum + same address | — |
+| **17** | Amount tiers (gap) | Place 0.001 / 0.184 / 2.0 | — |
+| **18** | Inheritance (gap) | Sealed vs chat; 2-of-3 people; open-while-alive | Legal counsel |
+| **19** | First receive (gap) | Sim tBTC + watch + Network dock | Live mempool in-tab |
+| **20–25** | P1 jobs (gap) | Metal, collab, ceremony, loop, geo, calendar | Vendor drivers |
+| **26–31** | P2 jobs (gap) | Node honesty, UTXO, mix, decoy, BIP-85, SLIP-39 dock | Node in-tab; Suite clone |
 
 ---
 
 ## Still leave on `/`
 
-Theme, Extra help, Classroom, First-hour rail, BIP-85 (`#cardBip85`), ops wall (`#cardOps`), full address matrix, SLIP-39 Suite, Network live lookup, funded storage.
+Theme, Extra help, Classroom, First-hour rail, full BIP-85 card, ops wall (`#cardOps`), full address matrix, SLIP-39 Suite implementation, Network live lookup, funded storage.
+
+V2 now **points at** BIP-85 (UC30) and SLIP-39 (UC31 dock). Rooms stay SoT.
 
 **Qualities already moved:** numbered card, word-count ENT, Test/Mainnet, Clear secrets, force-exit, offline V2, keys ≠ Shamir, inspect-not-sign, weak pad still mints words, they-hold vs you-hold, hot vs hardware vs cold.
 
 **Do not clone** classic Lab as a second SPA. Tracks teach; rooms stay SoT.
+
+---
+
+## Forensic tracks (shipped)
+
+Hard no still: fund practice mainnet; sign/broadcast real PSBT here; paste a real seed; inheritance as legal counsel.
+
+**Spec:** `.agents/specs/2026-08-25-v2-p0-p2-tracks.md`
 
 ---
 
