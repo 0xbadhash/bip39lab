@@ -1,28 +1,25 @@
 # CODE-REVIEW
 
-- **command:** `/code_review` working tree vs origin/master
-- **base:** origin/master
-- **head:** working tree → 0.16.45
-- **secrets:** no new secrets; QR/copy are addresses and xpubs, not mnemonics
+- **command:** `/code_review` vs origin/master (working tree)
+- **secrets:** no new secrets; PP stays in memory only
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-- CSP `connect-src none`. sessionStorage: progress, gates, dock `{id,step}` only.
-- QR via `BIP39Lab.qrDataUrl` on addresses/xpubs. Seed QR not added on V2 pads.
-- PSBT samples are synthetic inspect-only (`cHNidP8…`).
-- Lock green only when `entBits >= entNeed()` for the selected word count.
+- Passphrase textarea maxlength 128; not persisted to sessionStorage.
+- Estimate table updates cells in place (no outerHTML rebuild).
+- CSP unchanged.
 
 ## Follow-ups
 
-- leftover `scripts/*.py` still stashed
-- `/v2/js/lab-strip.js` 404
-- classic full Playwright not the V2 gate
+- leftover `scripts/*.py` stashed
+- lab-strip 404
+- classic full e2e not V2 gate
 
 p0=0 follow_ups=3
 
 ## Smoke
 
-`npx playwright test e2e/v2.spec.ts` — 16 passed (pre-stamp)
+Playwright V2-S0 + S16 (pre-full-suite in this pass)

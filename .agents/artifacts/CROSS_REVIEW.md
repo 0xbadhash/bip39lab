@@ -1,33 +1,31 @@
 # CROSS-REVIEW
 
-Working tree vs origin/master. V2 only.
-
 ## Security Guru
 
-**none (blocker).** Address/xpub QR and clipboard only. Dock payload has no seed. Fake 0.184 BTC copy.
+**none (blocker).** PP not stored. QR still addresses/xpubs.
 
 ## Maintainability Expert
 
-**none (blocker).** Copy/QR helper shared. quizBank is extra to single `quiz()`.
+**none (blocker).** `refreshEntStack` avoids table recreate.
 
 ### Obsolete / cleanup (scoped)
 
-- **Tier A:** 0
-- **Tier B:** lab-strip 404 (pre-existing)
-- **False keep:** dual stamp; stashed scripts
+- Tier A: 0
+- Tier B: lab-strip 404
+- False keep: dual stamp; scripts stash
 
 ## Domain Specialist
 
-**none (blocker).** ENT 128/160/192/224/256 by word count. Change=1 is BIP-84 change chain. Inspect-not-sign PSBT.
+**none (blocker).** PP estimate still teaching-only, capped 256, not added to pad ENT.
 
-## Severity counts
+## Severity
 
 blocker 0 · major 0 · nit 0
 
 ## §9
 
-1. Hue-rotate on a blue PNG for lock colour.
-2. Dock uses sessionStorage then `/v2/` without `?uc=`.
-3. Three PSBT samples are educational framing, not funded txs.
-4. Dual 0.16.x vs 0.17.N-v2 stamps.
-5. lab-strip 404.
+1. Dual stamp 0.16.46 vs 0.17.46-v2
+2. Fake 0.184 BTC
+3. lab-strip 404
+4. PP 128-char cap is UI, not BIP-39
+5. Key still is Lab beginner-key.png, not a new asset

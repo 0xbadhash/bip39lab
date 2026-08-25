@@ -1,23 +1,18 @@
-# Behavior contract — V2 lab habits 0.16.45
+# Behavior contract — 0.16.46 UC15 layout + PP
 
-- **Product:** bip39lab
-- **Target:** `http://127.0.0.1:4173/v2/`
-- **Setup:** Playwright webServer
+- **Target:** `/v2/?uc=15`
 
 ## User tasks
 
-1. 15 tracks, chip 0.17.44-v2, classic Generate still on `/`
-2. UC1: five Copy + QR on receive addresses
-3. UC4: path SVG; change chain flips last-but-one path nibble 0→1
-4. UC11: one-signer rounded card; five quiz questions all required
-5. UC14: 12-word green then 15/24 TOO LOW until more rolls
+1. First pad: dice, ~bits, lock, key on the right
+2. Type 64 characters; field keeps them; counter 64/128
+3. Estimate header does not require table rebuild (cells update)
 
 ## Must not
 
-- QR the recovery phrase on these pads
-- Sign or broadcast PSBT
-- Persist mnemonic in sessionStorage
+- Persist passphrase
+- Treat PP as pad bits
 
 ## Evidence
 
-- [x] Playwright e2e/v2.spec.ts 16 passed
+- [x] V2-S16

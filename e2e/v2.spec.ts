@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.44-v2)", () => {
+test.describe("V2 use-case tracks (0.17.46-v2)", () => {
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
@@ -8,7 +8,7 @@ test.describe("V2 use-case tracks (0.17.44-v2)", () => {
     await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator(".uc-card")).toHaveCount(15);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.44-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.46-v2/);
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
     await expect(page.locator(".sidebar")).not.toContainText(/Clear secrets/);
     await expect(page.locator(".topbar-actions #v2Clear")).toBeVisible();
@@ -494,6 +494,10 @@ test.describe("V2 use-case tracks (0.17.44-v2)", () => {
     await page.goto("/v2/?uc=15");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#uc15Viz .atom")).toHaveCount(3);
+    await expect(page.locator("#v2EntDice")).toBeVisible();
+    await expect(page.locator("#v2EntFace")).toBeVisible();
+    await expect(page.locator("#v2EntLock")).toBeVisible();
+    await expect(page.locator("#v2PpKeyUc15Start .v2-pp-key-img")).toBeVisible();
     await page.locator("#v2Dice").click();
     await page.locator("#v2Dice").click();
     await page.locator("#v2Dice").click();
@@ -509,5 +513,10 @@ test.describe("V2 use-case tracks (0.17.44-v2)", () => {
     await page.locator("#v2EntPp").fill("Correct-Horse-Battery-Staple-9");
     await expect(page.locator("#v2EntStack")).toContainText(/fair|stronger/i);
     await expect(page.locator("#v2EntStack")).toContainText(/does not fix|TOO LOW|pad is still/i);
+    const sixtyFour = "a".repeat(64);
+    await page.locator("#v2EntPp").fill(sixtyFour);
+    await expect(page.locator("#v2EntPp")).toHaveValue(sixtyFour);
+    await expect(page.locator("#v2EntPp")).toHaveAttribute("maxlength", "128");
+    await expect(page.locator("#v2EntPpCount")).toContainText("64 / 128");
   });
 });

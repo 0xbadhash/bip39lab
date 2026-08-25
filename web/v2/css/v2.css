@@ -240,6 +240,12 @@
   gap: 0.75rem 1rem;
   margin: 0.45rem 0 0.7rem;
 }
+.v2-ent-hero-eq {
+  align-items: stretch;
+}
+.v2-ent-hero-eq .v2-pp-key {
+  margin-left: auto;
+}
 .v2-os-ent {
   display: flex;
   flex-wrap: wrap;
@@ -418,19 +424,37 @@
 }
 .v2-ent-stack {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   margin: 0.5rem 0 0.75rem;
   font-size: 0.88rem;
 }
+.v2-ent-stack-c1 { width: 38%; }
+.v2-ent-stack-c2 { width: 62%; }
 .v2-ent-stack th,
 .v2-ent-stack td {
   text-align: left;
   padding: 0.35rem 0.5rem;
   border-bottom: 1px solid var(--line, rgba(0,0,0,0.12));
+  vertical-align: top;
+  word-break: break-word;
+}
+.v2-ent-stack th:last-child,
+.v2-ent-stack td:last-child {
+  min-width: 0;
 }
 .v2-ent-stack-low { color: var(--bad); }
 .v2-ent-stack-ok { color: var(--ok); }
-#v2EntPp { width: 100%; max-width: 28rem; font: inherit; padding: 0.35rem 0.5rem; }
+#v2EntPp {
+  display: block;
+  width: 100%;
+  max-width: 40rem;
+  min-height: 4.2rem;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 0.4rem 0.55rem;
+  resize: vertical;
+}
 #v2EntLog {
   max-height: 4.5rem;
   overflow: auto;

@@ -2205,13 +2205,23 @@
     );
   }
 
-  function entHeroHtml() {
-    return '<div class="v2-ent-hero">' + entDieHtml() + entFaceHtml() + lockHtml("pad") + "</div>";
+  function entHeroHtml(opts) {
+    opts = opts || {};
+    return (
+      '<div class="v2-ent-hero' +
+      (opts.key ? " v2-ent-hero-eq" : "") +
+      '">' +
+      entDieHtml() +
+      entFaceHtml() +
+      lockHtml("pad") +
+      (opts.key ? ppKeyHtml(opts.keyId || "v2PpKey") : "") +
+      "</div>"
+    );
   }
 
-  function entButtonsHtml() {
+  function entButtonsHtml(heroOpts) {
     return (
-      entHeroHtml() +
+      entHeroHtml(heroOpts) +
       '<div class="row v2-gen-bar">' +
       '<div class="v2-gen-left">' +
       '<button type="button" class="btn" id="v2Dice">Roll d6 (simulated)</button>' +
@@ -2379,25 +2389,60 @@
           " bits estimate). Still do not fund.";
     return (
       '<table class="v2-ent-stack" id="v2EntStack">' +
+      "<colgroup><col class=\"v2-ent-stack-c1\" /><col class=\"v2-ent-stack-c2\" /></colgroup>" +
       "<tr><th>Layer</th><th>Estimate</th></tr>" +
-      "<tr><td>Dice / coin pad</td><td>~" +
+      "<tr><td>Dice / coin pad</td><td id=\"v2StackPad\">~" +
       bits +
       " bits" +
       (low ? ' <strong class="v2-ent-stack-low">TOO LOW</strong>' : ' <strong class="v2-ent-stack-ok">meets ' + n + "-word</strong>") +
       "</td></tr>" +
       "<tr><td>" +
       n +
-      "-word BIP-39 wants</td><td>" +
+      "-word BIP-39 wants</td><td id=\"v2StackNeed\">" +
       need +
       " bits (12→128 · 24→256)</td></tr>" +
-      "<tr><td>Passphrase (25th)</td><td>" +
+      "<tr><td>Passphrase (25th)</td><td id=\"v2StackPp\">" +
       ppBitsLabel(pp) +
       "</td></tr>" +
-      '<tr><td colspan="2">' +
+      '<tr><td colspan="2" id="v2StackWhole">' +
       whole +
       "</td></tr>" +
       "</table>"
     );
+  }
+
+  function refreshEntStack() {
+    if (!$("v2EntStack")) return;
+    var bits = Math.round(entBits());
+    var n = mem.entWordCount || 12;
+    var need = entNeed();
+    var low = padIsLow();
+    var pp = mem.entPp || "";
+    var pest = estimatePassphraseBits(pp);
+    if ($("v2StackPad")) {
+      $("v2StackPad").innerHTML =
+        "~" +
+        bits +
+        " bits" +
+        (low
+          ? ' <strong class="v2-ent-stack-low">TOO LOW</strong>'
+          : ' <strong class="v2-ent-stack-ok">meets ' + n + "-word</strong>");
+    }
+    if ($("v2StackNeed")) {
+      $("v2StackNeed").textContent = need + " bits (12→128 · 24→256)";
+    }
+    if ($("v2StackPp")) $("v2StackPp").textContent = ppBitsLabel(pp);
+    if ($("v2StackWhole")) {
+      $("v2StackWhole").textContent = low
+        ? "Whole picture: pad is still TOO LOW. A longer passphrase does not fix a short pad."
+        : pest == null
+          ? "Whole picture: pad meets " + n + "-word ENT on paper. Empty passphrase adds no extra secret."
+          : "Whole picture: pad meets " +
+            n +
+            "-word on paper; passphrase is an extra vault secret (~" +
+            (pest < 0.5 ? "<1" : Math.round(pest)) +
+            " bits estimate). Still do not fund.";
+    }
   }
 
   async function uc15(step) {
@@ -2411,8 +2456,7 @@
         desc(
           "This track stacks three numbers: pad bits from dice or coin, BIP-39 ENT for the word count you pick, and a teaching estimate of the optional 25th word. They are not one magic total. The pad is the source."
         ) +
-        ppKeyHtml("v2PpKeyUc15a") +
-        entButtonsHtml() +
+        entButtonsHtml({ key: true, keyId: "v2PpKeyUc15Start" }) +
         entMintBarHtml() +
         pauseBtn("I have pad words in view", !mem.entMnemonic)
       );
@@ -2430,11 +2474,14 @@
         entHeroHtml() +
         entStackHtml() +
         ppKeyHeroHtml(
-          '<label class="field" for="v2EntPp"><span class="label-row">Practice passphrase</span>' +
-          '<input id="v2EntPp" type="text" autocomplete="off" spellcheck="false" value="' +
+          '<label class="field" for="v2EntPp"><span class="label-row">Practice passphrase (up to 128 characters)</span>' +
+          '<textarea id="v2EntPp" rows="3" maxlength="128" autocomplete="off" spellcheck="false" placeholder="try 1 character, then a longer phrase (64+ is fine)">' +
           attrEsc(mem.entPp) +
-          '" placeholder="try 1 character, then a longer phrase" /></label>' +
-          '<p class="control-help" id="v2EntPpHint">Try a single letter (weak), then several mixed characters (fair / stronger).</p>',
+          "</textarea></label>" +
+          '<p class="control-help" id="v2EntPpHint">Try a single letter (weak), then several mixed characters (fair / stronger). Length can go past 64.</p>' +
+          '<p class="control-help" id="v2EntPpCount">' +
+          (mem.entPp ? mem.entPp.length : 0) +
+          " / 128</p>",
           "v2PpKeyUc15"
         ) +
         pauseBtn("I saw the stack change with length", !(mem.entPp && mem.entPp.length))
@@ -3304,10 +3351,16 @@
     var ppIn = $("v2EntPp");
     if (ppIn) {
       ppIn.addEventListener("input", function () {
-        mem.entPp = ppIn.value || "";
-        var stack = $("v2EntStack");
-        if (stack) stack.outerHTML = entStackHtml();
-        if (pause) pause.disabled = !mem.entPp.length;
+        var v = ppIn.value || "";
+        if (v.length > 128) {
+          v = v.slice(0, 128);
+          ppIn.value = v;
+        }
+        mem.entPp = v;
+        refreshEntStack();
+        var cnt = $("v2EntPpCount");
+        if (cnt) cnt.textContent = v.length + " / 128";
+        if (pause) pause.disabled = !v.length;
       });
     }
     var regen = $("v2Regen");
