@@ -36,6 +36,8 @@
   var ENT_BITS = { 12: 128, 15: 160, 18: 192, 21: 224, 24: 256 };
   var ENT_BYTES = { 12: 16, 15: 20, 18: 24, 21: 28, 24: 32 };
   var PSBT_MIN = "cHNidP8A";
+  var PSBT_STORY = "cHNidP8BAAoCAAAAAA==";
+  var PSBT_PARTIAL = "cHNidP8AIgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA";
 
   var TRACKS = [
     { id: 1, level: "Starter", title: "First wallet", job: "Make a practice phrase and one receive address.", done: "Phrase, numbered card, address ≠ phrase; will not fund practice." },
@@ -852,6 +854,7 @@
           "<code>0</code> = receive (1 would be change). " +
           "<code>0</code> at the end = first address in that folder (index)."
         ) +
+        pathBipSvgHtml() +
         '<p class="v2-path-big" id="v2PathDemo">m/84\'/1\'/0\'/0/0</p>' +
         "<p class=\"control-help\">Hardened levels use an apostrophe (purpose, coin, account). Same words. Different BIP purpose = different address shape. This track uses BIP84.</p>" +
         pauseBtn("Path is a folder", false)
@@ -873,10 +876,12 @@
           "Index is which receive address in this folder",
           "Wallets ask for a new address so you do not reuse the first one. Index 0 is the first receive address. Index 1 is the next. The words stay the same. Only the last number in the path changes. Click to see the address string change while the card does not."
         ) +
+        pathBipSvgHtml() +
         '<p class="v2-path-big" id="v2PathLine">' + p0 + "</p>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn" id="v2Idx">Show index 1 (next receive address)</button>' +
         '<button type="button" class="btn secondary" id="v2IdxZero">Back to index 0</button>' +
+        '<button type="button" class="btn secondary" id="v2Change" data-change="0">Change chain: receive (0)</button>' +
         "</div>" +
         '<p class="control-help">Full receive address at this index (BIP84 test)</p>' +
         '<code class="v2-preview-big" id="v2Tail">Index 0 loads first. Each Next click adds 1 to the last path number.</code>' +
@@ -948,6 +953,7 @@
           "Refresh to show watch-only keys from this practice phrase. You should see xpub or zpub, not the twelve words. Lines under --- output descriptors --- are the same public material as an import string (wpkh / tr / sh / pkh) — click (i) on descriptor."
         ) +
         '<button type="button" class="btn" id="v2Wo">Refresh watch-only</button>' +
+        '<div id="v2WoList" class="v2-copy-list"></div>' +
         '<pre class="out" id="v2WoOut">Click refresh — public keys only.</pre>' +
         pauseBtn("I saw a zpub/xpub, not the seed", false)
       );
@@ -1090,7 +1096,7 @@
         "</div>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn danger" id="v2CsClearAll">Clear all three secrets</button>' +
-        '<a class="btn secondary" href="../multisig.html">Open Multisig room (full M-of-N build)</a>' +
+        '<a class="btn secondary" href="../multisig.html" data-v2-dock="6">Open Multisig room (full M-of-N build)</a>' +
         "</div>" +
         (ready
           ? '<p class="msg-ok" id="v2CsReady">Three zpubs ready. Those are what a 2-of-3 coordinator would see — not the words.</p>'
@@ -1167,7 +1173,7 @@
         (did ? "Already split once this session. Click again to make a new practice secret." : "Hex shares — never fund.") +
         "</pre>" +
         '<p class="control-help">Optional deeper lab (same idea, more controls): ' +
-        '<a href="../shamir.html">Open Shamir room</a>' +
+        '<a href="../shamir.html" data-v2-dock="7">Open Shamir room</a>' +
         " — educational GF(256) only, not Suite, not UC6 keys.</p>" +
         pauseBtn("I split and recombined", !did)
       );
@@ -1219,8 +1225,13 @@
           "Click inspect to read the sample package: magic bytes, maps, inputs, outputs. No signature is added. The recovery words are not needed."
         ) +
         callout("done", "Structure only", "A sample PSBT is parsed offline. No signature is added.") +
-        '<button type="button" class="btn" id="v2Psbt">Inspect sample PSBT</button>' +
-        '<pre class="out" id="v2PsbtOut">Structure only.</pre>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        '<button type="button" class="btn" id="v2Psbt" data-psbt="min">1 · Minimal</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtStory" data-psbt="story">2 · Multisig / HWW story</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtPartial" data-psbt="partial">3 · 1-of-2 partial</button>' +
+        "</div>" +
+        '<p class="control-help" id="v2PsbtStoryLine"></p>' +
+        '<pre class="out" id="v2PsbtOut">Structure only. Never sign here.</pre>' +
         pauseBtn("Inspected structure, no sign", false)
       );
     }
@@ -1273,6 +1284,7 @@
         ) +
         callout("is", "Public extended key", "You should see an xpub or zpub. You should not see an xprv " + termI("XPRV") + ", or the recovery words.") +
         '<button type="button" class="btn" id="v2Xpub">Show BIP84 watch key</button>' +
+        '<div id="v2XpubList" class="v2-copy-list"></div>' +
         '<pre class="out" id="v2XpubOut">Public extended key only.</pre>' +
         pauseBtn("I did not see an xprv", false)
       );
@@ -1328,7 +1340,8 @@
           "Network room",
           "Live fees and balances live on the Network page after you opt in. Lookups are address-only. Never send the mnemonic."
         ) +
-        '<a class="btn" href="../network.html">Open Network (opt-in)</a>' +
+        '<a class="btn" href="../network.html" data-v2-dock="10">Open Network (opt-in)</a>' +
+        '<p class="control-help">When you come back to /v2/, this track opens on Finish. Browser Back also works.</p>' +
         pauseBtn("I will only look up addresses I chose", false)
       );
     }
@@ -1553,7 +1566,7 @@
             : "You withdrew it. The company does not have this seed."
         }) +
         '<div class="v2-hold-split">' +
-        '<section class="v2-hold-col" aria-labelledby="v2HoldOneH">' +
+        '<section class="v2-hold-col v2-hold-col-one" aria-labelledby="v2HoldOneH">' +
         '<h3 id="v2HoldOneH">One signer</h3>' +
         '<p class="control-help">You alone hold the seed. You can send. You can also lose everything.</p>' +
         '<div id="v2HoldCard">' +
@@ -1621,21 +1634,46 @@
       );
     }
     if (step === 3) {
-      return quiz("Who usually holds the keys on Coinbase, Binance, or a login-only bitcoin app?", [
+      return quizBank([
         {
-          k: "ok",
-          t: "The company. You only have a login. You never got a seed phrase.",
-          okwhy: "Correct. They can freeze or lose it. That is not your wallet."
+          q: "Who usually holds the keys on Coinbase, Binance, or a login-only bitcoin app?",
+          opts: [
+            { k: "ok", t: "The company. You only have a login. You never got a seed phrase.", okwhy: "Correct. They can freeze or lose it. That is not your wallet." },
+            { k: "bad", t: "You, because you have a password and an extra login code.", why: "Wrong. A password opens their website. It is not a seed phrase." },
+            { k: "bad", t: "You, because you can open the same balance in any other wallet.", why: "Wrong. There are no words to type into another wallet." }
+          ]
         },
         {
-          k: "bad",
-          t: "You, because you have a password and an extra login code.",
-          why: "Wrong. A password opens their website. It is not a seed phrase."
+          q: "If the company locks the app, what happens to the 0.184 bitcoin it showed you?",
+          opts: [
+            { k: "ok", t: "You cannot send it. They still have the keys.", okwhy: "Correct. A freeze is possible because you never held the seed." },
+            { k: "bad", t: "You export the seed phrase and open Sparrow.", why: "Wrong. They never gave you a seed phrase." },
+            { k: "bad", t: "Support resets the twelve words.", why: "Wrong. There were no words. Support controls the account, not a BIP-39 phrase." }
+          ]
         },
         {
-          k: "bad",
-          t: "You, because you can open the same balance in any other wallet.",
-          why: "Wrong. There are no words to type into another wallet."
+          q: "When you self-custody with one signer and lose the only paper:",
+          opts: [
+            { k: "ok", t: "Nobody can reset it. The coins cannot move.", okwhy: "Correct. One seed, one person. Lost paper is loss." },
+            { k: "bad", t: "The exchange can restore the wallet from your email.", why: "Wrong. You withdrew. They never had this seed." },
+            { k: "bad", t: "Any password manager can rebuild the phrase.", why: "Wrong. A login is not a seed. The paper was the backup." }
+          ]
+        },
+        {
+          q: "In a 2-of-3 co-signer setup, if you lose only your paper:",
+          opts: [
+            { k: "ok", t: "The other two keys can still send.", okwhy: "Correct. Threshold is two signatures. One lost paper does not kill the vault." },
+            { k: "bad", t: "The coins are gone, same as one signer.", why: "Wrong. That is the one-signer column. 2-of-3 still works with the other two." },
+            { k: "bad", t: "You can send alone because you still remember the login.", why: "Wrong. There is no company login. You need a second signature." }
+          ]
+        },
+        {
+          q: "“I can spend and I can lose it” describes:",
+          opts: [
+            { k: "ok", t: "You hold the recovery words — self-custody.", okwhy: "Correct. Keys you hold can send. Keys you lose cannot be reset." },
+            { k: "bad", t: "An exchange account with two-factor login.", why: "Wrong. That is they-hold. You have a login, not a seed." },
+            { k: "bad", t: "Watch-only, because you can see 0.184.", why: "Wrong. Watch-only cannot spend. Seeing a balance is not holding keys." }
+          ]
         }
       ]);
     }
@@ -1868,35 +1906,41 @@
   }
 
   function entLockRatio() {
-    if (!(mem.entEvents || []).length) return null;
-    var need = entNeed();
-    if (!need) return null;
+    var need = entNeed() || 128;
     return Math.max(0, Math.min(1, entBits() / need));
   }
 
   function lockHue(ratio) {
     if (ratio == null) return 0;
-    if (ratio <= 0.5) return -145 * (1 - ratio / 0.5);
-    return 100 * ((ratio - 0.5) / 0.5);
+    var t = Math.max(0, Math.min(1, ratio));
+    // Green only when pad meets this word count. 128 bits for 12-word is green;
+    // the same 128 for 15–24 stays amber/red until 160/192/224/256.
+    if (t >= 0.999) return -90;
+    return 155 + (35 - 155) * t;
   }
 
   function lockFilter(ratio) {
     if (ratio == null) return "";
-    return "hue-rotate(" + lockHue(ratio).toFixed(1) + "deg) saturate(1.25)";
+    return "hue-rotate(" + lockHue(ratio).toFixed(1) + "deg) saturate(1.35)";
   }
 
   function lockCap(ratio) {
     if (ratio == null) return "Seed strength";
+    var n = mem.entWordCount || 12;
+    var need = entNeed();
+    if (ratio >= 0.999) return "Stronger seed · " + n + "-word";
+    if (entBits() + 0.001 >= 128 && padIsLow()) {
+      return "Not enough for " + n + "-word (~" + need + ")";
+    }
     if (ratio < 0.35) return "Weak seed";
-    if (ratio < 0.85) return "Building strength";
-    return "Stronger seed";
+    return "Building toward " + n + "-word";
   }
 
   function lockToneClass(ratio) {
     if (ratio == null) return "idle";
-    if (ratio < 0.35) return "low";
-    if (ratio < 0.85) return "mid";
-    return "ok";
+    if (ratio >= 0.999) return "ok";
+    if (ratio < 0.5) return "low";
+    return "mid";
   }
 
   function lockHtml(kind) {
@@ -1965,14 +2009,30 @@
     );
   }
 
-  function entFaceHtml() {
+  function entBarMetrics() {
     var bits = entBits();
+    var need = entNeed() || 128;
+    var fill = Math.min(100, need ? (bits / need) * 100 : 0);
+    var t128 = Math.min(100, (128 / need) * 100);
+    var t256 = Math.min(100, (256 / need) * 100);
+    return {
+      bits: bits,
+      need: need,
+      fill: fill,
+      t128: t128,
+      t256: t256,
+      low: padIsLow()
+    };
+  }
+
+  function entFaceHtml() {
+    var m = entBarMetrics();
+    var bits = m.bits;
     var rounded = Math.round(bits);
-    var scale = Math.max(256, bits);
-    var fill = scale ? Math.min(100, (bits / scale) * 100) : 0;
-    var t128 = (128 / scale) * 100;
-    var t256 = (256 / scale) * 100;
-    var low = bits + 0.001 < 128;
+    var fill = m.fill;
+    var t128 = m.t128;
+    var t256 = m.t256;
+    var low = m.low;
     var delta =
       lastEntDelta > 0
         ? "Last event +" + (lastEntDelta === 1 ? "1" : "2.58") + " bit" + (lastEntDelta === 1 ? "" : "s")
@@ -2004,19 +2064,19 @@
       "</div>" +
       '<p class="v2-ent-scale" id="v2EntScale">' +
       delta +
-      " · markers at <strong>128</strong> (12-word) and <strong>256</strong> (24-word). The big number is the running estimate — it can pass 256 (for example ~317).</p>" +
+      " · bar fills for <strong>this</strong> word count (12→128 · 15→160 · 18→192 · 21→224 · 24→256). Markers 128 and 256.</p>" +
       "</div>"
     );
   }
 
   function refreshEntDom() {
-    var bits = entBits();
+    var m = entBarMetrics();
+    var bits = m.bits;
     var rounded = Math.round(bits);
-    var scale = Math.max(256, bits);
-    var fill = scale ? Math.min(100, (bits / scale) * 100) : 0;
-    var t128 = (128 / scale) * 100;
-    var t256 = (256 / scale) * 100;
-    var low = bits + 0.001 < 128;
+    var fill = m.fill;
+    var t128 = m.t128;
+    var t256 = m.t256;
+    var low = m.low;
     var face = $("v2EntFace");
     if (face) {
       face.classList.toggle("low", low);
@@ -2034,7 +2094,7 @@
           : "Each d6 ≈ +2.58 bits · each coin = +1 bit";
       $("v2EntScale").innerHTML =
         delta +
-        " · markers at <strong>128</strong> (12-word) and <strong>256</strong> (24-word). The big number is the running estimate — it can pass 256 (for example ~317).";
+        " · bar fills for <strong>this</strong> word count (12→128 · 15→160 · 18→192 · 21→224 · 24→256). Markers 128 and 256.";
     }
     var meta = $("v2EntMeta");
     if (meta) meta.textContent = entMetaInner();
@@ -2216,21 +2276,46 @@
       );
     }
     if (step === 3) {
-      return quiz("A few dice rolls that still print 12 or 24 recovery words mean:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "The pad can be TOO LOW — word count is not entropy.",
-          okwhy: "Correct. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6). Words from a short pad are still weak."
+          q: "A few dice rolls that still print 12 or 24 recovery words mean:",
+          opts: [
+            { k: "ok", t: "The pad can be TOO LOW — word count is not entropy.", okwhy: "Correct. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6)." },
+            { k: "bad", t: "Twenty-four words always means 256 bits of good randomness.", why: "Wrong. The format can look complete while the pad is still TOO LOW versus 256." },
+            { k: "bad", t: "Three coin flips are enough because each flip is 128 bits.", why: "Wrong. Each coin flip is 1 bit." }
+          ]
         },
         {
-          k: "bad",
-          t: "Twenty-four words always means 256 bits of good randomness.",
-          why: "Wrong. The format can look complete while the pad estimate is still TOO LOW versus 256."
+          q: "You reached ~128 bits (green for 12-word) then switched the dropdown to 24. The lock should:",
+          opts: [
+            { k: "ok", t: "Go back toward red until the pad meets ~256 bits.", okwhy: "Correct. Green is for this length. 24-word wants 256." },
+            { k: "bad", t: "Stay green because you already have twelve words.", why: "Wrong. Word count is not entropy. 24-word still wants 256 bits." },
+            { k: "bad", t: "Jump to 256 bits automatically.", why: "Wrong. Changing the dropdown does not add dice. Keep rolling." }
+          ]
         },
         {
-          k: "bad",
-          t: "Three coin flips are enough because each flip is 128 bits.",
-          why: "Wrong. Each coin flip is 1 bit. You would need about 128 flips for 12-word, 256 for 24-word."
+          q: "About how many simulated d6 reach 12-word ENT (~128 bits)?",
+          opts: [
+            { k: "ok", t: "About 50 d6 (each ≈ 2.58 bits).", okwhy: "Correct. 50 × 2.58 ≈ 129. Coin would need 128 flips." },
+            { k: "bad", t: "Three rolls, because BIP-39 always prints 12 words.", why: "Wrong. Three rolls still mint words and stay TOO LOW." },
+            { k: "bad", t: "One roll, because a die has six faces.", why: "Wrong. Six faces is about 2.58 bits, not 128." }
+          ]
+        },
+        {
+          q: "A coin flip on this pad is:",
+          opts: [
+            { k: "ok", t: "1 bit. 128 flips for 12-word, 256 for 24-word.", okwhy: "Correct. Coin is the hard path. Dice reach the same ENT faster." },
+            { k: "bad", t: "128 bits, so three flips make a wallet.", why: "Wrong. One flip is one bit." },
+            { k: "bad", t: "The same as Lab Generate (OS CSPRNG).", why: "Wrong. These buttons are Math.random. Lab Generate uses the OS." }
+          ]
+        },
+        {
+          q: "If the pad is TOO LOW, a complete-looking phrase is:",
+          opts: [
+            { k: "ok", t: "Still weak — an attacker has a smaller guess space.", okwhy: "Correct. Hashing a short log can print words. That is not 128 or 256 bits of real entropy." },
+            { k: "bad", t: "Safe to fund because checksum passed.", why: "Wrong. Checksum only checks the format. It does not add missing bits." },
+            { k: "bad", t: "Equal to OS Generate because both show 12 words.", why: "Wrong. OS Generate uses a CSPRNG. The pad is a classroom estimate." }
+          ]
         }
       ]);
     }
@@ -2517,6 +2602,7 @@
     if (wrap) {
       wrap.innerHTML = addrHtml();
       wrap.classList.remove("v2-hidden");
+      wireCopyQr(wrap);
     }
     var pipe = $("v2Pipe");
     if (pipe) {
@@ -2608,6 +2694,88 @@
         pauseBtn("Continue", true)
     );
   }
+
+  function pathBipSvgHtml() {
+    return (
+      '<figure class="v2-path-fig" id="v2PathFig">' +
+      '<svg viewBox="0 0 560 200" width="100%" height="180" role="img" aria-label="BIP purpose folders from one phrase">' +
+      '<text x="8" y="20" fill="currentColor" font-size="13" font-weight="700">phrase</text>' +
+      '<text x="78" y="20" fill="#8b9bb0" font-size="13">→ seed</text>' +
+      '<line x1="28" y1="28" x2="28" y2="188" stroke="#2a3545" stroke-width="2" />' +
+      '<rect x="48" y="36" width="480" height="30" rx="6" fill="#1c2533" stroke="#2a3545" />' +
+      '<text x="60" y="56" fill="#8b9bb0" font-size="13">m/44h/…  1…  legacy</text>' +
+      '<rect x="48" y="74" width="480" height="30" rx="6" fill="#1c2533" stroke="#2a3545" />' +
+      '<text x="60" y="94" fill="#8b9bb0" font-size="13">m/49h/…  3…  nested</text>' +
+      '<rect x="48" y="112" width="480" height="30" rx="6" fill="rgba(61,139,253,0.18)" stroke="#3d8bfd" />' +
+      '<text x="60" y="132" fill="currentColor" font-size="13" font-weight="700">m/84h/…  bc1q / tb1q  native segwit · this track</text>' +
+      '<rect x="48" y="150" width="480" height="30" rx="6" fill="#1c2533" stroke="#2a3545" />' +
+      '<text x="60" y="170" fill="#8b9bb0" font-size="13">m/86h/…  bc1p  taproot</text>' +
+      "</svg>" +
+      '<figcaption class="control-help">Same words. Different BIP = different address shape. Receive is change=0; change chain is 1.</figcaption>' +
+      "</figure>"
+    );
+  }
+
+  function copyQrRowHtml(label, value) {
+    if (!value) return "";
+    return (
+      '<div class="v2-copy-row">' +
+      '<span class="v2-copy-lab">' +
+      label +
+      "</span>" +
+      '<code class="v2-copy-val">' +
+      value +
+      "</code>" +
+      '<button type="button" class="btn secondary btn-sm" data-copy="' +
+      attrEsc(value) +
+      '">Copy</button>' +
+      '<button type="button" class="btn secondary btn-sm" data-qr="' +
+      attrEsc(value) +
+      '" data-qr-label="' +
+      attrEsc(label) +
+      '">QR</button></div>'
+    );
+  }
+
+  function quizBank(items) {
+    return pad(
+      "<h2>Quiz</h2><p class=\"control-help\">Answer every question. Continue unlocks when each has the right sentence.</p>" +
+        items
+          .map(function (item, qi) {
+            return (
+              '<div class="v2-quiz-q" data-qi="' +
+              qi +
+              '"><p><strong>' +
+              (qi + 1) +
+              " · </strong>" +
+              item.q +
+              "</p><div class=\"quiz-opts\">" +
+              item.opts
+                .map(function (o, i) {
+                  return (
+                    '<button type="button" class="btn secondary" data-quiz="' +
+                    o.k +
+                    '" data-qi="' +
+                    qi +
+                    '">' +
+                    (i + 1) +
+                    " · " +
+                    o.t +
+                    '<span class="v2-quiz-why" hidden>' +
+                    (o.k === "ok" ? o.okwhy || "Correct." : o.why || "Wrong.") +
+                    "</span></button>"
+                  );
+                })
+                .join("") +
+              "</div></div>"
+            );
+          })
+          .join("") +
+        '<div id="v2QuizMsg"></div>' +
+        pauseBtn("Continue", true)
+    );
+  }
+
   function finishHtml(id) {
     var next = TRACKS.filter(function (x) { return x.id === id + 1; })[0];
     return pad(
@@ -2623,6 +2791,7 @@
       return '<p class="control-help">No addresses yet.</p>';
     }
     var cells = mem.lastRows.map(function (r) {
+      var addr = r.bip84_p2wpkh || r.bip86_p2tr || "";
       return (
         '<div class="cell">' +
         '<span class="idx nav-step" aria-label="index ' +
@@ -2631,7 +2800,17 @@
         r.index +
         "</span>" +
         '<span class="addr-text">' +
-        (r.bip84_p2wpkh || r.bip86_p2tr || "") +
+        addr +
+        "</span>" +
+        '<span class="v2-cell-act">' +
+        '<button type="button" class="btn secondary btn-sm" data-copy="' +
+        attrEsc(addr) +
+        '">Copy</button>' +
+        '<button type="button" class="btn secondary btn-sm" data-qr="' +
+        attrEsc(addr) +
+        '" data-qr-label="Receive #' +
+        r.index +
+        '">QR</button>' +
         "</span></div>"
       );
     }).join("");
@@ -2643,6 +2822,76 @@
       cells +
       "</div>"
     );
+  }
+
+  function copyText(text, btn) {
+    if (!text) return;
+    var ok = false;
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-999px";
+      document.body.appendChild(ta);
+      ta.select();
+      ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+    } catch (e) {
+      ok = false;
+    }
+    if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function () {});
+      ok = true;
+    }
+    if (btn) {
+      var idle = btn.getAttribute("data-copy-idle") || btn.textContent || "Copy";
+      btn.setAttribute("data-copy-idle", idle);
+      btn.textContent = ok ? "Copied" : "Failed";
+      window.setTimeout(function () {
+        btn.textContent = idle;
+      }, 1600);
+    }
+  }
+
+  function hideV2Qr() {
+    var m = $("v2QrModal");
+    if (!m) return;
+    m.hidden = true;
+    var img = $("v2QrImg");
+    if (img) img.removeAttribute("src");
+  }
+
+  async function showV2Qr(text, label) {
+    var m = $("v2QrModal");
+    if (!m || !text) return;
+    var B = window.BIP39Lab;
+    if (!B || typeof B.qrDataUrl !== "function") return;
+    var url = await B.qrDataUrl(text, { width: 220 });
+    $("v2QrLabel").textContent = label || "QR";
+    $("v2QrText").textContent = text;
+    $("v2QrImg").src = url;
+    m.hidden = false;
+  }
+
+  function wireCopyQr(root) {
+    root = root || document;
+    root.querySelectorAll("[data-copy]").forEach(function (btn) {
+      if (btn.getAttribute("data-wired") === "1") return;
+      btn.setAttribute("data-wired", "1");
+      btn.addEventListener("click", function () {
+        copyText(btn.getAttribute("data-copy") || "", btn);
+      });
+    });
+    root.querySelectorAll("[data-qr]").forEach(function (btn) {
+      if (btn.getAttribute("data-wired") === "1") return;
+      btn.setAttribute("data-wired", "1");
+      btn.addEventListener("click", function () {
+        showV2Qr(btn.getAttribute("data-qr") || "", btn.getAttribute("data-qr-label") || "QR").catch(
+          console.error
+        );
+      });
+    });
   }
 
   function wireStep() {
@@ -3119,7 +3368,18 @@
       $("v2CmpOut").innerHTML =
         '<div class="v2-callout is"><strong>' + labA + "</strong><code class=\"v2-preview-big\">" + addrA + "</code></div>" +
         '<div class="v2-callout done"><strong>' + labB + "</strong><code class=\"v2-preview-big\">" + addrB + "</code></div>" +
-        '<div class="v2-verdict ' + (same ? "same" : "split") + '">' + verdict + "</div>";
+        '<div class="v2-verdict ' + (same ? "same" : "split") + '">' + verdict + "</div>" +
+        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr>' +
+        "<tr><td>Passphrase</td><td>" +
+        (a === "" ? "(empty)" : a.length + " chars · " + ppBitsLabel(a)) +
+        "</td><td>" +
+        (b === "" ? "(empty)" : b.length + " chars · " + ppBitsLabel(b)) +
+        "</td></tr>" +
+        "<tr><td>Receive #0</td><td><code>" +
+        addrA +
+        "</code></td><td><code>" +
+        addrB +
+        "</code></td></tr></table>";
       if (pause) pause.disabled = false;
     });
     var idx = $("v2Idx");
@@ -3129,17 +3389,20 @@
       async function applyPathIndex(i) {
         i = Math.max(0, Math.min(19, i | 0));
         idx.setAttribute("data-i", String(i));
-        var path = BIP39Lab.formatPath(84, "test", 0, 0, i);
+        var ch = $("v2Change") ? parseInt($("v2Change").getAttribute("data-change") || "0", 10) : 0;
+        if (ch !== 0 && ch !== 1) ch = 0;
+        var path = BIP39Lab.formatPath(84, "test", 0, ch, i);
         $("v2PathLine").textContent = path;
         idx.textContent =
           i >= 19
             ? "Index 19 is the last in this demo"
             : "Show index " + (i + 1) + " (next receive address)";
-        var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 0 });
+        var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: ch });
         var row = r.rows[i] || r.rows[r.rows.length - 1];
         var a = (row && row.bip84_p2wpkh) || "";
-        $("v2Tail").textContent = "Index " + i + "  ·  " + a;
-        if (pause && i > 0) pause.disabled = false;
+        $("v2Tail").textContent =
+          (ch ? "Change" : "Receive") + " index " + i + "  ·  " + a;
+        if (pause && (i > 0 || ch === 1)) pause.disabled = false;
       }
       applyPathIndex(0).catch(console.error);
       idx.addEventListener("click", function () {
@@ -3149,6 +3412,18 @@
       if (idxZero) {
         idxZero.addEventListener("click", function () {
           applyPathIndex(0).catch(console.error);
+        });
+      }
+      var chBtn = $("v2Change");
+      if (chBtn) {
+        chBtn.addEventListener("click", function () {
+          var ch = parseInt(chBtn.getAttribute("data-change") || "0", 10) ? 0 : 1;
+          chBtn.setAttribute("data-change", String(ch));
+          chBtn.textContent = ch
+            ? "Change chain: change (1)"
+            : "Change chain: receive (0)";
+          var cur = parseInt(idx.getAttribute("data-i") || "0", 10);
+          applyPathIndex(cur).catch(console.error);
         });
       }
     }
@@ -3161,12 +3436,26 @@
         return d.label + "\n" + d.descriptor + (d.note ? "\n(" + d.note + ")" : "");
       }).join("\n\n");
       $("v2WoOut").textContent = keyBlock + (descBlock ? "\n\n--- output descriptors ---\n\n" + descBlock : "");
+      var list = $("v2WoList");
+      if (list) {
+        list.innerHTML = (pack.keys || [])
+          .map(function (k) {
+            return copyQrRowHtml(k.label, k.key);
+          })
+          .join("");
+        wireCopyQr(list);
+      }
     });
     var xp = $("v2Xpub");
     if (xp) xp.addEventListener("click", async function () {
       var pack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main" });
       var k = (pack.keys || []).filter(function (x) { return x.purpose === 84; })[0] || pack.keys[0];
       $("v2XpubOut").textContent = k.label + "\n" + k.key + "\n(no xprv)";
+      var xl = $("v2XpubList");
+      if (xl) {
+        xl.innerHTML = copyQrRowHtml(k.label, k.key);
+        wireCopyQr(xl);
+      }
     });
     document.querySelectorAll("[data-cs-gen]").forEach(function (btn) {
       btn.addEventListener("click", async function () {
@@ -3233,9 +3522,10 @@
       mem.shamirDone = true;
       if (pause) pause.disabled = false;
     });
-    var pb = $("v2Psbt");
-    if (pb) pb.addEventListener("click", function () {
-      var r = BIP39Lab.inspectPsbt(PSBT_MIN);
+    function inspectV2Psbt(raw, story) {
+      var r = BIP39Lab.inspectPsbt(raw);
+      var line = $("v2PsbtStoryLine");
+      if (line) line.textContent = story || "";
       var lines = [
         "What this is: a sample PSBT package (educational). No signature is added.",
         "Status: " + (r.status || "unknown"),
@@ -3247,7 +3537,23 @@
         "This tab does not sign and does not broadcast."
       ].filter(Boolean);
       $("v2PsbtOut").textContent = lines.join("\n");
-    });
+      if (pause) pause.disabled = false;
+    }
+    function bindPsbt(id, raw, story) {
+      var b = $(id);
+      if (b) {
+        b.addEventListener("click", function () {
+          inspectV2Psbt(raw, story);
+        });
+      }
+    }
+    bindPsbt("v2Psbt", PSBT_MIN, "Empty global map after magic — package opened, no fields filled yet.");
+    bindPsbt(
+      "v2PsbtStory",
+      PSBT_STORY,
+      "Multisig / hardware story: software builds the package; a cold device or co-signer adds a partial signature elsewhere. This tab never signs."
+    );
+    bindPsbt("v2PsbtPartial", PSBT_PARTIAL, "Educational blob with extra map bytes — still inspect-only, not a funded spend.");
     var uc2q = $("v2Uc2Quiz");
     if (uc2q) {
       uc2q.querySelectorAll("[data-quiz]").forEach(function (btn) {
@@ -3277,6 +3583,26 @@
           }
         });
       });
+    } else if (document.querySelector(".v2-quiz-q")) {
+      document.querySelectorAll("[data-quiz][data-qi]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var ok = btn.getAttribute("data-quiz") === "ok";
+          var qi = btn.getAttribute("data-qi");
+          var wrap = document.querySelector('.v2-quiz-q[data-qi="' + qi + '"]');
+          var box = $("v2QuizMsg");
+          var whyEl = btn.querySelector(".v2-quiz-why");
+          var msg = whyEl && whyEl.textContent ? whyEl.textContent : ok ? "Correct." : "Wrong.";
+          box.className = ok ? "msg-ok" : "msg-bad";
+          box.textContent = msg;
+          if (wrap) wrap.setAttribute("data-answered", ok ? "ok" : "bad");
+          var qs = document.querySelectorAll(".v2-quiz-q");
+          var all = true;
+          qs.forEach(function (q) {
+            if (q.getAttribute("data-answered") !== "ok") all = false;
+          });
+          if (pause) pause.disabled = !all;
+        });
+      });
     } else {
       document.querySelectorAll("[data-quiz]").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -3293,6 +3619,15 @@
         });
       });
     }
+    wireCopyQr(document);
+    document.querySelectorAll("[data-v2-dock]").forEach(function (a) {
+      a.addEventListener("click", function () {
+        var id = parseInt(a.getAttribute("data-v2-dock"), 10);
+        var s = loadState();
+        s.dock = { id: id, step: Math.max(0, stepsFor(id).length - 1) };
+        saveState(s);
+      });
+    });
     var ex = $("v2Exit");
     var fin = $("v2Finish");
     if (ex && fin) {
@@ -3364,9 +3699,25 @@
     }
     var q = new URLSearchParams(location.search).get("uc");
     renderPicker();
+    if ($("v2QrClose")) $("v2QrClose").addEventListener("click", hideV2Qr);
+    if ($("v2QrModal")) {
+      $("v2QrModal").addEventListener("click", function (ev) {
+        if (ev.target === $("v2QrModal")) hideV2Qr();
+      });
+    }
+    var dock = loadState().dock;
     if (q) {
       var n = parseInt(q, 10);
       if (n >= 1 && n <= 15) openUc(n);
+    } else if (dock && dock.id) {
+      var s = loadState();
+      delete s.dock;
+      saveState(s);
+      setGated(dock.id);
+      startTrack(dock.id);
+      mem.maxStep = Math.max(mem.maxStep || 0, dock.step || 0);
+      current.step = dock.step || 0;
+      renderTrack();
     }
   }
 

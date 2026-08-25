@@ -1,28 +1,28 @@
 # CODE-REVIEW
 
-- **command:** `/code_review` working tree vs origin/master (scripts/*.py stashed)
+- **command:** `/code_review` working tree vs origin/master
 - **base:** origin/master
-- **head:** working tree → commit 0.16.44
-- **secrets:** `check_secrets_diff` + gitleaks clean on origin/master...HEAD (empty until commit); no new secrets in v2 files
-- **engine:** same session (no CODE_REVIEW_MODEL)
+- **head:** working tree → 0.16.45
+- **secrets:** no new secrets; QR/copy are addresses and xpubs, not mnemonics
+- **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-- CSP still `connect-src 'none'`. sessionStorage only `completed` / `gateN`.
-- Pad mint uses SHA-256 of the roll log then `mnemonicFromEntropyBytes` (16–32 bytes). Simulated `Math.random` labelled as such.
-- Fake 0.184 BTC teaching balances; freeze keeps the number (strike), does not invent a real wallet.
-- Lock hue-rotate is CSS filter on a Lab PNG, not a second crypto path.
+- CSP `connect-src none`. sessionStorage: progress, gates, dock `{id,step}` only.
+- QR via `BIP39Lab.qrDataUrl` on addresses/xpubs. Seed QR not added on V2 pads.
+- PSBT samples are synthetic inspect-only (`cHNidP8…`).
+- Lock green only when `entBits >= entNeed()` for the selected word count.
 
 ## Follow-ups
 
-- leftover `scripts/*.py` stashed (not this ship)
-- `/v2/js/lab-strip.js` 404 (pre-existing)
-- classic full Playwright not the V2 ship gate
+- leftover `scripts/*.py` still stashed
+- `/v2/js/lab-strip.js` 404
+- classic full Playwright not the V2 gate
 
 p0=0 follow_ups=3
 
 ## Smoke
 
-`npx playwright test e2e/v2.spec.ts` — 16 passed
+`npx playwright test e2e/v2.spec.ts` — 16 passed (pre-stamp)

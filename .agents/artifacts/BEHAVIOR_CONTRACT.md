@@ -1,22 +1,22 @@
-# Behavior contract — V2 UC14–UC15 stills + UC11 hold
+# Behavior contract — V2 lab habits 0.16.45
 
 - **Product:** bip39lab
 - **Target:** `http://127.0.0.1:4173/v2/`
-- **Setup:** `python3 -m http.server 4173 --directory web`
+- **Setup:** Playwright webServer
 
 ## User tasks
 
-1. Picker shows 15 tracks; classic `/` still Lab Generate.
-   - **Expect:** 15 cards, chip 0.17.41-v2, `#btnGenerate` on `/`
-2. UC14: few d6 TOO LOW; mint 12 then 24; roll until sufficient; lock tints.
-3. UC15: pad words + passphrase stack; key still; long PP does not clear TOO LOW pad.
-4. UC11: 0.184 bitcoin visible; freeze keeps 0.184; you-hold two columns.
+1. 15 tracks, chip 0.17.44-v2, classic Generate still on `/`
+2. UC1: five Copy + QR on receive addresses
+3. UC4: path SVG; change chain flips last-but-one path nibble 0→1
+4. UC11: one-signer rounded card; five quiz questions all required
+5. UC14: 12-word green then 15/24 TOO LOW until more rolls
 
 ## Must not
 
+- QR the recovery phrase on these pads
+- Sign or broadcast PSBT
 - Persist mnemonic in sessionStorage
-- `connect-src` on `/v2/`
-- Fund practice words
 
 ## Evidence
 

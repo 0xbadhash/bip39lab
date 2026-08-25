@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.41-v2)", () => {
+test.describe("V2 use-case tracks (0.17.44-v2)", () => {
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
@@ -8,7 +8,7 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator(".uc-card")).toHaveCount(15);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.41-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.44-v2/);
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
     await expect(page.locator(".sidebar")).not.toContainText(/Clear secrets/);
     await expect(page.locator(".topbar-actions #v2Clear")).toBeVisible();
@@ -47,6 +47,8 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toBeVisible();
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/tb1|bc1/);
+    await expect(page.locator("#v2AddrGrid [data-copy]")).toHaveCount(5);
+    await expect(page.locator("#v2AddrGrid [data-qr]")).toHaveCount(5);
   });
 
   test("V2-S2 quiz colors + force exit", async ({ page }) => {
@@ -240,6 +242,7 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await page.locator("#v2Cmp").click();
     await expect(page.locator(".v2-verdict")).toContainText(/two wallets/i);
     await expect(page.locator("#v2CmpOut")).not.toContainText(/empty vs empty/i);
+    await expect(page.locator("#v2CmpTable")).toBeVisible();
   });
 
   test("V2-S10 UC4 index increments; Back to index 0", async ({ page }) => {
@@ -248,6 +251,7 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await expect(page.locator("#v2PathDemo")).toContainText("m/84'/1'/0'/0/0");
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/0");
+    await expect(page.locator("#v2PathFig")).toBeVisible();
     await expect(page.locator("#v2Idx")).toHaveText(/Show index 1 \(next receive address\)/);
     const t0 = await page.locator("#v2Tail").textContent();
     await page.locator("#v2Idx").click();
@@ -260,6 +264,9 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await page.locator("#v2IdxZero").click();
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/0");
     await expect(page.locator("#v2Idx")).toHaveText(/Show index 1 \(next receive address\)/);
+    await page.locator("#v2Change").click();
+    await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/1/0");
+    await expect(page.locator("#v2Change")).toContainText(/change \(1\)/i);
   });
 
   test("V2-S11 UC6 three cosigner zpubs; rail back to M-of-N", async ({ page }) => {
@@ -325,6 +332,8 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
         await page.locator("#v2Psbt").click();
         await expect(page.locator("#v2PsbtOut")).toContainText(/What this is/i);
         await expect(page.locator("#v2PsbtOut")).not.toContainText("{");
+        await expect(page.locator("#v2PsbtStory")).toBeVisible();
+        await expect(page.locator("#v2PsbtPartial")).toBeVisible();
       }
     }
   });
@@ -365,6 +374,7 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await expect(page.locator("#trackBody h2")).toContainText(/You hold/i);
     await expect(page.locator("#v2HoldBal .v2-btc-num")).toHaveText("0.184");
     await expect(page.locator(".v2-hold-split")).toBeVisible();
+    await expect(page.locator(".v2-hold-col-one")).toBeVisible();
     await expect(page.locator("#v2HoldOneH")).toContainText(/One signer/i);
     await expect(page.locator("#v2HoldMsH")).toContainText(/Co-signer/i);
     await page.locator("#v2HoldSpend").click();
@@ -374,7 +384,9 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await page.locator("#v2HoldMsPaper").click();
     await page.locator("#v2HoldMsSend").click();
     await page.locator("#v2Pause").click();
-    await page.locator('[data-quiz="ok"]').click();
+    const uc11Ok = page.locator(".v2-quiz-q [data-quiz='ok']");
+    await expect(uc11Ok).toHaveCount(5);
+    for (let i = 0; i < 5; i++) await uc11Ok.nth(i).click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
     await page.locator("#v2Pause").click();
     await page.locator("#v2Exit").check();
@@ -429,7 +441,8 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await expect(page.locator("#v2EntDice")).toBeVisible();
     await expect(page.locator("#v2EntDice")).toHaveAttribute("src", /beginner-dice\.png/);
     await expect(page.locator("#v2EntLock .v2-lock-img")).toHaveAttribute("src", /beginner-lock\.png/);
-    await expect(page.locator("#v2EntLock")).toHaveClass(/idle/);
+    await expect(page.locator("#v2EntLock")).toHaveClass(/low/);
+    await expect(page.locator("#v2EntLock")).toContainText(/Weak seed/i);
     await page.locator("#v2Dice").click();
     await page.locator("#v2Dice").click();
     await page.locator("#v2Dice").click();
@@ -462,8 +475,13 @@ test.describe("V2 use-case tracks (0.17.41-v2)", () => {
     await expect(page.locator("#v2EntLock")).toContainText(/Stronger seed/i);
     const bitsAfter = Number(await page.locator("#v2EntBits").innerText());
     expect(bitsAfter).toBeGreaterThanOrEqual(128);
+    await page.locator("#v2EntWc").selectOption("15");
+    await expect(page.locator("#v2EntSuff")).toContainText(/TOO LOW/i);
+    await expect(page.locator("#v2EntLock")).not.toHaveClass(/ok/);
+    await expect(page.locator("#v2EntFace")).toHaveClass(/low/);
     await page.locator("#v2EntWc").selectOption("24");
     await expect(page.locator("#v2EntSuff")).toContainText(/TOO LOW/i);
+    await expect(page.locator("#v2EntLock")).not.toHaveClass(/ok/);
     for (let i = 0; i < 8; i++) await page.locator("#v2Dice10").click();
     await page.locator("#v2EntMint").click();
     const bitsHigh = Number(await page.locator("#v2EntBits").innerText());

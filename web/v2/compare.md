@@ -3,7 +3,7 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-25 (local tree after UC14 + interactive UC11–UC13)
-- **v1:** `/` · product stamp `v0.16.44`
+- **v1:** `/` · product stamp `v0.16.45`
 - **v2:** `/v2/` · chip `v0.17.38-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live https://bip39.catalyxt.xyz/v2/compare.md may still be the **2026-08-24 / 0.17.23-v2** lecture snapshot until this file is deployed. Treat **this repo file** as source of truth.
@@ -221,12 +221,16 @@ Classic Lab mentions hardware and air-gap in glossary/copy. It does **not** have
 
 ## Suggested ship order (remaining v1 → V2)
 
-1. **UC1 copy + QR** on `#v2AddrGrid` (and optionally paste mnemonic, practice-only). This is the biggest everyday Lab habit still missing in-track.
-2. **UC4 change addresses + path SVG** (and a 44/49/84/86 *peek*, not a second table) so “folder” is visible, not only an index chip.
-3. **UC5 / UC9 copy + QR** on exported zpub/xpub/descriptor lines (reuse watch-only list pattern).
-4. **UC8 extra PSBT samples** or a thin mount of `#cardPsbt` — still inspect-only, never sign.
-5. **UC3 optional `#cardCmpPp`** after the A/B verdict for learners who want the Lab compare table.
-6. **UC6 / UC7 / UC10 return-dock** — Open room, then land back on the track Finish, so rooms stay SoT without losing the curriculum.
+Local chip **v0.17.44-v2** moved these in-track (rooms stay SoT):
+
+1. **UC1 copy + QR** on `#v2AddrGrid` — **done**
+2. **UC4 change-chain + path SVG** — **done**
+3. **UC5 / UC9 copy + QR** on exported keys — **done**
+4. **UC8 extra PSBT samples** (minimal / story / partial) — **done**
+5. **UC3 compare table** after A/B verdict (PP length + receive #0) — **done**
+6. **UC6 / UC7 / UC10 return-dock** (`data-v2-dock` → Finish on next `/v2/` visit) — **done**
+
+Still Lab-only: paste mnemonic on UC1; full `#cardCmpPp` strength bar; BIP-85 / ops / SLIP-39 Suite.
 
 **Leave on classic `/` (qualities, not clones):**
 
