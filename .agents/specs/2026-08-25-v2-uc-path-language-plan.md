@@ -15,9 +15,6 @@ Keep classic Lab at `/` frozen. Teach custody on `/v2/` with one idea per step. 
 
 ## Implementation sequence
 
-1. Fill `GATES` 1–31 and rewrite `TRACKS.done` without `≠`.
-2. `nextInPath(pickerFilter)` for picker Continue; `finishHtml` next title from remaining path ids (treat current as done).
-3. Relabel pause/primaries. UC3 compare empty vs test. UC4 `mem.pathTouched`. UC7 split then combine. UC8 inspect enables pause; never Sign.
-4. Relocate `#v2HardRefresh` to `.topbar-actions`.
-5. Rails on every PATHS section. Shared blurb `1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap`.
-6. Tests + compare.md as-of product 0.16.50 / chip 0.17.62-v2 at release stamp.
+1. Fill `GATES` 1–31, rewrite `TRACKS.done` without `≠`, `nextInPath` for Continue, verb+object pauses (UC3/UC4/UC7/UC8), Hard refresh in the topbar, PATHS rails.
+2. Playwright `e2e/v2.spec.ts` + pytest AC stubs for AC-1–AC-4.
+3. Dual stamp at release: product 0.16.50, V2 chip 0.17.62-v2, compare.md as-of.
