@@ -1,6 +1,6 @@
-# Release runbook — v0.16.45
+# Release runbook — v0.16.46
 
-**Phase:** approved (100) → tag `v0.16.45`
+**Phase:** approved (100) → tag `v0.16.46`
 
 ## Smoke
 
@@ -9,7 +9,7 @@
 | `.venv/bin/python -m pytest -q` | 0 (105) |
 | `npx playwright test e2e/v2.spec.ts` | 0 (16) |
 | `python3 scripts/check_web_e2e.py --root .` | 0 |
-| full classic e2e | skipped (V2 is ship gate) |
+| full classic e2e | skipped |
 
 ## Infra
 
@@ -17,16 +17,16 @@ None.
 
 ## Evidence pack
 
-hard_gates ok; pr_validator 100; CODE/CROSS/BEHAVIOR; pytest; V2 Playwright 16.
+hard_gates ok (gitleaks clean after id rename); pr_validator 100; CODE/CROSS/BEHAVIOR; pytest; V2 Playwright 16.
 
 ## Rollback
 
-`git checkout v0.16.44`.
+`git checkout v0.16.45`.
 
 ## §9
 
-1. leftover `scripts/*.py` stashed.
-2. Dual stamp 0.16.45 vs 0.17.44-v2.
-3. Classic Playwright not all-green.
-4. Fake 0.184 BTC teaching only.
-5. lab-strip 404 on `/v2/`.
+1. leftover scripts stash
+2. Dual stamp 0.16.46 vs 0.17.46-v2
+3. Classic Playwright not all-green
+4. lab-strip 404
+5. 128-char PP cap is UI only
