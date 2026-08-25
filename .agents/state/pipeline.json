@@ -1,8 +1,8 @@
 {
   "card_id": null,
   "note": "approved pending operator PW S110-S113 + tag",
-  "phase": "approved",
-  "score": 100,
+  "phase": "shipped",
+  "score": 100.0,
   "spec_id": ".agents/specs/2026-08-25-v2-uc-path-language.md",
   "task": "0.16.50 V2 path language",
   "waiver": null
