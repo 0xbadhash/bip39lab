@@ -2903,9 +2903,16 @@
     "0.002", "0.048", "0.013", "0.0006", "0.019"
   ];
 
-  function folderTeachBtc(change, i) {
+  function folderTeachBtc(change, i, purpose) {
     var list = change ? FOLDER_CHANGE_BTC : FOLDER_RECV_BTC;
-    return list[i] || list[0];
+    var n = list.length;
+    var idx = Math.max(0, i | 0) % n;
+    var p = purpose | 0;
+    var shift = 0;
+    if (p === 86) shift = 3;
+    else if (p === 49) shift = 7;
+    else if (p === 44) shift = 11;
+    return list[(idx + shift) % n];
   }
 
   function btcFaceHtml(opts) {
@@ -4398,9 +4405,9 @@
       "<thead><tr><th>Level</th><th>Value now</th><th>What it means</th></tr></thead>" +
       "<tbody>" +
       "<tr><th scope=\"row\"><code>m</code></th><td>master</td><td>Root of this practice phrase</td></tr>" +
-      "<tr><th scope=\"row\">purpose'</th><td id=\"v2PathCellPurpose\">84'</td><td id=\"v2PathCellPurposeWhy\">BIP-84 native (bc1q / tb1q)</td></tr>" +
-      "<tr><th scope=\"row\">coin_type'</th><td id=\"v2PathCellCoin\">1'</td><td>1 = testnet paths in this track</td></tr>" +
-      "<tr><th scope=\"row\">account'</th><td id=\"v2PathCellAccount\">0'</td><td>First account slot</td></tr>" +
+      "<tr><th scope=\"row\">purpose'</th><td id=\"v2PathCellPurpose\">84'</td><td id=\"v2PathCellPurposeWhy\">The ' means hardened (locked folder). BIP-84 native (bc1q / tb1q). A different BIP is a different pile of coins.</td></tr>" +
+      "<tr><th scope=\"row\">coin_type'</th><td id=\"v2PathCellCoin\">1'</td><td>The ' means hardened. 1 = testnet paths in this track (0 would be mainnet).</td></tr>" +
+      "<tr><th scope=\"row\">account'</th><td id=\"v2PathCellAccount\">0'</td><td>The ' means hardened. Account 0 is the usual first wallet slot.</td></tr>" +
       "<tr><th scope=\"row\">change</th><td id=\"v2PathCellChange\">0</td><td id=\"v2PathCellChangeWhy\">0 = receive · 1 = leftover change</td></tr>" +
       "<tr><th scope=\"row\">index</th><td id=\"v2PathCellIndex\">0</td><td>Which address in this folder</td></tr>" +
       "</tbody></table>"
@@ -4409,10 +4416,10 @@
 
   function paintPathPlayTable(purpose, change, index) {
     var why = {
-      86: "BIP-86 Taproot (bc1p / tb1p)",
-      84: "BIP-84 native (bc1q / tb1q)",
-      49: "BIP-49 nested (3… / 2…)",
-      44: "BIP-44 legacy (1… / m or n)"
+      86: "The ' means hardened (locked folder). BIP-86 Taproot (bc1p / tb1p). Coins here are not on 84/49/44.",
+      84: "The ' means hardened (locked folder). BIP-84 native (bc1q / tb1q). Coins here are not on 86/49/44.",
+      49: "The ' means hardened (locked folder). BIP-49 nested (3… / 2…). Coins here are not on 86/84/44.",
+      44: "The ' means hardened (locked folder). BIP-44 legacy (1… / m or n). Coins here are not on 86/84/49."
     };
     if ($("v2PathCellPurpose")) $("v2PathCellPurpose").textContent = purpose + "'";
     if ($("v2PathCellPurposeWhy")) $("v2PathCellPurposeWhy").textContent = why[purpose] || why[84];
@@ -5231,7 +5238,7 @@
         $("v2Tail").textContent =
           (ch ? "Change" : "Receive") + " index " + i + "  ·  " + a;
         var amtEl = $("v2FolderAmt");
-        if (amtEl) amtEl.textContent = folderTeachBtc(ch, i) + " BTC";
+        if (amtEl) amtEl.textContent = folderTeachBtc(ch, i, purpose) + " BTC";
         if ($("v2RcPair")) {
           var rRecv = ch === 0 ? r : await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 0 });
           var rChg = ch === 1 ? r : await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 1 });
@@ -5241,8 +5248,8 @@
           if ($("v2RcPath1")) $("v2RcPath1").textContent = BIP39Lab.formatPath(purpose, "test", 0, 1, i);
           if ($("v2RcAddr0")) $("v2RcAddr0").textContent = recvA;
           if ($("v2RcAddr1")) $("v2RcAddr1").textContent = chgA;
-          if ($("v2RcAmt0")) $("v2RcAmt0").textContent = folderTeachBtc(0, i) + " BTC";
-          if ($("v2RcAmt1")) $("v2RcAmt1").textContent = folderTeachBtc(1, i) + " BTC";
+          if ($("v2RcAmt0")) $("v2RcAmt0").textContent = folderTeachBtc(0, i, purpose) + " BTC";
+          if ($("v2RcAmt1")) $("v2RcAmt1").textContent = folderTeachBtc(1, i, purpose) + " BTC";
           if ($("v2RcRecv")) $("v2RcRecv").classList.toggle("is-on", ch === 0);
           if ($("v2RcChg")) $("v2RcChg").classList.toggle("is-on", ch === 1);
         }
