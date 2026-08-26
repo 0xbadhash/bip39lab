@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "approved pending operator PW S110-S113 + tag",
-  "phase": "init",
-  "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-26-v2-uc3-mintbar.md",
-  "task": "0.16.53 V2 compare polish + mint bar",
+  "phase": "approved",
+  "score": 100,
+  "spec_id": ".agents/specs/2026-08-26-v2-tracks-polish.md",
+  "task": "0.16.54 V2 tracks polish",
   "waiver": null
 }
