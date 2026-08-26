@@ -1,0 +1,5 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One share of a secret">
+  <path d="M110 10 L154 62 H66 Z" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+  <path d="M110 28 L132 56 H88 Z" fill="none" stroke="#2a3545" stroke-width="1"/>
+  <text x="110" y="82" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">share shard</text>
+</svg>

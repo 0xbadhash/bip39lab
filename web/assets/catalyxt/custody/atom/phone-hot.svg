@@ -1,0 +1,6 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Phone is a hot wallet">
+  <rect x="90" y="6" width="40" height="60" rx="8" fill="#1a2330" stroke="#e2483d" stroke-width="1.5"/>
+  <path d="M104 12h12" stroke="#8b9bb4" stroke-width="1.5"/>
+  <circle cx="110" cy="56" r="3" fill="none" stroke="#e2483d"/>
+  <text x="110" y="82" text-anchor="middle" fill="#e2483d" font-size="9" font-family="system-ui,sans-serif">phone · hot</text>
+</svg>

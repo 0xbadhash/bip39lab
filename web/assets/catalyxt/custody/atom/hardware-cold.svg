@@ -1,0 +1,6 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hardware signer stays cold">
+  <rect x="52" y="22" width="116" height="32" rx="8" fill="#1a2330" stroke="#22a06b" stroke-width="1.5"/>
+  <circle cx="76" cy="38" r="8" fill="none" stroke="#22a06b" stroke-width="1.5"/>
+  <path d="M96 38h56" stroke="#2a3545" stroke-width="1.5"/>
+  <text x="110" y="82" text-anchor="middle" fill="#22a06b" font-size="9" font-family="system-ui,sans-serif">hardware · cold</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 48" fill="none" role="img" aria-label="Paper fails fire and flood">
+  <rect x="20" y="10" width="36" height="24" rx="4" stroke="currentColor" stroke-width="1"/>
+  <path d="M52 12c4 4 2 8 0 10 6 0 8-6 8-10" stroke="currentColor" stroke-width="1"/>
+  <ellipse cx="38" cy="38" rx="16" ry="4" stroke="currentColor" stroke-width="1"/>
+</svg>

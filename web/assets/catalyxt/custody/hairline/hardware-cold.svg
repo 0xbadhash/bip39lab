@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 48" fill="none" role="img" aria-label="Hardware signer cold">
+  <rect x="20" y="16" width="56" height="16" rx="4" stroke="currentColor" stroke-width="1"/>
+  <circle cx="32" cy="24" r="4" stroke="currentColor" stroke-width="1"/>
+  <path d="M44 24h24" stroke="currentColor" stroke-width="1"/>
+</svg>

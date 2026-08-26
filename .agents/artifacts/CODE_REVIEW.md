@@ -1,30 +1,25 @@
 # CODE-REVIEW
 
-- **command:** `/code_review` vs origin/master (uncommitted V2 path language)
+- **command:** `/code_review` vs origin/master
 - **base:** origin/master
-- **head:** working tree (`web/v2/*`, `e2e/v2.spec.ts`)
-- **secrets:** `python3 scripts/check_secrets_diff.py --base origin/master --head HEAD` clean. `sessionStorage` key `bip39lab.v2` stores progress/gates/dock only — not mnemonic/PP.
-- **engine:** same session as implementer (no `CODE_REVIEW_MODEL`)
+- **head:** working tree (V2 UC20 kit, ack, UC3)
+- **secrets:** `check_secrets_diff` clean. sessionStorage: progress + `ack` only.
+- **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-- Hard refresh is in `.topbar-actions` (not nested in closed `<details>`).
-- UC8 inspect-only; no Sign control.
-- Classic `/` not in this diff beyond VERSION at ship.
-
-## Rejected
-
-- Atom caption `Child ≠ parent` (UC30 viz) — teaching chip, not gate Done when. Follow-up.
+Hard refresh now `location.replace(pathname)` so `?uc=` does not reopen a gated track after wipe.
 
 ## Follow-ups
 
-- leftover `scripts/*.py` stash (not this ship)
-- UC19 quiz still uses `Unknown ≠ 0`
+- leftover scripts stash
+- unused local `web/v2/assets/uc16-atom-*.png` / `uc20-atom-*.png` not shipped (photoreal ban)
+- lab-strip 404 under /v2/js
 
-p0=0 follow_ups=2
+p0=0 follow_ups=3
 
 ## Smoke
 
-Playwright `e2e/v2.spec.ts` (this chain).
+Playwright `e2e/v2.spec.ts` (S2/S13 re-run after ack + hard-refresh URL fix).

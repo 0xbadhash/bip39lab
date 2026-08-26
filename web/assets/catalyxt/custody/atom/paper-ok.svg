@@ -1,0 +1,5 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paper backup">
+  <rect x="70" y="8" width="80" height="58" rx="8" fill="#1a2330" stroke="#22a06b" stroke-width="1.5"/>
+  <path d="M84 22h52M84 34h52M84 46h36" stroke="#2a3545" stroke-width="1.5"/>
+  <text x="110" y="82" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">paper (ok)</text>
+</svg>

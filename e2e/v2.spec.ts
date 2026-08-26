@@ -1,11 +1,23 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-test.describe("V2 use-case tracks (0.17.62-v2)", () => {
+async function enterV2(page: Page, url = "/v2/") {
+  await page.goto(url);
+  const ack = page.locator("#v2AckUnderstand");
+  if (await ack.isVisible()) await ack.click();
+}
+
+test.describe("V2 use-case tracks (0.17.75-v2)", () => {
   // AC-1: Start here 3 cards; AC-3: chip + About Hard refresh
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
     await page.goto("/v2/");
+    await expect(page.locator("#v2AckOverlay")).toBeVisible();
+    await expect(page.locator("#v2AckOverlay")).toContainText(/These tracks are/i);
+    await expect(page.locator("#v2AckOverlay")).toContainText(/These tracks are not/i);
+    await expect(page.locator("#v2AckUnderstand")).toContainText(/start the tracks/i);
+    await page.locator("#v2AckUnderstand").click();
+    await expect(page.locator("#v2AckOverlay")).toBeHidden();
     await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator(".uc-card")).toHaveCount(3);
     await expect(page.locator(".v2-path-h").first()).toContainText(/Start here/i);
@@ -19,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(31);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.62-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.75-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -29,7 +41,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S1 UC1 generate shows words not addresses; Validate gated", async ({ page }) => {
-    await page.goto("/v2/");
+    await enterV2(page, "/v2/");
     await page.locator('.uc-card[data-uc="1"]').click();
     await expect(page.locator("#viewGate")).toBeVisible();
     await expect(page.locator("#gateScope")).toContainText(/Done when/i);
@@ -66,7 +78,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S2 quiz colors + force exit", async ({ page }) => {
-    await page.goto("/v2/?uc=1");
+    await enterV2(page, "/v2/?uc=1");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Generate").click();
     await page.locator("#v2Pause").click();
@@ -89,7 +101,14 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
     await expect(page.locator('.uc-card[data-uc="1"]')).toHaveClass(/done/);
     await expect(page.locator('.uc-card[data-uc="1"] .uc-step.is-done')).toBeVisible();
     await expect(page.locator("#v2Continue")).toContainText(/Paper backup/i);
-    await page.locator("#v2HardRefresh").click();
+    await Promise.all([
+      page.waitForLoadState("domcontentloaded"),
+      page.locator("#v2HardRefresh").click()
+    ]);
+    await expect(page.locator("#v2AckUnderstand")).toBeVisible();
+    await page.locator("#v2AckUnderstand").click();
+    await expect(page.locator("#v2AckOverlay")).toBeHidden();
+    await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator('.uc-card[data-uc="1"]')).not.toHaveClass(/done/);
     await expect(page.locator("#v2Continue")).toContainText(/First wallet/i);
   });
@@ -97,7 +116,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   test("V2-S4 UC1 word counts 12–24, Clear secrets beside Generate, plain copy, regenerate length", async ({
     page,
   }) => {
-    await page.goto("/v2/?uc=1");
+    await enterV2(page, "/v2/?uc=1");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2Generate")).toBeVisible();
     await expect(page.locator("#v2Clear")).toBeVisible();
@@ -146,7 +165,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto("/v2/?uc=1");
+    await enterV2(page, "/v2/?uc=1");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2Entropy")).toContainText(/128 bits/);
     await expect(page.locator("#v2Entropy")).toContainText(/12-word BIP-39/);
@@ -177,7 +196,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S6 secret-wall no export no session leak", async ({ page }) => {
-    await page.goto("/v2/?uc=1");
+    await enterV2(page, "/v2/?uc=1");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Generate").click();
     const store = await page.evaluate(() => sessionStorage.getItem("bip39lab.v2") || "");
@@ -187,7 +206,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S7 isolation two-holder IDOR wrong-id-not-other-holder", async ({ page }) => {
-    await page.goto("/v2/?uc=99");
+    await enterV2(page, "/v2/?uc=99");
     await expect(page.locator("#pickerGrid")).toBeVisible();
     await expect(page.locator("#viewGate")).toBeHidden();
   });
@@ -196,7 +215,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   test("V2-S8 UC2 paper backup: card, (i), Clear secrets, do-not copy, print sheet", async ({
     page,
   }) => {
-    await page.goto("/v2/?uc=2");
+    await enterV2(page, "/v2/?uc=2");
     await expect(page.locator("#gateIs")).toHaveClass(/is/);
     await expect(page.locator("#gateIsnt")).toHaveClass(/isnt/);
     await expect(page.locator("#gateDone")).toHaveClass(/done/);
@@ -249,19 +268,20 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S3 deep link uc=3 opens passphrase gate", async ({ page }) => {
-    await page.goto("/v2/?uc=3");
+    await enterV2(page, "/v2/?uc=3");
     await expect(page.locator("#gateTitle")).toContainText(/UC3/);
     await expect(page.locator("#gateIs")).toHaveClass(/is/);
     await expect(page.locator("#gateIsnt")).toHaveClass(/isnt/);
     await expect(page.locator("#gateDone")).toHaveClass(/done/);
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#panelTitle")).toContainText(/hidden 25th/i);
-    await expect(page.locator("#trackBody .v2-pp-key-img")).toBeVisible();
-    await expect(page.locator("#trackBody .v2-pp-key-img")).toHaveAttribute("src", /beginner-key\.png/);
+    await expect(page.locator("#trackBody .v2-pp-key-img")).toHaveCount(0);
     await expect(page.locator(".v2-donot .do")).toBeVisible();
     await expect(page.locator(".v2-donot .dont")).toBeVisible();
     await expect(page.locator("#v2WordCount option")).toHaveCount(5);
+    await expect(page.locator("#v2Regen")).toHaveCount(0);
     await page.locator("#v2WordCount").selectOption("24");
+    await expect(page.locator("#v2Generate")).toContainText(/24-word phrase/);
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2Card .ww")).toHaveCount(24);
     await page.locator("#v2Pause").click();
@@ -273,7 +293,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S10 UC4 index increments; Back to index 0", async ({ page }) => {
-    await page.goto("/v2/?uc=4");
+    await enterV2(page, "/v2/?uc=4");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2PathLine")).toContainText("m/84'/1'/0'/0/0");
     await expect(page.locator("#v2Pause")).toBeDisabled();
@@ -298,7 +318,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S11 UC6 three cosigner zpubs; rail back to M-of-N", async ({ page }) => {
-    await page.goto("/v2/?uc=6");
+    await enterV2(page, "/v2/?uc=6");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2MofnPic")).toContainText(/M = 2/);
     await expect(page.locator("#v2MofnPic")).toContainText(/N = 3/);
@@ -324,7 +344,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S12 quiz wrong answer explains why", async ({ page }) => {
-    await page.goto("/v2/?uc=1");
+    await enterV2(page, "/v2/?uc=1");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Generate").click();
     await page.locator("#v2Pause").click();
@@ -350,7 +370,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
 
   test("V2-S13 UC3–UC13 concept atoms mount", async ({ page }) => {
     for (const uc of [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) {
-      await page.goto(`/v2/?uc=${uc}`);
+      await enterV2(page, `/v2/?uc=${uc}`);
       const start = page.locator("#btnGateStart");
       if (await start.isVisible()) await start.click();
       await expect(page.locator(`#uc${uc}Viz .atom`)).toHaveCount(3);
@@ -367,7 +387,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S14 UC11–UC13 pads, quiz, force exit", async ({ page }) => {
-    await page.goto("/v2/?uc=11");
+    await enterV2(page, "/v2/?uc=11");
     await page.locator("#btnGateStart").click();
     await expect(page.locator(".v2-donot .do")).toBeVisible();
     await expect(page.locator("#v2Who")).toBeVisible();
@@ -421,7 +441,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
     await page.locator("#v2Finish").click();
     await expect(page.locator('.uc-card[data-uc="11"]')).toHaveClass(/done/);
 
-    await page.goto("/v2/?uc=12");
+    await enterV2(page, "/v2/?uc=12");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#uc12Viz .atom")).toHaveCount(3);
     await expect(page.locator("#trackBody h2")).toContainText(/Hot wallet on phone/i);
@@ -444,7 +464,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
     await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
     await expect(page.locator("#v2QuizMsg")).toContainText(/air-gap/i);
 
-    await page.goto("/v2/?uc=13");
+    await enterV2(page, "/v2/?uc=13");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#uc13Viz [data-atom=\"1\"]")).toHaveClass(/hi/);
     await page.locator("#v2Sort-exchange").selectOption("custodial");
@@ -462,7 +482,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S15 UC14 few d6 TOO LOW; 12–24 mint; roll until enough", async ({ page }) => {
-    await page.goto("/v2/?uc=14");
+    await enterV2(page, "/v2/?uc=14");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#uc14Viz .atom")).toHaveCount(3);
     await expect(page.locator("#v2Dice")).toBeVisible();
@@ -519,7 +539,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
   });
 
   test("V2-S16 UC15 pad plus passphrase stack", async ({ page }) => {
-    await page.goto("/v2/?uc=15");
+    await enterV2(page, "/v2/?uc=15");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#uc15Viz .atom")).toHaveCount(3);
     await expect(page.locator("#v2EntDice")).toBeVisible();
@@ -550,18 +570,19 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
 
   // AC-2: restore checksum + same address
   test("V2-S17 UC16 restore drill: hide card, type words, same address", async ({ page }) => {
-    await page.goto("/v2/?uc=16");
+    await enterV2(page, "/v2/?uc=16");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2Generate")).toBeVisible();
+    await expect(page.locator("#v2GenRow .help-tip-btn")).toBeVisible();
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     const words = await page.locator("#v2Card .ww").allTextContents();
     await page.locator("#v2Pause").click();
     await page.locator("#v2RestoreHide").click();
     await expect(page.locator("#v2Card")).toHaveClass(/v2-hidden/);
-    for (let i = 0; i < 12; i++) {
-      await page.locator(`#v2RestoreW${i}`).fill(words[i]);
-    }
+    await expect(page.locator("#v2RestoreFill")).toBeVisible();
+    await page.locator("#v2RestoreFill").click();
+    await expect(page.locator("#v2RestoreW0")).toHaveValue(words[0]);
     await page.locator("#v2RestoreCheck").click();
     await expect(page.locator("#v2RestoreMsg")).toHaveClass(/msg-ok/);
     await expect(page.locator("#v2RestoreMsg")).toContainText(/same receive address/i);
@@ -569,7 +590,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
 
   // AC-3: amount tiers
   test("V2-S18 UC17 amount tiers: coffee not 2-of-3; large not exchange", async ({ page }) => {
-    await page.goto("/v2/?uc=17");
+    await enterV2(page, "/v2/?uc=17");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("[data-amt]")).toHaveCount(3);
     await page.locator('[data-amt="coffee"] [data-bin="mofn"]').click();
@@ -583,7 +604,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
 
   // AC-4: first receive sim tBTC
   test("V2-S19 UC19 first receive: simulated tBTC, never fund mainnet", async ({ page }) => {
-    await page.goto("/v2/?uc=19");
+    await enterV2(page, "/v2/?uc=19");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toBeVisible();
@@ -598,7 +619,7 @@ test.describe("V2 use-case tracks (0.17.62-v2)", () => {
 
   // AC-5: air-gap loop never signs
   test("V2-S20 UC23 air-gap loop order; tab never signs", async ({ page }) => {
-    await page.goto("/v2/?uc=23");
+    await enterV2(page, "/v2/?uc=23");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
     await expect(page.locator("[data-loop]")).toHaveCount(4);

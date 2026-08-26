@@ -1,0 +1,13 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aluminium fails. Stainless survives. Titanium is premium.">
+  <path d="M16 16c8-6 22-4 28 2 4 5-2 12 2 18 3 5 12 8 4 14H20c-6-4-10-12-8-20 1-6 6-10 4-14z" fill="#1a2330" stroke="#e2483d" stroke-width="1.5"/>
+  <text x="30" y="44" text-anchor="middle" fill="#e2483d" font-size="8" font-weight="700" font-family="system-ui,sans-serif">Al</text>
+  <text x="30" y="82" text-anchor="middle" fill="#e2483d" font-size="8" font-family="system-ui,sans-serif">melts</text>
+  <rect x="78" y="12" width="56" height="50" rx="6" fill="#1c2533" stroke="#22a06b" stroke-width="1.7"/>
+  <path d="M86 24h40M86 34h40M86 44h28" stroke="#2a3545" stroke-width="1"/>
+  <text x="106" y="56" text-anchor="middle" fill="#22a06b" font-size="8" font-weight="700" font-family="system-ui,sans-serif">304</text>
+  <text x="106" y="82" text-anchor="middle" fill="#22a06b" font-size="8" font-family="system-ui,sans-serif">survives</text>
+  <rect x="150" y="12" width="56" height="50" rx="6" fill="#161d27" stroke="#3d8bfd" stroke-width="1.5"/>
+  <path d="M158 24h40M158 34h40M158 44h28" stroke="#2a3545" stroke-width="1"/>
+  <text x="178" y="56" text-anchor="middle" fill="#3d8bfd" font-size="8" font-weight="700" font-family="system-ui,sans-serif">Ti</text>
+  <text x="178" y="82" text-anchor="middle" fill="#8b9bb4" font-size="8" font-family="system-ui,sans-serif">premium</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Six sided die">
+  <rect x="86" y="12" width="48" height="48" rx="8" fill="#1a2330" stroke="#3d8bfd" stroke-width="1.5"/>
+  <circle cx="98" cy="24" r="3" fill="#3d8bfd"/>
+  <circle cx="122" cy="24" r="3" fill="#3d8bfd"/>
+  <circle cx="110" cy="36" r="3" fill="#3d8bfd"/>
+  <circle cx="98" cy="48" r="3" fill="#3d8bfd"/>
+  <circle cx="122" cy="48" r="3" fill="#3d8bfd"/>
+  <text x="110" y="82" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">d6</text>
+</svg>

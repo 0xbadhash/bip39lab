@@ -1,40 +1,37 @@
 # CROSS-REVIEW
 
 - **base:** origin/master
-- **scope:** uncommitted V2 path language (`v2-app.js`, `index.html`, `v2.css`, `e2e/v2.spec.ts`, `compare.md`)
 - **secrets:** gitleaks clean
 
 ## Security Guru
 
-**none** (blocker). Progress store is JSON in sessionStorage; hard refresh wipes it. No seed persistence. PSBT inspect never signs. CSP `connect-src 'none'` unchanged.
+**none.** No seed persistence. Ack is a boolean in sessionStorage. Generate is practice mnemonic only.
 
 ## Maintainability Expert
 
-**none** (blocker). `GATES` + `TRACKS.done` + `nextInPath` are localized. `wantRail = true` on all PATHS is intentional.
+**none** (blocker). Custody kit is isolated under `web/assets/catalyxt/custody/`. UC20 quiz/finish live inside `uc20()` so generic `ucJob` step-2 quiz does not steal the rail.
 
 ### Obsolete / cleanup (scoped)
 
 | Item | Tier | Confidence | Evidence |
 |------|------|------------|----------|
-| `#v2PathDemo` | C | 0.7 | UC4 step 0 now uses `#v2PathLine`; e2e updated. Dead id not referenced. Keep until `/sweep`. |
-| About-pop Hard refresh copy | keep | — | Button moved to topbar; About still explains it. |
+| `web/v2/assets/uc20-atom-*.png` | C | 0.8 | Unreferenced; kit SVGs replace them. Not committed. |
+| `uc16-atom-type-from-paper.png` | C | 0.8 | UC16 uses kit `hand-pen.svg`. |
 
-Whole-repo cruft: run `/sweep` — not this ship.
+Whole-repo: `/sweep`.
 
 ## Domain Specialist
 
-**none** (blocker). Shamir split then combine; multisig is three phrases not shares; UC8 inspect-only; Continue is path-local.
+**none** (blocker). 4-letter uniqueness is wordlist fact. Aluminium does not unlock Next. Solid plate only.
 
 ## Severity
 
-- blockers: 0
-- major: 0
-- nits: 0 (wide not requested)
+blockers 0 · major 0
 
-## §9 intentional oddities
+## §9
 
-1. Dual stamp: product `0.16.x` vs V2 `0.17.N-v2` on `data-v2-version`.
-2. Finish checkbox still “I will not send coins” on tracks without addresses.
-3. `startDotClass` lock logic is Start-here ids; other paths only done/current/empty.
-
-p0=0 obsolete_tier_A=0
+1. Dual stamp 0.16.51 vs 0.17.75-v2
+2. Photoreal ban in V2; classic 3D faces remain on `/`
+3. Hairline `currentColor` vs panel fills — documented two languages
+4. leftover scripts stash
+5. lab-strip 404

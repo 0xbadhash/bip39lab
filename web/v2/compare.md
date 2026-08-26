@@ -2,9 +2,9 @@
 
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
-- **As of:** 2026-08-25
-- **v1:** `/` · product stamp `v0.16.50`
-- **v2:** `/v2/` · chip `v0.17.62-v2` (`data-v2-version`; not the classic footer stamp)
+- **As of:** 2026-08-26
+- **v1:** `/` · product stamp `v0.16.51`
+- **v2:** `/v2/` · chip `v0.17.75-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -13,6 +13,13 @@ Live compare.md lags until deploy. This repo file is source of truth.
 V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a second crypto stack. Classic `/` is unchanged.
 
 ---
+
+## What landed since 0.16.50 / chip 0.17.62
+
+- **What this is / isn’t** on first `/v2/` visit (tracks wording). Hard refresh wipes ack + query string so the picker returns.
+- **UC20 materials lab:** paper fails · metals (Next only stainless/titanium) · random 12-word 4-letter plate · solid plate only · quiz · I will not photograph the plate.
+- **Custody kit:** `web/assets/catalyxt/custody/` hairline 96×48 + atom 220×88. Photoreal forbidden in V2 tracks.
+- **UC3:** one **Generate N-word phrase** button; compare split fields | results.
 
 ## What landed since 0.16.49 / chip 0.17.54
 

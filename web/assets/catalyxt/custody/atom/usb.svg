@@ -1,0 +1,6 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="USB cable is not an air-gap">
+  <rect x="24" y="30" width="36" height="16" rx="4" fill="#1a2330" stroke="#cf9f02" stroke-width="1.5"/>
+  <path d="M60 38 H150" stroke="#cf9f02" stroke-width="1.5"/>
+  <rect x="150" y="24" width="40" height="28" rx="4" fill="#1a2330" stroke="#cf9f02" stroke-width="1.5"/>
+  <text x="110" y="82" text-anchor="middle" fill="#cf9f02" font-size="9" font-family="system-ui,sans-serif">USB is not air-gap</text>
+</svg>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Catalyxt custody kit</title>
+  <link rel="stylesheet" href="../../css/app.css"/>
+  <style>
+    body { margin: 0; background: var(--bg); color: var(--text); }
+    main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    h1 { font-size: 1.25rem; }
+    h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 1.5rem 0 0.6rem; }
+    .sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+    .sheet.wide { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    figure { margin: 0; padding: 0.5rem; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+    figure svg, figure img { width: 100%; height: auto; display: block; color: var(--text); }
+    figcaption { margin-top: 0.35rem; font-size: 0.72rem; color: var(--muted); }
+    .roles { display: flex; gap: 0.75rem; font-size: 0.8rem; }
+    .roles span { display: flex; align-items: center; gap: 0.35rem; }
+    i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+    .a { background: #3d8bfd; } .o { background: #22a06b; } .b { background: #e2483d; } .m { background: #8b9bb4; }
+    a { color: var(--focus); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Custody kit</h1>
+    <p class="sub">Not exam Gap kit. Photoreal forbidden in V2 tracks. Hands: geometric <code>hand-pen</code> only.</p>
+    <p class="roles"><span><i class="a"></i> accent structure</span><span><i class="o"></i> ok survives</span><span><i class="b"></i> bad reject</span><span><i class="m"></i> muted</span></p>
+    <p><a href="README.md">README</a> · slot A 96×48 hairline · slot B 220×88 caption under</p>
+
+    <h2>Hairline · 96×48</h2>
+    <div class="sheet" id="hl"></div>
+    <h2>Track atoms · 220×88</h2>
+    <div class="sheet wide" id="at"></div>
+    <h2>Beats · Plan / Practice / Review</h2>
+    <div class="sheet wide" id="bt"></div>
+  </main>
+  <script>
+    var hl = ["word-card","paper-ok","paper-fail","plate-solid","plate-tiles","plate-photo-bad","plate-aluminium","plate-stainless","plate-titanium","hand-pen","camera-slash","d6","coin","phone-hot","hardware-cold","usb","psbt-package","share-shard","mofn-dots"];
+    var at = hl.concat(["metals"]);
+    var bt = ["beat-plan","beat-practice","beat-review"];
+    function fig(dir, name, w, h, inline) {
+      var vis = inline
+        ? '<object type="image/svg+xml" data="' + dir + "/" + name + '.svg" width="' + w + '" height="' + h + '" aria-label="' + name + '"></object>'
+        : '<img src="' + dir + "/" + name + '.svg" alt="' + name + '" width="' + w + '" height="' + h + '">';
+      return '<figure class="' + (inline ? "hl" : "") + '">' + vis + "<figcaption>" + name + "</figcaption></figure>";
+    }
+    document.getElementById("hl").innerHTML = hl.map(function (n) { return fig("hairline", n, 96, 48, true); }).join("");
+    document.getElementById("at").innerHTML = at.map(function (n) { return fig("atom", n, 220, 88); }).join("");
+    document.getElementById("bt").innerHTML = bt.map(function (n) { return fig("atom", n, 220, 88); }).join("");
+  </script>
+</body>
+</html>

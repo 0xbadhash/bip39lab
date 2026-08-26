@@ -1,0 +1,12 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Solid punched plate">
+  <rect x="62" y="8" width="96" height="56" rx="8" fill="#1c2533" stroke="#22a06b" stroke-width="1.6"/>
+  <g fill="none" stroke="#2a3545" stroke-width="1">
+    <rect x="74" y="18" width="20" height="10" rx="2"/>
+    <rect x="100" y="18" width="20" height="10" rx="2"/>
+    <rect x="126" y="18" width="20" height="10" rx="2"/>
+    <rect x="74" y="34" width="20" height="10" rx="2"/>
+    <rect x="100" y="34" width="20" height="10" rx="2"/>
+    <rect x="126" y="34" width="20" height="10" rx="2"/>
+  </g>
+  <text x="110" y="82" text-anchor="middle" fill="#22a06b" font-size="9" font-family="system-ui,sans-serif">solid plate</text>
+</svg>

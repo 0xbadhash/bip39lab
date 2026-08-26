@@ -59,7 +59,7 @@
     { id: 17, level: "Beginner", title: "Choose setup by amount", job: "Match daily, mid, and large to different objects.", done: "Daily on a hot spend. Mid on hardware. Large as 2-of-3. Not all on an exchange." },
     { id: 18, level: "Intermediate", title: "If I cannot speak", job: "Name who holds what if you cannot speak.", done: "Holders named. You practiced opening while alive. No seed in chat. Not legal advice." },
     { id: 19, level: "Beginner", title: "See a first receive", job: "Show a practice receive, then a second watch view.", done: "Same address on two views. Unknown is not zero. Never fund this practice phrase." },
-    { id: 20, level: "Beginner", title: "Metal backup", job: "Paper burns. Steel is the object for a funded seed.", done: "You chose metal for fire and flood. Still no photo of the plate." },
+    { id: 20, level: "Beginner", title: "Metal backup", job: "Paper burns. Pick a metal that survives fire and flood — and know which metals fail.", done: "You can name a safe metal, reject aluminium, accept 4-letter stamps, and still refuse any photo of the plate." },
     { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold two keys. A partner holds one.", done: "You can say who can freeze, who can steal, and how that differs from friends 2-of-3." },
     { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Check the device before a seed is born. Do not type words into the laptop.", done: "Seed stays on the device. A USB cable is not an air-gap." },
     { id: 23, level: "Intermediate", title: "Air-gap signing loop", job: "Build online, sign offline, send from hot.", done: "Four steps in order. This tab never signs." },
@@ -104,7 +104,7 @@
     17: { is: "Match how much to which object.", isnt: "Do not put daily, mid, and large all on an exchange." },
     18: { is: "Name who holds what if you cannot speak.", isnt: "Do not put a seed in chat. This is not legal counsel." },
     19: { is: "A practice receive, then a second watch view.", isnt: "Do not fund this practice phrase on mainnet." },
-    20: { is: "Steel for fire and flood. Paper still burns.", isnt: "Do not photograph the plate." },
+    20: { is: "Practice choosing a fire- and flood-resistant object for a funded seed.", isnt: "A shop, a product review site, or permission to photograph any plate." },
     21: { is: "You hold two keys. A partner or service holds one.", isnt: "Not the same threat model as three friends DIY." },
     22: { is: "Check firmware before a seed is born. Words stay on the device.", isnt: "Do not type the seed into the laptop. USB is not an air-gap." },
     23: { is: "Build online, sign offline, broadcast from hot.", isnt: "This tab never signs." },
@@ -143,6 +143,14 @@
   function setGated(id) {
     var s = loadState();
     s["gate" + id] = true;
+    saveState(s);
+  }
+  function hasAck() {
+    return !!loadState().ack;
+  }
+  function setAck() {
+    var s = loadState();
+    s.ack = true;
     saveState(s);
   }
 
@@ -462,7 +470,7 @@
       17: ["How much", "Place amounts", "Quiz", "Finish"],
       18: ["Name holders", "Open while alive", "Quiz", "Finish"],
       19: ["Receive address", "Watch + credit", "Quiz", "Finish"],
-      20: ["Paper vs steel", "Choose metal", "Quiz", "Finish"],
+      20: ["Paper fails", "Metals compared", "4 letters are enough", "Solid plate rules", "Quiz", "Finish"],
       21: ["You hold two", "Name freeze vs steal", "Quiz", "Finish"],
       22: ["Check firmware", "Keep seed off laptop", "Quiz", "Finish"],
       23: ["Four steps", "Tap the loop", "Quiz", "Finish"],
@@ -499,7 +507,7 @@
       17: ["Daily hot", "Mid hardware", "Large 2-of-3"],
       18: ["Sealed packet", "2-of-3 people", "Not legal counsel"],
       19: ["Test address", "Second view", "Unknown is not zero"],
-      20: ["Fire/flood", "No photo", "Steel object"],
+      20: ["Paper fails", "Aluminium bad · stainless good", "Plate is still secret"],
       21: ["You hold 2", "Service can freeze", "Not DIY same threat"],
       22: ["Firmware", "PIN vs PP", "Seed off computer"],
       23: ["Build PSBT", "Offline sign", "Broadcast elsewhere"],
@@ -531,6 +539,11 @@
     mem.shamirShares = null;
     mem.shamirSecret = "";
     mem.shamirDone = false;
+    mem.metalSeen = {};
+    mem.metalPick = "";
+    mem.fourOk = false;
+    mem.fourWords = null;
+    mem.plateKind = "";
     mem.geo = {};
     if (id === 6) mem.cosigners = emptyCosigners();
     if (id === 14) {
@@ -576,7 +589,7 @@
       17: [0, 1, 2],
       18: [0, 1, 2],
       19: [0, 1, 2],
-      20: [0, 1, 2],
+      20: [0, 1, 3],
       21: [0, 1, 2],
       22: [0, 1, 2],
       23: [0, 1, 2],
@@ -745,7 +758,7 @@
     16: {
       atoms: [
         atom(1, 0, "assets/uc2-atom-card-object.svg", "The numbered card is what you restore from", "<strong>Plan · Card object</strong><br/>Hide the screen. The paper (or metal) is the only copy you type from."),
-        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Type from paper not a photo", "<strong>Practice · Type from paper</strong><br/>Checksum and the same receive address prove the backup works."),
+        atom(2, 1, "../assets/catalyxt/custody/atom/hand-pen.svg", "Hand writing numbered words on a paper backup", "<strong>Practice · Type from paper</strong><br/>Checksum and the same receive address prove the backup works."),
         atom(3, 2, "assets/uc1-atom-phrase-ne-address.svg", "Same words must yield the same address", "<strong>Review · Same address</strong><br/>A photo of the screen is not a restore drill.")
       ]
     },
@@ -771,10 +784,11 @@
       ]
     },
     20: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 2) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc2-atom-card-object.svg", "Paper burns and floods", "<strong>Plan · Paper vs steel</strong><br/>A funded seed wants a metal object."),
-        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Do not photograph the plate", "<strong>Practice · No photo</strong><br/>Steel is still a secret. A snapshot of it is not."),
-        atom(3, 2, "assets/uc2-atom-passphrase-apart.svg", "Split plates if you split secrets", "<strong>Review · Object</strong><br/>One plate vs split plates is an ops choice, not a photo.")
+        atom(1, 0, "../assets/catalyxt/custody/atom/paper-fail.svg", "Paper burns and floods", "<strong>Plan · Paper fails</strong><br/>Fire and flood destroy paper. A funded seed wants a metal object."),
+        atom(2, 1, "../assets/catalyxt/custody/atom/metals.svg", "Compare metals: aluminium fails, stainless survives", "<strong>Practice · Metals</strong><br/>Aluminium melts in a house fire. Stainless is the default. Titanium is premium. Still no photo."),
+        atom(3, 3, "../assets/catalyxt/custody/atom/camera-slash.svg", "The plate is still a secret", "<strong>Review · Still secret</strong><br/>Four letters per word are enough. A photo of steel is not a backup. Solid plate, not loose tiles.")
       ]
     },
     21: {
@@ -971,7 +985,15 @@
 
   function wordGridHtml(m, gridId) {
     var words = (m || "").trim().split(/\s+/).filter(Boolean);
-    if (!words.length) return '<p class="control-help">Generate to fill this backup.</p>';
+    if (!words.length) {
+      var empty = '<ol class="word-grid"' + (gridId === undefined ? ' id="v2WordGrid"' : gridId ? ' id="' + gridId + '"' : "") + ">";
+      var e;
+      for (e = 0; e < 12; e++) {
+        empty += '<li><span class="wi">' + (e + 1) + '</span><span class="ww">—</span></li>';
+      }
+      empty += "</ol>";
+      return empty;
+    }
     var n = words.length;
     if (gridId === undefined) gridId = "v2WordGrid";
     var html = '<ol class="word-grid"' + (gridId ? ' id="' + gridId + '"' : "") + ">";
@@ -1125,13 +1147,13 @@
   }
 
   async function ucJob(id, step) {
+    if (id === 20) return uc20(step);
     if (step === 2) return quizBank(jobQuizzes(id));
     if (step === 3) return finishHtml(id);
     if (id === 16) return uc16(step);
     if (id === 17) return uc17(step);
     if (id === 18) return uc18(step);
     if (id === 19) return uc19(step);
-    if (id === 20) return uc20(step);
     if (id === 21) return uc21(step);
     if (id === 22) return uc22(step);
     if (id === 23) return uc23(step);
@@ -1151,7 +1173,14 @@
       return pad(
         "<h2>Look at the card, then hide it</h2>" +
         doDont("Treat the numbered card as paper. Next you will type from that paper.", "Do not photograph the card. Do not use a funded phrase.") +
+        '<div class="row v2-gen-bar" id="v2GenRow">' +
+        '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
+        inlineI(
+          "Generate to fill this backup",
+          "Click Make practice words to fill the numbered card. This is a throwaway phrase so you can practise typing it back. Do not fund it."
+        ) +
+        "</div></div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         pauseBtn("Next: hide the card", !mem.mnemonic)
       );
@@ -1167,7 +1196,10 @@
       '<button type="button" class="btn secondary" id="v2RestoreHide">Hide the on-screen card</button>' +
       '<div id="v2Card" class="' + (mem.restoreHidden ? "v2-hidden" : "") + '">' + wordGridHtml(mem.mnemonic) + "</div>" +
       '<div class="v2-restore-grid">' + inputs + "</div>" +
-      '<button type="button" class="btn" id="v2RestoreCheck">Check typed words</button>' +
+      '<div class="row v2-restore-act">' +
+      '<button type="button" class="btn" id="v2RestoreCheck">Check checksum and address</button>' +
+      '<button type="button" class="btn secondary" id="v2RestoreFill">Fill with words</button>' +
+      "</div>" +
       '<div id="v2RestoreMsg"></div>' +
       pauseBtn("Same address. The backup works.", !mem.restoreOk)
     );
@@ -1253,21 +1285,182 @@
     );
   }
 
-  function uc20(step) {
-    if (step === 0) {
-      return pad(
-        "<h2>Paper vs steel</h2>" +
-        doDont("Treat metal as the object for a funded seed.", "Do not photograph the plate. Paper still burns.") +
-        pauseBtn("Next: choose paper or steel", false)
+  async function uc20(step) {
+    if (!mem.metalSeen) mem.metalSeen = {};
+    var seen = mem.metalSeen;
+    var metalPick = mem.metalPick || "";
+    var metalsOk = metalPick === "ss" || metalPick === "ti";
+    function metalCard(id, title, teaser) {
+      var on = metalPick === id;
+      return (
+        '<button type="button" class="v2-metal-card' +
+        (on ? " is-on" : "") +
+        '" data-metal="' +
+        id +
+        '"><strong>' +
+        title +
+        "</strong><span>" +
+        teaser +
+        "</span></button>"
       );
     }
-    return pad(
-      "<h2>Choose metal</h2>" +
-      '<button type="button" class="btn secondary" data-metal="paper">Choose paper only</button>' +
-      '<button type="button" class="btn" data-metal="steel">Choose a steel plate</button>' +
-      '<div id="v2MetalOut"></div>' +
-      pauseBtn("I chose an object. No photo.", true)
-    );
+    if (step === 0) {
+      return pad(
+        "<h2>Paper fails</h2>" +
+        doDont(
+          "A funded seed wants a metal object that survives fire and flood.",
+          "Do not photograph any plate. Paper still burns. Metal does not make a photo safe."
+        ) +
+        desc(
+          "A house fire is hot enough to destroy paper. Flood and damp rot paper too. That is why people stamp a backup into metal. The next steps are which metals fail, and which designs fail even if the metal is good."
+        ) +
+        pauseBtn("Next: compare metals", false)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Metals compared</h2>" +
+        doDont(
+          "Tap each metal. Reject aluminium. Stainless is the usual default. Titanium is premium, not required.",
+          "Do not pick a metal from a shop logo. This is not a product list."
+        ) +
+        '<div class="v2-metal-grid">' +
+        metalCard("al", "Aluminium", "Melts in a house fire") +
+        metalCard("ss", "Stainless 304 / 316L", "Survives fire") +
+        metalCard("ti", "Titanium", "Premium, harder to punch") +
+        metalCard("pt", "Platinum", "Not a practical plate") +
+        "</div>" +
+        '<div id="v2MetalOut"' +
+        (mem.metalMsg
+          ? ' class="' + (mem.metalMsgOk ? "msg-ok" : "msg-bad") + '"'
+          : "") +
+        ">" +
+        (mem.metalMsg || "Tap a metal. Next stays off until you pick stainless or titanium.") +
+        "</div>" +
+        pauseBtn("I picked a metal that survives fire", !metalsOk)
+      );
+    }
+    if (step === 2) {
+      function stamp4(w) {
+        return w.length <= 4 ? w : w.slice(0, 4);
+      }
+      if (!mem.fourWords || mem.fourWords.length !== 12) {
+        var raw = "ozone pact paddle page pair palace palm panda panel panic panther paper";
+        if (window.BIP39Lab && typeof BIP39Lab.generateMnemonic === "function") {
+          raw = await BIP39Lab.generateMnemonic(12);
+        }
+        mem.fourWords = String(raw || "").trim().split(/\s+/).filter(Boolean);
+      }
+      var full12 = mem.fourWords;
+      var w0 = full12[0] || "";
+      var s0 = stamp4(w0);
+      var cells = full12
+        .map(function (w, i) {
+          var stamp = stamp4(w);
+          return (
+            '<li><span class="v2-stamp-n">' +
+            (i + 1) +
+            '</span><span class="v2-stamp-full">' +
+            w +
+            '</span><span class="v2-stamp-cut" aria-hidden="true">→</span><span class="v2-stamp-4">' +
+            stamp +
+            "</span></li>"
+          );
+        })
+        .join("");
+      var plate = full12
+        .map(function (w, i) {
+          return (
+            '<li><span class="idx">' +
+            (i + 1) +
+            '</span><span class="ww">' +
+            stamp4(w) +
+            "</span></li>"
+          );
+        })
+        .join("");
+      return pad(
+        "<h2>Four letters are enough</h2>" +
+        doDont(
+          "Stamp the first four letters of each word. That is enough to look the word up later.",
+          "Do not treat a 4-letter plate as broken. The rest of the word is optional on the plate."
+        ) +
+        desc(
+          "The English list has 2048 words. No two share the same first four letters. If a word is only three letters (zoo), you stamp those three."
+        ) +
+        '<p class="control-help">Practice phrase (not a funded seed). Twelve words from a random generate. Same twelve, two views:</p>' +
+        '<div class="row v2-gen-bar"><div class="v2-gen-left">' +
+        '<button type="button" class="btn secondary" id="v2FourRand">Make another practice phrase</button>' +
+        "</div></div>" +
+        '<div class="v2-stamp-wrap">' +
+        '<figure class="v2-stamp-fig"><figcaption>What you would stamp</figcaption><ol class="word-grid v2-stamp-plate">' +
+        plate +
+        "</ol></figure>" +
+        '<ol class="v2-stamp-map">' +
+        cells +
+        "</ol></div>" +
+        '<p class="control-help">Word 1 is <strong>' +
+        w0 +
+        "</strong>, so cell 1 is <strong>" +
+        s0 +
+        "</strong> — no other English backup word starts with those letters. Restore: read each stamp, look up the full word, type all twelve in order.</p>" +
+        pauseBtn("Next: solid plate rules", false)
+      );
+    }
+    if (step === 3) {
+      var pk = mem.plateKind || "";
+      var plateOk = pk === "solid";
+      return pad(
+        "<h2>Solid plate rules</h2>" +
+        doDont(
+          "A thick solid plate with deep punches has no pieces to lose. Thickness (~3–5 mm) and no loose tiles matter more than a logo.",
+          "Do not photograph the plate. A passphrase, if you use one, stays apart from the plate."
+        ) +
+        '<div class="v2-metal-grid v2-plate-grid">' +
+        '<button type="button" class="v2-metal-card' +
+        (pk === "solid" ? " is-on" : "") +
+        '" data-plate="solid"><strong>Solid punched plate</strong><span>Best durability. No tiles to spill.</span></button>' +
+        '<button type="button" class="v2-metal-card' +
+        (pk === "tiles" ? " is-on" : "") +
+        '" data-plate="tiles"><strong>Tile cassette</strong><span>Convenient. Heat or crush can spill tiles.</span></button>' +
+        '<button type="button" class="v2-metal-card' +
+        (pk === "photo" ? " is-on" : "") +
+        '" data-plate="photo"><strong>Photo of the plate</strong><span>Always wrong. Metal does not make a photo safe.</span></button>' +
+        "</div>" +
+        '<div id="v2PlateOut"' +
+        (mem.plateMsg ? ' class="' + (pk === "photo" ? "msg-bad" : "msg-ok") + '"' : "") +
+        ">" +
+        (mem.plateMsg || "Choose a design. Next stays off until you pick a solid punched plate.") +
+        "</div>" +
+        pauseBtn("I chose a solid punched plate", !plateOk)
+      );
+    }
+    if (step === 4) {
+      return quizBank([
+        {
+          q: "Aluminium is fine for a house fire?",
+          opts: [
+            qOk("No. It melts around house-fire heat. Do not use it for a funded seed.", "Correct. ~600°C melt vs a house fire."),
+            qBad("Yes. Light metal is good enough.", "Wrong. Aluminium fails. Stainless or titanium survive.")
+          ]
+        },
+        {
+          q: "Four letters are enough on a plate?",
+          opts: [
+            qOk("Yes. The first four letters uniquely identify each BIP-39 English word.", "Correct. abso is enough for absorb."),
+            qBad("No. You must stamp the full word or the backup is invalid.", "Wrong. Four letters are by design unique.")
+          ]
+        },
+        {
+          q: "A photo of a steel plate is a backup?",
+          opts: [
+            qOk("No. The plate is still a secret. A photo is never a backup.", "Correct."),
+            qBad("Yes, if the plate is stainless or titanium.", "Wrong. Metal does not make a photo safe.")
+          ]
+        }
+      ]);
+    }
+    return finishHtml(20);
   }
 
   function uc21(step) {
@@ -1546,7 +1739,7 @@
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar">' +
         '<div class="v2-gen-left">' +
-        '<button type="button" class="btn secondary" id="v2Regen">Regenerate ' +
+        '<button type="button" class="btn secondary" id="v2Regen">Generate ' +
         n +
         "-word phrase</button>" +
         mnemonicHelpHtml(true) +
@@ -1667,13 +1860,11 @@
         desc(
           "Both vaults start from this same numbered card. The extra secret comes on the next step."
         ) +
-        ppKeyHtml("v2PpKeyUc3a") +
         entropyHtml() +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar">' +
         '<div class="v2-gen-left">' +
-        '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
-        '<button type="button" class="btn secondary" id="v2Regen">Make a new ' + n + "-word card</button>" +
+        '<button type="button" class="btn" id="v2Generate">Generate ' + n + "-word phrase</button>" +
         mnemonicHelpHtml(true) +
         "</div>" +
         "</div>" +
@@ -1693,13 +1884,15 @@
           "Same words. A has no extra secret. B has a test secret. Two different receive addresses means two wallets. Forget B and that second vault is gone — there is no reset."
         ) +
         callout("is", "What you are comparing", "Same words. Empty extra secret vs a test secret. Public addresses only.") +
-        ppKeyHeroHtml(
-          '<label class="field">A · empty extra secret <input id="ppA" type="text" placeholder="(leave empty)" autocomplete="off"/></label>' +
-          '<label class="field">B · test secret <input id="ppB" type="text" value="test" autocomplete="off"/></label>' +
-          '<button type="button" class="btn" id="v2Cmp">Compare empty vs test secret</button>' +
-          '<div id="v2CmpOut" class="control-help">Click Compare empty vs test secret. You should see two different receive strings. Forget B and that vault is gone.</div>',
-          "v2PpKeyUc3b"
-        ) +
+        '<div class="v2-cmp-split">' +
+        '<div class="v2-cmp-fields">' +
+        ppKeyHtml("v2PpKeyUc3b") +
+        '<label class="field">A · empty extra secret <input id="ppA" type="text" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/></label>' +
+        '<label class="field">B · test secret <input id="ppB" type="text" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/></label>' +
+        '<button type="button" class="btn" id="v2Cmp">Compare A vs B</button>' +
+        "</div>" +
+        '<div id="v2CmpOut" class="v2-cmp-out"><p class="control-help">Results show here. A should stay empty. B can stay <code>test</code>.</p></div>' +
+        "</div>" +
         pauseBtn("Forget B and that vault is gone", true)
       );
     }
@@ -3765,8 +3958,10 @@
     var next = nid ? TRACKS.filter(function (x) { return x.id === nid; })[0] : null;
     return pad(
       "<h2>Finish</h2>" +
-      callout("isnt", "Do not send coins", "This is practice. Then you may open the next track.") +
-      '<label class="check"><input type="checkbox" id="v2Exit"/> I will not send coins to these addresses</label>' +
+      callout("isnt", id === 20 ? "Do not photograph the plate" : "Do not send coins", "This is practice. Then you may open the next track.") +
+      '<label class="check"><input type="checkbox" id="v2Exit"/> ' +
+      (id === 20 ? "I will not photograph the plate" : "I will not send coins to these addresses") +
+      "</label>" +
       '<div class="row"><button type="button" class="btn" id="v2Finish" disabled>Mark ' +
       (t ? t.title : "track") +
       " done</button></div>" +
@@ -3907,7 +4102,11 @@
       wc.addEventListener("change", function () {
         mem.wordCount = parseInt(wc.value, 10) || 12;
         var regenBtn = $("v2Regen");
-        if (regenBtn) regenBtn.textContent = "Regenerate " + mem.wordCount + "-word phrase";
+        if (regenBtn) regenBtn.textContent = "Generate " + mem.wordCount + "-word phrase";
+        var genLab = $("v2Generate");
+        if (genLab && /word phrase/.test(genLab.textContent || "")) {
+          genLab.textContent = "Generate " + mem.wordCount + "-word phrase";
+        }
         if (!mem.mnemonic && ($("v2OsEnt") || $("v2Entropy"))) replaceOsEntropy();
       });
     }
@@ -4327,7 +4526,7 @@
       mem.cardAck = false;
       $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);
       replaceOsEntropy();
-      regen.textContent = "Regenerate " + n + "-word phrase";
+      regen.textContent = "Generate " + n + "-word phrase";
     });
 
     var pack = $("v2PrintAck");
@@ -4651,6 +4850,16 @@
         if (card) card.classList.add("v2-hidden");
       });
     }
+    if ($("v2RestoreFill")) {
+      $("v2RestoreFill").addEventListener("click", function () {
+        var w = (mem.mnemonic || "").split(/\s+/).filter(Boolean);
+        var i;
+        for (i = 0; i < 12; i++) {
+          var inp = $("v2RestoreW" + i);
+          if (inp) inp.value = w[i] || "";
+        }
+      });
+    }
     if ($("v2RestoreCheck")) {
       $("v2RestoreCheck").addEventListener("click", async function () {
         var typed = [];
@@ -4747,15 +4956,57 @@
     document.querySelectorAll("[data-metal]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var k = btn.getAttribute("data-metal");
+        mem.metalSeen = mem.metalSeen || {};
+        mem.metalSeen[k] = true;
+        mem.metalPick = k;
+        document.querySelectorAll("[data-metal]").forEach(function (b) {
+          b.classList.toggle("is-on", b.getAttribute("data-metal") === k);
+        });
         var o = $("v2MetalOut");
-        var ok = k === "steel";
+        var copy = {
+          al: { ok: false, t: "Aluminium melts around house-fire heat (~600°C). Turns to slag. Not a seed plate. Next stays off." },
+          ss: { ok: true, t: "Stainless 304 / 316L melts far above a house fire (~1400°C). 304 is the common default. 316L holds up better near salt or long flood. Best balance for most people." },
+          ti: { ok: true, t: "Titanium melts even higher (~1660°C) and resists corrosion well. Harder and costlier to stamp deep. Stainless is enough for a normal house." },
+          pt: { ok: false, t: "Platinum is not a normal seed-backup product. Next stays off. Pick stainless or titanium." }
+        };
+        var row = copy[k] || { ok: false, t: "Tap a metal." };
+        mem.metalMsg = row.t;
+        mem.metalMsgOk = row.ok;
         if (o) {
-          o.className = ok ? "msg-ok" : "msg-bad";
-          o.textContent = ok
-            ? "Steel for a funded seed. Still do not photograph the plate."
-            : "Paper burns and floods. Pick steel for a funded seed.";
+          o.className = row.ok ? "msg-ok" : "msg-bad";
+          o.textContent = row.t;
         }
-        if (pause) pause.disabled = !ok;
+        if (pause) pause.disabled = !row.ok;
+      });
+    });
+    if ($("v2FourRand")) {
+      $("v2FourRand").addEventListener("click", async function () {
+        if (window.BIP39Lab && typeof BIP39Lab.generateMnemonic === "function") {
+          mem.fourWords = String(await BIP39Lab.generateMnemonic(12)).trim().split(/\s+/).filter(Boolean);
+        }
+        renderTrack();
+      });
+    }
+    document.querySelectorAll("[data-plate]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-plate");
+        mem.plateKind = k;
+        document.querySelectorAll("[data-plate]").forEach(function (b) {
+          b.classList.toggle("is-on", b.getAttribute("data-plate") === k);
+        });
+        var o = $("v2PlateOut");
+        var msg =
+          k === "solid"
+            ? "Solid punched plate: best durability. Deep punch, ~3–5 mm, no pieces to lose."
+            : k === "tiles"
+              ? "Tile cassette: heat or crush can spill tiles. Next stays off. Pick a solid punched plate."
+              : "A photo of the plate is never a backup. Next stays off.";
+        mem.plateMsg = msg;
+        if (o) {
+          o.className = k === "solid" ? "msg-ok" : "msg-bad";
+          o.textContent = msg;
+        }
+        if (pause) pause.disabled = k !== "solid";
       });
     });
     document.querySelectorAll("[data-collab]").forEach(function (btn) {
@@ -4876,8 +5127,23 @@
   }
 
   function wipeProgressStore() {
-    try { sessionStorage.removeItem(STORE); } catch (e) { /* ignore */ }
-    try { localStorage.removeItem(STORE); } catch (e2) { /* ignore */ }
+    function dropKey(store, key) {
+      try { store.removeItem(key); } catch (e) { /* ignore */ }
+    }
+    function dropPrefixed(store) {
+      var i;
+      var keys = [];
+      try {
+        for (i = 0; i < store.length; i++) keys.push(store.key(i));
+      } catch (e) { return; }
+      keys.forEach(function (k) {
+        if (k && (k === STORE || k.indexOf("bip39") === 0 || k.indexOf("bip39lab") === 0)) dropKey(store, k);
+      });
+    }
+    try { dropPrefixed(sessionStorage); } catch (e) { /* ignore */ }
+    try { dropPrefixed(localStorage); } catch (e2) { /* ignore */ }
+    dropKey(sessionStorage, STORE);
+    dropKey(localStorage, STORE);
     try {
       document.cookie.split(";").forEach(function (c) {
         var n = c.split("=")[0].trim();
@@ -4893,7 +5159,13 @@
     mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
     pickerFilter = "start";
     current = { id: 1, step: 0 };
-    renderPicker();
+    try {
+      var path = (window.location.pathname || "/v2/").split("?")[0];
+      window.location.replace(path);
+    } catch (e) {
+      renderPicker();
+      show("viewPicker");
+    }
   }
 
   function clearSecrets() {
@@ -4943,19 +5215,47 @@
         if (ev.target === $("v2QrModal")) hideV2Qr();
       });
     }
+    var pendingUc = null;
+    var pendingDock = null;
+    function resumeAfterAck() {
+      if (pendingUc != null) {
+        openUc(pendingUc);
+        pendingUc = null;
+        return;
+      }
+      if (pendingDock && pendingDock.id) {
+        var d = pendingDock;
+        pendingDock = null;
+        setGated(d.id);
+        startTrack(d.id);
+        mem.maxStep = Math.max(mem.maxStep || 0, d.step || 0);
+        current.step = d.step || 0;
+        renderTrack();
+      }
+    }
+    var ackOv = $("v2AckOverlay");
+    var ackBtn = $("v2AckUnderstand");
+    if (ackBtn) {
+      ackBtn.addEventListener("click", function () {
+        setAck();
+        if (ackOv) ackOv.hidden = true;
+        resumeAfterAck();
+      });
+    }
     var dock = loadState().dock;
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 31) openUc(n);
+      if (n >= 1 && n <= 31) pendingUc = n;
     } else if (dock && dock.id) {
       var s = loadState();
       delete s.dock;
       saveState(s);
-      setGated(dock.id);
-      startTrack(dock.id);
-      mem.maxStep = Math.max(mem.maxStep || 0, dock.step || 0);
-      current.step = dock.step || 0;
-      renderTrack();
+      pendingDock = dock;
+    }
+    if (!hasAck()) {
+      if (ackOv) ackOv.hidden = false;
+    } else {
+      resumeAfterAck();
     }
   }
 

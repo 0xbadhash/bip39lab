@@ -1,0 +1,6 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Do not photograph">
+  <rect x="70" y="12" width="80" height="48" rx="8" fill="#1a2330" stroke="#e2483d" stroke-width="1.5"/>
+  <circle cx="110" cy="36" r="12" fill="none" stroke="#e2483d" stroke-width="1.5"/>
+  <path d="M64 14 L156 58" stroke="#e2483d" stroke-width="1.6"/>
+  <text x="110" y="82" text-anchor="middle" fill="#e2483d" font-size="9" font-family="system-ui,sans-serif">no photo</text>
+</svg>

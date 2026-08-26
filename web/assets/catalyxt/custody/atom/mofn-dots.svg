@@ -1,0 +1,9 @@
+<svg viewBox="0 0 220 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two of three keys">
+  <circle cx="58" cy="36" r="18" fill="none" stroke="#3d8bfd" stroke-width="1.5"/>
+  <circle cx="110" cy="36" r="18" fill="none" stroke="#3d8bfd" stroke-width="1.5"/>
+  <circle cx="162" cy="36" r="18" fill="none" stroke="#2a3545" stroke-width="1.5"/>
+  <text x="58" y="40" text-anchor="middle" fill="#eef2f7" font-size="10" font-family="system-ui,sans-serif">A</text>
+  <text x="110" y="40" text-anchor="middle" fill="#eef2f7" font-size="10" font-family="system-ui,sans-serif">B</text>
+  <text x="162" y="40" text-anchor="middle" fill="#8b9bb4" font-size="10" font-family="system-ui,sans-serif">C</text>
+  <text x="110" y="82" text-anchor="middle" fill="#8b9bb4" font-size="9" font-family="system-ui,sans-serif">M=2 of N=3</text>
+</svg>
