@@ -661,18 +661,37 @@
 }
 .v2-cmp-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 8.5rem minmax(12rem, 1fr) minmax(0, 1.55fr);
   gap: 0.75rem 1rem;
   align-items: start;
   margin: 0.5rem 0 0.7rem;
 }
+.v2-cmp-face .v2-pp-key {
+  width: 8.5rem;
+}
+.v2-cmp-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 0;
+}
 .v2-cmp-fields .field {
-  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.28rem;
+  margin: 0;
+  max-width: none;
+  width: 100%;
 }
 .v2-cmp-fields .field input {
   width: 100%;
-  max-width: 16rem;
+  max-width: none;
   box-sizing: border-box;
+}
+.v2-cmp-fields #v2Cmp {
+  align-self: stretch;
+  width: 100%;
 }
 .v2-cmp-out {
   min-height: 10rem;
@@ -683,6 +702,18 @@
   font-size: 0.8rem;
   overflow-wrap: anywhere;
 }
+.v2-cmp-story {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0 0 0.55rem;
+}
+.v2-cmp-story-line {
+  margin: 0;
+}
+.v2-cmp-story-line strong {
+  display: block;
+  font-size: 0.82rem;
+}
 .v2-cmp-out .v2-preview-big,
 .v2-cmp-out code {
   font-size: 0.72rem;
@@ -691,7 +722,12 @@
   margin-top: 0.25rem;
 }
 .v2-cmp-out .v2-callout { margin: 0 0 0.45rem; }
-.v2-cmp-out .v2-ent-stack { font-size: 0.75rem; }
+.v2-cmp-out .v2-ent-stack { font-size: 0.75rem; margin-top: 0.55rem; }
+.v2-cmp-out .v2-verdict { margin: 0 0 0.45rem; }
+@media (max-width: 900px) {
+  .v2-cmp-split { grid-template-columns: 8.5rem minmax(0, 1fr); }
+  .v2-cmp-out { grid-column: 1 / -1; }
+}
 @media (max-width: 720px) {
   .v2-cmp-split { grid-template-columns: 1fr; }
 }

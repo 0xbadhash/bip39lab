@@ -1,37 +1,34 @@
 # CROSS-REVIEW
 
-- **base:** origin/master
-- **secrets:** gitleaks clean
-
 ## Security Guru
 
-**none.** No seed persistence. Ack is a boolean in sessionStorage. Generate is practice mnemonic only.
+none. Passphrase and addresses painted with `textContent`. Derive stays in-tab via BIP39Lab. sessionStorage unchanged (progress/ack only). CSP `connect-src 'none'`.
 
 ## Maintainability Expert
 
-**none** (blocker). Custody kit is isolated under `web/assets/catalyxt/custody/`. UC20 quiz/finish live inside `uc20()` so generic `ucJob` step-2 quiz does not steal the rail.
+none as blockers. Painters hoisted to module scope; Compare click reuses the same path.
 
 ### Obsolete / cleanup (scoped)
 
 | Item | Tier | Confidence | Evidence |
 |------|------|------------|----------|
-| `web/v2/assets/uc20-atom-*.png` | C | 0.8 | Unreferenced; kit SVGs replace them. Not committed. |
-| `uc16-atom-type-from-paper.png` | C | 0.8 | UC16 uses kit `hand-pen.svg`. |
+| Old click-only innerHTML dump of `#v2CmpOut` | A | 0.9 | Replaced by live table in `v2-app.js`; no remaining `v2CmpOut.innerHTML` assignment in this path |
+| leftover scripts stash | C | 0.4 | Unrelated; not this diff |
 
-Whole-repo: `/sweep`.
+Whole-repo cruft: run `/sweep` if wanted.
 
 ## Domain Specialist
 
-**none** (blocker). 4-letter uniqueness is wordlist fact. Aluminium does not unlock Next. Solid plate only.
+none as blockers. Empty vs `test` still teaches two vaults. Next still gated on diverged addresses via Compare unlock.
 
-## Severity
+## Severity counts
 
-blockers 0 · major 0
+blocker=0 major=0 nit=0 obsolete_tier_A=1 (dead innerHTML painter, already removed)
 
 ## §9
 
-1. Dual stamp 0.16.51 vs 0.17.75-v2
-2. Photoreal ban in V2; classic 3D faces remain on `/`
-3. Hairline `currentColor` vs panel fills — documented two languages
-4. leftover scripts stash
-5. lab-strip 404
+1. Dual stamp
+2. Compare still unlocks pause
+3. Face PNG is classic Catalyxt still, not a new family
+
+✅ CROSS-REVIEW DONE blockers=0 obsolete_tier_A=0 remaining

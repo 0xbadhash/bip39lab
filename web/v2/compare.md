@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
-- **v1:** `/` · product stamp `v0.16.51`
-- **v2:** `/v2/` · chip `v0.17.75-v2` (`data-v2-version`; not the classic footer stamp)
+- **v1:** `/` · product stamp `v0.16.52`
+- **v2:** `/v2/` · chip `v0.17.78-v2` (`data-v2-version`; not the classic footer stamp)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -13,6 +13,10 @@ Live compare.md lags until deploy. This repo file is source of truth.
 V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a second crypto stack. Classic `/` is unchanged.
 
 ---
+
+## What landed since 0.16.51 / chip 0.17.75
+
+- **UC3 live compare:** type A or B and the estimate row plus Receive #0 update without waiting for Compare. Three columns: beginner-key still, stacked A/B fields, story + table. Chip `0.17.78-v2`.
 
 ## What landed since 0.16.50 / chip 0.17.62
 

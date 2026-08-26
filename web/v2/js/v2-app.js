@@ -1885,13 +1885,22 @@
         ) +
         callout("is", "What you are comparing", "Same words. Empty extra secret vs a test secret. Public addresses only.") +
         '<div class="v2-cmp-split">' +
-        '<div class="v2-cmp-fields">' +
+        '<div class="v2-cmp-face">' +
         ppKeyHtml("v2PpKeyUc3b") +
+        "</div>" +
+        '<div class="v2-cmp-fields">' +
         '<label class="field">A · empty extra secret <input id="ppA" type="text" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/></label>' +
         '<label class="field">B · test secret <input id="ppB" type="text" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/></label>' +
         '<button type="button" class="btn" id="v2Cmp">Compare A vs B</button>' +
         "</div>" +
-        '<div id="v2CmpOut" class="v2-cmp-out"><p class="control-help">Results show here. A should stay empty. B can stay <code>test</code>.</p></div>' +
+        '<div id="v2CmpOut" class="v2-cmp-out">' +
+        '<div class="v2-cmp-story">' +
+        '<p class="v2-cmp-story-line"><strong id="v2CmpStoryA">A has no passphrase</strong><code id="v2CmpStoryAddrA">…</code></p>' +
+        '<p class="v2-cmp-story-line"><strong id="v2CmpStoryB">B = “test”</strong><code id="v2CmpStoryAddrB">…</code></p>' +
+        "</div>" +
+        '<div id="v2CmpVerdict" class="v2-verdict split">Type in A or B. Addresses follow a moment later.</div>' +
+        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr><tr><td>Passphrase</td><td id="v2CmpPpA">(empty)</td><td id="v2CmpPpB">4 chars · ~6 bits · weak (estimate only)</td></tr><tr><td>Receive #0</td><td><code id="v2CmpAddrA">…</code></td><td><code id="v2CmpAddrB">…</code></td></tr></table>' +
+        "</div>" +
         "</div>" +
         pauseBtn("Forget B and that vault is gone", true)
       );
@@ -3485,6 +3494,71 @@
     return "~" + shown + " bits · " + ppTier(est) + " (estimate only)";
   }
 
+  function ppCmpCell(pp) {
+    if (!pp) return "(empty)";
+    return pp.length + " chars · " + ppBitsLabel(pp);
+  }
+
+  function ppCmpStoryLabel(side, pp) {
+    if (!pp) return side + " has no passphrase";
+    return side + " = “" + pp + "”";
+  }
+
+  function paintCmpEstimates() {
+    var aEl = $("ppA");
+    var bEl = $("ppB");
+    if (!aEl && !bEl) return;
+    var a = (aEl && aEl.value) || "";
+    var b = (bEl && bEl.value) || "";
+    if ($("v2CmpPpA")) $("v2CmpPpA").textContent = ppCmpCell(a);
+    if ($("v2CmpPpB")) $("v2CmpPpB").textContent = ppCmpCell(b);
+    if ($("v2CmpStoryA")) $("v2CmpStoryA").textContent = ppCmpStoryLabel("A", a);
+    if ($("v2CmpStoryB")) $("v2CmpStoryB").textContent = ppCmpStoryLabel("B", b);
+  }
+
+  async function paintCmpAddresses(unlock) {
+    if (!$("v2CmpTable") || !mem.mnemonic || !window.BIP39Lab) return;
+    var seq = (mem.cmpSeq = (mem.cmpSeq || 0) + 1);
+    var a = ($("ppA") && $("ppA").value) || "";
+    var b = ($("ppB") && $("ppB").value) || "";
+    ["v2CmpAddrA", "v2CmpAddrB", "v2CmpStoryAddrA", "v2CmpStoryAddrB"].forEach(function (id) {
+      if ($(id)) $(id).textContent = "…";
+    });
+    var ra = await BIP39Lab.deriveAddresses(mem.mnemonic, a, { network: "test", count: 1 });
+    var rb = await BIP39Lab.deriveAddresses(mem.mnemonic, b, { network: "test", count: 1 });
+    if (seq !== mem.cmpSeq) return;
+    var addrA = ra.rows[0].bip84_p2wpkh;
+    var addrB = rb.rows[0].bip84_p2wpkh;
+    var same = addrA === addrB;
+    if ($("v2CmpAddrA")) $("v2CmpAddrA").textContent = addrA;
+    if ($("v2CmpAddrB")) $("v2CmpAddrB").textContent = addrB;
+    if ($("v2CmpStoryAddrA")) $("v2CmpStoryAddrA").textContent = addrA;
+    if ($("v2CmpStoryAddrB")) $("v2CmpStoryAddrB").textContent = addrB;
+    var verdict;
+    if (same) {
+      if (a === "" && b === "") verdict = "Same receive address. Both empty — one vault.";
+      else if (a === b) verdict = "Same receive address. A and B match — one vault.";
+      else verdict = "Same receive address with these two secrets.";
+    } else {
+      verdict = "Diverged — two wallets. Same words, different passphrases, different addresses.";
+    }
+    var vEl = $("v2CmpVerdict");
+    if (vEl) {
+      vEl.className = "v2-verdict " + (same ? "same" : "split");
+      vEl.textContent = verdict;
+    }
+    var pause = $("v2Pause");
+    if (unlock && pause && !same) pause.disabled = false;
+  }
+
+  function scheduleCmpAddresses(unlock) {
+    paintCmpEstimates();
+    if (mem.cmpTimer) clearTimeout(mem.cmpTimer);
+    mem.cmpTimer = setTimeout(function () {
+      paintCmpAddresses(!!unlock);
+    }, unlock ? 0 : 120);
+  }
+
   function entStackHtml() {
     var bits = Math.round(entBits());
     var n = mem.entWordCount || 12;
@@ -4550,45 +4624,12 @@
       });
     }
     var cmp = $("v2Cmp");
-    if (cmp) cmp.addEventListener("click", async function () {
-      var a = ($("ppA") && $("ppA").value) || "";
-      var b = ($("ppB") && $("ppB").value) || "";
-      var labA = a === "" ? "A has no passphrase" : "A = “" + a + "”";
-      var labB = b === "" ? "B has no passphrase" : "B = “" + b + "”";
-      var ra = await BIP39Lab.deriveAddresses(mem.mnemonic, a, { network: "test", count: 1 });
-      var rb = await BIP39Lab.deriveAddresses(mem.mnemonic, b, { network: "test", count: 1 });
-      var addrA = ra.rows[0].bip84_p2wpkh;
-      var addrB = rb.rows[0].bip84_p2wpkh;
-      var same = addrA === addrB;
-      var verdict;
-      if (same) {
-        if (a === "" && b === "") {
-          verdict = "Same receive address. Both sides have no passphrase, so this is one vault.";
-        } else if (a === b) {
-          verdict = "Same receive address. Passphrase A and passphrase B are the same, so this is one vault.";
-        } else {
-          verdict = "Same receive address with these two passphrases.";
-        }
-      } else {
-        verdict = "Diverged — two wallets. Same words, different passphrases, different addresses.";
-      }
-      $("v2CmpOut").innerHTML =
-        '<div class="v2-callout is"><strong>' + labA + "</strong><code class=\"v2-preview-big\">" + addrA + "</code></div>" +
-        '<div class="v2-callout done"><strong>' + labB + "</strong><code class=\"v2-preview-big\">" + addrB + "</code></div>" +
-        '<div class="v2-verdict ' + (same ? "same" : "split") + '">' + verdict + "</div>" +
-        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr>' +
-        "<tr><td>Passphrase</td><td>" +
-        (a === "" ? "(empty)" : a.length + " chars · " + ppBitsLabel(a)) +
-        "</td><td>" +
-        (b === "" ? "(empty)" : b.length + " chars · " + ppBitsLabel(b)) +
-        "</td></tr>" +
-        "<tr><td>Receive #0</td><td><code>" +
-        addrA +
-        "</code></td><td><code>" +
-        addrB +
-        "</code></td></tr></table>";
-      if (pause) pause.disabled = false;
-    });
+    if (cmp) {
+      scheduleCmpAddresses(false);
+      cmp.addEventListener("click", function () {
+        scheduleCmpAddresses(true);
+      });
+    }
     var idx = $("v2Idx");
     var idxZero = $("v2IdxZero");
     if (idx) {
@@ -5188,6 +5229,16 @@
   }
 
   function boot() {
+    document.addEventListener("input", function (ev) {
+      var t = ev.target;
+      if (!t || (t.id !== "ppA" && t.id !== "ppB")) return;
+      scheduleCmpAddresses(false);
+    });
+    document.addEventListener("keyup", function (ev) {
+      var t = ev.target;
+      if (!t || (t.id !== "ppA" && t.id !== "ppB")) return;
+      paintCmpEstimates();
+    });
     if ($("v2Clear")) $("v2Clear").addEventListener("click", clearSecrets);
     if ($("v2HardRefresh")) $("v2HardRefresh").addEventListener("click", hardRefresh);
     if ($("btnBackPicker")) $("btnBackPicker").addEventListener("click", renderPicker);

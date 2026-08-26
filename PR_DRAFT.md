@@ -1,28 +1,28 @@
-# PR Draft: v0.16.51 V2 UC20 materials, custody kit, ack overlay
+# PR Draft: v0.16.52 V2 UC3 live compare
 
-**Spec:** `.agents/specs/2026-08-26-v2-uc20-kit.md`
-**Plan:** `.agents/specs/2026-08-26-v2-uc20-kit-plan.md`
+**Spec:** `.agents/specs/2026-08-26-v2-uc3-live-compare.md`
+**Plan:** `.agents/specs/2026-08-26-v2-uc3-live-compare-plan.md`
 
 ## What Problem This Solves
 
-UC20 was too thin. V2 lacked the classic is/isn’t overlay. UC3 had two generate buttons and a full-width compare dump. Track pictures were photoreal slop.
+UC3 compare only refreshed after Compare. Typing a passphrase left estimates and receive addresses stale. The key still shared the fields column so A and B did not align.
 
 ## Why This Change Was Made
 
-Operator asked UC20 materials lab, Catalyxt custody kit, ack overlay, UC3 generate/compare layout, then the ship chain.
+Operator asked the passphrase table to be dynamic while typing, then a three-column card: beginner-key, stacked A/B, live story + table.
 
 ## User Impact
 
-Chip **v0.17.75-v2**. Ack on first visit. UC20 Next gated. Random 12-word 4-letter plate. Kit sheet at `/assets/catalyxt/custody/`. Classic `/` unchanged.
+Chip **v0.17.78-v2**. Compare empty vs a test secret updates as you type. Classic `/` unchanged.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 overlay | V2-S0 |
-| AC-2 chip | V2-S0 |
-| AC-3 UC3 one generate | V2-S3 |
-| AC-4 classic Generate | V2-S0 |
+| AC-1 live estimates | V2-S3 `#v2CmpPpB` 4 chars, `#v2CmpPpA` 26 chars |
+| AC-2 live addresses | V2-S3 `#v2CmpAddrA` `tb1` |
+| AC-3 three columns | V2-S3 `.v2-cmp-face` + fields |
+| AC-4 chip / classic | V2-S0 |
 
 ## Red-proof
 
@@ -31,9 +31,9 @@ Chip **v0.17.75-v2**. Ack on first visit. UC20 Next gated. Random 12-word 4-lett
 
 ## Threat notes
 
-- secrets: no mnemonic in sessionStorage
-- xss: CSP connect-src none
-- csrf: none
+- secrets: no mnemonic in sessionStorage; passphrase only in RAM fields
+- xss: story and table use textContent, not innerHTML
+- csrf: none (static offline lab)
 
 ## Evidence pack
 
@@ -41,12 +41,12 @@ hard_gates; Playwright e2e/v2.spec.ts; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CRO
 
 ## Things that look bad but are actually fine
 
-1. leftover scripts stash
-2. Dual stamp
-3. lab-strip 404
-4. Uncommitted photoreal PNGs not shipped
-5. Hairline SVGs as `<img>` do not inherit currentColor — sheet uses `<object>`
+1. leftover scripts stash still not this ship
+2. Dual stamp product 0.16.52 vs chip 0.17.78-v2
+3. Compare still required to unlock Next even though the table is live
+4. lab-strip 404 under /v2/js
+5. Photoreal PNGs remain untracked and unshipped
 
 ## Cross-review
 
-Blockers 0. Obsolete Tier A 0.
+Blockers 0. Obsolete Tier A 0 remaining (old innerHTML dump removed).
