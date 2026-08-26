@@ -2,25 +2,24 @@
 
 - **command:** `/code_review` vs origin/master
 - **base:** origin/master
-- **head:** working tree then 0.16.54 commit
-- **secrets:** gitleaks clean origin/master...HEAD (pre-commit); re-check after commit
+- **head:** working tree UC32–35
+- **secrets:** gitleaks clean on committed range after ship commit
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-Folder amounts are constants, labeled teaching-only. Laptop-seed import is gated to the stay-hot choice. Quiz HTML is author strings.
+Timelock has no Sign. Electrum does not fake KDF. XOR is classroom N-of-N.
 
 ## Follow-ups
 
 - leftover scripts stash
-- photoreal atom stash
 - lab-strip 404
-- mnemonic words in plate HTML are BIP-39 English (not user-freeform)
+- SeedXOR not byte-XOR of entropy (teaching N-of-N only)
 
-p0=0 follow_ups=4
+p0=0 follow_ups=3
 
 ## Smoke
 
-Playwright `e2e/v2.spec.ts`; pytest.
+Playwright S0 + S23–S26.

@@ -1,30 +1,30 @@
-# PR Draft: v0.16.54 V2 tracks polish
+# PR Draft: v0.16.55 V2 UC32–UC35
 
-**Spec:** `.agents/specs/2026-08-26-v2-tracks-polish.md`
-**Plan:** `.agents/specs/2026-08-26-v2-tracks-polish-plan.md`
+**Spec:** `.agents/specs/2026-08-26-v2-uc32-35.md`
+**Plan:** `.agents/specs/2026-08-26-v2-uc32-35-plan.md`
 
 ## What Problem This Solves
 
-V2 cards that the operator walked still hid teaching (compare click, far-right mint, 4-letter-only plate, first-option quizzes, slogan UC22, folders without visible amounts).
+Four unique leftover jobs were missing from a 31-card picker: all-parts BIP39-looking split, inactivity timelock, descriptor/policy backup, Electrum-looking words.
 
 ## Why This Change Was Made
 
-Operator asked live compare, mint beside word count, full-word plate stamps, shuffled plain quizzes, firmware examples, laptop seed stays hot, and visible folder amounts beside addresses.
+WINDOW 6 spec-first: UC32–35 only. Practice lab. No live CSV signer.
 
 ## User Impact
 
-Chip **v0.17.88-v2**. Classic `/` cache-bust only.
+Chip **v0.17.89-v2**. Picker **35**. `?uc=32`–`35`. Classic `/` cache-bust only.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 compare/mint | V2-S3, V2-S15 |
-| AC-2 plate | V2-S21 |
-| AC-3 quizzes | V2-S2/S14 (data-quiz not position) |
-| AC-4 UC22 | V2-S22 |
-| AC-5 UC4 amounts | V2-S10 |
-| AC-6 chip `0.17.88-v2` and classic Generate | V2-S0 `test_ac_6` |
+| AC-1 picker 35 + chip | V2-S0 `test_ac_1` |
+| AC-2 SeedXOR all parts | V2-S23 `test_ac_2` |
+| AC-3 timelock FSM | V2-S24 `test_ac_3` |
+| AC-4 descriptor | V2-S25 `test_ac_4` |
+| AC-5 Electrum | V2-S26 `test_ac_5` |
+| AC-6 classic Generate | V2-S0 `test_ac_6` |
 
 ## Red-proof
 
@@ -34,7 +34,7 @@ Chip **v0.17.88-v2**. Classic `/` cache-bust only.
 ## Threat notes
 
 - secrets: no mnemonic in sessionStorage
-- xss: quiz copy is author-controlled; estimates use textContent
+- xss: practice descriptor is a canned string; XOR grids use wordGridHtml from generated mnemonics
 - csrf: none
 
 ## Evidence pack
@@ -43,12 +43,12 @@ hard_gates; Playwright e2e/v2.spec.ts; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CRO
 
 ## Things that look bad but are actually fine
 
-1. leftover scripts stash
-2. Dual stamp 0.16.54 vs 0.17.88-v2
-3. lab-strip 404
-4. Teaching BTC amounts are not chain lookups
-5. Photoreal atoms remain unshipped
+1. SeedXOR tab is not seedxor.com
+2. Timelock does not sign CSV
+3. Electrum path invents no Electrum address
+4. Dual stamp 0.16.55 vs 0.17.89-v2
+5. leftover scripts stash
 
 ## Cross-review
 
-Blockers 0. Obsolete Tier A 0 remaining.
+Blockers 0.

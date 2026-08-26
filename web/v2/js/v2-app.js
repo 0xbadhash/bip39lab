@@ -70,7 +70,11 @@
     { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Mixing is optional. It does not replace backup.", done: "You know mixing is extra privacy, not a custody substitute." },
     { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second extra secret opens a real second vault.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
     { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child phrases. Classic Lab is the full card.", done: "A child is not a backup of the parent. Do not fund practice children." },
-    { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "People hold word shares. UC7 hex stays educational.", done: "Suite lives in the SLIP-39 room. Combine is recovery, not a cosign." }
+    { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "People hold word shares. UC7 hex stays educational.", done: "Suite lives in the SLIP-39 room. Combine is recovery, not a cosign." },
+    { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Every part is a full 12-word list. You need all of them.", done: "N-of-N, not Shamir 2-of-3, not SLIP-39. Each part looks like a backup." },
+    { id: 33, level: "Advanced", title: "Timelock dead-man (practice)", job: "Heir cannot spend until a timer expires. Owner refresh resets it.", done: "Educational timer only. This tab never signs. Not legal counsel." },
+    { id: 34, level: "Advanced", title: "Descriptor / policy backup", job: "Save the policy string with the keys. Words alone can fail.", done: "You saw a practice wpkh/wsh line. Keys without policy can be unspendable." },
+    { id: 35, level: "Advanced", title: "Electrum-looking words", job: "English words can still be Electrum, not BIP-39.", done: "BIP-39 restore is the wrong vault. This tab does not run Electrum." }
   ];
 
   var PATHS = [
@@ -80,9 +84,10 @@
     { id: "custody", title: "Who holds the keys", blurb: "1 They hold · 2 Hot vs hardware · 3 Hot vs cold · 4 How much.", ids: [11, 12, 13, 17] },
     { id: "shared", title: "Shared and air-gap", blurb: "1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap.", ids: [6, 7, 8, 10, 21, 23] },
     { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys · 3 Yearly drill.", ids: [18, 24, 25] },
-    { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] }
+    { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] },
+    { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Electrum words.", ids: [32, 33, 34, 35] }
   ];
-  var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+  var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
   var pickerFilter = "start";
   var GATES = {
     1: { is: "Make practice words and look at the numbered card before any address.", isnt: "Do not import these words. Do not send coins here." },
@@ -115,7 +120,11 @@
     28: { is: "Inputs spent together can look like one owner.", isnt: "Mixing does not replace backup. No mixer brand here." },
     29: { is: "A second extra secret opens a real second vault.", isnt: "Not legal or personal-safety advice." },
     30: { is: "One master can mint child phrases. Classic Lab is the full card.", isnt: "A child is not a backup of the parent. Do not fund practice children." },
-    31: { is: "People hold product word shares. Dock the SLIP-39 room.", isnt: "UC7 hex is educational, not Suite." }
+    31: { is: "People hold product word shares. Dock the SLIP-39 room.", isnt: "UC7 hex is educational, not Suite." },
+    32: { is: "Every XOR part is a full 12-word list. You need all of them.", isnt: "Not Shamir 2-of-3. Not SLIP-39. Not the SeedXOR.com calculator." },
+    33: { is: "A practice timer. Heir spend stays locked until it expires. Refresh resets.", isnt: "This tab never signs or broadcasts. Not a live CSV wallet. Not legal counsel." },
+    34: { is: "Back up the policy string with the keys.", isnt: "Words alone can fail for multisig and script paths. Not UC5 export." },
+    35: { is: "English words can still be Electrum’s stretch, not BIP-39.", isnt: "BIP-39 restore is the wrong vault. This tab does not compute Electrum addresses." }
   };
 
   function $(id) { return document.getElementById(id); }
@@ -481,7 +490,11 @@
       28: ["Common input", "Mixing is not custody", "Quiz", "Finish"],
       29: ["Second vault", "Decoy is real", "Quiz", "Finish"],
       30: ["Parent vs child", "Classic BIP-85", "Quiz", "Finish"],
-      31: ["People + threshold", "Dock Suite", "Quiz", "Finish"]
+      31: ["People + threshold", "Dock Suite", "Quiz", "Finish"],
+      32: ["All parts look like seeds", "Need every part", "Quiz", "Finish"],
+      33: ["Arm the timer", "Tick / refresh / heir", "Quiz", "Finish"],
+      34: ["Policy is an object", "Save the descriptor", "Quiz", "Finish"],
+      35: ["Looks like BIP-39", "Wrong restore", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
   }
@@ -518,7 +531,11 @@
       28: ["Heuristics", "Optional mix", "Still need keys"],
       29: ["Two vaults", "Duress copy", "Not advice"],
       30: ["Child mnemonic", "Parent stays", "Lab #cardBip85"],
-      31: ["SLIP-39 words", "Not UC7 hex", "Room dock"]
+      31: ["SLIP-39 words", "Not UC7 hex", "Room dock"],
+      32: ["Full-phrase parts", "N-of-N", "Not Shamir"],
+      33: ["Arm", "Expire", "Refresh"],
+      34: ["Policy string", "With the keys", "Not words only"],
+      35: ["Same English", "BIP-39 restore", "Wrong vault"]
     };
     return c[id] || ["A", "B", "C"];
   }
@@ -545,6 +562,16 @@
     mem.fourWords = null;
     mem.plateKind = "";
     mem.geo = {};
+    mem.xorA = "";
+    mem.xorB = "";
+    mem.xorOrig = "";
+    mem.xorAll = false;
+    mem.tl = { armed: false, ticks: 0, expired: false };
+    mem.tlHeirTried = false;
+    mem.descAck = false;
+    mem.elBip = false;
+    mem.elNote = "";
+    mem.elAddr = "";
     if (id === 6) mem.cosigners = emptyCosigners();
     if (id === 14) {
       mem.entEvents = [];
@@ -600,7 +627,11 @@
       28: [0, 1, 2],
       29: [0, 1, 2],
       30: [0, 1, 2],
-      31: [0, 1, 2]
+      31: [0, 1, 2],
+      32: [0, 1, 2],
+      33: [0, 1, 2],
+      34: [0, 1, 2],
+      35: [0, 1, 2]
     };
     var row = map[id] || [0, 1, 2];
     return row[chipIndex] != null ? row[chipIndex] : 0;
@@ -867,6 +898,34 @@
         atom(2, 1, "assets/uc7-atom-m-pieces.svg", "Threshold people", "<strong>Practice · People</strong><br/>M of N human holders. Combine is recovery."),
         atom(3, 2, "assets/uc7-atom-share-no-sign.svg", "UC7 stays hex; dock the room", "<strong>Review · Dock</strong><br/>Open /slip39.html. This tab does not replace Suite.")
       ]
+    },
+    32: {
+      atoms: [
+        atom(1, 0, "assets/uc7-atom-one-secret.svg", "Each part looks like a full backup", "<strong>Plan · Full lists</strong><br/>SeedXOR-style N-of-N: every part is twelve words."),
+        atom(2, 1, "assets/uc7-atom-m-pieces.svg", "You need every part", "<strong>Practice · All parts</strong><br/>One missing list and the secret does not come back."),
+        atom(3, 2, "assets/uc7-atom-share-no-sign.svg", "Not Shamir, not SLIP-39", "<strong>Review · Different job</strong><br/>UC7 is threshold hex. UC31 is Suite words. This is all-parts.")
+      ]
+    },
+    33: {
+      atoms: [
+        atom(1, 0, "assets/uc8-atom-package.svg", "Arm a dead-man timer", "<strong>Plan · Arm</strong><br/>CSV inactivity is the bitcoin idea. This tab is a classroom timer."),
+        atom(2, 1, "assets/uc8-atom-no-seed.svg", "Heir waits; owner can refresh", "<strong>Practice · Tick</strong><br/>Advance simulated days. Refresh resets. No signature."),
+        atom(3, 2, "assets/uc8-atom-sign-elsewhere.svg", "This tab never signs", "<strong>Review · No signer</strong><br/>Heir spend here is a state label, not a transaction.")
+      ]
+    },
+    34: {
+      atoms: [
+        atom(1, 0, "assets/uc5-atom-viewing-key.svg", "Policy is a string you can lose", "<strong>Plan · Descriptor</strong><br/>wpkh / wsh / sortedmulti. Keys without the script can fail."),
+        atom(2, 1, "assets/uc5-atom-viewing-key.svg", "Save the line with the keys", "<strong>Practice · Backup the policy</strong><br/>Not the same job as exporting a watch-only key."),
+        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Not UC6 three seeds", "<strong>Review · Extra object</strong><br/>Cosigners still need the output script recorded.")
+      ]
+    },
+    35: {
+      atoms: [
+        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Twelve English words", "<strong>Plan · Looks like BIP-39</strong><br/>Electrum can use the same dictionary with a different stretch."),
+        atom(2, 1, "assets/uc1-atom-phrase-ne-address.svg", "BIP-39 restore is the wrong vault", "<strong>Practice · Wrong tool</strong><br/>Checksum-looking words can still not be BIP-39."),
+        atom(3, 2, "assets/uc2-atom-card-object.svg", "This tab does not run Electrum", "<strong>Review · No fake address</strong><br/>We do not invent an Electrum receive string.")
+      ]
     }
   };
 
@@ -1053,7 +1112,7 @@
     if (id === 13) return uc13(step);
     if (id === 14) return uc14(step);
     if (id === 15) return uc15(step);
-    if (id >= 16 && id <= 31) return ucJob(id, step);
+    if (id >= 16 && id <= 35) return ucJob(id, step);
     return "";
   }
 
@@ -1155,6 +1214,26 @@
         { q: "How do the hex shares in the Shamir track differ from SLIP-39 word shares?", opts: [qOk("The hex split is a classroom demo. SLIP-39 word shares are the product people actually hold.", "Correct. They are not the same word list."), qBad("They are the same words.", "Wrong.")] },
         { q: "For people holding shares in real life, what should you use?", opts: [qOk("Word shares that people can write. Open the SLIP-39 room for that tool.", "Correct."), qBad("Email the classroom hex from this track.", "Wrong.")] },
         { q: "Can one share sign a bitcoin payment by itself?", opts: [qOk("No. Combining shares rebuilds one secret. That is recovery, not a second signer.", "Correct."), qBad("Yes, like a cosigner in multisig.", "Wrong. A share is not a cosigner.")] }
+      ],
+      32: [
+        { q: "How many SeedXOR-style parts do you need?", opts: [qOk("All of them. Each part looks like a complete 12-word backup.", "Correct. N-of-N, not 2-of-3."), qBad("Any two of three, like Shamir in UC7.", "Wrong. That is threshold Shamir, not all-parts XOR.")] },
+        { q: "Is this the same as SLIP-39 people shares?", opts: [qOk("No. SLIP-39 is a different word product. This job is full BIP-39-looking lists, all required.", "Correct."), qBad("Yes. Same words as Trezor Suite.", "Wrong.")] },
+        { q: "Does this tab replace the SeedXOR.com calculator?", opts: [qOk("No. Classroom N-of-N only. Do not fund these parts.", "Correct."), qBad("Yes. Export and fund the XOR result.", "Wrong.")] }
+      ],
+      33: [
+        { q: "Can the heir spend before the timer expires?", opts: [qOk("No. The heir path stays locked until simulated time is up.", "Correct."), qBad("Yes. Heir key always spends.", "Wrong. That would not be a dead-man timer.")] },
+        { q: "What does owner refresh do?", opts: [qOk("It resets the timer. The heir path locks again.", "Correct."), qBad("It signs a CSV transaction in this tab.", "Wrong. This tab never signs.")] },
+        { q: "Is this legal inheritance advice?", opts: [qOk("No. Educational timer only. Not a live wallet.", "Correct."), qBad("Yes. Use this instead of a will.", "Wrong.")] }
+      ],
+      34: [
+        { q: "What extra object does a scripted vault need besides keys?", opts: [qOk("The policy string (descriptor): which script, which keys, which paths.", "Correct."), qBad("Only the twelve words. Scripts are optional.", "Wrong. Without the policy, keys can be unspendable.")] },
+        { q: "Is this the same as watch-only export in UC5?", opts: [qOk("No. Watch-only is a viewing key. This job is recording the spend policy.", "Correct."), qBad("Yes. Same button.", "Wrong.")] },
+        { q: "Should you fund the practice descriptor?", opts: [qOk("Do not. Practice string only.", "Correct."), qBad("Yes, a small amount to test.", "Wrong.")] }
+      ],
+      35: [
+        { q: "Twelve English words always mean BIP-39?", opts: [qOk("No. Electrum can use the same dictionary with a different stretch.", "Correct."), qBad("Yes. If they look English, BIP-39 restore is always right.", "Wrong.")] },
+        { q: "If you restore Electrum words with BIP-39 rules, what happens?", opts: [qOk("You open the wrong vault, or empty. Not the Electrum wallet.", "Correct."), qBad("You get the same coins. Dictionaries match so the wallets match.", "Wrong.")] },
+        { q: "Does this tab compute an Electrum address?", opts: [qOk("No. It refuses to invent Electrum’s stretch.", "Correct."), qBad("Yes. It prints a real Electrum tb1.", "Wrong.")] }
       ]
     };
     return m[id] || [];
@@ -1179,6 +1258,10 @@
     if (id === 29) return uc29(step);
     if (id === 30) return uc30(step);
     if (id === 31) return uc31(step);
+    if (id === 32) return uc32(step);
+    if (id === 33) return uc33(step);
+    if (id === 34) return uc34(step);
+    if (id === 35) return uc35(step);
     return "";
   }
 
@@ -1702,6 +1785,162 @@
       "<p class=\"control-help\">The hex split in UC7 stays educational. Combine is recovery, not a second signer.</p>" +
       pauseBtn("The room is the source of truth", false)
     );
+  }
+
+  async function uc32(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>All parts look like seeds</h2>" +
+        doDont(
+          "Make two practice 12-word parts. Each list looks like a complete backup. You will need both.",
+          "Do not treat one list as a Shamir share. Do not fund these parts. This is not the SeedXOR.com calculator."
+        ) +
+        desc(
+          "SeedXOR-style split is N-of-N: every part is a full BIP-39-looking phrase. Lose one list and the original is gone. That is not UC7 (any 2 of 3 hex) and not UC31 (SLIP-39 people shares)."
+        ) +
+        '<button type="button" class="btn" id="v2XorSplit">Make two practice parts</button>' +
+        '<div class="v2-xor-grid">' +
+        '<div><h3>Part A</h3><div id="v2XorA"></div></div>' +
+        '<div><h3>Part B</h3><div id="v2XorB"></div></div>' +
+        "</div>" +
+        pauseBtn("Next: recover needs every part", !(mem.xorA && mem.xorB))
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Need every part</h2>" +
+        doDont(
+          "Try recover with one part, then with every part.",
+          "Do not expect 2-of-3. One missing list fails."
+        ) +
+        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
+        '<button type="button" class="btn secondary" id="v2XorOne">Recover with part A only</button>' +
+        '<button type="button" class="btn" id="v2XorAll">Recover with every part</button>' +
+        "</div>" +
+        '<div id="v2XorNeedAll" class="control-help">' +
+        (mem.xorAll
+          ? "All parts present. Classroom original shown. N-of-N, not Shamir."
+          : "You need every part.") +
+        "</div>" +
+        pauseBtn("N-of-N, not Shamir", !mem.xorAll)
+      );
+    }
+    return null;
+  }
+
+  function uc33(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Arm the timer</h2>" +
+        doDont(
+          "Arm a practice dead-man timer. The heir path stays locked until simulated time expires.",
+          "Do not sign. Do not broadcast. This is not a live CSV wallet and not legal counsel."
+        ) +
+        desc(
+          "On-chain, people use relative timelocks (CSV) so an heir key cannot spend until the owner has been inactive. This tab is a classroom clock: Arm, then later Tick / Refresh / Heir try. No signature is made."
+        ) +
+        '<button type="button" class="btn" id="v2TlArm">Arm practice timer (90-day classroom)</button>' +
+        '<div id="v2TlArmOut" class="control-help">' +
+        (mem.tl && mem.tl.armed ? "Armed. Next pad ticks simulated days." : "Not armed.") +
+        "</div>" +
+        pauseBtn("Next: tick, refresh, heir", !(mem.tl && mem.tl.armed))
+      );
+    }
+    if (step === 1) {
+      var tl = mem.tl || { armed: false, ticks: 0, expired: false };
+      return pad(
+        "<h2>Tick / refresh / heir</h2>" +
+        doDont(
+          "Advance simulated days. Owner refresh resets. Heir try only works after expiry.",
+          "There is no Sign button. A success label is not a transaction."
+        ) +
+        '<p id="v2TlState" class="v2-tl-state">Day ' +
+        tl.ticks * 30 +
+        " / 90 · " +
+        (tl.expired ? "heir path unlocked (practice)" : "heir path locked") +
+        "</p>" +
+        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
+        '<button type="button" class="btn" id="v2TlTick">Advance 30 simulated days</button>' +
+        '<button type="button" class="btn secondary" id="v2TlRefresh">Owner refresh (reset timer)</button>' +
+        '<button type="button" class="btn secondary" id="v2TlHeir">Heir try spend (practice)</button>' +
+        "</div>" +
+        '<div id="v2TlOut" class="control-help">No signer in this tab.</div>' +
+        pauseBtn("Timer is educational only", !(mem.tlHeirTried && mem.tl && mem.tl.expired))
+      );
+    }
+    return null;
+  }
+
+  function uc34(step) {
+    if (step === 0) {
+      return pad(
+        "<h2>Policy is an object</h2>" +
+        doDont(
+          "A scripted vault needs the descriptor: which script and which keys. Record that string with the keys.",
+          "Do not assume the twelve words rebuild every wallet. Multisig and miniscript can fail without the policy."
+        ) +
+        desc(
+          "UC5 exports a viewing key. UC6 makes three full seeds. This job is the output descriptor — the policy line wallets import. Lose it and the keys may not be enough."
+        ) +
+        pauseBtn("Next: save a practice descriptor", false)
+      );
+    }
+    if (step === 1) {
+      var line =
+        mem.descLine ||
+        "wpkh([00000000/84h/1h/0h]tpubD6NzVbNrCqUK1practice00000000000000000000000000000000000000000000000/0/*)#labonly";
+      return pad(
+        "<h2>Save the descriptor</h2>" +
+        doDont(
+          "Copy the practice policy line. Tick that you would store it with the keys.",
+          "Do not fund this string. It is teaching-only."
+        ) +
+        '<code class="v2-preview-big" id="v2DescLine">' +
+        line +
+        "</code>" +
+        '<label class="check"><input type="checkbox" id="v2DescAck"/> I would store this policy string with the keys (practice tick)</label>' +
+        pauseBtn("Policy saved with keys (practice)", !mem.descAck)
+      );
+    }
+    return null;
+  }
+
+  async function uc35(step) {
+    if (step === 0) {
+      await ensurePhrase();
+      return pad(
+        "<h2>Looks like BIP-39</h2>" +
+        doDont(
+          "Look at twelve English words. Electrum can use the same dictionary with a different stretch.",
+          "Do not assume BIP-39 restore is always right because the words look English."
+        ) +
+        '<div id="v2Card">' +
+        wordGridHtml(mem.mnemonic) +
+        "</div>" +
+        pauseBtn("Next: try the wrong restore", !mem.mnemonic)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Wrong restore</h2>" +
+        doDont(
+          "Restore these words as BIP-39 to see a practice tb1. Then mark them as Electrum-style: BIP-39 would be the wrong vault.",
+          "This tab does not run Electrum’s stretch and will not invent an Electrum address."
+        ) +
+        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
+        '<button type="button" class="btn" id="v2ElBip39">Restore as BIP-39</button>' +
+        '<button type="button" class="btn secondary" id="v2ElElectrum">These words were Electrum-style</button>' +
+        "</div>" +
+        '<code class="v2-preview-big" id="v2ElAddr">' +
+        (mem.elAddr || "BIP-39 restore shows a practice address here.") +
+        "</code>" +
+        '<div id="v2ElOut" class="control-help">' +
+        (mem.elNote || "Pick both buttons. Electrum does not get a fake address.") +
+        "</div>" +
+        pauseBtn("BIP-39 restore is the wrong vault", !(mem.elBip && mem.elNote))
+      );
+    }
+    return null;
   }
 
   async function uc1(step) {
@@ -5178,6 +5417,131 @@
         renderTrack();
       });
     }
+    if ($("v2XorSplit")) {
+      $("v2XorSplit").addEventListener("click", async function () {
+        if (!window.BIP39Lab) return;
+        mem.xorOrig = await BIP39Lab.generateMnemonic(12);
+        mem.xorA = await BIP39Lab.generateMnemonic(12);
+        mem.xorB = await BIP39Lab.generateMnemonic(12);
+        if ($("v2XorA")) $("v2XorA").innerHTML = wordGridHtml(mem.xorA);
+        if ($("v2XorB")) $("v2XorB").innerHTML = wordGridHtml(mem.xorB);
+        if (pause) pause.disabled = false;
+      });
+    }
+    if ($("v2XorOne")) {
+      $("v2XorOne").addEventListener("click", function () {
+        var o = $("v2XorNeedAll");
+        if (o) {
+          o.className = "msg-bad";
+          o.textContent = "Not enough parts. N-of-N needs every list. One 12-word part is not Shamir 2-of-3.";
+        }
+      });
+    }
+    if ($("v2XorAll")) {
+      $("v2XorAll").addEventListener("click", function () {
+        mem.xorAll = true;
+        var o = $("v2XorNeedAll");
+        if (o) {
+          o.className = "msg-ok";
+          o.id = "v2XorNeedAll";
+          o.textContent =
+            "All parts present. Classroom original: " +
+            (mem.xorOrig || "(generate parts first)") +
+            " — N-of-N, not Shamir. Do not fund.";
+        }
+        if (pause) pause.disabled = false;
+      });
+    }
+    function paintTl() {
+      var tl = mem.tl || { armed: false, ticks: 0, expired: false };
+      var st = $("v2TlState");
+      if (st) {
+        st.textContent =
+          "Day " +
+          tl.ticks * 30 +
+          " / 90 · " +
+          (tl.expired ? "heir path unlocked (practice)" : "heir path locked");
+      }
+    }
+    if ($("v2TlArm")) {
+      $("v2TlArm").addEventListener("click", function () {
+        mem.tl = { armed: true, ticks: 0, expired: false };
+        mem.tlHeirTried = false;
+        var o = $("v2TlArmOut");
+        if (o) o.textContent = "Armed. Next pad ticks simulated days.";
+        if (pause) pause.disabled = false;
+      });
+    }
+    if ($("v2TlTick")) {
+      $("v2TlTick").addEventListener("click", function () {
+        mem.tl = mem.tl || { armed: true, ticks: 0, expired: false };
+        mem.tl.ticks = Math.min(6, (mem.tl.ticks || 0) + 1);
+        mem.tl.expired = mem.tl.ticks >= 3;
+        paintTl();
+        var o = $("v2TlOut");
+        if (o) o.textContent = mem.tl.expired ? "90 simulated days reached. Heir path may try (practice)." : "Timer advanced. No signature.";
+      });
+    }
+    if ($("v2TlRefresh")) {
+      $("v2TlRefresh").addEventListener("click", function () {
+        mem.tl = { armed: true, ticks: 0, expired: false };
+        mem.tlHeirTried = false;
+        paintTl();
+        var o = $("v2TlOut");
+        if (o) {
+          o.className = "msg-ok";
+          o.textContent = "Owner refreshed. Heir path locked again. No transaction signed.";
+        }
+        if (pause) pause.disabled = true;
+      });
+    }
+    if ($("v2TlHeir")) {
+      $("v2TlHeir").addEventListener("click", function () {
+        var tl = mem.tl || {};
+        var o = $("v2TlOut");
+        if (!tl.expired) {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = "Locked. Heir cannot spend yet. Timer has not expired. No Sign in this tab.";
+          }
+          return;
+        }
+        mem.tlHeirTried = true;
+        if (o) {
+          o.className = "msg-ok";
+          o.textContent = "Practice only: heir path would be allowed after inactivity. This tab did not sign or broadcast.";
+        }
+        if (pause) pause.disabled = false;
+      });
+    }
+    if ($("v2DescAck")) {
+      $("v2DescAck").addEventListener("change", function () {
+        mem.descAck = !!$("v2DescAck").checked;
+        if (pause) pause.disabled = !mem.descAck;
+      });
+    }
+    if ($("v2ElBip39")) {
+      $("v2ElBip39").addEventListener("click", async function () {
+        if (!mem.mnemonic || !window.BIP39Lab) return;
+        var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: 1 });
+        mem.elAddr = (r.rows[0] && r.rows[0].bip84_p2wpkh) || "";
+        mem.elBip = true;
+        if ($("v2ElAddr")) $("v2ElAddr").textContent = mem.elAddr;
+        if (pause && mem.elBip && mem.elNote) pause.disabled = false;
+      });
+    }
+    if ($("v2ElElectrum")) {
+      $("v2ElElectrum").addEventListener("click", function () {
+        mem.elNote =
+          "If these words were Electrum-style, BIP-39 restore is the wrong vault. This tab does not run Electrum’s stretch and will not invent an Electrum address.";
+        var o = $("v2ElOut");
+        if (o) {
+          o.className = "msg-ok";
+          o.textContent = mem.elNote;
+        }
+        if (pause && mem.elBip && mem.elNote) pause.disabled = false;
+      });
+    }
     document.querySelectorAll("[data-plate]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var k = btn.getAttribute("data-plate");
@@ -5463,7 +5827,7 @@
     var dock = loadState().dock;
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 31) pendingUc = n;
+      if (n >= 1 && n <= 35) pendingUc = n;
     } else if (dock && dock.id) {
       var s = loadState();
       delete s.dock;
