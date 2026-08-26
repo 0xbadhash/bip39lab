@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.78-v2)", () => {
+test.describe("V2 use-case tracks (0.17.80-v2)", () => {
   // AC-1: Start here 3 cards; AC-3: chip + About Hard refresh
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.78-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(31);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.78-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.80-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -291,12 +291,14 @@ test.describe("V2 use-case tracks (0.17.78-v2)", () => {
     await expect(page.locator(".v2-cmp-fields #ppB")).toBeVisible();
     await expect(page.locator("#v2CmpTable")).toBeVisible();
     await expect(page.locator("#v2CmpStoryA")).toContainText(/A has no passphrase/i);
+    await expect(page.locator("#v2Cmp")).toHaveCount(0);
     await page.locator("#ppB").fill("test");
     await expect(page.locator("#v2CmpPpB")).toContainText(/4 chars/i);
+    await expect(page.locator("#v2PpEstB")).toHaveClass(/v2-pp-est-weak/);
+    await expect(page.locator("#v2CmpPpB .v2-pp-est-weak")).toBeVisible();
     await page.locator("#ppA").fill("abcdefghijklmnopqrstuvwxyz");
     await expect(page.locator("#v2CmpPpA")).toContainText(/26 chars/);
     await expect(page.locator("#v2CmpAddrA")).toHaveText(/^tb1/, { timeout: 8000 });
-    await page.locator("#v2Cmp").click();
     await expect(page.locator(".v2-verdict")).toContainText(/two wallets/i);
     await expect(page.locator("#v2CmpOut")).not.toContainText(/empty vs empty/i);
     await expect(page.locator("#v2CmpTable")).toBeVisible();
@@ -512,6 +514,13 @@ test.describe("V2 use-case tracks (0.17.78-v2)", () => {
     await expect(page.locator("#v2EntMeta")).toContainText(/256/);
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2EntWc")).toBeVisible();
+    const mintGroup = page.locator(".v2-ent-mint-group");
+    await expect(mintGroup.locator("#v2EntWc")).toBeVisible();
+    await expect(mintGroup.locator("#v2EntMint")).toBeVisible();
+    const wcBox = await page.locator("#v2EntWc").boundingBox();
+    const mintBox = await page.locator("#v2EntMint").boundingBox();
+    expect(wcBox && mintBox).toBeTruthy();
+    expect(mintBox!.x).toBeLessThan(wcBox!.x + wcBox!.width + 96);
     await page.locator("#v2EntMint").click();
     await expect(page.locator("#v2EntWords .ww")).toHaveCount(12);
     await expect(page.locator("#v2EntMintNote")).toContainText(/TOO LOW/i);

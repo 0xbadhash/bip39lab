@@ -1889,9 +1889,8 @@
         ppKeyHtml("v2PpKeyUc3b") +
         "</div>" +
         '<div class="v2-cmp-fields">' +
-        '<label class="field">A · empty extra secret <input id="ppA" type="text" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/></label>' +
-        '<label class="field">B · test secret <input id="ppB" type="text" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/></label>' +
-        '<button type="button" class="btn" id="v2Cmp">Compare A vs B</button>' +
+        '<label class="field">A · empty extra secret <input id="ppA" type="text" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span></label>' +
+        '<label class="field">B · test secret <input id="ppB" type="text" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span></label>' +
         "</div>" +
         '<div id="v2CmpOut" class="v2-cmp-out">' +
         '<div class="v2-cmp-story">' +
@@ -1899,7 +1898,7 @@
         '<p class="v2-cmp-story-line"><strong id="v2CmpStoryB">B = “test”</strong><code id="v2CmpStoryAddrB">…</code></p>' +
         "</div>" +
         '<div id="v2CmpVerdict" class="v2-verdict split">Type in A or B. Addresses follow a moment later.</div>' +
-        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr><tr><td>Passphrase</td><td id="v2CmpPpA">(empty)</td><td id="v2CmpPpB">4 chars · ~6 bits · weak (estimate only)</td></tr><tr><td>Receive #0</td><td><code id="v2CmpAddrA">…</code></td><td><code id="v2CmpAddrB">…</code></td></tr></table>' +
+        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr><tr><td>Passphrase</td><td id="v2CmpPpA"><span class="v2-pp-est v2-pp-est-empty">(empty)</span></td><td id="v2CmpPpB">4 chars · <span class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span></td></tr><tr><td>Receive #0</td><td><code id="v2CmpAddrA">…</code></td><td><code id="v2CmpAddrB">…</code></td></tr></table>' +
         "</div>" +
         "</div>" +
         pauseBtn("Forget B and that vault is gone", true)
@@ -3245,10 +3244,12 @@
     var n = mem.entWordCount || 12;
     return (
       '<div class="row v2-gen-bar v2-ent-mintbar">' +
+      '<div class="v2-ent-mint-group">' +
       wordCountSelectHtml("v2EntWc", n) +
       '<button type="button" class="btn" id="v2EntMint">Build ' +
       n +
       " practice words from this pad</button>" +
+      "</div>" +
       "</div>" +
       entSuffHtml() +
       '<p class="control-help" id="v2EntMintNote">' +
@@ -3494,9 +3495,26 @@
     return "~" + shown + " bits · " + ppTier(est) + " (estimate only)";
   }
 
-  function ppCmpCell(pp) {
-    if (!pp) return "(empty)";
-    return pp.length + " chars · " + ppBitsLabel(pp);
+  function ppEstClass(pp) {
+    if (!pp) return "v2-pp-est-empty";
+    return "v2-pp-est-" + ppTier(estimatePassphraseBits(pp));
+  }
+
+  function paintPpEst(el, pp) {
+    if (!el) return;
+    el.className = "v2-pp-est " + ppEstClass(pp);
+    el.textContent = pp ? ppBitsLabel(pp) : "(empty)";
+  }
+
+  function paintCmpCell(el, pp) {
+    if (!el) return;
+    el.replaceChildren();
+    if (!pp) {
+      paintPpEst(el.appendChild(document.createElement("span")), "");
+      return;
+    }
+    el.appendChild(document.createTextNode(pp.length + " chars · "));
+    paintPpEst(el.appendChild(document.createElement("span")), pp);
   }
 
   function ppCmpStoryLabel(side, pp) {
@@ -3510,13 +3528,15 @@
     if (!aEl && !bEl) return;
     var a = (aEl && aEl.value) || "";
     var b = (bEl && bEl.value) || "";
-    if ($("v2CmpPpA")) $("v2CmpPpA").textContent = ppCmpCell(a);
-    if ($("v2CmpPpB")) $("v2CmpPpB").textContent = ppCmpCell(b);
+    paintCmpCell($("v2CmpPpA"), a);
+    paintCmpCell($("v2CmpPpB"), b);
+    paintPpEst($("v2PpEstA"), a);
+    paintPpEst($("v2PpEstB"), b);
     if ($("v2CmpStoryA")) $("v2CmpStoryA").textContent = ppCmpStoryLabel("A", a);
     if ($("v2CmpStoryB")) $("v2CmpStoryB").textContent = ppCmpStoryLabel("B", b);
   }
 
-  async function paintCmpAddresses(unlock) {
+  async function paintCmpAddresses() {
     if (!$("v2CmpTable") || !mem.mnemonic || !window.BIP39Lab) return;
     var seq = (mem.cmpSeq = (mem.cmpSeq || 0) + 1);
     var a = ($("ppA") && $("ppA").value) || "";
@@ -3548,15 +3568,15 @@
       vEl.textContent = verdict;
     }
     var pause = $("v2Pause");
-    if (unlock && pause && !same) pause.disabled = false;
+    if (pause && !same) pause.disabled = false;
   }
 
-  function scheduleCmpAddresses(unlock) {
+  function scheduleCmpAddresses() {
     paintCmpEstimates();
     if (mem.cmpTimer) clearTimeout(mem.cmpTimer);
     mem.cmpTimer = setTimeout(function () {
-      paintCmpAddresses(!!unlock);
-    }, unlock ? 0 : 120);
+      paintCmpAddresses();
+    }, 120);
   }
 
   function entStackHtml() {
@@ -4623,13 +4643,7 @@
         }
       });
     }
-    var cmp = $("v2Cmp");
-    if (cmp) {
-      scheduleCmpAddresses(false);
-      cmp.addEventListener("click", function () {
-        scheduleCmpAddresses(true);
-      });
-    }
+    if ($("v2CmpTable")) scheduleCmpAddresses();
     var idx = $("v2Idx");
     var idxZero = $("v2IdxZero");
     if (idx) {
@@ -5232,7 +5246,7 @@
     document.addEventListener("input", function (ev) {
       var t = ev.target;
       if (!t || (t.id !== "ppA" && t.id !== "ppB")) return;
-      scheduleCmpAddresses(false);
+      scheduleCmpAddresses();
     });
     document.addEventListener("keyup", function (ev) {
       var t = ev.target;

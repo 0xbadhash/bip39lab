@@ -1,28 +1,28 @@
-# PR Draft: v0.16.52 V2 UC3 live compare
+# PR Draft: v0.16.53 V2 compare polish + mint bar
 
-**Spec:** `.agents/specs/2026-08-26-v2-uc3-live-compare.md`
-**Plan:** `.agents/specs/2026-08-26-v2-uc3-live-compare-plan.md`
+**Spec:** `.agents/specs/2026-08-26-v2-uc3-mintbar.md`
+**Plan:** `.agents/specs/2026-08-26-v2-uc3-mintbar-plan.md`
 
 ## What Problem This Solves
 
-UC3 compare only refreshed after Compare. Typing a passphrase left estimates and receive addresses stale. The key still shared the fields column so A and B did not align.
+Compare required an extra button. Strength estimates were uncolored. Build-from-pad sat on the far right of the word-count row.
 
 ## Why This Change Was Made
 
-Operator asked the passphrase table to be dynamic while typing, then a three-column card: beginner-key, stacked A/B, live story + table.
+Operator asked to drop Compare, color `~N bits · weak`, and put Build next to Word count.
 
 ## User Impact
 
-Chip **v0.17.78-v2**. Compare empty vs a test secret updates as you type. Classic `/` unchanged.
+Chip **v0.17.80-v2**. Live compare with colored tiers. Pad mint button beside the dropdown. Classic `/` cache-bust only.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 live estimates | V2-S3 `#v2CmpPpB` 4 chars, `#v2CmpPpA` 26 chars |
-| AC-2 live addresses | V2-S3 `#v2CmpAddrA` `tb1` |
-| AC-3 three columns | V2-S3 `.v2-cmp-face` + fields |
-| AC-4 chip / classic | V2-S0 |
+| AC-1 no Compare | V2-S3 `#v2Cmp` count 0 |
+| AC-2 colored weak | V2-S3 `#v2PpEstB` class weak |
+| AC-3 mint beside count | V2-S15 bounding box gap |
+| AC-4 chip | V2-S0 |
 
 ## Red-proof
 
@@ -31,9 +31,9 @@ Chip **v0.17.78-v2**. Compare empty vs a test secret updates as you type. Classi
 
 ## Threat notes
 
-- secrets: no mnemonic in sessionStorage; passphrase only in RAM fields
-- xss: story and table use textContent, not innerHTML
-- csrf: none (static offline lab)
+- secrets: no mnemonic in sessionStorage
+- xss: estimate classes from ppTier; labels textContent
+- csrf: none
 
 ## Evidence pack
 
@@ -41,12 +41,12 @@ hard_gates; Playwright e2e/v2.spec.ts; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CRO
 
 ## Things that look bad but are actually fine
 
-1. leftover scripts stash still not this ship
-2. Dual stamp product 0.16.52 vs chip 0.17.78-v2
-3. Compare still required to unlock Next even though the table is live
-4. lab-strip 404 under /v2/js
-5. Photoreal PNGs remain untracked and unshipped
+1. leftover scripts stash
+2. Dual stamp 0.16.53 vs 0.17.80-v2
+3. lab-strip 404
+4. Photoreal atoms remain unshipped
+5. Next unlocks from live derive, not a confirm click
 
 ## Cross-review
 
-Blockers 0. Obsolete Tier A 0 remaining (old innerHTML dump removed).
+Blockers 0. Obsolete Tier A 0 remaining.

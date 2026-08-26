@@ -2,33 +2,32 @@
 
 ## Security Guru
 
-none. Passphrase and addresses painted with `textContent`. Derive stays in-tab via BIP39Lab. sessionStorage unchanged (progress/ack only). CSP `connect-src 'none'`.
+none. Estimate spans use controlled classes. Passphrase not innerHTML.
 
 ## Maintainability Expert
 
-none as blockers. Painters hoisted to module scope; Compare click reuses the same path.
+none as blockers.
 
 ### Obsolete / cleanup (scoped)
 
 | Item | Tier | Confidence | Evidence |
 |------|------|------------|----------|
-| Old click-only innerHTML dump of `#v2CmpOut` | A | 0.9 | Replaced by live table in `v2-app.js`; no remaining `v2CmpOut.innerHTML` assignment in this path |
-| leftover scripts stash | C | 0.4 | Unrelated; not this diff |
+| `#v2Cmp` Compare button | A | 0.95 | Removed from UC3 HTML; e2e asserts count 0 |
 
-Whole-repo cruft: run `/sweep` if wanted.
+Whole-repo cruft: `/sweep` if wanted.
 
 ## Domain Specialist
 
-none as blockers. Empty vs `test` still teaches two vaults. Next still gated on diverged addresses via Compare unlock.
+none. Weak `test` secret still red; pad mint still TOO LOW until enough rolls.
 
 ## Severity counts
 
-blocker=0 major=0 nit=0 obsolete_tier_A=1 (dead innerHTML painter, already removed)
+blocker=0 major=0 nit=0
 
 ## §9
 
 1. Dual stamp
-2. Compare still unlocks pause
-3. Face PNG is classic Catalyxt still, not a new family
+2. Live Next unlock
+3. Mint group wrap on narrow viewports
 
 ✅ CROSS-REVIEW DONE blockers=0 obsolete_tier_A=0 remaining
