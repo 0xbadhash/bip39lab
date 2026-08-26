@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
   var D6_BITS = 2.58;
   var ENT_PAD_MAX = 200;
   var lastEntDelta = 0;
@@ -2266,6 +2266,8 @@
           "Think of a path as a folder inside the backup. Click Change folder to see the next receive address. The numbered card does not change."
         ) +
         '<p class="v2-path-big" id="v2PathLine">m/84\'/1\'/0\'/0/0</p>' +
+        pathPurposeTabsHtml() +
+        pathPlayTableHtml() +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn" id="v2Idx">Change folder</button>' +
         '<button type="button" class="btn secondary" id="v2IdxZero">Back to first folder</button>' +
@@ -2293,6 +2295,8 @@
         ) +
         '<p class="v2-scene">Example: 0.184 BTC arrives on receive #0. You spend 0.181. The leftover 0.003 goes to change #0 — not back to the receive address.</p>' +
         '<p class="v2-path-big" id="v2PathLine">' + p0 + "</p>" +
+        pathPurposeTabsHtml() +
+        pathPlayTableHtml() +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn" id="v2Idx">Change folder</button>' +
         '<button type="button" class="btn secondary" id="v2IdxZero">Back to first folder</button>' +
@@ -4344,6 +4348,84 @@
     );
   }
 
+  function pathPurposeNow() {
+    var p = mem.pathPurpose | 0;
+    return p === 86 || p === 49 || p === 44 ? p : 84;
+  }
+
+  function pathRowField(purpose) {
+    if (purpose === 86) return "bip86_p2tr";
+    if (purpose === 49) return "bip49_p2sh_p2wpkh";
+    if (purpose === 44) return "bip44_p2pkh";
+    return "bip84_p2wpkh";
+  }
+
+  function pathPurposeTabsHtml() {
+    var cur = pathPurposeNow();
+    var items = [
+      [86, "BIP86 · Taproot"],
+      [84, "BIP84 · native"],
+      [49, "BIP49 · nested"],
+      [44, "BIP44 · legacy"]
+    ];
+    var tabs = items
+      .map(function (it) {
+        var on = it[0] === cur;
+        return (
+          '<button type="button" class="seg-tab' +
+          (on ? " active" : "") +
+          '" data-purpose="' +
+          it[0] +
+          '" aria-selected="' +
+          (on ? "true" : "false") +
+          '">' +
+          it[1] +
+          "</button>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="seg-block v2-path-purpose" id="v2PathPurpose">' +
+      '<div class="seg-tabs" role="tablist" aria-label="BIP purpose folder">' +
+      tabs +
+      "</div></div>"
+    );
+  }
+
+  function pathPlayTableHtml() {
+    return (
+      '<table class="compare-table v2-path-play" id="v2PathPlayTable" aria-label="Path levels">' +
+      "<thead><tr><th>Level</th><th>Value now</th><th>What it means</th></tr></thead>" +
+      "<tbody>" +
+      "<tr><th scope=\"row\"><code>m</code></th><td>master</td><td>Root of this practice phrase</td></tr>" +
+      "<tr><th scope=\"row\">purpose'</th><td id=\"v2PathCellPurpose\">84'</td><td id=\"v2PathCellPurposeWhy\">BIP-84 native (bc1q / tb1q)</td></tr>" +
+      "<tr><th scope=\"row\">coin_type'</th><td id=\"v2PathCellCoin\">1'</td><td>1 = testnet paths in this track</td></tr>" +
+      "<tr><th scope=\"row\">account'</th><td id=\"v2PathCellAccount\">0'</td><td>First account slot</td></tr>" +
+      "<tr><th scope=\"row\">change</th><td id=\"v2PathCellChange\">0</td><td id=\"v2PathCellChangeWhy\">0 = receive · 1 = leftover change</td></tr>" +
+      "<tr><th scope=\"row\">index</th><td id=\"v2PathCellIndex\">0</td><td>Which address in this folder</td></tr>" +
+      "</tbody></table>"
+    );
+  }
+
+  function paintPathPlayTable(purpose, change, index) {
+    var why = {
+      86: "BIP-86 Taproot (bc1p / tb1p)",
+      84: "BIP-84 native (bc1q / tb1q)",
+      49: "BIP-49 nested (3… / 2…)",
+      44: "BIP-44 legacy (1… / m or n)"
+    };
+    if ($("v2PathCellPurpose")) $("v2PathCellPurpose").textContent = purpose + "'";
+    if ($("v2PathCellPurposeWhy")) $("v2PathCellPurposeWhy").textContent = why[purpose] || why[84];
+    if ($("v2PathCellCoin")) $("v2PathCellCoin").textContent = "1'";
+    if ($("v2PathCellAccount")) $("v2PathCellAccount").textContent = "0'";
+    if ($("v2PathCellChange")) $("v2PathCellChange").textContent = String(change);
+    if ($("v2PathCellChangeWhy")) {
+      $("v2PathCellChangeWhy").textContent =
+        change === 1 ? "1 = leftover change folder" : "0 = receive folder";
+    }
+    if ($("v2PathCellIndex")) $("v2PathCellIndex").textContent = String(index);
+  }
+
   function pathBipSvgHtml() {
     return (
       '<figure class="v2-path-fig" id="v2PathFig">' +
@@ -5133,8 +5215,11 @@
         idx.setAttribute("data-i", String(i));
         var ch = $("v2Change") ? parseInt($("v2Change").getAttribute("data-change") || "0", 10) : 0;
         if (ch !== 0 && ch !== 1) ch = 0;
-        var path = BIP39Lab.formatPath(84, "test", 0, ch, i);
+        var purpose = pathPurposeNow();
+        var field = pathRowField(purpose);
+        var path = BIP39Lab.formatPath(purpose, "test", 0, ch, i);
         $("v2PathLine").textContent = path;
+        paintPathPlayTable(purpose, ch, i);
         mem.pathTouched = i > 0 || ch === 1;
         idx.textContent =
           i >= 19
@@ -5142,7 +5227,7 @@
             : "Change folder · next address";
         var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: ch });
         var row = r.rows[i] || r.rows[r.rows.length - 1];
-        var a = (row && row.bip84_p2wpkh) || "";
+        var a = (row && row[field]) || "";
         $("v2Tail").textContent =
           (ch ? "Change" : "Receive") + " index " + i + "  ·  " + a;
         var amtEl = $("v2FolderAmt");
@@ -5150,10 +5235,10 @@
         if ($("v2RcPair")) {
           var rRecv = ch === 0 ? r : await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 0 });
           var rChg = ch === 1 ? r : await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 1 });
-          var recvA = ((rRecv.rows[i] || rRecv.rows[rRecv.rows.length - 1]) || {}).bip84_p2wpkh || "";
-          var chgA = ((rChg.rows[i] || rChg.rows[rChg.rows.length - 1]) || {}).bip84_p2wpkh || "";
-          if ($("v2RcPath0")) $("v2RcPath0").textContent = BIP39Lab.formatPath(84, "test", 0, 0, i);
-          if ($("v2RcPath1")) $("v2RcPath1").textContent = BIP39Lab.formatPath(84, "test", 0, 1, i);
+          var recvA = ((rRecv.rows[i] || rRecv.rows[rRecv.rows.length - 1]) || {})[field] || "";
+          var chgA = ((rChg.rows[i] || rChg.rows[rChg.rows.length - 1]) || {})[field] || "";
+          if ($("v2RcPath0")) $("v2RcPath0").textContent = BIP39Lab.formatPath(purpose, "test", 0, 0, i);
+          if ($("v2RcPath1")) $("v2RcPath1").textContent = BIP39Lab.formatPath(purpose, "test", 0, 1, i);
           if ($("v2RcAddr0")) $("v2RcAddr0").textContent = recvA;
           if ($("v2RcAddr1")) $("v2RcAddr1").textContent = chgA;
           if ($("v2RcAmt0")) $("v2RcAmt0").textContent = folderTeachBtc(0, i) + " BTC";
@@ -5171,6 +5256,21 @@
       if (idxZero) {
         idxZero.addEventListener("click", function () {
           applyPathIndex(0).catch(console.error);
+        });
+      }
+      var purposeRoot = $("v2PathPurpose");
+      if (purposeRoot) {
+        purposeRoot.querySelectorAll("[data-purpose]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            mem.pathPurpose = parseInt(btn.getAttribute("data-purpose") || "84", 10) || 84;
+            purposeRoot.querySelectorAll("[data-purpose]").forEach(function (b) {
+              var on = parseInt(b.getAttribute("data-purpose"), 10) === mem.pathPurpose;
+              b.classList.toggle("active", on);
+              b.setAttribute("aria-selected", on ? "true" : "false");
+            });
+            var cur = parseInt(idx.getAttribute("data-i") || "0", 10);
+            applyPathIndex(cur).catch(console.error);
+          });
         });
       }
       var chBtn = $("v2Change");
@@ -5849,7 +5949,7 @@
 
   function hardRefresh() {
     wipeProgressStore();
-    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
     pickerFilter = "start";
     current = { id: 1, step: 0 };
     try {

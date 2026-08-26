@@ -753,6 +753,22 @@ td .v2-pp-est {
   margin: 0.25rem 0 0.15rem;
   height: 6px;
 }
+.v2-path-purpose {
+  margin: 0.35rem 0 0.25rem;
+}
+.v2-path-purpose .seg-tab {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+}
+.v2-path-play {
+  width: 100%;
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.82rem;
+}
+.v2-path-play th,
+.v2-path-play td {
+  padding: 0.2rem 0.4rem;
+}
 .v2-cmp-out {
   min-height: 10rem;
   padding: 0.65rem 0.75rem;

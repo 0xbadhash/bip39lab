@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.91-v2)", () => {
+test.describe("V2 use-case tracks (0.17.92-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.91-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.91-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.92-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -314,6 +314,8 @@ test.describe("V2 use-case tracks (0.17.91-v2)", () => {
     await enterV2(page, "/v2/?uc=4");
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2PathLine")).toContainText("m/84'/1'/0'/0/0");
+    await expect(page.locator("#v2PathPlayTable")).toBeVisible();
+    await expect(page.locator("#v2PathCellPurpose")).toHaveText("84'");
     await expect(page.locator("#v2Pause")).toBeDisabled();
     await expect(page.locator("#v2FolderAmt")).toHaveClass(/v2-amt-chip/);
     await expect(page.locator("#v2FolderAmt")).toHaveText(/0\.184 BTC/);
@@ -321,6 +323,7 @@ test.describe("V2 use-case tracks (0.17.91-v2)", () => {
     const a0 = await page.locator("#v2FolderAmt").textContent();
     await page.locator("#v2Idx").click();
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/1");
+    await expect(page.locator("#v2PathCellIndex")).toHaveText("1");
     await expect(page.locator("#v2Pause")).toBeEnabled();
     const t1 = await page.locator("#v2Tail").textContent();
     expect(t1).not.toEqual(t0);
@@ -809,5 +812,21 @@ test.describe("V2 use-case tracks (0.17.91-v2)", () => {
     await expect(page.locator("#v2PpBarA")).toHaveClass(/pp-tier-(fair|strong)/);
     const now = await page.locator("#v2PpBarA").getAttribute("aria-valuenow");
     expect(Number(now)).toBeGreaterThan(6);
+  });
+
+  test("V2-S30 UC4 live path table + purpose tabs", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=4");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2PathPlayTable")).toBeVisible();
+    await expect(page.locator("#v2PathCellPurpose")).toHaveText("84'");
+    await expect(page.locator("#v2PathCellCoin")).toHaveText("1'");
+    await expect(page.locator("#v2PathCellIndex")).toHaveText("0");
+    await page.locator("#v2Idx").click();
+    await expect(page.locator("#v2PathCellIndex")).toHaveText("1");
+    await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/1");
+    await page.locator('#v2PathPurpose [data-purpose="86"]').click();
+    await expect(page.locator("#v2PathCellPurpose")).toHaveText("86'");
+    await expect(page.locator("#v2PathLine")).toHaveText("m/86'/1'/0'/0/1");
+    await expect(page.locator("#v2PathPurpose [data-purpose]")).toHaveCount(4);
   });
 });

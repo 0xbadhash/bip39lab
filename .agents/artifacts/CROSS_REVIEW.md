@@ -4,4 +4,4 @@ Personas: security, product, QA.
 
 Blockers 0.
 
-Masked fields + teaching bar. Estimate is not a wallet score. No broadcast.
+Live bind is local derive. No broadcast. UC1/UC3 not edited for this leftover.

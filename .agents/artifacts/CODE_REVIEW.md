@@ -2,15 +2,15 @@
 
 - **command:** `/code_review` vs origin/master
 - **base:** origin/master
-- **head:** UC3 masked PP bar
-- **secrets:** password inputs; no sessionStorage passphrase
+- **head:** UC4 path table
+- **secrets:** no new sinks
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-Bars reuse classic tier CSS. No Sign. UC1 untouched in this diff besides chip already on 0.17.90.
+Table is offline path levels. Purpose tabs switch derive field. No Sign.
 
 ## Follow-ups
 
@@ -21,4 +21,4 @@ p0=0 follow_ups=2
 
 ## Smoke
 
-Playwright V2-S0, S3, S29 passed.
+Playwright V2-S0, S10, S30 passed.
