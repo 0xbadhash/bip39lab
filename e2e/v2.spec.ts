@@ -7,7 +7,7 @@ async function enterV2(page: Page, url = "/v2/") {
 }
 
 test.describe("V2 use-case tracks (0.17.88-v2)", () => {
-  // AC-1: Start here 3 cards; AC-3: chip + About Hard refresh
+  // AC-1: Start here 3 cards; AC-6: chip 0.17.88-v2 + classic Generate
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();

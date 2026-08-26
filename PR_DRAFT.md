@@ -24,7 +24,7 @@ Chip **v0.17.88-v2**. Classic `/` cache-bust only.
 | AC-3 quizzes | V2-S2/S14 (data-quiz not position) |
 | AC-4 UC22 | V2-S22 |
 | AC-5 UC4 amounts | V2-S10 |
-| AC-6 chip | V2-S0 |
+| AC-6 chip `0.17.88-v2` and classic Generate | V2-S0 `test_ac_6` |
 
 ## Red-proof
 
