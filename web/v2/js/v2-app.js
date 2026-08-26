@@ -2214,8 +2214,10 @@
         ppKeyHtml("v2PpKeyUc3b") +
         "</div>" +
         '<div class="v2-cmp-fields">' +
-        '<label class="field">A · empty extra secret <input id="ppA" type="text" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span></label>' +
-        '<label class="field">B · test secret <input id="ppB" type="text" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span></label>' +
+        '<label class="field">A · empty extra secret <input id="ppA" type="password" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span>' +
+        '<div class="pp-strength-bar v2-pp-bar"><div id="v2PpBarA" class="pp-strength-bar-fill pp-tier-empty" role="progressbar" aria-valuemin="0" aria-valuemax="128" aria-valuenow="0" style="width:0%"></div></div></label>' +
+        '<label class="field">B · test secret <input id="ppB" type="password" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span>' +
+        '<div class="pp-strength-bar v2-pp-bar"><div id="v2PpBarB" class="pp-strength-bar-fill pp-tier-weak" role="progressbar" aria-valuemin="0" aria-valuemax="128" aria-valuenow="6" style="width:5%"></div></div></label>' +
         "</div>" +
         '<div id="v2CmpOut" class="v2-cmp-out">' +
         '<div class="v2-cmp-story">' +
@@ -3875,6 +3877,18 @@
     el.textContent = pp ? ppBitsLabel(pp) : "(empty)";
   }
 
+  function paintPpBar(id, pp) {
+    var bar = $(id);
+    if (!bar) return;
+    var est = estimatePassphraseBits(pp);
+    var raw = est == null ? "empty" : ppTier(est);
+    var tier = raw === "stronger" ? "strong" : raw;
+    var pct = est == null ? 0 : Math.min(100, Math.round((est / 128) * 100));
+    bar.style.width = pct + "%";
+    bar.setAttribute("aria-valuenow", String(Math.round(est || 0)));
+    bar.className = "pp-strength-bar-fill pp-tier-" + tier;
+  }
+
   function paintCmpCell(el, pp) {
     if (!el) return;
     el.replaceChildren();
@@ -3901,6 +3915,8 @@
     paintCmpCell($("v2CmpPpB"), b);
     paintPpEst($("v2PpEstA"), a);
     paintPpEst($("v2PpEstB"), b);
+    paintPpBar("v2PpBarA", a);
+    paintPpBar("v2PpBarB", b);
     if ($("v2CmpStoryA")) $("v2CmpStoryA").textContent = ppCmpStoryLabel("A", a);
     if ($("v2CmpStoryB")) $("v2CmpStoryB").textContent = ppCmpStoryLabel("B", b);
   }

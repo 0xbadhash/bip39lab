@@ -749,6 +749,10 @@ td .v2-pp-est {
 .v2-pp-est-weak { color: var(--bad); }
 .v2-pp-est-fair { color: var(--warn, #e3b341); }
 .v2-pp-est-stronger { color: var(--ok); }
+.v2-cmp-fields .v2-pp-bar {
+  margin: 0.25rem 0 0.15rem;
+  height: 6px;
+}
 .v2-cmp-out {
   min-height: 10rem;
   padding: 0.65rem 0.75rem;

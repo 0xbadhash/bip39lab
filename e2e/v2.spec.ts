@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.90-v2)", () => {
+test.describe("V2 use-case tracks (0.17.91-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.90-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.90-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.91-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -292,7 +292,9 @@ test.describe("V2 use-case tracks (0.17.90-v2)", () => {
     await expect(page.locator("#v2PpKeyUc3b .v2-pp-key-img")).toBeVisible();
     await expect(page.locator(".v2-cmp-split .v2-cmp-face")).toBeVisible();
     await expect(page.locator(".v2-cmp-fields #ppA")).toBeVisible();
+    await expect(page.locator(".v2-cmp-fields #ppA")).toHaveAttribute("type", "password");
     await expect(page.locator(".v2-cmp-fields #ppB")).toBeVisible();
+    await expect(page.locator(".v2-cmp-fields #ppB")).toHaveAttribute("type", "password");
     await expect(page.locator("#v2CmpTable")).toBeVisible();
     await expect(page.locator("#v2CmpStoryA")).toContainText(/A has no passphrase/i);
     await expect(page.locator("#v2Cmp")).toHaveCount(0);
@@ -792,5 +794,20 @@ test.describe("V2 use-case tracks (0.17.90-v2)", () => {
     expect(legacy).not.toMatch(/^tb1/);
     await page.locator('#v2AddrType [data-addr-type="bip84"]').click();
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(native);
+  });
+
+  test("V2-S29 UC3 masked PP strength bar", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=3");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Generate").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#ppA")).toHaveAttribute("type", "password");
+    await expect(page.locator("#ppB")).toHaveAttribute("type", "password");
+    await expect(page.locator("#v2PpBarA")).toHaveClass(/pp-tier-empty/);
+    await expect(page.locator("#v2PpBarB")).toHaveClass(/pp-tier-weak/);
+    await page.locator("#ppA").fill("abcdefghijklmnopqrstuvwxyz");
+    await expect(page.locator("#v2PpBarA")).toHaveClass(/pp-tier-(fair|strong)/);
+    const now = await page.locator("#v2PpBarA").getAttribute("aria-valuenow");
+    expect(Number(now)).toBeGreaterThan(6);
   });
 });
