@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
-- **v1:** `/` · product stamp `v0.16.55`
-- **v2:** `/v2/` · chip `v0.17.89-v2` (`data-v2-version`; not the classic footer stamp)
+- **v1:** `/` · product stamp `v0.16.56`
+- **v2:** `/v2/` · chip `v0.17.90-v2` · `/v2/VERSION` `0.17.90-v2` (skew closed 2026-08-26)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -159,6 +159,10 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | **19** | First receive (gap) | Sim tBTC + watch + Network dock | Live mempool in-tab |
 | **20–25** | P1 jobs (gap) | Metal, collab, ceremony, loop, geo, calendar | Vendor drivers |
 | **26–31** | P2 jobs (gap) | Node honesty, UTXO, mix, decoy, BIP-85, SLIP-39 dock | Node in-tab; Suite clone |
+| **32** SeedXOR | No dedicated card | All-parts 12-word lists + quiz | XOR of live Lab mnemonic |
+| **33** Timelock FSM | No dedicated card | 90-day classroom timer; no Sign | Live CSV signer (forbidden) |
+| **34** Descriptor policy | `#cardDescriptors` + `#cardDescExplain` | Practice wpkh/wsh + ack | Lab refresh + paste/explain |
+| **35** Electrum-looking | BIP-39 restore only | Wrong-vault teach; no Electrum address | Electrum KDF (forbidden) |
 
 ---
 
@@ -181,6 +185,29 @@ Hard no still: fund practice mainnet; sign/broadcast real PSBT here; paste a rea
 **Spec:** `.agents/specs/2026-08-25-v2-p0-p2-tracks.md`
 
 ---
+
+
+## Leftover ports (v1 has, same UC on v2 lacks)
+
+Do not invent new UCs. Rooms stay SoT.
+
+| UC | v1 still has | v2 same UC lacks |
+|----|--------------|------------------|
+| 1 | Paste mnemonic; full 44/49/84/86 address matrix `#card-addresses` | **Ported** `#v2PasteMn` + `#v2AddrType` 44/49/84/86 |
+| 3 | Masked PP strength bar on `#cardCmpPp` | Strength bar |
+| 4 | Live Lab table bind `#cardPathPlay` | Live bind |
+| 5 / 9 | Full purpose tabs + `#cardDescriptors` refresh from Lab | Full purpose tabs |
+| 6 / 7 | Policy builder; SLIP-39 Suite | Policy builder; Suite (UC31 docks only) |
+| 8 | Paste arbitrary PSBT `#cardPsbt` | Arbitrary paste |
+| 10 | Live Network lookup (`connect-src`) | Live lookup in-tab |
+| 14 | Extra RNG toys (`+10 d6`, send pad to Lab) | Extra RNG toys |
+| 20–25 | — (jobs were gap) | Vendor drivers (leave) |
+| 26–31 | `#cardBip85` full card; SLIP-39 Suite | Node in-tab; Suite clone |
+| 32 | No SeedXOR card (Shamir/SLIP rooms only) | XOR of live Lab mnemonic |
+| 33 | No CSV/timelock card | Live CSV signer (forbidden) |
+| 34 | `#cardDescriptors` + `#cardDescExplain` (Lab refresh + paste/explain) | Lab-phrase descriptor refresh + explain paste |
+| 35 | Restore is BIP-39 only | Electrum KDF (forbidden) |
+| chrome | Theme, Extra help, Classroom, First-hour rail, `#cardOps` | Leave on `/` |
 
 ## Retrieval
 

@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
   var D6_BITS = 2.58;
   var ENT_PAD_MAX = 200;
   var lastEntDelta = 0;
@@ -1960,6 +1960,12 @@
         mnemonicHelpHtml(true) +
         "</div>" +
         "</div>" +
+        '<label class="field mnemonic-raw" for="v2PasteMn"><span class="label-row">Paste practice words</span>' +
+        '<textarea id="v2PasteMn" rows="3" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<div class="row" style="margin-top:0.45rem">' +
+        '<button type="button" class="btn secondary" id="v2PasteApply">Use pasted practice words</button>' +
+        "</div>" +
+        '<p id="v2PasteMsg" class="control-help">Paste a practice BIP-39 phrase only. Do not paste a funded backup.</p>' +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         '<div id="v2AddrWrap" class="v2-hidden"></div>' +
         pauseBtn("I have the numbered card", !mem.mnemonic)
@@ -2012,6 +2018,7 @@
         netSelectHtml() +
         "</div>" +
         "</div>" +
+        addrTypeTabsHtml() +
         '<div id="v2AddrWrap">' +
         (derived ? addrHtml() : '<p class="control-help">Addresses stay hidden until you click Show receive addresses.</p>') +
         "</div>" +
@@ -4421,12 +4428,56 @@
       (next ? '<p class="control-help">Next: ' + next.title + "</p>" : "<p>All listed tracks done.</p>")
     );
   }
+  function addrTypeMeta() {
+    return {
+      bip86: { label: "BIP86 · Taproot", field: "bip86_p2tr", kicker: "BIP86 Taproot (bc1p / tb1p)" },
+      bip84: { label: "BIP84 · native", field: "bip84_p2wpkh", kicker: "BIP84 native (bc1q / tb1q)" },
+      bip49: { label: "BIP49 · nested", field: "bip49_p2sh_p2wpkh", kicker: "BIP49 nested (3… / 2…)" },
+      bip44: { label: "BIP44 · legacy", field: "bip44_p2pkh", kicker: "BIP44 legacy (1… / m or n)" }
+    };
+  }
+
+  function currentAddrType() {
+    var t = mem.addrType || "bip84";
+    return addrTypeMeta()[t] ? t : "bip84";
+  }
+
+  function addrTypeTabsHtml() {
+    var cur = currentAddrType();
+    var meta = addrTypeMeta();
+    var keys = ["bip86", "bip84", "bip49", "bip44"];
+    var tabs = keys
+      .map(function (k) {
+        var on = k === cur;
+        return (
+          '<button type="button" class="seg-tab' +
+          (on ? " active" : "") +
+          '" role="tab" aria-selected="' +
+          (on ? "true" : "false") +
+          '" data-addr-type="' +
+          k +
+          '">' +
+          meta[k].label +
+          "</button>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="seg-block v2-addr-type" id="v2AddrType">' +
+      '<div class="seg-tabs" role="tablist" aria-label="Address type one at a time">' +
+      tabs +
+      "</div></div>"
+    );
+  }
+
   function addrHtml() {
     if (!mem.lastRows || !mem.lastRows.length) {
       return '<p class="control-help">No addresses yet.</p>';
     }
+    var type = currentAddrType();
+    var field = addrTypeMeta()[type].field;
     var cells = mem.lastRows.map(function (r) {
-      var addr = r.bip84_p2wpkh || r.bip86_p2tr || "";
+      var addr = r[field] || "";
       return (
         '<div class="cell">' +
         '<span class="idx nav-step" aria-label="index ' +
@@ -4450,8 +4501,10 @@
       );
     }).join("");
     return (
-      '<p class="v2-addr-kicker" id="v2AddrKicker">Receive addresses from this seed (BIP84 ' +
-      (currentNet() === "main" ? "mainnet · bc1…" : "test · tb1…") +
+      '<p class="v2-addr-kicker" id="v2AddrKicker">Receive addresses from this seed (' +
+      addrTypeMeta()[type].kicker +
+      " · " +
+      (currentNet() === "main" ? "mainnet" : "test") +
       ").</p>" +
       '<div class="v2-addr-grid" id="v2AddrGrid">' +
       cells +
@@ -4610,6 +4663,58 @@
       await deriveNow();
       if (pause) pause.disabled = false;
     });
+    var pasteBtn = $("v2PasteApply");
+    if (pasteBtn) {
+      pasteBtn.addEventListener("click", async function () {
+        var ta = $("v2PasteMn");
+        var msg = $("v2PasteMsg");
+        var raw = ((ta && ta.value) || "").trim().replace(/\s+/g, " ");
+        var words = raw ? raw.split(" ") : [];
+        var n = words.length;
+        var okLen = n === 12 || n === 15 || n === 18 || n === 21 || n === 24;
+        var valid = false;
+        if (okLen && window.BIP39Lab && BIP39Lab.validateMnemonic) {
+          valid = !!(await BIP39Lab.validateMnemonic(raw));
+        }
+        if (!valid) {
+          if (msg) {
+            msg.className = "msg-bad";
+            msg.textContent = "That is not a valid English BIP-39 phrase. Generate practice words instead. Do not paste a funded backup.";
+          }
+          return;
+        }
+        mem.mnemonic = raw;
+        mem.wordCount = n;
+        mem.lastRows = null;
+        mem.cardAck = false;
+        var cardEl = $("v2Card");
+        if (cardEl) cardEl.innerHTML = wordGridHtml(mem.mnemonic);
+        if (msg) {
+          msg.className = "control-help";
+          msg.textContent = "Pasted practice words loaded. Do not import a funded phrase.";
+        }
+        if (pause) pause.disabled = false;
+      });
+    }
+    var typeRoot = $("v2AddrType");
+    if (typeRoot) {
+      typeRoot.querySelectorAll("[data-addr-type]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          mem.addrType = btn.getAttribute("data-addr-type") || "bip84";
+          typeRoot.querySelectorAll("[data-addr-type]").forEach(function (b) {
+            var on = b.getAttribute("data-addr-type") === mem.addrType;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          var wrap = $("v2AddrWrap");
+          if (wrap && mem.lastRows && mem.lastRows.length) {
+            wrap.innerHTML = addrHtml();
+            wrap.classList.remove("v2-hidden");
+            wireCopyQr(wrap);
+          }
+        });
+      });
+    }
     var netSel = $("v2Net");
     if (netSel) {
       netSel.addEventListener("change", async function () {
@@ -5728,7 +5833,7 @@
 
   function hardRefresh() {
     wipeProgressStore();
-    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
     pickerFilter = "start";
     current = { id: 1, step: 0 };
     try {

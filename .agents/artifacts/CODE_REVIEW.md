@@ -2,24 +2,23 @@
 
 - **command:** `/code_review` vs origin/master
 - **base:** origin/master
-- **head:** working tree UC32–35
-- **secrets:** gitleaks clean on committed range after ship commit
+- **head:** working tree UC1 portage
+- **secrets:** no new secret sinks; paste is tab memory
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-Timelock has no Sign. Electrum does not fake KDF. XOR is classroom N-of-N.
+Paste validates BIP-39 before loading. Address tabs only switch already-derived fields. No Sign/Broadcast.
 
 ## Follow-ups
 
 - leftover scripts stash
-- lab-strip 404
-- SeedXOR not byte-XOR of entropy (teaching N-of-N only)
+- lab-strip 404 on /v2/
 
-p0=0 follow_ups=3
+p0=0 follow_ups=2
 
 ## Smoke
 
-Playwright S0 + S23–S26.
+Playwright V2-S0, S1, S27, S28 passed.

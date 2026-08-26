@@ -6,8 +6,8 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.89-v2)", () => {
-  // AC-1 picker 35; classic Generate; chip 0.17.89-v2
+test.describe("V2 use-case tracks (0.17.90-v2)", () => {
+  // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.89-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.89-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.90-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -48,6 +48,8 @@ test.describe("V2 use-case tracks (0.17.89-v2)", () => {
     await expect(page.locator("#gateViz .atom")).toHaveCount(3);
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2Generate")).toBeVisible();
+    await expect(page.locator("#v2PasteMn")).toBeVisible();
+    await expect(page.locator("#v2PasteApply")).toBeVisible();
     await expect(page.locator(".v2-donot .do")).toBeVisible();
     await expect(page.locator(".v2-donot .dont")).toContainText(/Do not import/i);
     await expect(page.locator("#v2OsLock")).toBeVisible();
@@ -75,6 +77,8 @@ test.describe("V2 use-case tracks (0.17.89-v2)", () => {
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/tb1|bc1/);
     await expect(page.locator("#v2AddrGrid [data-copy]")).toHaveCount(5);
     await expect(page.locator("#v2AddrGrid [data-qr]")).toHaveCount(5);
+    await expect(page.locator('#v2AddrType [data-addr-type="bip84"]')).toHaveClass(/active/);
+    await expect(page.locator("#v2AddrType [data-addr-type]")).toHaveCount(4);
   });
 
   test("V2-S2 quiz colors + force exit", async ({ page }) => {
@@ -749,5 +753,44 @@ test.describe("V2 use-case tracks (0.17.89-v2)", () => {
     await page.locator("#v2ElElectrum").click();
     await expect(page.locator("#v2ElOut")).toContainText(/wrong vault/i);
     await expect(page.locator("#v2ElOut")).toContainText(/does not run Electrum/i);
+  });
+
+  test("V2-S27 UC1 paste mnemonic", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=1");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2PasteMn").fill("not a phrase");
+    await page.locator("#v2PasteApply").click();
+    await expect(page.locator("#v2PasteMsg")).toContainText(/not a valid/i);
+    await expect(page.locator("#v2Card .ww").first()).toHaveText("—");
+    await page.locator("#v2PasteMn").fill(
+      "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    );
+    await page.locator("#v2PasteApply").click();
+    await expect(page.locator("#v2Card .ww")).toHaveCount(12);
+    await expect(page.locator("#v2Card .ww").first()).not.toHaveText("—");
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S28 UC1 address type tabs 44/49/84/86", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=1");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Generate").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2CardAck").check();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Derive").click();
+    const native = await page.locator("#v2AddrWrap .addr-text").first().innerText();
+    await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/^tb1q/);
+    await page.locator('#v2AddrType [data-addr-type="bip86"]').click();
+    await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(/^tb1p/);
+    await page.locator('#v2AddrType [data-addr-type="bip49"]').click();
+    const nested = await page.locator("#v2AddrWrap .addr-text").first().innerText();
+    expect(nested).not.toBe(native);
+    await page.locator('#v2AddrType [data-addr-type="bip44"]').click();
+    const legacy = await page.locator("#v2AddrWrap .addr-text").first().innerText();
+    expect(legacy).not.toBe(native);
+    expect(legacy).not.toMatch(/^tb1/);
+    await page.locator('#v2AddrType [data-addr-type="bip84"]').click();
+    await expect(page.locator("#v2AddrWrap .addr-text").first()).toHaveText(native);
   });
 });

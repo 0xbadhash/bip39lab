@@ -1624,6 +1624,17 @@ ol.word-grid.v2-stamp-plate {
   background: var(--warn-soft);
   color: var(--warn);
 }
+.v2-addr-type {
+  margin: 0.25rem 0 0.15rem;
+}
+.v2-addr-type .seg-tabs {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.v2-addr-type .seg-tab {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+}
 .v2-addr-kicker {
   margin: 0.5rem 0 0.35rem;
   padding: 0.35rem 0.55rem;
