@@ -1,15 +1,17 @@
-# Behavior contract — v0.16.53
+# Behavior contract — v0.16.54
 
 - **Product:** bip39lab
-- **Target:** `/v2/?uc=3` and `/v2/?uc=14`
+- **Target:** `/v2/` tracks
 
 ## User tasks
 
-1. Compare card has no Compare button; typing updates estimates with color.
-2. Pad card: Build sits next to Word count, not far right.
-3. Classic generate still on `/`.
+1. UC3 compare updates without Compare; mint beside word count.
+2. UC20 plate shows full word then four-letter stamp.
+3. UC22 firmware cards then notes-file vault stays hot.
+4. UC4 folder amount chip moves with address; receive ≠ change amounts.
 
 ## Must not
 
 - Persist mnemonic
-- Fund practice words
+- Present teaching amounts as chain lookups
+- Import laptop seed as cold

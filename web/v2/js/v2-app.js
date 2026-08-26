@@ -106,7 +106,7 @@
     19: { is: "A practice receive, then a second watch view.", isnt: "Do not fund this practice phrase on mainnet." },
     20: { is: "Practice choosing a fire- and flood-resistant object for a funded seed.", isnt: "A shop, a product review site, or permission to photograph any plate." },
     21: { is: "You hold two keys. A partner or service holds one.", isnt: "Not the same threat model as three friends DIY." },
-    22: { is: "Check firmware before a seed is born. Words stay on the device.", isnt: "Do not type the seed into the laptop. USB is not an air-gap." },
+    22: { is: "Check firmware before a seed is born. A seed that lived on a laptop stays a hot wallet.", isnt: "Do not import a laptop phrase into hardware and call it cold." },
     23: { is: "Build online, sign offline, broadcast from hot.", isnt: "This tab never signs." },
     24: { is: "Home, elsewhere, a person — three sites.", isnt: "Do not put two keys in one building." },
     25: { is: "Schedule restore and inheritance drills this year.", isnt: "A document you never run is a hope." },
@@ -472,7 +472,7 @@
       19: ["Receive address", "Watch + credit", "Quiz", "Finish"],
       20: ["Paper fails", "Metals compared", "4 letters are enough", "Solid plate rules", "Quiz", "Finish"],
       21: ["You hold two", "Name freeze vs steal", "Quiz", "Finish"],
-      22: ["Check firmware", "Keep seed off laptop", "Quiz", "Finish"],
+      22: ["Check firmware", "Laptop seed stays hot", "Quiz", "Finish"],
       23: ["Four steps", "Tap the loop", "Quiz", "Finish"],
       24: ["Three sites", "Place three keys", "Quiz", "Finish"],
       25: ["Plans go stale", "Schedule drills", "Quiz", "Finish"],
@@ -509,7 +509,7 @@
       19: ["Test address", "Second view", "Unknown is not zero"],
       20: ["Paper fails", "Aluminium bad · stainless good", "Plate is still secret"],
       21: ["You hold 2", "Service can freeze", "Not DIY same threat"],
-      22: ["Firmware", "PIN vs PP", "Seed off computer"],
+      22: ["Firmware", "Notes-file vault", "New seed on device"],
       23: ["Build PSBT", "Offline sign", "Broadcast elsewhere"],
       24: ["Home", "Elsewhere", "Not one building"],
       25: ["Calendar", "UC16 restore", "UC18 open-alive"],
@@ -801,8 +801,8 @@
     22: {
       atoms: [
         atom(1, 0, "assets/uc12-atom-hardware.svg", "Check firmware before a seed", "<strong>Plan · Unbox</strong><br/>Supply chain and firmware are the ceremony, not a USB driver in this tab."),
-        atom(2, 1, "assets/uc12-atom-usb-not-airgap.svg", "USB is not air-gap", "<strong>Practice · Cable</strong><br/>PIN is not a passphrase. The seed stays on the device."),
-        atom(3, 2, "assets/uc12-atom-hot-phone.svg", "Typing the seed into a laptop kills the vault", "<strong>Review · Off computer</strong><br/>UC12 already showed the drain. This track is the setup job.")
+        atom(2, 1, "assets/uc12-atom-usb-not-airgap.svg", "Laptop seed stays hot", "<strong>Practice · Same words</strong><br/>Words that lived on a computer stay a software vault. Hardware does not un-steal them."),
+        atom(3, 2, "assets/uc12-atom-hot-phone.svg", "New seed on the device", "<strong>Review · Separate vaults</strong><br/>Savings get a seed born on hardware. The laptop phrase stays hot.")
       ]
     },
     23: {
@@ -1060,87 +1060,101 @@
   function qOk(t, why) { return { k: "ok", t: t, okwhy: why || "Correct." }; }
   function qBad(t, why) { return { k: "bad", t: t, why: why || "Wrong." }; }
 
+  function shuffleQuizOpts(opts) {
+    var a = (opts || []).slice();
+    var i;
+    var j;
+    var t;
+    for (i = a.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
+    return a;
+  }
+
   function jobQuizzes(id) {
     var m = {
       16: [
-        { q: "A restore drill proves what?", opts: [qOk("The paper words rebuild the same address.", "The backup object works."), qBad("You photographed the screen.", "A photo is not the card.")] },
-        { q: "If checksum fails?", opts: [qOk("A word is wrong or out of order.", "Fix the paper copy."), qBad("Fund it anyway.", "Never.")] },
-        { q: "Practice phrase?", opts: [qOk("Do not fund it.", "Restore drill is practice."), qBad("Send mainnet coins to test restore.", "Hard no.")] }
+        { q: "What does a restore drill prove?", opts: [qOk("The words on paper rebuild the same receive address.", "Correct. The backup object works."), qBad("You photographed the screen, so you are safe.", "Wrong. A photo is not the numbered card.")] },
+        { q: "If the checksum check fails, what is true?", opts: [qOk("A word is wrong, misspelled, or out of order. Fix the paper copy.", "Correct."), qBad("Send coins anyway to test it.", "Wrong. Never fund a broken practice restore.")] },
+        { q: "This restore phrase is for practice. What should you do with real money?", opts: [qOk("Do not send real coins to it.", "Correct. The drill is practice only."), qBad("Send a little real bitcoin to prove restore works.", "Wrong. Never fund a practice phrase.")] }
       ],
       17: [
-        { q: "Coffee-size stack?", opts: [qOk("Hot phone (or similar).", "2-of-3 is overkill."), qBad("2-of-3 for 0.001.", "Trap.")] },
-        { q: "Large stack?", opts: [qOk("2-of-3 or collab.", "Not a login."), qBad("All on one exchange.", "They-hold.")] },
-        { q: "All three amounts on the phone?", opts: [qOk("Trap. Amount-tiered means different objects.", "Yes."), qBad("Fine if the brand is cold.", "Brand is not the split.")] }
+        { q: "For a coffee-size amount, what object fits?", opts: [qOk("A hot phone wallet (or similar) is enough.", "Correct. A three-person vault is overkill for coffee money."), qBad("Set up a 2-of-3 vault for a tiny amount.", "Wrong. That is more ceremony than the amount needs.")] },
+        { q: "For a large amount, what object fits?", opts: [qOk("A 2-of-3 setup among people you named — not a company login.", "Correct."), qBad("Keep all of it on one exchange account.", "Wrong. Then the company holds the keys.")] },
+        { q: "Should daily, mid, and large amounts all live on the same phone?", opts: [qOk("No. Different amounts should live on different objects.", "Correct. Brand on a box does not make a phone cold."), qBad("Yes, if the app’s box said hardware.", "Wrong. Keys on a phone are hot.")] }
       ],
       18: [
-        { q: "Seed in WhatsApp?", opts: [qOk("Fail. Sealed packet or key holders, not chat.", "Yes."), qBad("Fine if the group is family.", "Chat is not a vault.")] },
-        { q: "Open while alive?", opts: [qOk("Rehearse recovery now.", "Dry-run."), qBad("Wait until after death.", "Then you cannot debug.")] },
-        { q: "This track is legal counsel?", opts: [qOk("No. Objects only.", "Not a will."), qBad("Yes, follow it in court.", "Hard no.")] }
+        { q: "Should you send the recovery words in a family chat?", opts: [qOk("No. Chat is not a vault. Use a sealed packet or named key holders.", "Correct."), qBad("Yes, if the group is only family.", "Wrong. Chat apps are not a backup.")] },
+        { q: "When should you practise opening the backup?", opts: [qOk("While you are alive, so you can still fix mistakes.", "Correct. A dry run now beats a first try after death."), qBad("Wait until after death so heirs can figure it out.", "Wrong. Then nobody can ask you what went wrong.")] },
+        { q: "Is this track legal advice for a will?", opts: [qOk("No. It only names objects and holders. It is not a lawyer.", "Correct."), qBad("Yes. A court should follow these screens.", "Wrong. This is a teaching lab, not legal counsel.")] }
       ],
       19: [
-        { q: "Fund the practice mainnet phrase?", opts: [qOk("Never.", "Hard no."), qBad("Yes, small amount.", "No.")] },
-        { q: "Simulated 0.000184?", opts: [qOk("Teaching credit. Unknown ≠ 0 on a real lookup.", "Yes."), qBad("Proof the coins exist on-chain.", "This tab is offline.")] },
-        { q: "Second view?", opts: [qOk("Watch-only same address.", "UC5 job."), qBad("Paste the seed into a phone app.", "That is a hot wallet.")] }
+        { q: "Should you send real bitcoin to this practice address?", opts: [qOk("Never. This phrase is for teaching only.", "Correct."), qBad("Yes, a small amount is fine to test.", "Wrong. Do not fund a practice phrase.")] },
+        { q: "The simulated 0.000184 coins on this tab mean:", opts: [qOk("A teaching credit. A failed real lookup should say unknown, not zero.", "Correct. This tab is offline."), qBad("Proof those coins exist on the real bitcoin network.", "Wrong. This tab does not look up the chain unless you opt in on Network.")] },
+        { q: "What is the second view of the same receive address?", opts: [qOk("A watch-only list that sees the address, not the secret words.", "Correct."), qBad("Paste the recovery words into a phone app.", "Wrong. That makes a hot wallet, not a second view.")] }
       ],
       20: [
-        { q: "Funded seed backup?", opts: [qOk("Metal survives fire/flood better than paper.", "Yes."), qBad("A screenshot of steel is enough.", "No photo.")] },
-        { q: "Photograph the plate?", opts: [qOk("Do not.", "Steel is still secret."), qBad("Cloud backup of the photo.", "No.")] },
-        { q: "UC2 already covered photos?", opts: [qOk("This track is the object: paper vs steel.", "Yes."), qBad("Same as UC2.", "Separate job.")] }
+        { q: "For a funded seed, which backup survives fire and flood better?", opts: [qOk("A metal plate, not paper.", "Correct. Paper burns and rots."), qBad("A screenshot of the steel plate in the cloud.", "Wrong. A photo of steel is still a leak.")] },
+        { q: "Should you photograph a stamped metal plate?", opts: [qOk("No. The plate is still a secret.", "Correct."), qBad("Yes. Upload the photo as a cloud backup.", "Wrong. Metal does not make a photo safe.")] },
+        { q: "Is this the same lesson as the paper-backup track?", opts: [qOk("No. That track was how to copy. This track is paper versus metal as an object.", "Correct."), qBad("Yes. It is the same job twice.", "Wrong. This job is which object survives fire.")] }
       ],
       21: [
-        { q: "You hold 2, service holds 1.", opts: [qOk("Service can often freeze; should not spend alone.", "Yes."), qBad("Service can steal anytime.", "They lack your two keys.")] },
-        { q: "Same as DIY 2-of-3?", opts: [qOk("No. Product vs three people you named.", "Different threat."), qBad("Identical.", "No.")] },
-        { q: "Keys?", opts: [qOk("Whole seeds / devices, not Shamir pieces.", "UC6."), qBad("Word shares of one mnemonic.", "That's Shamir.")] }
+        { q: "You hold two keys and a company holds one. What can the company usually do?", opts: [qOk("It can often freeze a spend. It should not be able to steal alone.", "Correct. It lacks your two keys."), qBad("It can steal your coins whenever it wants.", "Wrong. It does not have two keys.")] },
+        { q: "Is this the same as three friends each holding a key?", opts: [qOk("No. One is a product relationship. The other is three people you named.", "Correct. The threats differ."), qBad("Yes. Identical in every way.", "Wrong.")] },
+        { q: "What are the keys in this setup?", opts: [qOk("Whole seeds or devices — not scraps of one phrase.", "Correct."), qBad("Word pieces of one recovery phrase.", "Wrong. Those would be Shamir shares, not cosigners.")] }
       ],
       22: [
-        { q: "First job on a new device?", opts: [qOk("Firmware / supply chain before a seed.", "Ceremony."), qBad("Type the seed into the laptop to test.", "Kills the vault.")] },
-        { q: "USB cable?", opts: [qOk("Not an air-gap by itself.", "UC12."), qBad("Air-gap guaranteed.", "No.")] },
-        { q: "PIN vs passphrase?", opts: [qOk("PIN unlocks the device; PP is another vault.", "Different objects."), qBad("Same thing.", "No.")] }
+        { q: "On a new hardware device, what comes first?", opts: [qOk("Prove it is genuine: seals, official app or published firmware hash on the device screen — then create the seed on the device.", "Correct. Do this before any coins."), qBad("Type the recovery words into the laptop to test the device.", "Wrong. Typing the seed into a computer kills the vault.")] },
+        { q: "The recovery words were already on a laptop. Should you import them into a hardware wallet?", opts: [qOk("No. That vault stays a hot / software wallet. You do not know whether the laptop leaked the words.", "Correct. Hardware does not un-steal a laptop seed."), qBad("Yes. Putting the same words on hardware makes them cold.", "Wrong. Same secret, still compromised if the computer had it.")] },
+        { q: "Where should a savings seed be born?", opts: [qOk("On the hardware device, after you proved firmware. Never copied from a laptop.", "Correct. A new seed is a new vault."), qBad("On the laptop first, then copied onto the device so you have a backup.", "Wrong. Then the device is holding a hot secret.")] }
       ],
       23: [
-        { q: "This tab signs?", opts: [qOk("Never. Inspect / story only.", "UC8 stays inspect-only."), qBad("Sign the sample PSBT here.", "No.")] },
-        { q: "Order?", opts: [qOk("Build → hand-off → sign offline → broadcast elsewhere.", "Four steps."), qBad("Broadcast then sign.", "No.")] },
-        { q: "Fake QR?", opts: [qOk("Teaching hand-off. Not a real signed tx.", "Yes."), qBad("Broadcast it on mainnet.", "Hard no.")] }
+        { q: "Does this tab sign a payment?", opts: [qOk("Never. It only lets you look at a sample package.", "Correct."), qBad("Yes. Sign the sample here.", "Wrong. This tab never signs.")] },
+        { q: "What is the safe order?", opts: [qOk("Build the payment, move it by hand, sign on an offline device, then send it from a hot machine.", "Correct. Four steps."), qBad("Send it to the network first, then sign.", "Wrong.")] },
+        { q: "What is the fake QR on this track?", opts: [qOk("A teaching picture of a hand-off. It is not a real signed payment.", "Correct."), qBad("A real payment you should broadcast on mainnet.", "Wrong. Never broadcast teaching samples.")] }
       ],
       24: [
-        { q: "Two keys in one house?", opts: [qOk("Cluster. Fire/theft takes M.", "Yes."), qBad("Convenient is fine.", "Ops fail.")] },
-        { q: "This is M-of-N math?", opts: [qOk("No. Geography of objects.", "Yes."), qBad("New threshold math.", "No.")] },
-        { q: "Third site?", opts: [qOk("Person or institution, not the same building.", "Yes."), qBad("The garage counts as elsewhere.", "Same building.")] }
+        { q: "If two keys live in the same house, what is the risk?", opts: [qOk("Fire or theft can take enough keys to spend or freeze you out.", "Correct. That is a cluster."), qBad("It is fine because it is convenient.", "Wrong. Convenience is not the lesson.")] },
+        { q: "Is this track teaching new signature math?", opts: [qOk("No. It is about where the objects live geographically.", "Correct."), qBad("Yes. It invents a new threshold formula.", "Wrong.")] },
+        { q: "What counts as a third place for a key?", opts: [qOk("Another person or institution — not the same building.", "Correct."), qBad("The garage of the same house.", "Wrong. That is still one building.")] }
       ],
       25: [
-        { q: "Stale plan?", opts: [qOk("Schedule UC16 and UC18.", "Maintenance."), qBad("Write once, never run.", "Hope.")] },
-        { q: "Heirs should first try after death?", opts: [qOk("No. Open while alive.", "UC18."), qBad("Yes.", "Too late to debug.")] },
-        { q: "Restore from a screenshot?", opts: [qOk("That fails UC16.", "Paper/metal."), qBad("Fine yearly.", "No.")] }
+        { q: "A backup plan you never practise becomes:", opts: [qOk("Stale. Schedule a restore drill and an open-while-alive rehearsal.", "Correct."), qBad("Fine. Write it once and never run it.", "Wrong. Hope is not a rehearsal.")] },
+        { q: "Should heirs first try the backup after you cannot help?", opts: [qOk("No. Practise opening it while you are alive.", "Correct."), qBad("Yes. That is when it matters.", "Wrong. Then you cannot debug it.")] },
+        { q: "Is a screenshot a yearly restore?", opts: [qOk("No. Restore from paper or metal, not a photo.", "Correct."), qBad("Yes. A screenshot is a yearly backup.", "Wrong.")] }
       ],
       26: [
-        { q: "Does /v2/ run bitcoind?", opts: [qOk("No. connect-src none.", "Yes."), qBad("Yes, in WASM.", "No.")] },
-        { q: "Explorer balance 0?", opts: [qOk("Unknown if the lookup failed.", "Honesty."), qBad("Definitely broke.", "No.")] },
-        { q: "Where to look up?", opts: [qOk("Opt-in Network room, address-only.", "Dock."), qBad("Paste seed into an explorer.", "No.")] }
+        { q: "Does this tracks tab run your own bitcoin node?", opts: [qOk("No. This tab stays offline. It does not run a node.", "Correct."), qBad("Yes. A full node runs inside this browser.", "Wrong.")] },
+        { q: "If a public explorer shows 0, what is honest?", opts: [qOk("The lookup may have failed. Unknown is not the same as zero.", "Correct."), qBad("The wallet is definitely empty.", "Wrong. A failed lookup is unknown.")] },
+        { q: "Where should you look up a balance if you opt in?", opts: [qOk("The Network room, using the address only — never the recovery words.", "Correct."), qBad("Paste the twelve words into an explorer.", "Wrong. Never send the seed to a website.")] }
       ],
       27: [
-        { q: "A wallet total is?", opts: [qOk("A sum of UTXOs (pieces).", "Yes."), qBad("One coin.", "No.")] },
-        { q: "Change path?", opts: [qOk("…/1/n folder. Words stay.", "UC4."), qBad("New mnemonic for change.", "No.")] },
-        { q: "Mix all inputs always?", opts: [qOk("Links history. Coin control is a choice.", "Yes."), qBad("Always mix.", "Leaks.")] }
+        { q: "What is a wallet balance made of?", opts: [qOk("A sum of leftover pieces (coins) from earlier payments.", "Correct. Not one giant coin."), qBad("One single coin that never splits.", "Wrong.")] },
+        { q: "What is the change folder?", opts: [qOk("Another folder under the same words. The recovery phrase does not change.", "Correct."), qBad("A brand-new recovery phrase for change.", "Wrong.")] },
+        { q: "Should you always mix every leftover piece into one spend?", opts: [qOk("No. Spending pieces together can link their history. Mixing is a choice.", "Correct."), qBad("Yes. Always dump every piece into one payment.", "Wrong. That can leak history.")] }
       ],
       28: [
-        { q: "CoinJoin replaces backup?", opts: [qOk("No. Mixing is not custody.", "Yes."), qBad("Yes.", "No.")] },
-        { q: "Brand in this track?", opts: [qOk("None. Heuristic only.", "Agnostic."), qBad("Use this named mixer.", "No.")] },
-        { q: "Common-input?", opts: [qOk("Inputs spent together look like one owner.", "Yes."), qBad("Addresses cannot be linked that way.", "Heuristic exists.")] }
+        { q: "Does mixing coins replace a backup?", opts: [qOk("No. Mixing is extra privacy. It is not custody.", "Correct."), qBad("Yes. Mixing is a backup.", "Wrong.")] },
+        { q: "Does this track name a mixer brand you must use?", opts: [qOk("No. It only explains the idea.", "Correct."), qBad("Yes. Use the named mixer on the card.", "Wrong. This lab is brand-agnostic.")] },
+        { q: "If several inputs are spent together, what can an observer guess?", opts: [qOk("They often look like they belong to one owner.", "Correct."), qBad("Addresses can never be linked that way.", "Wrong. That guess exists.")] }
       ],
       29: [
-        { q: "Decoy passphrase?", opts: [qOk("Opens a real second vault.", "Yes."), qBad("A fake empty wallet is enough.", "Obvious.")] },
-        { q: "Legal / safety advice?", opts: [qOk("No. Teaching objects only.", "Copy bar."), qBad("Follow this under duress.", "Hard no.")] },
-        { q: "Forgotten decoy PP?", opts: [qOk("That vault is gone, same as UC3.", "Yes."), qBad("Lab can reset it.", "No.")] }
+        { q: "What does a second (decoy) passphrase open?", opts: [qOk("A real second vault with its own coins.", "Correct. It is not an empty fake screen."), qBad("A fake empty wallet that fools everyone.", "Wrong. An empty decoy is often obvious.")] },
+        { q: "Is this track personal-safety or legal advice?", opts: [qOk("No. It only teaches that a second extra secret is a second vault.", "Correct."), qBad("Yes. Follow it if someone threatens you.", "Wrong. This is not safety counsel.")] },
+        { q: "If you forget the decoy extra secret, what happens?", opts: [qOk("That second vault is gone. Same as forgetting any passphrase.", "Correct. The lab cannot reset it."), qBad("This website can reset it for you.", "Wrong. There is no reset desk.")] }
       ],
       30: [
-        { q: "BIP-85 child?", opts: [qOk("Derived mnemonic. Parent loss loses children.", "Yes."), qBad("Independent backup of the parent.", "No.")] },
-        { q: "SoT?", opts: [qOk("Classic #cardBip85.", "Yes."), qBad("This V2 track replaces Lab.", "No.")] },
-        { q: "Fund practice children?", opts: [qOk("Do not.", "Practice."), qBad("Yes, tiny amount.", "No.")] }
+        { q: "What is a child phrase made from a master?", opts: [qOk("A derived phrase. If the parent is lost, the children are lost too.", "Correct. A child is not a backup of the parent."), qBad("An independent backup of the parent phrase.", "Wrong.")] },
+        { q: "Where is the full child-phrase tool?", opts: [qOk("On classic Lab, not as a replacement for this teaching track.", "Correct."), qBad("This V2 track replaces classic Lab.", "Wrong. Rooms stay the full instruments.")] },
+        { q: "Should you fund practice child phrases?", opts: [qOk("Do not. They are practice.", "Correct."), qBad("Yes, send a tiny amount.", "Wrong.")] }
       ],
       31: [
-        { q: "UC7 hex vs SLIP-39?", opts: [qOk("UC7 is educational GF(256). Suite is the product.", "Yes."), qBad("Same words.", "No.")] },
-        { q: "Operational inheritance?", opts: [qOk("People hold SLIP-39 shares. Dock the room.", "Yes."), qBad("Email the hex.", "No.")] },
-        { q: "A share signs bitcoin?", opts: [qOk("No. Combine is recovery, not a cosign.", "UC7."), qBad("Yes, like multisig.", "No.")] }
+        { q: "How do the hex shares in the Shamir track differ from SLIP-39 word shares?", opts: [qOk("The hex split is a classroom demo. SLIP-39 word shares are the product people actually hold.", "Correct. They are not the same word list."), qBad("They are the same words.", "Wrong.")] },
+        { q: "For people holding shares in real life, what should you use?", opts: [qOk("Word shares that people can write. Open the SLIP-39 room for that tool.", "Correct."), qBad("Email the classroom hex from this track.", "Wrong.")] },
+        { q: "Can one share sign a bitcoin payment by itself?", opts: [qOk("No. Combining shares rebuilds one secret. That is recovery, not a second signer.", "Correct."), qBad("Yes, like a cosigner in multisig.", "Wrong. A share is not a cosigner.")] }
       ]
     };
     return m[id] || [];
@@ -1354,27 +1368,20 @@
       var full12 = mem.fourWords;
       var w0 = full12[0] || "";
       var s0 = stamp4(w0);
-      var cells = full12
+      var plate = full12
         .map(function (w, i) {
           var stamp = stamp4(w);
           return (
-            '<li><span class="v2-stamp-n">' +
+            '<li class="v2-stamp-cell">' +
+            '<span class="v2-stamp-n">' +
             (i + 1) +
-            '</span><span class="v2-stamp-full">' +
+            "</span>" +
+            '<span class="v2-stamp-full">' +
             w +
-            '</span><span class="v2-stamp-cut" aria-hidden="true">→</span><span class="v2-stamp-4">' +
+            "</span>" +
+            '<span class="v2-stamp-cut" aria-hidden="true">→</span>' +
+            '<span class="v2-stamp-4">' +
             stamp +
-            "</span></li>"
-          );
-        })
-        .join("");
-      var plate = full12
-        .map(function (w, i) {
-          return (
-            '<li><span class="idx">' +
-            (i + 1) +
-            '</span><span class="ww">' +
-            stamp4(w) +
             "</span></li>"
           );
         })
@@ -1388,17 +1395,14 @@
         desc(
           "The English list has 2048 words. No two share the same first four letters. If a word is only three letters (zoo), you stamp those three."
         ) +
-        '<p class="control-help">Practice phrase (not a funded seed). Twelve words from a random generate. Same twelve, two views:</p>' +
+        '<p class="control-help">Practice phrase (not a funded seed). Each cell shows the full word, then the four letters you would punch on a plate.</p>' +
         '<div class="row v2-gen-bar"><div class="v2-gen-left">' +
         '<button type="button" class="btn secondary" id="v2FourRand">Make another practice phrase</button>' +
         "</div></div>" +
         '<div class="v2-stamp-wrap">' +
-        '<figure class="v2-stamp-fig"><figcaption>What you would stamp</figcaption><ol class="word-grid v2-stamp-plate">' +
+        '<figure class="v2-stamp-fig"><figcaption>What you would stamp</figcaption><ol class="word-grid v2-stamp-plate" id="v2StampPlate">' +
         plate +
-        "</ol></figure>" +
-        '<ol class="v2-stamp-map">' +
-        cells +
-        "</ol></div>" +
+        "</ol></figure></div>" +
         '<p class="control-help">Word 1 is <strong>' +
         w0 +
         "</strong>, so cell 1 is <strong>" +
@@ -1438,21 +1442,21 @@
     if (step === 4) {
       return quizBank([
         {
-          q: "Aluminium is fine for a house fire?",
+          q: "Is aluminium fine for a house fire?",
           opts: [
-            qOk("No. It melts around house-fire heat. Do not use it for a funded seed.", "Correct. ~600°C melt vs a house fire."),
+            qOk("No. It melts in a house fire. Do not use it for a funded seed.", "Correct. Stainless or titanium survive that heat. Aluminium does not."),
             qBad("Yes. Light metal is good enough.", "Wrong. Aluminium fails. Stainless or titanium survive.")
           ]
         },
         {
-          q: "Four letters are enough on a plate?",
+          q: "Are four letters enough on a plate?",
           opts: [
-            qOk("Yes. The first four letters uniquely identify each BIP-39 English word.", "Correct. abso is enough for absorb."),
-            qBad("No. You must stamp the full word or the backup is invalid.", "Wrong. Four letters are by design unique.")
+            qOk("Yes. No two English backup words share the same first four letters, so canoe can be stamped as CANO.", "Correct. You look the full word up from those four letters later."),
+            qBad("No. You must stamp the whole word or the backup is invalid.", "Wrong. Four letters are enough by design.")
           ]
         },
         {
-          q: "A photo of a steel plate is a backup?",
+          q: "Is a photo of a steel plate a backup?",
           opts: [
             qOk("No. The plate is still a secret. A photo is never a backup.", "Correct."),
             qBad("Yes, if the plate is stainless or titanium.", "Wrong. Metal does not make a photo safe.")
@@ -1482,19 +1486,70 @@
 
   function uc22(step) {
     if (step === 0) {
+      function authCard(name, job) {
+        return (
+          '<article class="v2-auth-card"><strong>' +
+          name +
+          "</strong><p>" +
+          job +
+          "</p></article>"
+        );
+      }
       return pad(
         "<h2>Unbox ceremony</h2>" +
-        doDont("Check firmware and bag seals before a seed is born.", "No vendor driver in this browser. Do not type the seed into the laptop.") +
-        '<label class="check"><input type="checkbox" id="v2Fw"/> Firmware hash checked (practice tick)</label>' +
-        pauseBtn("Next: keep the seed off the laptop", true)
+        doDont(
+          "Prove the device is genuine and running the maker’s firmware before any seed is born, and before any coins go on it.",
+          "Do not skip this because the box looked new. This tab has no vendor app. Do not type recovery words into the laptop."
+        ) +
+        desc(
+          "A hardware signer is only as honest as the chip and the software on it. A swapped device or a fake update can steal the first seed you type. The job is always the same: buy from the maker or a reseller you can name, inspect the bag and seals, power on with no seed yet, then match what the device shows to what the maker published — not to a random USB stick or a chat link."
+        ) +
+        callout(
+          "is",
+          "What “firmware hash checked” means",
+          "The device screen (or the official app talking to that screen) shows a version and a fingerprint. You compare that fingerprint to the one on the maker’s own website. If they do not match, stop. Do not create a seed. Do not fund it."
+        ) +
+        '<p class="control-help">Same job, four common objects. Menus change; the job does not. This lab does not run their software.</p>' +
+        '<div class="v2-auth-grid">' +
+        authCard(
+          "Ledger",
+          "Use Ledger’s own Live app from the maker’s site or store. Run the genuine-check. Read the firmware version on the device, then compare it to the hash Ledger publishes. A “Ledger” sticker on a marketplace listing is not that check. Only then let the device create the seed on-chip."
+        ) +
+        authCard(
+          "Trezor",
+          "Install Trezor Suite from trezor.io (or the address printed in the official docs), not a random installer. Suite talks to the device and offers the published firmware. Confirm the model and fingerprint on the device screen. Then create the seed on the Trezor — never by typing the words into the computer."
+        ) +
+        authCard(
+          "Coldcard",
+          "Coldcard is meant to be verified, not trusted. On first boot, read the firmware hash on the device screen and match it to the hash on coinkite / Coldcard’s own site. Prefer a documented air-gapped update (MicroSD), not a mystery file from the web. Only after the hashes match do you create the seed on the Coldcard."
+        ) +
+        authCard(
+          "Tangem",
+          "The seed is born on the card, not as twelve words you type. Still prove the card: sealed pack from the maker or a named reseller, official Tangem app from the store the maker names, and the in-app genuine / attestation check before you put value on it. A clone card plus a look-alike app is the failure mode."
+        ) +
+        "</div>" +
+        '<label class="check"><input type="checkbox" id="v2Fw"/> I compared a device fingerprint to the maker’s published firmware (practice tick — this tab does not talk to any device)</label>' +
+        pauseBtn("Next: a laptop seed stays hot", true)
       );
     }
     return pad(
-      "<h2>Refuse laptop seed</h2>" +
-      doDont("A PIN unlocks the device. An extra secret is another vault. A USB cable is not an air-gap.", "Typing the seed into a computer still kills the vault.") +
-      '<button type="button" class="btn secondary" id="v2RefuseSeed">I will not type the seed into the laptop</button>' +
-      '<div id="v2CerOut"></div>' +
-      pauseBtn("Seed stays on the device", true)
+      "<h2>Words already on a laptop</h2>" +
+      doDont(
+        "Keep that phrase as a software wallet. If you want hardware, let the device create a new seed.",
+        "Do not copy those words onto a hardware wallet. You cannot know whether the laptop already leaked them."
+      ) +
+      '<p class="v2-scene">You have twelve words in a notes file on this computer. You also bought a hardware signer. Two objects. One question: what happens to the notes-file vault?</p>' +
+      '<div class="v2-vault-pair">' +
+      '<div class="v2-vault-col" id="v2VaultLaptop"><h3>Notes on the laptop</h3><p class="v2-btc-num">0.184 BTC</p><p>Those words already lived here. This is a hot wallet, even if you later type the same words into a device.</p></div>' +
+      '<div class="v2-vault-col" id="v2VaultHw"><h3>Hardware signer</h3><p class="v2-btc-num" id="v2VaultHwAmt">no seed yet</p><p id="v2VaultHwNote">Empty until a seed is born on the chip. Importing the laptop words would put the <em>same</em> vault on the device — still hot.</p></div>' +
+      "</div>" +
+      '<p class="control-help">What do you do with the notes-file words?</p>' +
+      '<div class="v2-metal-grid v2-laptop-seed-grid">' +
+      '<button type="button" class="v2-metal-card" id="v2ImportLaptop" data-laptop-seed="hot-import"><strong>Type the notes-file words into the hardware wallet</strong><span>Same secret, new box. Still hot.</span></button>' +
+      '<button type="button" class="v2-metal-card" id="v2RefuseSeed" data-laptop-seed="stay-hot"><strong>Leave the notes-file vault on software. New seed on the device</strong><span>Two vaults. Only the new one can be cold.</span></button>' +
+      "</div>" +
+      '<div id="v2CerOut" class="control-help">Choose one. Hardware does not wash a laptop seed.</div>' +
+      pauseBtn("The notes-file vault stays hot", true)
     );
   }
 
@@ -1836,10 +1891,34 @@
         "<h2>Quiz</h2>" +
         "<p>Four sentences. Choose the two that are right. Both right sentences must be selected to continue.</p>" +
         '<div class="quiz-opts" id="v2Uc2Quiz">' +
-        '<button type="button" class="btn secondary" data-quiz="bad">1 · Photograph the sheet, or print it from this computer.<span class="v2-quiz-why" hidden>Wrong. Photograph and print from this computer put the words on a camera or a printer path. That is not the backup discipline.</span></button>' +
-        '<button type="button" class="btn secondary" data-quiz="ok" id="v2Qhand">2 · Write the numbered cells by hand while the computer is offline.<span class="v2-quiz-why" hidden>Correct. Hand copy offline is the backup discipline.</span></button>' +
-        '<button type="button" class="btn secondary" data-quiz="ok" id="v2Qprint">3 · Photograph and print from this lab are not the most secure, because the words are on the computer (not an air-gap).<span class="v2-quiz-why" hidden>Correct. Print and photos are not an air-gap.</span></button>' +
-        '<button type="button" class="btn secondary" data-quiz="bad">4 · Print is as secure as an air-gapped handwritten copy.<span class="v2-quiz-why" hidden>Wrong. Print is not an air-gap: the words were already on the computer.</span></button>' +
+        shuffleQuizOpts([
+          {
+            k: "bad",
+            t: "Photograph the sheet, or print it from this computer.",
+            why: "Wrong. A camera or a printer path is not a handwritten backup."
+          },
+          {
+            k: "ok",
+            id: "v2Qhand",
+            t: "Write the numbered cells by hand while the computer is offline.",
+            okwhy: "Correct. Hand copy offline is the backup you want."
+          },
+          {
+            k: "ok",
+            id: "v2Qprint",
+            t: "A photo or a print from this lab is weaker, because the words were already on this computer.",
+            okwhy: "Correct. Print and photos are not an offline handwritten copy."
+          },
+          {
+            k: "bad",
+            t: "Print from this lab is as safe as writing the words by hand on a machine that never went online.",
+            why: "Wrong. The words were already on this computer, so print is not that safe."
+          }
+        ])
+          .map(function (o, i) {
+            return quizOptBtn(o, i);
+          })
+          .join("") +
         "</div>" +
         '<div id="v2QuizMsg"></div>' +
         pauseBtn("Continue", true)
@@ -1905,21 +1984,21 @@
       );
     }
     if (step === 2) {
-      return quiz("If you forget the passphrase for a vault:", [
+      return quiz("If you forget the extra secret (passphrase) for a vault:", [
         {
           k: "ok",
-          t: "That vault’s coins are not recoverable from the recovery words alone.",
-          okwhy: "Correct. Same words without that passphrase open a different vault."
+          t: "The twelve words alone will not open that vault. Those coins are gone.",
+          okwhy: "Correct. Same words without that extra secret open a different vault."
         },
         {
           k: "bad",
-          t: "Lab can reset it.",
-          why: "Wrong. The lab cannot recover a forgotten passphrase. There is no reset desk."
+          t: "This website can reset the extra secret for you.",
+          why: "Wrong. There is no reset desk. Forgotten extra secret means that vault is gone."
         },
         {
           k: "bad",
-          t: "The addresses stay the same.",
-          why: "Wrong. A different passphrase derives different addresses. They do not stay the same."
+          t: "The receive addresses stay the same even if the extra secret is wrong.",
+          why: "Wrong. A different extra secret makes different addresses."
         }
       ]);
     }
@@ -1943,8 +2022,12 @@
         '<button type="button" class="btn" id="v2Idx">Change folder</button>' +
         '<button type="button" class="btn secondary" id="v2IdxZero">Back to first folder</button>' +
         "</div>" +
-        '<p class="control-help">Words stay on the card below. Only the address string should move.</p>' +
+        '<p class="control-help">Words stay on the card below. The address and the green amount belong to this folder only.</p>' +
+        '<div class="v2-addr-amt">' +
         '<code class="v2-preview-big" id="v2Tail">Click Change folder. Watch the address, not the words.</code>' +
+        '<span class="v2-amt-chip" id="v2FolderAmt" title="Teaching amount — not a chain lookup">…</span>' +
+        "</div>" +
+        '<p class="control-help">Green chip = teaching amount for this folder (not a chain lookup).</p>' +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         pauseBtn("Next: receive vs change folder", !mem.pathTouched)
       );
@@ -1958,35 +2041,58 @@
           "Do not think a new folder is a new recovery phrase."
         ) +
         desc(
-          "Receive is the folder for money coming in. Change is another folder the wallet uses when you spend. Same words. Different address."
+          "Receive is where new coins arrive. When you spend, the leftover does not stay on that same address — the wallet sends it to a change address in another folder. Same words. Different path. Different amount."
         ) +
+        '<p class="v2-scene">Example: 0.184 BTC arrives on receive #0. You spend 0.181. The leftover 0.003 goes to change #0 — not back to the receive address.</p>' +
         '<p class="v2-path-big" id="v2PathLine">' + p0 + "</p>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn" id="v2Idx">Change folder</button>' +
         '<button type="button" class="btn secondary" id="v2IdxZero">Back to first folder</button>' +
         '<button type="button" class="btn secondary" id="v2Change" data-change="0">Show change folder</button>' +
         "</div>" +
-        '<code class="v2-preview-big" id="v2Tail">Click Change folder or Show change folder. The card does not rewrite.</code>' +
+        '<div class="v2-vault-pair v2-rc-pair" id="v2RcPair">' +
+        '<div class="v2-vault-col is-on" id="v2RcRecv">' +
+        "<h3>Receive · money in</h3>" +
+        '<p class="v2-path-mini" id="v2RcPath0">m/84\'/1\'/0\'/0/0</p>' +
+        '<div class="v2-addr-amt">' +
+        '<code class="v2-preview-big" id="v2RcAddr0">…</code>' +
+        '<span class="v2-amt-chip" id="v2RcAmt0">…</span>' +
+        "</div>" +
+        "<p>Incoming payments. Path ends in <code>/0/n</code>.</p></div>" +
+        '<div class="v2-vault-col" id="v2RcChg">' +
+        "<h3>Change · leftover after a spend</h3>" +
+        '<p class="v2-path-mini" id="v2RcPath1">m/84\'/1\'/0\'/1/0</p>' +
+        '<div class="v2-addr-amt">' +
+        '<code class="v2-preview-big" id="v2RcAddr1">…</code>' +
+        '<span class="v2-amt-chip" id="v2RcAmt1">…</span>' +
+        "</div>" +
+        "<p>Change folder. Path ends in <code>/1/n</code>. Not a new backup.</p></div>" +
+        "</div>" +
+        '<div class="v2-addr-amt">' +
+        '<code class="v2-preview-big" id="v2Tail">Click Show change folder. Words stay. Address and amount switch folders.</code>' +
+        '<span class="v2-amt-chip" id="v2FolderAmt" title="Teaching amount — not a chain lookup">…</span>' +
+        "</div>" +
+        '<p class="control-help">Green chip = teaching amount for the highlighted folder (not a chain lookup).</p>' +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         pauseBtn("The words stayed the same", true)
       );
     }
     if (step === 2) {
-      return quiz("Changing the derivation path:", [
+      return quiz("When you change the folder path:", [
         {
           k: "ok",
-          t: "Changes the address; the words stay the same.",
-          okwhy: "Correct. Only the folder index in the path changes."
+          t: "The receive address changes. The recovery words stay the same.",
+          okwhy: "Correct. Only the folder number changes."
         },
         {
           k: "bad",
-          t: "Rewrites the mnemonic.",
+          t: "The twelve words on the card are rewritten.",
           why: "Wrong. The recovery words stay put. Only the last numbers in the path change."
         },
         {
           k: "bad",
-          t: "Broadcasts a transaction.",
-          why: "Wrong. Changing a folder path is local math. Nothing is sent to the network."
+          t: "A payment is sent on the bitcoin network.",
+          why: "Wrong. Changing a folder is local math. Nothing is sent."
         }
       ]);
     }
@@ -2042,21 +2148,21 @@
       );
     }
     if (step === 2) {
-      return quiz("A watch-only wallet should receive:", [
+      return quiz("What should a watch-only wallet receive?", [
         {
           k: "ok",
-          t: "An xpub/zpub or descriptor — never the mnemonic.",
-          okwhy: "Correct. That is a public viewing key, not spend authority."
+          t: "A public viewing key (the long xpub or zpub string) — never the twelve recovery words.",
+          okwhy: "Correct. That key can list addresses. It cannot spend."
         },
         {
           k: "bad",
-          t: "The recovery words so it can “just work”.",
-          why: "Wrong. Pasting the mnemonic makes a hot spend wallet, not watch-only."
+          t: "The recovery words, so the watch app can “just work”.",
+          why: "Wrong. Pasting the words makes a hot wallet that can spend, not watch-only."
         },
         {
           k: "bad",
-          t: "Your passphrase in the same photo.",
-          why: "Wrong. The passphrase is a spend secret. Watch-only gets a public key, never the 25th word."
+          t: "Your extra secret in the same photo as the words.",
+          why: "Wrong. The extra secret spends. Watch-only only gets a public key."
         }
       ]);
     }
@@ -2188,21 +2294,21 @@
       );
     }
     if (step === 2) {
-      return quiz("2-of-3 multisig keys are:", [
+      return quiz("In a 2-of-3 setup, the three keys are:", [
         {
           k: "ok",
-          t: "Independent public keys / cosigners — not Shamir word shares.",
-          okwhy: "Correct. Each key is a whole wallet. M signatures of N keys, not M pieces of one secret."
+          t: "Three separate wallets. Any two people can sign. They are not scraps of one phrase.",
+          okwhy: "Correct. Each person holds a whole seed. Two signatures spend."
         },
         {
           k: "bad",
-          t: "Three pieces of one mnemonic.",
-          why: "Wrong. Those would be Shamir shares of one secret (UC7). 2-of-3 here is three independent keys; any two signatures spend."
+          t: "Three scraps of one recovery phrase.",
+          why: "Wrong. That would be one secret cut into pieces. Here each person has a full key."
         },
         {
           k: "bad",
-          t: "A reason to paste the seed into Discord.",
-          why: "Wrong. You share public keys or zpubs to build the vault. The seed never goes in chat."
+          t: "A reason to paste the recovery words into chat.",
+          why: "Wrong. You share public viewing keys to build the vault. The words never go in chat."
         }
       ]);
     }
@@ -2267,21 +2373,21 @@
       );
     }
     if (step === 2) {
-      return quiz("Shamir shares in this lab:", [
+      return quiz("The shares you split in this lab are:", [
         {
           k: "ok",
-          t: "Are an educational split of one secret — not SLIP-39 production.",
-          okwhy: "Correct. Hex shares here teach threshold recovery, not a Trezor backup."
+          t: "A classroom split of one secret. They are not the word lists a hardware wallet uses for people.",
+          okwhy: "Correct. These hex pieces teach the idea. They are not a product backup."
         },
         {
           k: "bad",
-          t: "Are Trezor Suite compatible by default.",
-          why: "Wrong. This lab’s hex shares are educational GF(256). They are not SLIP-39 / Trezor Suite words."
+          t: "Ready to import into a Trezor as a real backup.",
+          why: "Wrong. These hex pieces are not those word shares."
         },
         {
           k: "bad",
-          t: "Replace multisig on mainnet.",
-          why: "Wrong. Combining shares rebuilds one secret. It does not replace M-of-N signatures from separate keys (UC6)."
+          t: "A replacement for three people each holding a full key.",
+          why: "Wrong. Combining pieces rebuilds one secret. It is not two people signing."
         }
       ]);
     }
@@ -2324,21 +2430,21 @@
       );
     }
     if (step === 2) {
-      return quiz("This lab’s PSBT tool:", [
+      return quiz("What does this lab do with a payment package?", [
         {
           k: "ok",
-          t: "Parses structure offline and never signs or broadcasts.",
-          okwhy: "Correct. Inspect is structure only."
+          t: "It only reads the file on this computer. It never signs and never sends it.",
+          okwhy: "Correct. Inspect is look-only."
         },
         {
           k: "bad",
-          t: "Sends the seed to a coordinator.",
-          why: "Wrong. Inspect never uploads a seed. A PSBT is a transaction package, not a mnemonic."
+          t: "It uploads the recovery words to a coordinator.",
+          why: "Wrong. The inspect tool never sends the words. A payment file is not a seed."
         },
         {
           k: "bad",
-          t: "Finalizes mainnet spends.",
-          why: "Wrong. This card parses framing offline. It does not finalize or broadcast."
+          t: "It finishes and broadcasts real mainnet payments.",
+          why: "Wrong. This card only reads the sample. It does not send."
         }
       ]);
     }
@@ -2378,21 +2484,21 @@
       );
     }
     if (step === 2) {
-      return quiz("Publishing an xpub:", [
+      return quiz("If you publish a viewing key (xpub):", [
         {
           k: "ok",
-          t: "Does not spend coins but leaks future addresses / activity.",
-          okwhy: "Correct. Watch-only and leaky, not spend."
+          t: "Nobody can spend with it, but they can see future addresses and activity.",
+          okwhy: "Correct. Watch-only and leaky — not spend."
         },
         {
           k: "bad",
-          t: "Lets anyone steal funds immediately.",
-          why: "Wrong. An xpub cannot sign. It can leak future addresses and history."
+          t: "Anyone can steal the coins immediately.",
+          why: "Wrong. A viewing key cannot sign. It can still leak history."
         },
         {
           k: "bad",
-          t: "Is the same as the recovery words.",
-          why: "Wrong. The xpub is a public account key. The recovery words can spend."
+          t: "It is the same secret as the twelve recovery words.",
+          why: "Wrong. The viewing key cannot spend. The words can."
         }
       ]);
     }
@@ -2434,21 +2540,21 @@
       );
     }
     if (step === 2) {
-      return quiz("If a balance API fails, the honest display is:", [
+      return quiz("If a balance lookup fails, what should the screen say?", [
         {
           k: "ok",
-          t: "unknown — never silent 0.",
+          t: "Unknown — not a fake zero.",
           okwhy: "Correct. A failed lookup is unknown, not an empty wallet."
         },
         {
           k: "bad",
-          t: "0.00000000 BTC.",
-          why: "Wrong. A failed lookup is unknown, not zero. Zero looks like an empty wallet."
+          t: "0.00000000 bitcoin.",
+          why: "Wrong. Zero looks like an empty wallet. Failed lookup is unknown."
         },
         {
           k: "bad",
-          t: "Retry forever with the seed.",
-          why: "Wrong. Lookups are address-only. Never send the mnemonic to a balance API."
+          t: "Keep retrying and send the recovery words to the lookup site.",
+          why: "Wrong. Lookups use the address only. Never send the words."
         }
       ]);
     }
@@ -2532,6 +2638,23 @@
   }
 
   var TEACH_BTC = "0.184";
+  var FOLDER_RECV_BTC = [
+    "0.184", "0.012", "0.001", "0.050", "0.000184",
+    "0.420", "0.008", "0.091", "0.0022", "0.150",
+    "0.033", "0.007", "0.210", "0.0005", "0.064",
+    "0.018", "0.300", "0.0041", "0.077", "0.025"
+  ];
+  var FOLDER_CHANGE_BTC = [
+    "0.003", "0.017", "0.0009", "0.041", "0.006",
+    "0.022", "0.011", "0.0003", "0.055", "0.0088",
+    "0.014", "0.029", "0.0017", "0.036", "0.0094",
+    "0.002", "0.048", "0.013", "0.0006", "0.019"
+  ];
+
+  function folderTeachBtc(change, i) {
+    var list = change ? FOLDER_CHANGE_BTC : FOLDER_RECV_BTC;
+    return list[i] || list[0];
+  }
 
   function btcFaceHtml(opts) {
     opts = opts || {};
@@ -2873,18 +2996,18 @@
       return quiz("Same recovery words on a phone app versus a hardware signer:", [
         {
           k: "ok",
-          t: "Same words, different where they live — phone is hot; hardware should keep keys on the device.",
-          okwhy: "Correct. Placement is the lesson. USB is not an air-gap."
+          t: "Same words, different home. A phone is hot. Hardware should keep the keys on the device.",
+          okwhy: "Correct. Where the keys live is the lesson. A USB cable is not an air-gap."
         },
         {
           k: "bad",
-          t: "USB to a laptop is automatically an air-gap.",
+          t: "Plugging USB into a laptop automatically makes an air-gap.",
           why: "Wrong. A cable to an online computer is not an air-gap."
         },
         {
           k: "bad",
-          t: "Typing the seed into the computer is the safe way to set up hardware.",
-          why: "Wrong. Typing the seed into a computer still kills the vault."
+          t: "The safe setup is to type the recovery words into the computer.",
+          why: "Wrong. Typing the words into a computer still kills the vault."
         }
       ]);
     }
@@ -2940,21 +3063,21 @@
       );
     }
     if (step === 2) {
-      return quiz("Hot versus cold is:", [
+      return quiz("Hot versus cold means:", [
         {
           k: "ok",
-          t: "Whether keys are on a machine that talks to the internet — brand is not the split.",
+          t: "Whether your keys live on a machine that talks to the internet. The brand on the box is not the split.",
           okwhy: "Correct. Daily spend can be hot. Savings stay cold or watch-only."
         },
         {
           k: "bad",
-          t: "Whatever the box says “hardware”, even if you typed the seed into a laptop.",
-          why: "Wrong. Brand is not the split. Keys on an online machine are hot."
+          t: "Whatever the box says “hardware”, even if you typed the words into a laptop.",
+          why: "Wrong. Keys on an online machine are hot, whatever the box says."
         },
         {
           k: "bad",
-          t: "The same as custodial versus self-custody.",
-          why: "Wrong. An exchange is custodial. Hot vs cold is about whether *your* keys are online."
+          t: "The same as a company holding the keys versus you holding them.",
+          why: "Wrong. An exchange is them-holding. Hot versus cold is about whether your keys are online."
         }
       ]);
     }
@@ -3414,41 +3537,41 @@
         {
           q: "A few dice rolls that still print 12 or 24 recovery words mean:",
           opts: [
-            { k: "ok", t: "The pad can be TOO LOW — word count is not entropy.", okwhy: "Correct. 12-word wants ~128 bits (~50 d6). 24-word wants ~256 (~100 d6)." },
-            { k: "bad", t: "Twenty-four words always means 256 bits of good randomness.", why: "Wrong. The format can look complete while the pad is still TOO LOW versus 256." },
-            { k: "bad", t: "Three coin flips are enough because each flip is 128 bits.", why: "Wrong. Each coin flip is 1 bit." }
+            { k: "ok", t: "The pad can still be too weak. Having 12 or 24 words does not prove you rolled enough.", okwhy: "Correct. Twelve words want about 50 dice. Twenty-four want about 100." },
+            { k: "bad", t: "Twenty-four words always means enough randomness.", why: "Wrong. The list can look complete while the pad is still too weak." },
+            { k: "bad", t: "Three coin flips are enough because each flip is huge.", why: "Wrong. Each coin flip is one bit." }
           ]
         },
         {
-          q: "You reached ~128 bits (green for 12-word) then switched the dropdown to 24. The lock should:",
+          q: "You reached enough for 12 words (green), then switched the dropdown to 24. The lock should:",
           opts: [
-            { k: "ok", t: "Go back toward red until the pad meets ~256 bits.", okwhy: "Correct. Green is for this length. 24-word wants 256." },
-            { k: "bad", t: "Stay green because you already have twelve words.", why: "Wrong. Word count is not entropy. 24-word still wants 256 bits." },
-            { k: "bad", t: "Jump to 256 bits automatically.", why: "Wrong. Changing the dropdown does not add dice. Keep rolling." }
+            { k: "ok", t: "Go back toward red until you have rolled enough for 24 words.", okwhy: "Correct. Green is for this length. Twenty-four words want about twice the pad." },
+            { k: "bad", t: "Stay green because you already have twelve words.", why: "Wrong. Word count is not the same as enough rolls." },
+            { k: "bad", t: "Jump to enough automatically.", why: "Wrong. Changing the dropdown does not add dice. Keep rolling." }
           ]
         },
         {
-          q: "About how many simulated d6 reach 12-word ENT (~128 bits)?",
+          q: "About how many six-sided dice rolls reach enough for 12 words?",
           opts: [
-            { k: "ok", t: "About 50 d6 (each ≈ 2.58 bits).", okwhy: "Correct. 50 × 2.58 ≈ 129. Coin would need 128 flips." },
-            { k: "bad", t: "Three rolls, because BIP-39 always prints 12 words.", why: "Wrong. Three rolls still mint words and stay TOO LOW." },
-            { k: "bad", t: "One roll, because a die has six faces.", why: "Wrong. Six faces is about 2.58 bits, not 128." }
+            { k: "ok", t: "About 50 rolls.", okwhy: "Correct. A coin would need about 128 flips for the same job." },
+            { k: "bad", t: "Three rolls, because the list always prints 12 words.", why: "Wrong. Three rolls still print words and stay too weak." },
+            { k: "bad", t: "One roll, because a die has six faces.", why: "Wrong. Six faces is only a little randomness, not enough for 12 words." }
           ]
         },
         {
           q: "A coin flip on this pad is:",
           opts: [
-            { k: "ok", t: "1 bit. 128 flips for 12-word, 256 for 24-word.", okwhy: "Correct. Coin is the hard path. Dice reach the same ENT faster." },
-            { k: "bad", t: "128 bits, so three flips make a wallet.", why: "Wrong. One flip is one bit." },
-            { k: "bad", t: "The same as Lab Generate (OS CSPRNG).", why: "Wrong. These buttons are Math.random. Lab Generate uses the OS." }
+            { k: "ok", t: "One bit. You would need about 128 flips for 12 words, or 256 for 24.", okwhy: "Correct. A coin is the slow path. Dice reach the same strength faster." },
+            { k: "bad", t: "Huge — three flips make a wallet.", why: "Wrong. One flip is one bit." },
+            { k: "bad", t: "The same as the Lab Generate button, which uses the operating system.", why: "Wrong. These pad buttons are a classroom estimate. Lab Generate uses the operating system." }
           ]
         },
         {
-          q: "If the pad is TOO LOW, a complete-looking phrase is:",
+          q: "If the pad is too weak, a complete-looking phrase is:",
           opts: [
-            { k: "ok", t: "Still weak — an attacker has a smaller guess space.", okwhy: "Correct. Hashing a short log can print words. That is not 128 or 256 bits of real entropy." },
-            { k: "bad", t: "Safe to fund because checksum passed.", why: "Wrong. Checksum only checks the format. It does not add missing bits." },
-            { k: "bad", t: "Equal to OS Generate because both show 12 words.", why: "Wrong. OS Generate uses a CSPRNG. The pad is a classroom estimate." }
+            { k: "ok", t: "Still weak. An attacker has fewer guesses than a well-rolled phrase.", okwhy: "Correct. A short roll log can still print twelve words. That does not make it strong." },
+            { k: "bad", t: "Safe to fund because the checksum passed.", why: "Wrong. Checksum only checks the format. It does not add missing rolls." },
+            { k: "bad", t: "As strong as Lab Generate because both show 12 words.", why: "Wrong. Lab Generate uses the operating system. The pad is a classroom estimate." }
           ]
         }
       ]);
@@ -3696,21 +3819,21 @@
       );
     }
     if (step === 2) {
-      return quiz("A strong-looking passphrase on a TOO LOW dice pad means:", [
+      return quiz("A long extra secret on a TOO LOW dice pad means:", [
         {
           k: "ok",
-          t: "The pad is still the weak source. The 25th word does not replace rolling.",
-          okwhy: "Correct. Pad bits must meet 128 (12-word) or 256 (24-word). Passphrase is an extra secret, not extra dice."
+          t: "The dice pad is still too weak. The extra secret does not replace rolling more dice.",
+          okwhy: "Correct. Twelve words want about 128 bits of pad. Twenty-four want about 256. The extra secret is another vault secret, not extra dice."
         },
         {
           k: "bad",
-          t: "Add the passphrase bits to the pad and you have a 24-word wallet.",
-          why: "Wrong. You do not add estimates into one BIP-39 ENT. A short pad stays a short pad."
+          t: "Add the extra-secret estimate to the pad and you now have a 24-word wallet.",
+          why: "Wrong. A short pad stays a short pad. You do not add the two estimates together."
         },
         {
           k: "bad",
-          t: "PBKDF2 outputs 512 bits so the pad no longer matters.",
-          why: "Wrong. 512 bits is the seed output size, not the entropy of a short roll log."
+          t: "The computer always stretches the pad to 512 bits, so few rolls are fine.",
+          why: "Wrong. That 512 number is the size of the output file, not how random your few rolls were."
         }
       ]);
     }
@@ -3925,24 +4048,33 @@
     return '<div class="row" style="margin-top:0.85rem"><button type="button" class="btn" id="v2Pause"' +
       (disabled ? " disabled" : "") + ">" + label + "</button></div>";
   }
+  function quizOptBtn(o, i, qi) {
+    var extra = "";
+    if (o.id) extra += ' id="' + o.id + '"';
+    if (qi != null) extra += ' data-qi="' + qi + '"';
+    return (
+      '<button type="button" class="btn secondary" data-quiz="' +
+      o.k +
+      '"' +
+      extra +
+      ">" +
+      (i + 1) +
+      " · " +
+      o.t +
+      '<span class="v2-quiz-why" hidden>' +
+      (o.k === "ok" ? o.okwhy || "Correct." : o.why || "Wrong. That is not what this track teaches.") +
+      "</span></button>"
+    );
+  }
+
   function quiz(q, opts) {
     return pad(
       "<h2>Quiz</h2><p>" +
         q +
         "</p><div class=\"quiz-opts\">" +
-        opts
+        shuffleQuizOpts(opts)
           .map(function (o, i) {
-            return (
-              '<button type="button" class="btn secondary" data-quiz="' +
-              o.k +
-              '">' +
-              (i + 1) +
-              " · " +
-              o.t +
-              '<span class="v2-quiz-why" hidden>' +
-              (o.k === "ok" ? o.okwhy || "Correct." : o.why || "Wrong. That is not what this track teaches.") +
-              "</span></button>"
-            );
+            return quizOptBtn(o, i);
           })
           .join("") +
         '</div><div id="v2QuizMsg"></div>' +
@@ -4005,21 +4137,9 @@
               " · </strong>" +
               item.q +
               "</p><div class=\"quiz-opts\">" +
-              item.opts
+              shuffleQuizOpts(item.opts)
                 .map(function (o, i) {
-                  return (
-                    '<button type="button" class="btn secondary" data-quiz="' +
-                    o.k +
-                    '" data-qi="' +
-                    qi +
-                    '">' +
-                    (i + 1) +
-                    " · " +
-                    o.t +
-                    '<span class="v2-quiz-why" hidden>' +
-                    (o.k === "ok" ? o.okwhy || "Correct." : o.why || "Wrong.") +
-                    "</span></button>"
-                  );
+                  return quizOptBtn(o, i, qi);
                 })
                 .join("") +
               "</div></div>"
@@ -4665,6 +4785,22 @@
         var a = (row && row.bip84_p2wpkh) || "";
         $("v2Tail").textContent =
           (ch ? "Change" : "Receive") + " index " + i + "  ·  " + a;
+        var amtEl = $("v2FolderAmt");
+        if (amtEl) amtEl.textContent = folderTeachBtc(ch, i) + " BTC";
+        if ($("v2RcPair")) {
+          var rRecv = ch === 0 ? r : await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 0 });
+          var rChg = ch === 1 ? r : await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: i + 1, change: 1 });
+          var recvA = ((rRecv.rows[i] || rRecv.rows[rRecv.rows.length - 1]) || {}).bip84_p2wpkh || "";
+          var chgA = ((rChg.rows[i] || rChg.rows[rChg.rows.length - 1]) || {}).bip84_p2wpkh || "";
+          if ($("v2RcPath0")) $("v2RcPath0").textContent = BIP39Lab.formatPath(84, "test", 0, 0, i);
+          if ($("v2RcPath1")) $("v2RcPath1").textContent = BIP39Lab.formatPath(84, "test", 0, 1, i);
+          if ($("v2RcAddr0")) $("v2RcAddr0").textContent = recvA;
+          if ($("v2RcAddr1")) $("v2RcAddr1").textContent = chgA;
+          if ($("v2RcAmt0")) $("v2RcAmt0").textContent = folderTeachBtc(0, i) + " BTC";
+          if ($("v2RcAmt1")) $("v2RcAmt1").textContent = folderTeachBtc(1, i) + " BTC";
+          if ($("v2RcRecv")) $("v2RcRecv").classList.toggle("is-on", ch === 0);
+          if ($("v2RcChg")) $("v2RcChg").classList.toggle("is-on", ch === 1);
+        }
         if (pause && mem.pathTouched) pause.disabled = false;
       }
       applyPathIndex(0).catch(console.error);
@@ -5083,13 +5219,30 @@
         if (pause) pause.disabled = !$("v2Fw").checked;
       });
     }
-    if ($("v2RefuseSeed")) {
-      $("v2RefuseSeed").addEventListener("click", function () {
+    document.querySelectorAll("[data-laptop-seed]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var stay = btn.getAttribute("data-laptop-seed") === "stay-hot";
+        document.querySelectorAll("[data-laptop-seed]").forEach(function (b) {
+          b.classList.toggle("is-on", b === btn);
+        });
         var o = $("v2CerOut");
-        if (o) o.textContent = "Seed stays on the device. USB is not an air-gap.";
-        if (pause) pause.disabled = false;
+        var hwAmt = $("v2VaultHwAmt");
+        var hwNote = $("v2VaultHwNote");
+        if (o) {
+          o.className = stay ? "msg-ok" : "msg-bad";
+          o.textContent = stay
+            ? "Two vaults. The notes-file coins stay a software wallet. The device starts a new seed that never touched this computer."
+            : "Wrong. The device now holds the same words the laptop already saw. A thief on the laptop still has them. Not cold.";
+        }
+        if (hwAmt) hwAmt.textContent = stay ? "new seed · separate vault" : "0.184 BTC · same words as laptop";
+        if (hwNote) {
+          hwNote.textContent = stay
+            ? "Savings can live here. The laptop phrase is a different wallet and stays hot."
+            : "Same vault as the notes file. Putting it in a metal box did not make it cold.";
+        }
+        if (pause) pause.disabled = !stay;
       });
-    }
+    });
     mem.loopClicks = mem.loopClicks || [];
     document.querySelectorAll("[data-loop]").forEach(function (btn) {
       btn.addEventListener("click", function () {

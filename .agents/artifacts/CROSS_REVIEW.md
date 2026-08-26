@@ -2,7 +2,7 @@
 
 ## Security Guru
 
-none. Estimate spans use controlled classes. Passphrase not innerHTML.
+none. No mnemonic persistence. Teaching balances are local constants.
 
 ## Maintainability Expert
 
@@ -12,13 +12,12 @@ none as blockers.
 
 | Item | Tier | Confidence | Evidence |
 |------|------|------------|----------|
-| `#v2Cmp` Compare button | A | 0.95 | Removed from UC3 HTML; e2e asserts count 0 |
-
-Whole-repo cruft: `/sweep` if wanted.
+| `#v2Cmp` Compare button | A | 0.95 | Removed; e2e count 0 |
+| “Refuse laptop seed” slogan card | A | 0.9 | Replaced by notes-file vault scene |
 
 ## Domain Specialist
 
-none. Weak `test` secret still red; pad mint still TOO LOW until enough rolls.
+none. Laptop seed stays hot is correct custody. Receive vs change leftover amounts match the spend story.
 
 ## Severity counts
 
@@ -27,7 +26,7 @@ blocker=0 major=0 nit=0
 ## §9
 
 1. Dual stamp
-2. Live Next unlock
-3. Mint group wrap on narrow viewports
+2. Teaching BTC not on-chain
+3. Quiz shuffle uses Math.random (fine offline)
 
 ✅ CROSS-REVIEW DONE blockers=0 obsolete_tier_A=0 remaining

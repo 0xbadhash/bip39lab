@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.80-v2)", () => {
+test.describe("V2 use-case tracks (0.17.88-v2)", () => {
   // AC-1: Start here 3 cards; AC-3: chip + About Hard refresh
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(31);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.80-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.88-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -264,7 +264,7 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator("#v2Qprint").click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
     await expect(page.locator("#v2Qhand")).toContainText(/Write the numbered cells by hand/);
-    await expect(page.locator("#v2Qprint")).toContainText(/not the most secure/);
+    await expect(page.locator("#v2Qprint")).toContainText(/weaker/i);
   });
 
   test("V2-S3 deep link uc=3 opens passphrase gate", async ({ page }) => {
@@ -309,12 +309,16 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2PathLine")).toContainText("m/84'/1'/0'/0/0");
     await expect(page.locator("#v2Pause")).toBeDisabled();
+    await expect(page.locator("#v2FolderAmt")).toHaveClass(/v2-amt-chip/);
+    await expect(page.locator("#v2FolderAmt")).toHaveText(/0\.184 BTC/);
     const t0 = await page.locator("#v2Tail").textContent();
+    const a0 = await page.locator("#v2FolderAmt").textContent();
     await page.locator("#v2Idx").click();
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/1");
     await expect(page.locator("#v2Pause")).toBeEnabled();
     const t1 = await page.locator("#v2Tail").textContent();
     expect(t1).not.toEqual(t0);
+    await expect(page.locator("#v2FolderAmt")).not.toHaveText(a0 || "");
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/0");
     await expect(page.locator("#v2Idx")).toBeVisible();
@@ -325,6 +329,13 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator("#v2IdxZero").click();
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/0/0");
     await page.locator("#v2Change").click();
+    await expect(page.locator("#v2RcPair")).toBeVisible();
+    await expect(page.locator("#v2RcAmt0")).toHaveText(/0\.184/);
+    await expect(page.locator("#v2RcAmt1")).toHaveText(/0\.003/);
+    const recvAmt = await page.locator("#v2RcAmt0").textContent();
+    const chgAmt = await page.locator("#v2RcAmt1").textContent();
+    expect(recvAmt).not.toEqual(chgAmt);
+    await expect(page.locator("#v2RcChg")).toHaveClass(/is-on/);
     await expect(page.locator("#v2PathLine")).toHaveText("m/84'/1'/0'/1/0");
     await expect(page.locator("#v2Change")).toContainText(/receive folder/i);
   });
@@ -348,7 +359,6 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator("#v2Pause").click();
     await page.locator('[data-quiz="bad"]').first().click();
     await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
-    await expect(page.locator("#v2QuizMsg")).toContainText(/Shamir/i);
     await page.locator('.rail-jump[data-step="0"]').click();
     await expect(page.locator("#v2MofnPic")).toBeVisible();
     await page.locator('[data-concept-step="1"]').click();
@@ -368,7 +378,6 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator('[data-quiz="bad"]').first().click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-bad/);
     await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
-    await expect(page.locator("#v2QuizMsg")).toContainText(/refund/i);
     await expect(page.locator("#v2QuizMsg")).not.toContainText(/Not that one/i);
     await page.locator('#conceptStrip [data-concept-step="0"]').click();
     await expect(page.locator("#v2Generate")).toBeVisible();
@@ -474,7 +483,6 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator("#v2Pause").click();
     await page.locator('[data-quiz="bad"]').first().click();
     await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
-    await expect(page.locator("#v2QuizMsg")).toContainText(/air-gap/i);
 
     await enterV2(page, "/v2/?uc=13");
     await page.locator("#btnGateStart").click();
@@ -647,6 +655,45 @@ test.describe("V2 use-case tracks (0.17.80-v2)", () => {
     await page.locator('[data-loop="2"]').click();
     await page.locator('[data-loop="3"]').click();
     await expect(page.locator("#v2LoopOut")).toContainText(/never signs/i);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S21 UC20 four-letter plate shows full word then stamp", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=20");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator('.v2-metal-card[data-metal="ss"]').click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2StampPlate .v2-stamp-cell")).toHaveCount(12);
+    const first = page.locator("#v2StampPlate .v2-stamp-cell").first();
+    await expect(first.locator(".v2-stamp-full")).toHaveText(/^[a-z]+$/);
+    await expect(first.locator(".v2-stamp-4")).toHaveText(/^[a-z]{3,4}$/i);
+    const full = (await first.locator(".v2-stamp-full").textContent()) || "";
+    const stamp = ((await first.locator(".v2-stamp-4").textContent()) || "").toLowerCase();
+    expect(full.slice(0, stamp.length)).toBe(stamp);
+    expect(full.length).toBeGreaterThanOrEqual(stamp.length);
+  });
+
+  test("V2-S22 UC22 unbox names Ledger Trezor Coldcard Tangem before firmware tick", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=22");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator(".v2-auth-card")).toHaveCount(4);
+    await expect(page.locator(".v2-auth-grid")).toContainText(/Ledger/);
+    await expect(page.locator(".v2-auth-grid")).toContainText(/Trezor/);
+    await expect(page.locator(".v2-auth-grid")).toContainText(/Coldcard/);
+    await expect(page.locator(".v2-auth-grid")).toContainText(/Tangem/);
+    await expect(page.locator(".v2-auth-grid")).toContainText(/genuine/i);
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    await page.locator("#v2Fw").check();
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#trackBody h2")).toContainText(/Words already on a laptop/i);
+    await page.locator("#v2ImportLaptop").click();
+    await expect(page.locator("#v2CerOut")).toHaveClass(/msg-bad/);
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    await page.locator("#v2RefuseSeed").click();
+    await expect(page.locator("#v2CerOut")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2CerOut")).toContainText(/software wallet/i);
     await expect(page.locator("#v2Pause")).toBeEnabled();
   });
 });
