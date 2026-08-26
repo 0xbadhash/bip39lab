@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 173 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.50 · Contract: 2 · Last aligned: 2026-08-25 · Scenarios: S0–S183 · Playwright S-ids: 173`
+`Product: 0.16.51 · Contract: 2 · Last aligned: 2026-08-26 · Scenarios: S0–S183 · Playwright S-ids: 173`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
