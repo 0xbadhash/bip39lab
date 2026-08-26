@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import os
+import signal
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -97,23 +99,48 @@ def run_smoke(
                 }
             )
             continue
-        proc = subprocess.run(
-            cmd_s,
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        results.append(
-            {
-                "name": name,
-                "cmd": cmd_s,
-                "cwd": str(cwd),
-                "exit": int(proc.returncode),
-                "stdout": (proc.stdout or "")[-2000:],
-                "stderr": (proc.stderr or "")[-2000:],
-            }
-        )
+        step_timeout = raw.get("timeout")
+        try:
+            timeout_s = float(step_timeout) if step_timeout not in (None, "") else None
+        except (TypeError, ValueError):
+            timeout_s = None
+        try:
+            proc = subprocess.run(
+                cmd_s,
+                cwd=cwd,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=timeout_s,
+                start_new_session=True,
+            )
+            results.append(
+                {
+                    "name": name,
+                    "cmd": cmd_s,
+                    "cwd": str(cwd),
+                    "exit": int(proc.returncode),
+                    "stdout": (proc.stdout or "")[-2000:],
+                    "stderr": (proc.stderr or "")[-2000:],
+                }
+            )
+        except subprocess.TimeoutExpired as exc:
+            pid = getattr(exc, "pid", None)
+            if pid:
+                try:
+                    os.killpg(int(pid), signal.SIGKILL)
+                except OSError:
+                    pass
+            results.append(
+                {
+                    "name": name,
+                    "cmd": cmd_s,
+                    "cwd": str(cwd),
+                    "exit": 124,
+                    "stdout": "",
+                    "stderr": f"smoke step timeout after {timeout_s}s (killed process group)",
+                }
+            )
     return results
 
 

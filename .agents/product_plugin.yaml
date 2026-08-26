@@ -19,9 +19,11 @@ smoke:
   - name: unit
     cmd: ["python", "-m", "pytest", "-q"]
     cwd: .
+    timeout: 180
   - name: e2e
-    cmd: ["npm", "run", "test:e2e"]
+    cmd: ["python", "scripts/run_e2e_smoke.py"]
     cwd: .
+    timeout: 780
 
 # Deterministic Playwright + Comet scenario contract (harness 1.4.17+)
 web_e2e:
@@ -146,6 +148,8 @@ night_shift:
   live_urls: []
   live_expect_code: "200"
   coverage_soft: "1"
+  # Inner e2e wall is 720s; keep night wrapper above unit+e2e, not 900s hang-kill.
+  smoke_timeout: 1200
 
 # Full ship FSM is required for every ROADMAP phase (see ROADMAP.md).
 # Agents must start each phase with /spec (or an explicit Spec waiver).
