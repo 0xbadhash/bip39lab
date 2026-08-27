@@ -5884,6 +5884,17 @@
         });
       }
     });
+    function paintTone(el, kind) {
+      if (!el) return;
+      var base = String(el.className || "")
+        .replace(/\bmsg-ok\b/g, "")
+        .replace(/\bmsg-bad\b/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (kind === "ok") el.className = base + " msg-ok";
+      else if (kind === "bad") el.className = base + " msg-bad";
+      else el.className = base;
+    }
     function utf8DecodeU8(u8) {
       try {
         if (typeof TextDecoder !== "undefined") return new TextDecoder("utf-8").decode(u8);
@@ -5951,6 +5962,7 @@
       mem.shamirShares = shares;
       mem.shamirDone = false;
       if (out) {
+        paintTone(out, "");
         out.textContent = [
           "Built from the twelve words still on this pad (not a new screen).",
           "What it is: one practice BIP-39 phrase cut into " + mn.n + " classroom hex shares.",
@@ -5982,6 +5994,7 @@
       var words = utf8DecodeU8(rec).trim();
       var match = words === String(mem.shamirMnemonic).trim();
       if (out) {
+        paintTone(out, match ? "ok" : "bad");
         out.textContent = [
           "Combined any " + need + " of " + ((mem.shamirMN && mem.shamirMN.n) || 3) + ".",
           "Recovered words: " + words,
@@ -6006,6 +6019,7 @@
         var lines = raw.split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
         if (lines.length < need) {
           if (tout) {
+            paintTone(tout, "bad");
             tout.textContent =
               "Need at least " + need + " share lines. You pasted " + lines.length + ". Recovery failed — that is honest.";
           }
@@ -6017,6 +6031,7 @@
           for (i = 0; i < lines.length; i++) parsed.push(ShamirLab.parseShare(lines[i]));
         } catch (e) {
           if (tout) {
+            paintTone(tout, "bad");
             tout.textContent =
               "Could not read a share line (" +
               (e && e.message ? e.message : e) +
@@ -6029,6 +6044,7 @@
           var words = utf8DecodeU8(rec).trim();
           var match = words === String(mem.shamirMnemonic).trim();
           if (tout) {
+            paintTone(tout, match ? "ok" : "bad");
             tout.textContent = [
               "Tried " + parsed.length + " pasted share(s); threshold M=" + need + ".",
               "Recovered words: " + words,
@@ -6045,6 +6061,7 @@
           }
         } catch (e2) {
           if (tout) {
+            paintTone(tout, "bad");
             tout.textContent =
               "Combine failed (" +
               (e2 && e2.message ? e2.message : e2) +
@@ -6099,6 +6116,7 @@
         var rec = Slip39Lab.combineShares(mem.slip39Shares.slice(0, 2), "");
         var ok = Slip39Lab.matchExpected(rec, mem.slip39Hex);
         if (out) {
+          paintTone(out, ok ? "ok" : "bad");
           out.textContent = [
             "Combined 2 of 3 SLIP-39 word shares.",
             "Recovered master hex: " + rec,
@@ -6127,6 +6145,7 @@
         }
         if (picked.length < 2) {
           if (tout) {
+            paintTone(tout, "bad");
             tout.textContent =
               "Need any 2 of the 3 SLIP-39 word lists. You filled " +
               picked.length +
@@ -6138,6 +6157,7 @@
           var rec = Slip39Lab.combineShares(picked.slice(0, picked.length), "");
           var ok = Slip39Lab.matchExpected(rec, mem.slip39Hex);
           if (tout) {
+            paintTone(tout, ok ? "ok" : "bad");
             tout.textContent = [
               "Tried " + picked.length + " pasted SLIP-39 share list(s).",
               "Recovered master hex: " + rec,
@@ -6154,6 +6174,7 @@
           }
         } catch (e) {
           if (tout) {
+            paintTone(tout, "bad");
             tout.textContent =
               "Combine failed (" +
               (e && e.message ? e.message : e) +

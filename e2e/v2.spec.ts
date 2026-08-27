@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.111-v2)", () => {
+test.describe("V2 use-case tracks (0.17.112-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.111-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.111-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.112-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1003,6 +1003,7 @@ test.describe("V2 use-case tracks (0.17.111-v2)", () => {
     await expect(page.locator("#v2ShOut")).toContainText(/not SLIP-39/i);
     await page.locator("#v2ShCombine").click();
     await expect(page.locator("#v2ShOut")).toContainText(/Match original phrase: true/i);
+    await expect(page.locator("#v2ShOut")).toHaveClass(/msg-ok/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
@@ -1018,9 +1019,11 @@ test.describe("V2 use-case tracks (0.17.111-v2)", () => {
     await page.locator("#v2ShRecombineIn").fill(two);
     await page.locator("#v2ShTry").click();
     await expect(page.locator("#v2ShTryOut")).toContainText(/Match original phrase: true/i);
+    await expect(page.locator("#v2ShTryOut")).toHaveClass(/msg-ok/);
     await page.locator("#v2ShRecombineIn").fill("share:1:00");
     await page.locator("#v2ShTry").click();
     await expect(page.locator("#v2ShTryOut")).toContainText(/Need at least 2|honest|failed/i);
+    await expect(page.locator("#v2ShTryOut")).toHaveClass(/msg-bad/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 

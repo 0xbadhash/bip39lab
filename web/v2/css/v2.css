@@ -1803,6 +1803,14 @@ ol.word-grid.v2-stamp-plate {
   border-radius: var(--radius-sm);
   margin: 0.5rem 0;
 }
+pre.out.msg-ok {
+  background: rgba(34, 160, 107, 0.18);
+  border-color: var(--ok);
+}
+pre.out.msg-bad {
+  background: var(--bad-soft);
+  border-color: var(--bad);
+}
 .quiz-opts { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.5rem 0; }
 .quiz-opts button { text-align: left; white-space: normal; }
 .quiz-opts button.is-picked {

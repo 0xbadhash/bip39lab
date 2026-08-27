@@ -1,3 +1,3 @@
 # CROSS-REVIEW
 
-Personas: teacher (hand combine). Blockers: 0.
+Personas: teacher (green/red). Blockers: 0.
