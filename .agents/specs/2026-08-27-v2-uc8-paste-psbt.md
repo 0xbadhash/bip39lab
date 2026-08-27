@@ -2,7 +2,7 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-27
-- **Updated:** 2026-08-27 (WINDOW 6: `/v2/` `connect-src 'self'`; UC8 fetches `/api/mempool/tx/<txid>` after leak-ack)
+- **Updated:** 2026-08-27 (three public example txids on UC8; classroom samples still have no prevout)
 - **Status:** ready-for-agent
 - **Priority:** P0
 - **Plan:** `.agents/specs/2026-08-27-v2-uc8-paste-psbt-plan.md`
@@ -17,7 +17,8 @@ Paste/inspect shipped. After Inspect, if a **txid** or input **prev_txid** exist
 
 Keep `#v2PsbtIn` + Inspect. After a successful inspect, parse prevouts from the unsigned tx if present.
 
-- No txid → `#v2PsbtNetMsg` says this classroom blob has no on-chain id; a public lookup would honestly be not found. **No fetch.**
+- No txid → `#v2PsbtNetMsg` says this classroom blob has no on-chain id; a public lookup would honestly be not found. **No fetch** from the sample.
+- Three **public example** txids (genesis coinbase, first transfer, pizza day) sit under Inspect. After leak-ack, fetch `/api/mempool/tx/<txid>`. These are real history, not the classroom PSBT.
 - Txid present → leak-ack `#v2PsbtNetAck`, then this tab fetches **same-origin** `/api/mempool/tx/<txid>` and paints `#v2PsbtNetLive`. HTTP 404 → not found, not a fake confirm.
 - `#v2PsbtNetOpen` still docks `../network.html?txid=<hex>` after ack. Do not hide `#txLookupCard` on Network.
 - `/v2/` CSP `connect-src 'self'` (meta + nginx `location ^~ /v2/`). Classic Lab stays `'none'`. Network page still `'self' https://mempool.space`.
@@ -29,7 +30,7 @@ Chip `v0.17.105-v2`. Product stamp on ship.
 | ID | Criterion |
 |----|-----------|
 | AC-1 | `#v2PsbtIn` `#v2PsbtInspect` still work. Sample inspect still ok. |
-| AC-2 | After sample inspect (no prevout), `#v2PsbtNetMsg` states no on-chain id / would not be found. No fetch. `#v2PsbtNetOpen` inactive until a txid exists **and** leak-ack. |
+| AC-2 | After sample inspect (no prevout), `#v2PsbtNetMsg` states no on-chain id / would not be found. No fetch from the sample. Three public example tx buttons exist. After leak-ack, example fetch uses `/api/mempool/tx/<txid>`. `#v2PsbtNetOpen` inactive until a txid exists **and** leak-ack. |
 | AC-3 | Secret-looking paste still refused. No Sign. |
 | AC-4 | `web/v2/index.html` CSP is `connect-src 'self'` and does **not** include `mempool.space`. After leak-ack with a prevout, UC8 fetches `/api/mempool/tx/<txid>` on that face. |
 | AC-5 | Classic `/` still `#psbtIn` and `connect-src 'none'`. `network.html` `#txLookupCard` / `?txid=` after ack stays; missing tx is honest not-found. |

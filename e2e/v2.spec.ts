@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.106-v2)", () => {
+test.describe("V2 use-case tracks (0.17.107-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.106-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.106-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.107-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1020,6 +1020,36 @@ test.describe("V2 use-case tracks (0.17.106-v2)", () => {
     await expect(page.locator("#v2S39Out")).toContainText(/SLIP-39 word shares/i);
     await page.locator("#v2S39Combine").click();
     await expect(page.locator("#v2S39Out")).toContainText(/Match: true/i);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S41 UC8 three public example txs after leak-ack", async ({ page }) => {
+    await page.route("**/api/mempool/tx/**", async (route) => {
+      const url = route.request().url();
+      expect(url).toContain("/api/mempool/tx/");
+      expect(url).not.toContain("mempool.space");
+      const id = url.split("/api/mempool/tx/")[1].split("?")[0];
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          txid: id,
+          status: { confirmed: true, block_height: 170 },
+          vin: [{}],
+          vout: [{}, {}],
+        }),
+      });
+    });
+    await enterV2(page, "/v2/?uc=8");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("[data-v2-ex-txid]")).toHaveCount(3);
+    await page.locator("#v2Psbt").click();
+    await expect(page.locator("#v2PsbtNetMsg")).toContainText(/no on-chain txid|not found/i);
+    await page.locator("[data-v2-ex-txid]").nth(1).click();
+    await page.locator("#v2PsbtNetAck").check();
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/Found|txid|block=/i);
+    await expect(page.locator("#v2PsbtNetOpen")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 });

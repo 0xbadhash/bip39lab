@@ -2,10 +2,10 @@
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| AC-1 | pass | V2-S39 generate phrase |
-| AC-2 | pass | V2-S39 split/combine match |
-| AC-3 | pass | V2-S40 SLIP-39 match |
-| AC-4 | pass | no Sign |
-| AC-5 | pass | quiz bank step 3 |
+| AC-1 | pass | inspect samples |
+| AC-2 | pass | S37 no sample fetch; S41 three buttons |
+| AC-3 | pass | no Sign |
+| AC-4 | pass | S41 Found after ack |
+| AC-5 | pass | Network dock still |
 
-**summary:** V2-S13 S39 S40 passed.
+**summary:** V2-S37 S38 S41 passed.

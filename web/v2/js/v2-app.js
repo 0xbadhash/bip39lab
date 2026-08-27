@@ -38,6 +38,23 @@
   var PSBT_MIN = "cHNidP8A";
   var PSBT_STORY = "cHNidP8BAAoCAAAAAA==";
   var PSBT_PARTIAL = "cHNidP8AIgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA";
+  var PSBT_EX_TX = [
+    {
+      id: "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+      label: "Genesis coinbase",
+      why: "Block 0. The first bitcoin output. Public history."
+    },
+    {
+      id: "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16",
+      label: "First transfer",
+      why: "Block 170. Ten BTC, Satoshi to Hal Finney. Public history."
+    },
+    {
+      id: "cca7507897abc89628f450e8b1e0c6fca4ec3f7b34cccf55f3f531c659ff4d79",
+      label: "Pizza day",
+      why: "Block 57044. Ten thousand BTC for two pizzas. Public history."
+    }
+  ];
 
   function psbtB64ToBytes(raw) {
     var s = String(raw || "").trim();
@@ -143,7 +160,7 @@
 
   var psbtNetIds = [];
 
-  function paintPsbtNet(ids) {
+  function paintPsbtNet(ids, note) {
     var msg = $("v2PsbtNetMsg");
     var ack = $("v2PsbtNetAck");
     var open = $("v2PsbtNetOpen");
@@ -152,15 +169,15 @@
     if (!msg || !open) return;
     if (!psbtNetIds.length) {
       msg.textContent =
-        "This classroom blob has no on-chain txid or input prevout. A public lookup would honestly say not found. This tab did not fetch anything.";
+        "This classroom blob has no on-chain txid or input prevout. A public lookup would honestly say not found. Use a public example below, or paste a package that has a prevout. This tab did not fetch anything.";
       open.hidden = true;
       open.removeAttribute("href");
-      if (ack) ack.checked = false;
       if (live) live.textContent = "No fetch. Missing txs stay not found — never a fake confirm.";
       return;
     }
-    msg.textContent =
-      "Inspect found a prevout txid. Tick leak-ack to look it up on this tab via the same-origin mempool proxy. This tab does not call mempool.space. Network room stays available.";
+    msg.textContent = note
+      ? String(note)
+      : "Inspect found a prevout txid. Tick leak-ack to look it up on this tab via the same-origin mempool proxy. This tab does not call mempool.space. Network room stays available.";
     open.href = "../network.html?txid=" + encodeURIComponent(psbtNetIds[0]);
     open.hidden = !(ack && ack.checked);
     maybeFetchPsbtNet();
@@ -190,10 +207,16 @@
       })
       .then(function (data) {
         if (!data) return;
+        var st = data.status || {};
+        var vinN = data.vin && data.vin.length != null ? data.vin.length : "";
+        var voutN = data.vout && data.vout.length != null ? data.vout.length : "";
         live.textContent =
           "Found (public explorer via same-origin proxy). txid " +
           (data.txid ? String(data.txid) : txid) +
-          (data.confirmed != null ? " confirmed=" + data.confirmed : "") +
+          (st.confirmed != null ? " confirmed=" + st.confirmed : data.confirmed != null ? " confirmed=" + data.confirmed : "") +
+          (st.block_height != null ? " block=" + st.block_height : "") +
+          (vinN !== "" ? " inputs=" + vinN : "") +
+          (voutN !== "" ? " outputs=" + voutN : "") +
           ". This is not a signature and not a broadcast.";
       })
       .catch(function (e) {
@@ -2990,9 +3013,23 @@
         '<p class="control-help" id="v2PsbtStoryLine">This tab never signs. There is no seed field.</p>' +
         '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
         '<div class="v2-psbt-net" id="v2PsbtNet">' +
-        '<p id="v2PsbtNetMsg" class="control-help">Inspect first. If a prevout exists, leak-ack then this tab fetches /api/mempool/tx/ (same origin). Network room stays open.</p>' +
+        '<p id="v2PsbtNetMsg" class="control-help">Inspect first. Classroom samples have no on-chain id. Public examples below are real history — leak-ack then this tab fetches /api/mempool/tx/ (same origin).</p>' +
+        '<p class="control-help">True public examples (not the classroom PSBT):</p>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        PSBT_EX_TX.map(function (ex, i) {
+          return (
+            '<button type="button" class="btn secondary" data-v2-ex-txid="' +
+            ex.id +
+            '" data-v2-ex-i="' +
+            i +
+            '">' +
+            ex.label +
+            "</button>"
+          );
+        }).join("") +
+        "</div>" +
         '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
-        '<pre class="out" id="v2PsbtNetLive">Inspect first. No fetch until leak-ack and a real prevout.</pre>' +
+        '<pre class="out" id="v2PsbtNetLive">Inspect first. No fetch until leak-ack and a real prevout or a public example.</pre>' +
         '<a class="btn secondary" id="v2PsbtNetOpen" hidden href="../network.html" data-v2-dock="8">Open Network (public lookup)</a>' +
         "</div>" +
         pauseBtn("I inspected the package. No sign.", true)
@@ -6024,6 +6061,20 @@
         if (!netAck || !netAck.checked || !/txid=/.test(href)) ev.preventDefault();
       });
     }
+    document.querySelectorAll("[data-v2-ex-txid]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var hex = String(btn.getAttribute("data-v2-ex-txid") || "");
+        var i = parseInt(btn.getAttribute("data-v2-ex-i") || "0", 10);
+        var ex = PSBT_EX_TX[i] || { id: hex, label: "Public tx", why: "Public history." };
+        paintPsbtNet(
+          [hex],
+          ex.label +
+            " — " +
+            ex.why +
+            " Tick leak-ack to fetch /api/mempool/tx/ on this tab. Not from the classroom PSBT. Never a seed."
+        );
+      });
+    });
     var uc2q = $("v2Uc2Quiz");
     if (uc2q) {
       uc2q.querySelectorAll("[data-quiz]").forEach(function (btn) {

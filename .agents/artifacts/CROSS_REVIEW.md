@@ -1,5 +1,5 @@
 # CROSS-REVIEW
 
-Personas: teacher (phrase then split), security (never fund SLIP-39), hardware (format ≠ Suite).
+Personas: teacher (famous txs), security (leak-ack), honesty (not the classroom PSBT).
 
 Blockers: 0.
