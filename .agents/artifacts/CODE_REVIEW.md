@@ -1,24 +1,24 @@
 # CODE-REVIEW
 
-- **command:** `/code_review` vs origin/master
-- **head:** UC6 policy + UC8 paste
-- **secrets:** inspect refuses seed-looking paste; policy is public zpubs
+- **command:** `/code_review`
+- **head:** UC8 Network dock
+- **secrets:** V2 connect-src none; inspect refuses xprv
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-No Sign. No Suite. Paste inspect-only.
+No V2 fetch. Lookup is navigation. Samples honestly have no txid.
 
 ## Follow-ups
 
 - leftover scripts stash
 - lab-strip 404
-- classroom sortedmulti uses zpub strings not compressed pubkeys
+- unsigned-tx parser is educational, not a full bitcoin core decoder
 
 p0=0 follow_ups=3
 
 ## Smoke
 
-Playwright V2-S0 S11 S33 S34 passed.
+Playwright V2-S34 S37 passed.

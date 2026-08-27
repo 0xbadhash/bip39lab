@@ -10,6 +10,53 @@
     if (kind) el.classList.add(kind);
   }
 
+  function txidFromQuery() {
+    try {
+      var q = new URLSearchParams(location.search || "");
+      var t = String(q.get("txid") || "");
+      return /^[0-9a-fA-F]{64}$/.test(t) ? t.toLowerCase() : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  async function fetchTxLookup() {
+    var card = $("txLookupCard");
+    var out = $("txLookupOut");
+    var txid = txidFromQuery();
+    if (!card || !out || !txid) return;
+    card.hidden = false;
+    if (!$("balAck") || !$("balAck").checked) {
+      out.textContent = "Tick leak-ack first. Then this page may fetch " + txid.slice(0, 12) + "… from the mempool proxy. V2 did not fetch.";
+      return;
+    }
+    var api = globalThis.NetworkApi;
+    if (!api || !api.fetchJson || !api.resolveMempoolBase) {
+      out.textContent = "Network API not loaded.";
+      return;
+    }
+    var url = api.resolveMempoolBase() + "/tx/" + encodeURIComponent(txid);
+    out.textContent = "Looking up " + txid + " (public). Failures stay unknown — never a fake confirm.";
+    try {
+      var data = await api.fetchJson(url);
+      var txidOut = data && data.txid ? String(data.txid) : txid;
+      out.textContent =
+        "Found (public explorer). txid " +
+        txidOut +
+        (data && data.confirmed != null ? " confirmed=" + data.confirmed : "") +
+        ". This is not a signature and not a broadcast from Lab.";
+    } catch (e) {
+      var msg = e && e.message ? String(e.message) : String(e);
+      if (/HTTP 404/.test(msg)) {
+        out.textContent =
+          "Not found. That is honest — this id is not on the public chain (classroom samples often 404). Not a fake confirm.";
+      } else {
+        out.textContent =
+          "Lookup unavailable (" + msg + "). Unknown is not a fake zero or a fake confirm.";
+      }
+    }
+  }
+
   function updateAck() {
     const on = $("balAck").checked;
     const fetchBtn = $("btnFetchBal");
@@ -35,6 +82,7 @@
     if (window.LearnLevels && LearnLevels.noteHour) {
       LearnLevels.noteHour("h7Ack", !!on);
     }
+    fetchTxLookup().catch(console.error);
   }
 
   async function fetchSnapshot() {
@@ -362,5 +410,10 @@
     setStatus($("snapStatus"), "Idle — click Fetch when you want public fee/traffic data.", "");
     setStatus($("balStatus"), "Idle — ack leak, then load/paste addresses.", "");
     showFirstHourReturn();
+    if (txidFromQuery()) {
+      var card0 = $("txLookupCard");
+      if (card0) card0.hidden = false;
+      fetchTxLookup().catch(console.error);
+    }
   });
 })();

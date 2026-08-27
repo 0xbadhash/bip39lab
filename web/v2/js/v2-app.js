@@ -39,6 +39,127 @@
   var PSBT_STORY = "cHNidP8BAAoCAAAAAA==";
   var PSBT_PARTIAL = "cHNidP8AIgICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA";
 
+  function psbtB64ToBytes(raw) {
+    var s = String(raw || "").trim();
+    if (!s) return null;
+    var bytes;
+    var i2;
+    if (/^[0-9a-fA-F]+$/.test(s) && s.length % 2 === 0) {
+      bytes = new Uint8Array(s.length / 2);
+      for (i2 = 0; i2 < bytes.length; i2++) bytes[i2] = parseInt(s.slice(i2 * 2, i2 * 2 + 2), 16);
+      return bytes;
+    }
+    try {
+      var bin = atob(s.replace(/\s+/g, ""));
+      bytes = new Uint8Array(bin.length);
+      for (i2 = 0; i2 < bytes.length; i2++) bytes[i2] = bin.charCodeAt(i2);
+      return bytes;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function psbtReadCompact(bytes, i) {
+    if (i >= bytes.length) return [0, i];
+    var n = bytes[i++];
+    if (n < 253) return [n, i];
+    if (n === 253 && i + 1 < bytes.length) return [bytes[i] | (bytes[i + 1] << 8), i + 2];
+    if (n === 254 && i + 3 < bytes.length) {
+      return [
+        (bytes[i] | (bytes[i + 1] << 8) | (bytes[i + 2] << 16) | (bytes[i + 3] << 24)) >>> 0,
+        i + 4
+      ];
+    }
+    return [0, bytes.length];
+  }
+
+  function parseTxPrevTxids(tx) {
+    var out = [];
+    if (!tx || tx.length < 10) return out;
+    var i = 4;
+    if (tx[4] === 0 && tx[5] === 1) i = 6;
+    var vin;
+    var pair = psbtReadCompact(tx, i);
+    vin = pair[0];
+    i = pair[1];
+    var n;
+    var j;
+    var k;
+    var hex;
+    for (n = 0; n < vin && n < 16 && i + 36 <= tx.length; n++) {
+      hex = "";
+      for (j = 31; j >= 0; j--) {
+        k = tx[i + j].toString(16);
+        hex += k.length < 2 ? "0" + k : k;
+      }
+      if (/[1-9a-f]/i.test(hex)) out.push(hex);
+      i += 32;
+      i += 4;
+      pair = psbtReadCompact(tx, i);
+      i = pair[1] + pair[0] + 4;
+    }
+    return out;
+  }
+
+  function extractPsbtPrevTxids(raw) {
+    var bytes = psbtB64ToBytes(raw);
+    var ids = [];
+    if (!bytes || bytes.length < 5) return ids;
+    if (bytes[0] !== 112 || bytes[1] !== 115 || bytes[2] !== 98 || bytes[3] !== 116 || bytes[4] !== 255) {
+      return ids;
+    }
+    var i = 5;
+    var maps = 0;
+    var keyLen;
+    var valLen;
+    var keyType;
+    var pair;
+    var slice;
+    while (i < bytes.length) {
+      if (bytes[i] === 0) {
+        maps++;
+        i++;
+        continue;
+      }
+      pair = psbtReadCompact(bytes, i);
+      keyLen = pair[0];
+      i = pair[1];
+      keyType = keyLen > 0 && i < bytes.length ? bytes[i] : -1;
+      i += keyLen;
+      if (i >= bytes.length) break;
+      pair = psbtReadCompact(bytes, i);
+      valLen = pair[0];
+      i = pair[1];
+      if (maps === 0 && keyType === 0 && valLen > 0 && i + valLen <= bytes.length) {
+        slice = bytes.subarray(i, i + valLen);
+        parseTxPrevTxids(slice).forEach(function (id) {
+          if (ids.indexOf(id) < 0) ids.push(id);
+        });
+      }
+      i += valLen;
+    }
+    return ids;
+  }
+
+  function paintPsbtNet(ids) {
+    var msg = $("v2PsbtNetMsg");
+    var ack = $("v2PsbtNetAck");
+    var open = $("v2PsbtNetOpen");
+    if (!msg || !open) return;
+    if (!ids || !ids.length) {
+      msg.textContent =
+        "This classroom blob has no on-chain txid or input prevout. A public lookup would honestly say not found. This tab did not fetch anything.";
+      open.hidden = true;
+      open.removeAttribute("href");
+      if (ack) ack.checked = false;
+      return;
+    }
+    msg.textContent =
+      "Inspect found a prevout txid. Public lookup uses the Network room (mempool proxy / mempool.space). Tick leak-ack, then open Network. This V2 tab still does not fetch.";
+    open.href = "../network.html?txid=" + encodeURIComponent(ids[0]);
+    open.hidden = !(ack && ack.checked);
+  }
+
   var TRACKS = [
     { id: 1, level: "Starter", title: "First wallet", job: "Make a practice phrase and one receive address.", done: "You made words, saw the card, and know the address is not the secret. You will not send coins here." },
     { id: 2, level: "Starter", title: "Paper backup", job: "Write it on paper. Do not photo it.", done: "The numbered card is the backup. No photo or cloud of a funded phrase." },
@@ -2752,6 +2873,11 @@
         "</div>" +
         '<p class="control-help" id="v2PsbtStoryLine">This tab never signs. There is no seed field.</p>' +
         '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
+        '<div class="v2-psbt-net" id="v2PsbtNet">' +
+        '<p id="v2PsbtNetMsg" class="control-help">Inspect first. Public lookup, if any, opens the Network room — this tab does not fetch.</p>' +
+        '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
+        '<a class="btn secondary" id="v2PsbtNetOpen" hidden href="../network.html" data-v2-dock="8">Open Network (public lookup)</a>' +
+        "</div>" +
         pauseBtn("I inspected the package. No sign.", true)
       );
     }
@@ -5615,9 +5741,11 @@
           : "This blob is not a readable payment package. " +
             (r.detail || "unknown") +
             "\nThis tab does not sign and does not broadcast.";
+        paintPsbtNet([]);
         if (pause) pause.disabled = false;
         return;
       }
+      var prevs = extractPsbtPrevTxids(src);
       out.textContent = [
         "What it is: an unfinished bitcoin send (PSBT) you can pass around without the seed.",
         "Why: hot software can build the send; a cold device or a co-signer adds a signature later. Nobody pastes the twelve words.",
@@ -5626,8 +5754,12 @@
         "What the parser saw: status ok — the file starts with the PSBT stamp (psbt\\xff). Classroom blob, not a funded spend. Partial signatures counted: " +
           (r.partialSigs != null ? r.partialSigs : 0) +
           ".",
+        prevs.length
+          ? "Prevout txid(s): " + prevs.join(" ")
+          : "No on-chain txid or input prevout in this blob.",
         "This tab does not sign and does not broadcast."
       ].join("\n");
+      paintPsbtNet(prevs);
       if (pause) pause.disabled = false;
     }
     function bindPsbt(id, raw, story) {
@@ -5649,6 +5781,22 @@
     if (insp) {
       insp.addEventListener("click", function () {
         inspectV2Psbt(($("v2PsbtIn") && $("v2PsbtIn").value) || "", "Inspected the box. This tab never signs.");
+      });
+    }
+    var netAck = $("v2PsbtNetAck");
+    if (netAck) {
+      netAck.addEventListener("change", function () {
+        var open = $("v2PsbtNetOpen");
+        if (!open) return;
+        var href = open.getAttribute("href") || "";
+        open.hidden = !(netAck.checked && /txid=/.test(href));
+      });
+    }
+    var netOpen = $("v2PsbtNetOpen");
+    if (netOpen) {
+      netOpen.addEventListener("click", function (ev) {
+        var href = netOpen.getAttribute("href") || "";
+        if (!netAck || !netAck.checked || !/txid=/.test(href)) ev.preventDefault();
       });
     }
     var uc2q = $("v2Uc2Quiz");

@@ -9,7 +9,7 @@
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://mempool.space; base-uri 'none'; form-action 'none'" />
   <meta name="description" content="bip39lab Network — fees, mempool traffic, address balances (opt-in, address-only)." />
   <title>Network · bip39.catalyxt.xyz</title>
-  <link rel="stylesheet" href="css/app.css?v=0.16.60" />
+  <link rel="stylesheet" href="css/app.css?v=0.16.61" />
 </head>
 <body>
   <div class="app">
@@ -88,7 +88,7 @@
 
             <div class="sidebar-foot">
         <p class="sidebar-note">
-          <span class="site-version-chip" data-site-version title="Site release v0.16.60">v0.16.60</span>
+          <span class="site-version-chip" data-site-version title="Site release v0.16.61">v0.16.61</span>
           <br />
           May contact mempool.space after you opt in.
         </p>
@@ -196,6 +196,11 @@
           </div>
           <p class="card-lede">Addresses only — never a seed phrase.</p>
           <!-- Safety always visible -->
+          <div class="card-sub" id="txLookupCard" hidden>
+            <h3>Public tx lookup (from V2 inspect dock)</h3>
+            <p class="control-help" id="txLookupHint">Tick leak-ack, then this page fetches that txid via the mempool proxy. Missing txs say not found — never a fake confirm.</p>
+            <pre class="out" id="txLookupOut">Waiting for leak-ack.</pre>
+          </div>
           <label class="check label-row">
             <input type="checkbox" id="balAck" />
             I understand these addresses and my IP go to this site’s mempool proxy, then mempool.space (leak ack)
@@ -288,11 +293,11 @@
     <span class="learn-return-hint" id="learnReturnDockNetHint">Tick the leak-ack: addresses and your IP go to the mempool proxy. Mark done stays off until that box is ticked.</span>
     <button type="button" class="btn btn-sm" id="btnHourMarkFromDockNet" hidden disabled>Mark done</button>
   </div>
-  <script src="js/site-version.js?v=0.16.60"></script>
-  <script src="js/glossary.js?v=0.16.60"></script>
-  <script src="js/help-ui.js?v=0.16.60"></script>
-  <script src="js/learn-levels.js?v=0.16.60"></script>
-  <script src="js/network.bundle.js?v=0.16.60"></script>
-  <script src="js/network-app.js?v=0.16.60"></script>
+  <script src="js/site-version.js?v=0.16.61"></script>
+  <script src="js/glossary.js?v=0.16.61"></script>
+  <script src="js/help-ui.js?v=0.16.61"></script>
+  <script src="js/learn-levels.js?v=0.16.61"></script>
+  <script src="js/network.bundle.js?v=0.16.61"></script>
+  <script src="js/network-app.js?v=0.16.61"></script>
 </body>
 </html>

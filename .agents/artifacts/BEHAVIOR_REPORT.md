@@ -2,9 +2,10 @@
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| UC6 AC-1 | pass | 2-of-3 after three zpubs |
-| UC6 AC-2 | pass | wsh(sortedmulti(2, three zpub |
-| UC8 AC-1–3 | pass | V2-S34 paste + refuse xprv |
-| classic | pass | S0 |
+| AC-1 | pass | V2-S34 paste inspect |
+| AC-2 | pass | V2-S37 no-txid dock hidden |
+| AC-3 | pass | V2-S34 refuse |
+| AC-4 | pass | connect-src none |
+| AC-5 | pass | no Sign; no V2 fetch |
 
-**summary:** V2-S0 S11 S33 S34 passed.
+**summary:** V2-S34 S37 passed.
