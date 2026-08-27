@@ -21,8 +21,10 @@ Chip **v0.17.100-v2**. `#v2MsPolicy` / `#v2MsDesc`. `#v2PsbtIn` / `#v2PsbtInspec
 
 | AC | Test |
 |----|------|
-| UC6 AC-1–4 | V2-S11 V2-S33 `test_ac_v2_uc6_policy_builder` |
-| UC8 AC-1–4 | V2-S34 `test_ac_v2_uc8_paste_psbt` |
+| AC-1 | V2-S33 `test_ac_1_policy_2of3` V2-S34 `test_ac_1_textarea` |
+| AC-2 | V2-S33 `test_ac_2_wsh_sortedmulti` V2-S34 `test_ac_2_inspect_paste` |
+| AC-3 | V2-S33 `test_ac_3_no_sign` V2-S34 `test_ac_3_refuse_secret` |
+| AC-4 | V2-S0 `test_ac_4_classic_mspolicy` `test_ac_4_classic_psbtin` |
 
 ## Red-proof
 
