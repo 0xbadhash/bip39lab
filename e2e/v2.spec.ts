@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.94-v2)", () => {
+test.describe("V2 use-case tracks (0.17.95-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.94-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.94-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.95-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -296,16 +296,18 @@ test.describe("V2 use-case tracks (0.17.94-v2)", () => {
     await expect(page.locator(".v2-cmp-fields #ppB")).toBeVisible();
     await expect(page.locator(".v2-cmp-fields #ppB")).toHaveAttribute("type", "password");
     await expect(page.locator("#v2CmpTable")).toBeVisible();
-    await expect(page.locator("#v2CmpStoryA")).toContainText(/A has no passphrase/i);
     await expect(page.locator("#v2Cmp")).toHaveCount(0);
+    await expect(page.locator("#v2CmpStoryA")).toHaveCount(0);
     await page.locator("#ppB").fill("test");
-    await expect(page.locator("#v2CmpPpB")).toContainText(/4 chars/i);
+    await expect(page.locator("#v2PpCharsB")).toHaveText(/4 chars/);
     await expect(page.locator("#v2PpEstB")).toHaveClass(/v2-pp-est-weak/);
-    await expect(page.locator("#v2CmpPpB .v2-pp-est-weak")).toBeVisible();
+    await expect(page.locator("#v2CmpPpB")).toHaveCount(0);
     await page.locator("#ppA").fill("abcdefghijklmnopqrstuvwxyz");
-    await expect(page.locator("#v2CmpPpA")).toContainText(/26 chars/);
+    await expect(page.locator("#v2PpCharsA")).toHaveText(/26 chars/);
     await expect(page.locator("#v2CmpAddrA")).toHaveText(/^tb1/, { timeout: 8000 });
-    await expect(page.locator(".v2-verdict")).toContainText(/two wallets/i);
+    await expect(page.locator(".v2-verdict")).toHaveText(
+      /Diverged — two wallets\. Same words, different passphrases, different addresses/
+    );
     await expect(page.locator("#v2CmpOut")).not.toContainText(/empty vs empty/i);
     await expect(page.locator("#v2CmpTable")).toBeVisible();
   });

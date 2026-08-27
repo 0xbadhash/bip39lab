@@ -745,6 +745,13 @@ td .v2-pp-est {
   margin: 0;
   font-size: inherit;
 }
+.v2-pp-chars {
+  display: block;
+  margin-top: 0.15rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--muted, #8b9bb0);
+}
 .v2-pp-est-empty { color: var(--muted, #8b93a7); }
 .v2-pp-est-weak { color: var(--bad); }
 .v2-pp-est-fair { color: var(--warn, #e3b341); }

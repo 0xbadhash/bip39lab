@@ -2206,26 +2206,21 @@
           "Do not fund either practice address."
         ) +
         desc(
-          "Same words. A has no extra secret. B has a test secret. Two different receive addresses means two wallets. Forget B and that second vault is gone — there is no reset."
+          "Same words. A empty vs B with a test secret. Different receive addresses are two wallets."
         ) +
-        callout("is", "What you are comparing", "Same words. Empty extra secret vs a test secret. Public addresses only.") +
         '<div class="v2-cmp-split">' +
         '<div class="v2-cmp-face">' +
         ppKeyHtml("v2PpKeyUc3b") +
         "</div>" +
         '<div class="v2-cmp-fields">' +
-        '<label class="field">A · empty extra secret <input id="ppA" type="password" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span>' +
+        '<label class="field">A · empty extra secret <input id="ppA" type="password" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span id="v2PpCharsA" class="v2-pp-chars">0 chars</span><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span>' +
         '<div class="pp-strength-bar v2-pp-bar"><div id="v2PpBarA" class="pp-strength-bar-fill pp-tier-empty" role="progressbar" aria-valuemin="0" aria-valuemax="128" aria-valuenow="0" style="width:0%"></div></div></label>' +
-        '<label class="field">B · test secret <input id="ppB" type="password" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span>' +
+        '<label class="field">B · test secret <input id="ppB" type="password" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span id="v2PpCharsB" class="v2-pp-chars">4 chars</span><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span>' +
         '<div class="pp-strength-bar v2-pp-bar"><div id="v2PpBarB" class="pp-strength-bar-fill pp-tier-weak" role="progressbar" aria-valuemin="0" aria-valuemax="128" aria-valuenow="6" style="width:5%"></div></div></label>' +
         "</div>" +
         '<div id="v2CmpOut" class="v2-cmp-out">' +
-        '<div class="v2-cmp-story">' +
-        '<p class="v2-cmp-story-line"><strong id="v2CmpStoryA">A has no passphrase</strong><code id="v2CmpStoryAddrA">…</code></p>' +
-        '<p class="v2-cmp-story-line"><strong id="v2CmpStoryB">B = “test”</strong><code id="v2CmpStoryAddrB">…</code></p>' +
-        "</div>" +
         '<div id="v2CmpVerdict" class="v2-verdict split">Type in A or B. Addresses follow a moment later.</div>' +
-        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr><tr><td>Passphrase</td><td id="v2CmpPpA"><span class="v2-pp-est v2-pp-est-empty">(empty)</span></td><td id="v2CmpPpB">4 chars · <span class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span></td></tr><tr><td>Receive #0</td><td><code id="v2CmpAddrA">…</code></td><td><code id="v2CmpAddrB">…</code></td></tr></table>' +
+        '<table class="v2-ent-stack" id="v2CmpTable"><tr><th></th><th>A</th><th>B</th></tr><tr><td>Receive #0</td><td><code id="v2CmpAddrA">…</code></td><td><code id="v2CmpAddrB">…</code></td></tr></table>' +
         "</div>" +
         "</div>" +
         pauseBtn("Forget B and that vault is gone", true)
@@ -3912,20 +3907,9 @@
     bar.className = "pp-strength-bar-fill pp-tier-" + tier;
   }
 
-  function paintCmpCell(el, pp) {
+  function paintPpChars(el, pp) {
     if (!el) return;
-    el.replaceChildren();
-    if (!pp) {
-      paintPpEst(el.appendChild(document.createElement("span")), "");
-      return;
-    }
-    el.appendChild(document.createTextNode(pp.length + " chars · "));
-    paintPpEst(el.appendChild(document.createElement("span")), pp);
-  }
-
-  function ppCmpStoryLabel(side, pp) {
-    if (!pp) return side + " has no passphrase";
-    return side + " = “" + pp + "”";
+    el.textContent = pp ? pp.length + " chars" : "0 chars";
   }
 
   function paintCmpEstimates() {
@@ -3934,14 +3918,12 @@
     if (!aEl && !bEl) return;
     var a = (aEl && aEl.value) || "";
     var b = (bEl && bEl.value) || "";
-    paintCmpCell($("v2CmpPpA"), a);
-    paintCmpCell($("v2CmpPpB"), b);
+    paintPpChars($("v2PpCharsA"), a);
+    paintPpChars($("v2PpCharsB"), b);
     paintPpEst($("v2PpEstA"), a);
     paintPpEst($("v2PpEstB"), b);
     paintPpBar("v2PpBarA", a);
     paintPpBar("v2PpBarB", b);
-    if ($("v2CmpStoryA")) $("v2CmpStoryA").textContent = ppCmpStoryLabel("A", a);
-    if ($("v2CmpStoryB")) $("v2CmpStoryB").textContent = ppCmpStoryLabel("B", b);
   }
 
   async function paintCmpAddresses() {
@@ -3949,7 +3931,7 @@
     var seq = (mem.cmpSeq = (mem.cmpSeq || 0) + 1);
     var a = ($("ppA") && $("ppA").value) || "";
     var b = ($("ppB") && $("ppB").value) || "";
-    ["v2CmpAddrA", "v2CmpAddrB", "v2CmpStoryAddrA", "v2CmpStoryAddrB"].forEach(function (id) {
+    ["v2CmpAddrA", "v2CmpAddrB"].forEach(function (id) {
       if ($(id)) $(id).textContent = "…";
     });
     var ra = await BIP39Lab.deriveAddresses(mem.mnemonic, a, { network: "test", count: 1 });
@@ -3960,13 +3942,9 @@
     var same = addrA === addrB;
     if ($("v2CmpAddrA")) $("v2CmpAddrA").textContent = addrA;
     if ($("v2CmpAddrB")) $("v2CmpAddrB").textContent = addrB;
-    if ($("v2CmpStoryAddrA")) $("v2CmpStoryAddrA").textContent = addrA;
-    if ($("v2CmpStoryAddrB")) $("v2CmpStoryAddrB").textContent = addrB;
     var verdict;
     if (same) {
-      if (a === "" && b === "") verdict = "Same receive address. Both empty — one vault.";
-      else if (a === b) verdict = "Same receive address. A and B match — one vault.";
-      else verdict = "Same receive address with these two secrets.";
+      verdict = "Same receive address. A and B match — one vault.";
     } else {
       verdict = "Diverged — two wallets. Same words, different passphrases, different addresses.";
     }
