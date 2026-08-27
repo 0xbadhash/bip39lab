@@ -2465,6 +2465,27 @@
     );
   }
 
+  function paintMsPolicy() {
+    var pol = $("v2MsPolicy");
+    var box = $("v2MsDesc");
+    if (!pol || !box) return;
+    var cs = mem.cosigners || [];
+    var zs = [];
+    var i;
+    for (i = 0; i < 3; i++) {
+      if (cs[i] && cs[i].zpub) zs.push(cs[i].zpub);
+    }
+    if (zs.length !== 3) {
+      pol.textContent = "Generate three zpubs to build the 2-of-3 policy.";
+      box.textContent = "wsh(sortedmulti(2,…)) appears when all three viewing keys exist. No signer.";
+      return;
+    }
+    var sorted = zs.slice().sort();
+    pol.textContent =
+      "Policy: 2-of-3 — any 2 of the 3 cosigners must sign to spend. BIP67 classroom sort ON: keys ordered so every wallet builds the same string. No signer on this pad.";
+    box.textContent = "wsh(sortedmulti(2," + sorted.join(",") + "))";
+  }
+
   async function uc6(step) {
     if (step === 0) {
       return pad(
@@ -2549,6 +2570,17 @@
         (ready
           ? '<p class="msg-ok" id="v2CsReady">Three zpubs ready. Those are what a 2-of-3 coordinator would see — not the words.</p>'
           : '<p class="control-help">Pause stays locked until each cosigner shows a zpub.</p>') +
+        '<h3>Policy readout</h3>' +
+        '<p id="v2MsPolicy" class="status-plain">' +
+        (ready
+          ? "Policy: 2-of-3 — any 2 of the 3 cosigners must sign to spend. BIP67 classroom sort ON. No signer on this pad."
+          : "Generate three zpubs to build the 2-of-3 policy.") +
+        "</p>" +
+        '<pre class="out" id="v2MsDesc">' +
+        (ready
+          ? "wsh(sortedmulti(2,…))"
+          : "wsh(sortedmulti(2,…)) appears when all three viewing keys exist. No signer.") +
+        "</pre>" +
         pauseBtn("Each keeps a full seed", !ready)
       );
     }
@@ -2677,11 +2709,13 @@
         desc(
           "Click inspect to read the sample package: magic bytes, maps, inputs, outputs. No signature is added. The recovery words are not needed."
         ) +
-        callout("done", "Structure only", "A sample PSBT is parsed offline. No signature is added.") +
+        callout("done", "Structure only", "A sample or a paste is parsed offline. No signature is added.") +
+        '<label class="field" for="v2PsbtIn">PSBT text (sample or paste)<textarea id="v2PsbtIn" rows="3" spellcheck="false" autocomplete="off" placeholder="Click a sample, or paste cHNidP8…"></textarea></label>' +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn" id="v2Psbt" data-psbt="min">Inspect sample</button>' +
         '<button type="button" class="btn secondary" id="v2PsbtStory" data-psbt="story">Inspect another sample</button>' +
         '<button type="button" class="btn secondary" id="v2PsbtPartial" data-psbt="partial">Inspect a partial sample</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtInspect">Inspect again</button>' +
         "</div>" +
         '<p class="control-help" id="v2PsbtStoryLine">This tab never signs. There is no seed field.</p>' +
         '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
@@ -5461,6 +5495,7 @@
         renderTrack();
       });
     }
+    if ($("v2MsPolicy")) paintMsPolicy();
     [0, 1, 2].forEach(function (i) {
       var sel = $("v2CsWc" + i);
       if (sel) {
@@ -5505,7 +5540,10 @@
       if (pause) pause.disabled = false;
     });
     function inspectV2Psbt(raw, story) {
-      var r = BIP39Lab.inspectPsbt(raw);
+      var box = $("v2PsbtIn");
+      if (box && raw != null && String(raw).length) box.value = String(raw);
+      var src = (box && box.value) || raw || "";
+      var r = BIP39Lab.inspectPsbt(src);
       var line = $("v2PsbtStoryLine");
       if (line) line.textContent = story || "";
       var lines = [
@@ -5536,6 +5574,12 @@
       "Multisig / hardware story: software builds the package; a cold device or co-signer adds a partial signature elsewhere. This tab never signs."
     );
     bindPsbt("v2PsbtPartial", PSBT_PARTIAL, "Educational blob with extra map bytes — still inspect-only, not a funded spend.");
+    var insp = $("v2PsbtInspect");
+    if (insp) {
+      insp.addEventListener("click", function () {
+        inspectV2Psbt(($("v2PsbtIn") && $("v2PsbtIn").value) || "", "Inspected the box. This tab never signs.");
+      });
+    }
     var uc2q = $("v2Uc2Quiz");
     if (uc2q) {
       uc2q.querySelectorAll("[data-quiz]").forEach(function (btn) {

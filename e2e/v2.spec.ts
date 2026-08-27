@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.99-v2)", () => {
+test.describe("V2 use-case tracks (0.17.100-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.99-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.99-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.100-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -367,6 +367,9 @@ test.describe("V2 use-case tracks (0.17.99-v2)", () => {
       await expect(page.locator(`#v2CsZpub${i}`)).toHaveText(/^zpub/);
     }
     await expect(page.locator("#v2CsReady")).toBeVisible();
+    await expect(page.locator("#v2MsPolicy")).toContainText(/2-of-3/);
+    await expect(page.locator("#v2MsDesc")).toContainText(/wsh\(sortedmulti\(2,/);
+    await expect(page.locator("#v2MsDesc")).toContainText(/zpub/);
     await expect(page.locator("#v2Pause")).toBeEnabled();
     await page.locator("#v2Pause").click();
     await page.locator('[data-quiz="bad"]').first().click();
@@ -878,6 +881,36 @@ test.describe("V2 use-case tracks (0.17.99-v2)", () => {
     await expect(page.locator("#v2DescOut")).toContainText(/pkh\(/);
     await expect(page.locator("#v2WoList [data-qr]")).toHaveCount(1);
     await expect(page.locator("#v2DescLine")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S33 UC6 wsh sortedmulti policy from three zpubs", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=6");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    for (let i = 0; i < 3; i++) {
+      await page.locator(`[data-cs-gen="${i}"]`).click();
+      await page.locator(`[data-cs-zpub="${i}"]`).click();
+    }
+    await expect(page.locator("#v2MsPolicy")).toContainText(/2-of-3/);
+    const line = await page.locator("#v2MsDesc").innerText();
+    expect(line).toMatch(/^wsh\(sortedmulti\(2,/);
+    expect(line.split("zpub").length - 1).toBe(3);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S34 UC8 paste PSBT inspect-only", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=8");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2PsbtIn")).toBeVisible();
+    await expect(page.locator("#v2PsbtInspect")).toBeVisible();
+    await page.locator("#v2PsbtIn").fill("cHNidP8A");
+    await page.locator("#v2PsbtInspect").click();
+    await expect(page.locator("#v2PsbtOut")).toContainText(/Status|Magic|ok/i);
+    await page.locator("#v2PsbtIn").fill("xprv secret looking");
+    await page.locator("#v2PsbtInspect").click();
+    await expect(page.locator("#v2PsbtOut")).toContainText(/refus|secret/i);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 });
