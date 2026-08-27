@@ -2476,13 +2476,16 @@
       if (cs[i] && cs[i].zpub) zs.push(cs[i].zpub);
     }
     if (zs.length !== 3) {
-      pol.textContent = "Generate three zpubs to build the 2-of-3 policy.";
-      box.textContent = "wsh(sortedmulti(2,…)) appears when all three viewing keys exist. No signer.";
+      pol.textContent =
+        "Show all three viewing keys first. Then this pad writes the spend rule: any 2 of these 3 people can move coins.";
+      box.textContent = "The recipe line appears when all three viewing keys exist. This pad does not sign.";
       return;
     }
     var sorted = zs.slice().sort();
     pol.textContent =
-      "Policy: 2-of-3 — any 2 of the 3 cosigners must sign to spend. BIP67 classroom sort ON: keys ordered so every wallet builds the same string. No signer on this pad.";
+      "What it is: a 2-of-3 spend rule. Any two of these three people can move the coins. One person alone cannot. Each still keeps a full backup — not scraps of one phrase. " +
+      "Why you need it: a wallet cannot rebuild this vault from the three backups alone. It also needs this recipe (how many must sign, and which three keys, in one agreed order). Lose the recipe and you can be locked out even if the words survive. " +
+      "Where you use it: save it with the three viewing keys (paper or a coordinator / Sparrow watch-only import). You build and spend in a real wallet, not here. Sorted = always the same A–Z key order so everyone gets the same vault. This pad does not sign.";
     box.textContent = "wsh(sortedmulti(2," + sorted.join(",") + "))";
   }
 
@@ -2570,16 +2573,17 @@
         (ready
           ? '<p class="msg-ok" id="v2CsReady">Three zpubs ready. Those are what a 2-of-3 coordinator would see — not the words.</p>'
           : '<p class="control-help">Pause stays locked until each cosigner shows a zpub.</p>') +
-        '<h3>Policy readout</h3>' +
+        '<h3>The spend rule</h3>' +
         '<p id="v2MsPolicy" class="status-plain">' +
         (ready
-          ? "Policy: 2-of-3 — any 2 of the 3 cosigners must sign to spend. BIP67 classroom sort ON. No signer on this pad."
-          : "Generate three zpubs to build the 2-of-3 policy.") +
+          ? "What it is: a 2-of-3 spend rule. Any two of these three people can move the coins. One person alone cannot."
+          : "Show all three viewing keys first. Then this pad writes the spend rule: any 2 of these 3 people can move coins.") +
         "</p>" +
+        '<p class="control-help" id="v2MsWhy">The box below is the recipe you would save with the three viewing keys. Sorted means the keys are always listed in the same order so every wallet builds the same vault. This pad does not sign.</p>' +
         '<pre class="out" id="v2MsDesc">' +
         (ready
           ? "wsh(sortedmulti(2,…))"
-          : "wsh(sortedmulti(2,…)) appears when all three viewing keys exist. No signer.") +
+          : "The recipe line appears when all three viewing keys exist. This pad does not sign.") +
         "</pre>" +
         pauseBtn("Each keeps a full seed", !ready)
       );
