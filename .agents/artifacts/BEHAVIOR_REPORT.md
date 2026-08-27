@@ -2,16 +2,13 @@
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| AC-1 | pass | V2-S15 V2-S46 `#v2Dice10` +10 d6 (fast) |
-| AC-2 | pass | V2-S46 mint then `#v2EntToLab` → UC1 same words |
-| AC-3 | pass | no Sign; sessionStorage without pad words |
-| AC-4 | pass | V2-S0 classic Lab Generate |
-| AC-5 | pass | UC10 files not in this UC14 delta intent |
+| AC-1 | pass | V2-S45 `#v2S39TryOut` class `msg-warn`, copy not the exercise |
+| AC-2 | pass | V2-S45 two shares `msg-ok` Match practice hex: true |
+| AC-3 | pass | V2-S45 under two Need any 2 / honest; no Sign |
 
-**summary:** V2-S15 and V2-S46 passed. Pad toys stay simulated.
+**summary:** Playwright V2-S45 vs contract. Surface `/v2/?uc=7` after gate + phrase + split + SLIP-39.
 
 ## Things that look bad but are actually fine
-
-1. First wallet not a Lab tab — V2 analog
-2. Math.random d6 — classroom, labelled simulated
-3. Dual stamp 0.16.73 / 0.17.116-v2
+1. Amber is CSS class not a screenshot in CI
+2. Combine any 2 of 3 shortcut still green
+3. Dual stamp

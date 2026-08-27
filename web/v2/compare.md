@@ -4,7 +4,7 @@
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
 - **v1:** `/` · product stamp `v0.16.72`
-- **v2:** `/v2/` · chip `v0.17.116-v2` · `/v2/VERSION` `0.17.116-v2` (skew closed 2026-08-27)
+- **v2:** `/v2/` · chip `v0.17.117-v2` · `/v2/VERSION` `0.17.117-v2` (skew closed 2026-08-27)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 

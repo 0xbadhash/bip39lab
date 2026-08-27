@@ -5982,10 +5982,12 @@
       var base = String(el.className || "")
         .replace(/\bmsg-ok\b/g, "")
         .replace(/\bmsg-bad\b/g, "")
+        .replace(/\bmsg-warn\b/g, "")
         .replace(/\s+/g, " ")
         .trim();
       if (kind === "ok") el.className = base + " msg-ok";
       else if (kind === "bad") el.className = base + " msg-bad";
+      else if (kind === "warn") el.className = base + " msg-warn";
       else el.className = base;
     }
     function utf8DecodeU8(u8) {
@@ -6251,7 +6253,7 @@
             var rec3 = Slip39Lab.combineShares(picked.slice(0, 2), "");
             var ok3 = Slip39Lab.matchExpected(rec3, mem.slip39Hex);
             if (tout) {
-              paintTone(tout, ok3 ? "" : "bad");
+              paintTone(tout, ok3 ? "warn" : "bad");
               tout.textContent = ok3
                 ? [
                     "These three lists are correct — they are the full 2-of-3 backup (practice hex " + rec3 + ").",

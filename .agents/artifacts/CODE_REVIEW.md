@@ -1,8 +1,9 @@
 # CODE-REVIEW
 
-command: UC14 RNG toys vs origin/master
-base: HEAD (pre-commit)
-secrets: none (practice pad in RAM)
+command: `/code_review` UC7 msg-warn
+base: origin/master
+head: working tree then HEAD
+secrets: clean (practice hex already classroom)
 
 ## Findings accepted
 None.
@@ -14,7 +15,12 @@ None.
 0
 
 ## Follow-ups
-Classic Lab `#btnEntToLab` unchanged. UC10 fetch off-nginx still out of this ship.
+`--warn` token in app.css is gold; this ship uses explicit orange `#e08a24` on `.msg-warn`.
 
 ## Smoke
-V2-S0, V2-S15, V2-S46 passed.
+V2-S45 passed (msg-warn on three lists).
+
+## Things that look bad but are actually fine
+1. Dual stamp
+2. leftover scripts
+3. amber not using only var(--warn)

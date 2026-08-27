@@ -1811,6 +1811,19 @@ pre.out.msg-bad {
   background: var(--bad-soft);
   border-color: var(--bad);
 }
+.msg-warn {
+  background: rgba(224, 138, 36, 0.16);
+  border: 1px solid #e08a24;
+  color: var(--text);
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  margin: 0.5rem 0;
+}
+pre.out.msg-warn {
+  background: rgba(224, 138, 36, 0.22);
+  border-color: #e08a24;
+  color: #f3c27a;
+}
 .quiz-opts { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.5rem 0; }
 .quiz-opts button { text-align: left; white-space: normal; }
 .quiz-opts button.is-picked {

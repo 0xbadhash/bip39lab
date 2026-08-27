@@ -1,17 +1,22 @@
 # CROSS-REVIEW
 
-Personas: learner, security.
+Blockers: 0. Obsolete Tier A: 0.
 
-Blockers 0.
+### Security Guru
+none — textContent paint; no new network; no Sign; practice hex already shown in-track.
 
-Learner: +10 d6 (fast) and send pad to First wallet after confirm.
+### Maintainability Expert
+none — paintTone now strips msg-warn; CSS next to msg-ok/msg-bad.
 
-Security: no mnemonic in sessionStorage; no Sign; practice overwrite confirm.
+### Obsolete / cleanup (scoped)
+- Tier A: none
+- Tier B: none
+- Tier C: whole-repo cruft → `/sweep` if asked
 
-Obsolete: leftover row 14 in compare.md marked Ported.
+### Domain Specialist
+none — three shares still not the 2-of-3 exercise; two shares still green success.
 
 ## Things that look bad but are actually fine
-
-1. No classic Lab tab on V2
-2. startTrack(1) does not persist pad
-3. UC10 not reopened
+1. First wallet vs Lab analog (not this ship)
+2. SLIP-39 library rejects 3 mnemonics for 2-of-3
+3. Dual stamp

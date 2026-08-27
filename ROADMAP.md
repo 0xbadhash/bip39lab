@@ -72,6 +72,14 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 UC7 amber three-share warning
+- **Status:** done
+- **Priority:** P1
+- **Spec:** `.agents/specs/2026-08-27-v2-uc7-amber-three-shares.md`
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g V2-S45`
+- **Notes:** grill-me complete; msg-warn not msg-ok
+
+
 ### [DONE] V2 UC14 extra RNG toys
 - **Status:** done
 - **Priority:** P0
