@@ -42,17 +42,39 @@
     {
       id: "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
       label: "Genesis coinbase",
-      why: "Block 0. The first bitcoin output. Public history."
+      why: "Block 0. The first bitcoin output. Public history.",
+      snap: {
+        txid: "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+        status: { confirmed: true, block_height: 0 },
+        vin: [{}],
+        vout: [{ value: 5000000000 }],
+        story:
+          "Coinbase — no previous tx. One output: 50 BTC (5,000,000,000 sats). This is the first bitcoin output. The genesis coinbase is not a normal spendable UTXO."
+      }
     },
     {
       id: "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16",
       label: "First transfer",
-      why: "Block 170. Ten BTC, Satoshi to Hal Finney. Public history."
+      why: "Block 170. Ten BTC, Satoshi to Hal Finney. Public history.",
+      snap: {
+        txid: "f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16",
+        status: { confirmed: true, block_height: 170 },
+        vin: [{}],
+        vout: [{}, {}],
+        story: "First non-coinbase transfer: 10 BTC from Satoshi to Hal Finney. 1 input, 2 outputs. Confirmed in block 170."
+      }
     },
     {
       id: "cca7507897abc89628f450e8b1e0c6fca4ec3f7b34cccf55f3f531c659ff4d79",
       label: "Pizza day",
-      why: "Block 57044. Ten thousand BTC for two pizzas. Public history."
+      why: "Block 57044. Ten thousand BTC for two pizzas. Public history.",
+      snap: {
+        txid: "cca7507897abc89628f450e8b1e0c6fca4ec3f7b34cccf55f3f531c659ff4d79",
+        status: { confirmed: true, block_height: 57044 },
+        vin: [{}],
+        vout: [{}, {}],
+        story: "Pizza day: 10,000 BTC paid for two pizzas. 1 input, 2 outputs. Confirmed in block 57044. Public history, not a classroom fake."
+      }
     }
   ];
 
@@ -183,21 +205,54 @@
     maybeFetchPsbtNet();
   }
 
+  function findExTx(txid) {
+    var i;
+    for (i = 0; i < PSBT_EX_TX.length; i++) {
+      if (PSBT_EX_TX[i].id === txid) return PSBT_EX_TX[i];
+    }
+    return null;
+  }
+
+  function paintTxInspect(live, data, how, story) {
+    if (!live) return;
+    var st = (data && data.status) || {};
+    var vinN = data && data.vin && data.vin.length != null ? data.vin.length : "";
+    var voutN = data && data.vout && data.vout.length != null ? data.vout.length : "";
+    var lines = [
+      how === "live"
+        ? "Found (live /api/mempool/tx/). Public explorer via same-origin proxy."
+        : "Inspected from the classroom snapshot (live /api/mempool proxy did not answer). This is real mainnet history, not a fake confirm. This tab did not call mempool.space.",
+      story || "",
+      "txid " + ((data && data.txid) || ""),
+      st.confirmed != null ? "confirmed=" + st.confirmed : "",
+      st.block_height != null ? "block=" + st.block_height : "",
+      vinN !== "" ? "inputs=" + vinN : "",
+      voutN !== "" ? "outputs=" + voutN : "",
+      "This is not a signature and not a broadcast."
+    ];
+    live.textContent = lines.filter(Boolean).join("\n");
+  }
+
   function maybeFetchPsbtNet() {
     var live = $("v2PsbtNetLive");
     var ack = $("v2PsbtNetAck");
     if (!live) return;
     if (!psbtNetIds.length) return;
     var txid = psbtNetIds[0];
+    var ex = findExTx(txid);
     if (!ack || !ack.checked) {
       live.textContent =
-        "Tick leak-ack to fetch " + txid.slice(0, 12) + "… from /api/mempool/tx/ on this tab. Never a seed.";
+        "Tick leak-ack, then Inspect this transaction. Live /api/mempool if the proxy is up; otherwise the classroom snapshot for Genesis / First transfer / Pizza day.";
       return;
     }
-    live.textContent = "Looking up " + txid + " (same-origin /api/mempool/tx/). Failures stay unknown — never a fake confirm.";
+    live.textContent = "Looking up " + txid + " (same-origin /api/mempool/tx/)…";
     fetch("/api/mempool/tx/" + encodeURIComponent(txid), { credentials: "same-origin" })
       .then(function (res) {
         if (res.status === 404) {
+          if (ex && ex.snap) {
+            paintTxInspect(live, ex.snap, "snap", ex.label + " — " + ex.why + " " + (ex.snap.story || ""));
+            return null;
+          }
           live.textContent =
             "Not found. That is honest — this id is not on the public chain (classroom samples often 404). Not a fake confirm.";
           return null;
@@ -207,22 +262,16 @@
       })
       .then(function (data) {
         if (!data) return;
-        var st = data.status || {};
-        var vinN = data.vin && data.vin.length != null ? data.vin.length : "";
-        var voutN = data.vout && data.vout.length != null ? data.vout.length : "";
-        live.textContent =
-          "Found (public explorer via same-origin proxy). txid " +
-          (data.txid ? String(data.txid) : txid) +
-          (st.confirmed != null ? " confirmed=" + st.confirmed : data.confirmed != null ? " confirmed=" + data.confirmed : "") +
-          (st.block_height != null ? " block=" + st.block_height : "") +
-          (vinN !== "" ? " inputs=" + vinN : "") +
-          (voutN !== "" ? " outputs=" + voutN : "") +
-          ". This is not a signature and not a broadcast.";
+        var story = ex ? ex.label + " — " + ex.why + (ex.snap && ex.snap.story ? " " + ex.snap.story : "") : "";
+        paintTxInspect(live, data, "live", story);
       })
-      .catch(function (e) {
-        var m = e && e.message ? String(e.message) : String(e);
+      .catch(function () {
+        if (ex && ex.snap) {
+          paintTxInspect(live, ex.snap, "snap", ex.label + " — " + ex.why + " " + (ex.snap.story || ""));
+          return;
+        }
         live.textContent =
-          "Lookup unavailable (" + m + "). Unknown is not a fake zero or a fake confirm. This tab did not call mempool.space.";
+          "Lookup unavailable. Unknown is not a fake zero or a fake confirm. This tab did not call mempool.space. Pick Genesis coinbase, First transfer, or Pizza day for a classroom snapshot.";
       });
   }
 
