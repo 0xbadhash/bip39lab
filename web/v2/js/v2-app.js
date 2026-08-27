@@ -2868,6 +2868,12 @@
         (mem.shamirShares ? "" : " disabled") +
         ">Combine any M</button>" +
         "</div>" +
+        '<label class="field" for="v2ShRecombineIn">Paste M share lines (share:index:hex), then try' +
+        '<textarea id="v2ShRecombineIn" rows="4" spellcheck="false" autocomplete="off" placeholder="share:1:…\nshare:2:…"></textarea></label>' +
+        '<button type="button" class="btn secondary" id="v2ShTry"' +
+        (mem.shamirShares ? "" : " disabled") +
+        ">Try these M shares</button>" +
+        '<pre class="out" id="v2ShTryOut">Paste any M of the printed shares here. Try these M shares checks whether they rebuild the words on this pad. Combine any M still does it for you.</pre>' +
         '<pre class="out" id="v2ShOut">' +
         (did
           ? "Those shares were built from the phrase on this pad. Combine already matched."
@@ -5901,6 +5907,10 @@
         if (splitBtn) splitBtn.disabled = false;
         var comb0 = $("v2ShCombine");
         if (comb0) comb0.disabled = true;
+        var try0 = $("v2ShTry");
+        if (try0) try0.disabled = true;
+        var box0 = $("v2ShRecombineIn");
+        if (box0) box0.value = "";
         var sout = $("v2ShOut");
         if (sout) {
           sout.textContent =
@@ -5942,11 +5952,15 @@
           "How: this tab encoded the words as bytes and Shamir-split them (GF(256) lab). That is not SLIP-39.",
           "Phrase starts: " + phrase.split(/\s+/).slice(0, 3).join(" ") + " …",
           shares.map(ShamirLab.encodeShare).join("\n"),
-          "Next: Combine any M. Never fund. Not Trezor Suite."
+          "Next: Combine any M, or paste M lines below and Try these M shares. Never fund. Not Trezor Suite."
         ].join("\n");
       }
+      var box = $("v2ShRecombineIn");
+      if (box) box.value = shares.map(ShamirLab.encodeShare).join("\n");
       var comb = $("v2ShCombine");
       if (comb) comb.disabled = false;
+      var tryb = $("v2ShTry");
+      if (tryb) tryb.disabled = false;
       if (pause) pause.disabled = true;
     });
     var shc = $("v2ShCombine");
@@ -5971,6 +5985,67 @@
       mem.shamirDone = !!match;
       if (pause) pause.disabled = !mem.shamirDone;
     });
+    var shTry = $("v2ShTry");
+    if (shTry) {
+      shTry.addEventListener("click", function () {
+        var tout = $("v2ShTryOut");
+        var box = $("v2ShRecombineIn");
+        if (!window.ShamirLab || !mem.shamirMnemonic) {
+          if (tout) tout.textContent = "Generate and split first.";
+          return;
+        }
+        var need = (mem.shamirMN && mem.shamirMN.m) || 2;
+        var raw = box && box.value ? String(box.value) : "";
+        var lines = raw.split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
+        if (lines.length < need) {
+          if (tout) {
+            tout.textContent =
+              "Need at least " + need + " share lines. You pasted " + lines.length + ". Recovery failed — that is honest.";
+          }
+          return;
+        }
+        var parsed = [];
+        var i;
+        try {
+          for (i = 0; i < lines.length; i++) parsed.push(ShamirLab.parseShare(lines[i]));
+        } catch (e) {
+          if (tout) {
+            tout.textContent =
+              "Could not read a share line (" +
+              (e && e.message ? e.message : e) +
+              "). Format is share:<index>:<hex>. Recovery failed — that is honest.";
+          }
+          return;
+        }
+        try {
+          var rec = ShamirLab.combineShares(parsed.slice(0, Math.max(need, parsed.length)));
+          var words = utf8DecodeU8(rec).trim();
+          var match = words === String(mem.shamirMnemonic).trim();
+          if (tout) {
+            tout.textContent = [
+              "Tried " + parsed.length + " pasted share(s); threshold M=" + need + ".",
+              "Recovered words: " + words,
+              "Match original phrase: " + match,
+              match
+                ? "These pieces rebuild the phrase on this pad."
+                : "These pieces did not rebuild the phrase. Try a different M of the printed shares.",
+              "Educational hex. Not SLIP-39. A share cannot sign."
+            ].join("\n");
+          }
+          if (match) {
+            mem.shamirDone = true;
+            if (pause) pause.disabled = false;
+          }
+        } catch (e2) {
+          if (tout) {
+            tout.textContent =
+              "Combine failed (" +
+              (e2 && e2.message ? e2.message : e2) +
+              "). That is honest — not a fake secret.";
+          }
+        }
+      });
+    }
     var s39b = $("v2S39");
     if (s39b) {
       s39b.addEventListener("click", function () {
