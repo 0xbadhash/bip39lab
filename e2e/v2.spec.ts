@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.102-v2)", () => {
+test.describe("V2 use-case tracks (0.17.103-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.102-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.102-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.103-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -907,10 +907,11 @@ test.describe("V2 use-case tracks (0.17.102-v2)", () => {
     await expect(page.locator("#v2PsbtInspect")).toBeVisible();
     await page.locator("#v2PsbtIn").fill("cHNidP8A");
     await page.locator("#v2PsbtInspect").click();
-    await expect(page.locator("#v2PsbtOut")).toContainText(/Status|Magic|ok/i);
+    await expect(page.locator("#v2PsbtOut")).toContainText(/unfinished bitcoin send|status ok/i);
+    await expect(page.locator("#v2PsbtOut")).toContainText(/does not sign/i);
     await page.locator("#v2PsbtIn").fill("xprv secret looking");
     await page.locator("#v2PsbtInspect").click();
-    await expect(page.locator("#v2PsbtOut")).toContainText(/refus|secret/i);
+    await expect(page.locator("#v2PsbtOut")).toContainText(/Refused|seed/i);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
@@ -922,6 +923,20 @@ test.describe("V2 use-case tracks (0.17.102-v2)", () => {
       await page.locator(`[data-cs-gen="${i}"]`).click();
       await page.locator(`[data-cs-zpub="${i}"]`).click();
     }
+    await page.locator("#v2Pause").click();
+    await expect(page.locator(".v2-quiz-q")).toHaveCount(5);
+    await expect(page.locator(".v2-quiz-q [data-quiz]")).toHaveCount(15);
+    for (let i = 0; i < 5; i++) {
+      await page.locator(".v2-quiz-q").nth(i).locator('[data-quiz="ok"]').click();
+    }
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S36 UC8 five quiz questions shuffled", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=8");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Psbt").click();
     await page.locator("#v2Pause").click();
     await expect(page.locator(".v2-quiz-q")).toHaveCount(5);
     await expect(page.locator(".v2-quiz-q [data-quiz]")).toHaveCount(15);

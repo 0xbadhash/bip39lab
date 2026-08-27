@@ -2723,7 +2723,7 @@
           "Do not paste a seed to help a PSBT. This card never signs and never broadcasts."
         ) +
         desc(
-          "A PSBT is a package for an incomplete payment. You can inspect it here. You would sign it on a cold device you trust and broadcast it from a hot computer you choose. This page never signs and never sends it to the network."
+          "A payment package (PSBT) is an unfinished bitcoin send you can pass around. Hot software can build it. A cold device or a co-signer adds a signature later. A hot machine broadcasts. Nobody pastes the twelve words. This page only looks."
         ) +
         pauseBtn("Next: inspect the payment package", false)
       );
@@ -2736,9 +2736,13 @@
           "Do not paste a seed. This card never signs and never broadcasts."
         ) +
         desc(
-          "Click inspect to read the sample package: magic bytes, maps, inputs, outputs. No signature is added. The recovery words are not needed."
+          "Load a sample or paste a package. Inspect only means: does this blob look like a PSBT, not a seed. Then you sign somewhere else and broadcast somewhere else."
         ) +
-        callout("done", "Structure only", "A sample or a paste is parsed offline. No signature is added.") +
+        callout(
+          "done",
+          "Why this exists",
+          "Air-gap and 2-of-3 both need a file that is not the backup. This tab checks the file. It never signs and never sends."
+        ) +
         '<label class="field" for="v2PsbtIn">PSBT text (sample or paste)<textarea id="v2PsbtIn" rows="3" spellcheck="false" autocomplete="off" placeholder="Click a sample, or paste cHNidP8…"></textarea></label>' +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn" id="v2Psbt" data-psbt="min">Inspect sample</button>' +
@@ -2752,21 +2756,46 @@
       );
     }
     if (step === 2) {
-      return quiz("What does this lab do with a payment package?", [
+      return quizBank([
         {
-          k: "ok",
-          t: "It only reads the file on this computer. It never signs and never sends it.",
-          okwhy: "Correct. Inspect is look-only."
+          q: "What is a PSBT here?",
+          opts: [
+            qBad("The twelve recovery words in another format.", "Wrong. A payment package is not a backup."),
+            qOk("An unfinished bitcoin send you can pass around without the seed.", "Correct. Hot software builds it; someone else can sign later."),
+            qBad("A finished payment already on the network.", "Wrong. If it were already broadcast you would not be inspecting a package.")
+          ]
         },
         {
-          k: "bad",
-          t: "It uploads the recovery words to a coordinator.",
-          why: "Wrong. The inspect tool never sends the words. A payment file is not a seed."
+          q: "Why does this job exist?",
+          opts: [
+            qOk("So a hot computer can build a send and a cold device or co-signer can sign later — without pasting the words.", "Correct. Air-gap and 2-of-3 both need a file that is not the seed."),
+            qBad("So this website can hold your coins.", "Wrong. This tab never holds coins."),
+            qBad("So you can skip hardware and type the seed into the package.", "Wrong. Never put the seed in the package or on this page.")
+          ]
         },
         {
-          k: "bad",
-          t: "It finishes and broadcasts real mainnet payments.",
-          why: "Wrong. This card only reads the sample. It does not send."
+          q: "Where do you actually sign?",
+          opts: [
+            qBad("On this inspect pad, after the magic line is ok.", "Wrong. Ok means the blob looks like a PSBT. This pad does not sign."),
+            qBad("In chat, by pasting the twelve words next to the package.", "Wrong. The package is not a place for the backup."),
+            qOk("On a cold device or with a co-signer you trust — not on this tab.", "Correct. Inspect here. Sign elsewhere.")
+          ]
+        },
+        {
+          q: "What does this lab do with the package?",
+          opts: [
+            qOk("It only reads the file on this computer. It never signs and never sends it.", "Correct. Inspect is look-only."),
+            qBad("It uploads the recovery words to a coordinator.", "Wrong. The inspect tool never sends the words."),
+            qBad("It finishes and broadcasts real mainnet payments.", "Wrong. This card does not send.")
+          ]
+        },
+        {
+          q: "After inspect says the blob looks like a PSBT, what is next?",
+          opts: [
+            qBad("Fund these practice samples. They are a real vault.", "Wrong. Classroom blobs. Not a funded spend."),
+            qOk("Sign on a device you trust, then broadcast from a hot machine you choose. This tab already finished its job.", "Correct. Inspect → sign elsewhere → broadcast elsewhere."),
+            qBad("Click Sign on this page. The magic line is the signature.", "Wrong. Magic is only the file stamp. There is no Sign here.")
+          ]
         }
       ]);
     }
@@ -5574,18 +5603,31 @@
       var src = (box && box.value) || raw || "";
       var r = BIP39Lab.inspectPsbt(src);
       var line = $("v2PsbtStoryLine");
-      if (line) line.textContent = story || "";
-      var lines = [
-        "What this is: a sample PSBT package (educational). No signature is added.",
-        "Status: " + (r.status || "unknown"),
-        r.magic ? "Magic: " + r.magic : "",
-        r.globalKeys != null ? "Global map keys: " + r.globalKeys : "",
-        r.inputCount != null ? "Inputs: " + r.inputCount : "",
-        r.outputCount != null ? "Outputs: " + r.outputCount : "",
-        r.detail ? "Note: " + r.detail : "",
+      if (line) {
+        line.textContent = story || "This tab never signs. There is no seed field.";
+      }
+      var out = $("v2PsbtOut");
+      if (!out) return;
+      if (r.status !== "ok") {
+        var refuse = /refus|secret/i.test(String(r.detail || ""));
+        out.textContent = refuse
+          ? "Refused. That looked like a seed or xprv. A payment package is not a backup. Paste a PSBT, not words.\nThis tab does not sign and does not broadcast."
+          : "This blob is not a readable payment package. " +
+            (r.detail || "unknown") +
+            "\nThis tab does not sign and does not broadcast.";
+        if (pause) pause.disabled = false;
+        return;
+      }
+      out.textContent = [
+        "What it is: an unfinished bitcoin send (PSBT) you can pass around without the seed.",
+        "Why: hot software can build the send; a cold device or a co-signer adds a signature later. Nobody pastes the twelve words.",
+        "When / where: air-gap and 2-of-3. Inspect here. Sign on a device you trust. Broadcast from a hot machine you choose.",
+        "How you proceed: 1) inspect  2) sign elsewhere  3) broadcast elsewhere. This tab stops at step 1.",
+        "What the parser saw: status ok — the file starts with the PSBT stamp (psbt\\xff). Classroom blob, not a funded spend. Partial signatures counted: " +
+          (r.partialSigs != null ? r.partialSigs : 0) +
+          ".",
         "This tab does not sign and does not broadcast."
-      ].filter(Boolean);
-      $("v2PsbtOut").textContent = lines.join("\n");
+      ].join("\n");
       if (pause) pause.disabled = false;
     }
     function bindPsbt(id, raw, story) {
