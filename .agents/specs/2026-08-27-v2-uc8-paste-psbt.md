@@ -18,7 +18,7 @@ Paste/inspect shipped. After Inspect, if a **txid** or input **prev_txid** exist
 Keep `#v2PsbtIn` + Inspect. After a successful inspect, parse prevouts from the unsigned tx if present.
 
 - No txid → `#v2PsbtNetMsg` says this classroom blob has no on-chain id; a public lookup would honestly be not found. **No fetch** from the sample.
-- Three **public example** txids (genesis coinbase, first transfer, pizza day) sit under Inspect. After leak-ack, fetch `/api/mempool/tx/<txid>`. These are real history, not the classroom PSBT.
+- Inspect pad **proposes three named true txs** to **select**, then **Inspect this transaction** after leak-ack: **Genesis coinbase**, **First transfer**, **Pizza day**. Fetch `/api/mempool/tx/<txid>`. Chain history, not the classroom PSBT. Classroom samples still have no prevout.
 - Txid present → leak-ack `#v2PsbtNetAck`, then this tab fetches **same-origin** `/api/mempool/tx/<txid>` and paints `#v2PsbtNetLive`. HTTP 404 → not found, not a fake confirm.
 - `#v2PsbtNetOpen` still docks `../network.html?txid=<hex>` after ack. Do not hide `#txLookupCard` on Network.
 - `/v2/` CSP `connect-src 'self'` (meta + nginx `location ^~ /v2/`). Classic Lab stays `'none'`. Network page still `'self' https://mempool.space`.

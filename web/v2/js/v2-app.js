@@ -748,6 +748,7 @@
     mem.slip39Shares = null;
     mem.slip39Hex = "";
     mem.slip39Done = false;
+    mem.psbtExI = null;
     mem.metalSeen = {};
     mem.metalPick = "";
     mem.fourOk = false;
@@ -2830,45 +2831,26 @@
   async function uc7(step) {
     if (step === 0) {
       var has = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
+      var mn = mem.shamirMN || { m: 2, n: 3 };
+      var did = !!(mem.shamirDone);
       return pad(
-        "<h2>One practice phrase</h2>" +
+        "<h2>One practice phrase → Shamir shares</h2>" +
         doDont(
-          "Make one throwaway BIP-39 phrase. Next pad cuts that one secret into shares.",
-          "Do not fund it. This is not three cosigner keys (UC6)."
+          "Generate the phrase on this pad. Split those same words into shares here. Watch the shares come from that grid.",
+          "Do not change screens to split. Do not fund it. This is not three cosigner keys (UC6)."
         ) +
         desc(
-          "Shamir starts from one secret. Generate a practice phrase first. Then we cut that same phrase into pieces. Any M pieces rebuild these words. A piece cannot sign."
+          "Shamir starts from one secret. These twelve words are that secret. Split encodes those words as bytes and cuts them into N classroom hex shares. Any M rebuild the same words. A piece cannot sign."
         ) +
         callout(
           "done",
-          "Phrase first",
-          "Click Generate. You should see twelve English words. That list is the blob we will split. People shares on Trezor use a different word list (SLIP-39) — that comes after the classroom hex split."
+          "Same pad",
+          "Generate, then Split, without leaving this screen. The readout names the phrase the shares were built from. SLIP-39 (Trezor-shaped words) is the next pad — a different list."
         ) +
         '<button type="button" class="btn" id="v2ShPhrase">Generate practice phrase</button>' +
         '<div id="v2ShCard">' +
         (has ? wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid") : wordGridHtml("", "v2ShWordGrid")) +
         "</div>" +
-        pauseBtn("Next: choose M-of-N and split", !has)
-      );
-    }
-    if (step === 1) {
-      var mn = mem.shamirMN || { m: 2, n: 3 };
-      var did = !!(mem.shamirDone);
-      var hasPhrase = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
-      return pad(
-        "<h2>Split / combine</h2>" +
-        doDont(
-          "Pick M-of-N. Click Split. Read the story. Then combine any M shares — same words come back.",
-          "Do not fund these hex shares. They are not Trezor SLIP-39 word lists."
-        ) +
-        desc(
-          "One click splits the practice phrase into N classroom hex shares. Any M rebuild the same words. This is recovery of one secret, not two people signing."
-        ) +
-        (hasPhrase
-          ? '<p class="control-help">Phrase to split (practice): ' +
-            String(mem.shamirMnemonic).trim().split(/\s+/).slice(0, 3).join(" ") +
-            " …</p>"
-          : '<p class="msg-bad">Go back and generate a phrase first.</p>') +
         '<label class="field" for="v2ShMN">Threshold<select id="v2ShMN">' +
         '<option value="2/3"' +
         (mn.m === 2 && mn.n === 3 ? " selected" : "") +
@@ -2879,24 +2861,26 @@
         "</select></label>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn" id="v2Sh"' +
-        (hasPhrase ? "" : " disabled") +
-        ">Split into shares</button>" +
+        (has ? "" : " disabled") +
+        ">Split these words into shares</button>" +
         '<button type="button" class="btn secondary" id="v2ShCombine"' +
         (mem.shamirShares ? "" : " disabled") +
         ">Combine any M</button>" +
         "</div>" +
         '<pre class="out" id="v2ShOut">' +
         (did
-          ? "Already combined this session. Split again if you change M-of-N."
-          : "Click Split. This pad then explains what happened. Educational hex. Not SLIP-39.") +
+          ? "Those shares were built from the phrase on this pad. Combine already matched."
+          : has
+            ? "The grid is the secret. Click Split these words into shares — stay here."
+            : "Generate a practice phrase first. Split stays on this pad.") +
         "</pre>" +
         '<p class="control-help">Optional longer hex lab: ' +
         '<a href="../shamir.html" data-v2-dock="7">Open Shamir room</a>' +
         " — still not Suite.</p>" +
-        pauseBtn("I split and combined any M", !did)
+        pauseBtn("I split and combined these words", !did)
       );
     }
-    if (step === 2) {
+    if (step === 1) {
       var s39 = !!(mem.slip39Done);
       return pad(
         "<h2>Practice SLIP-39 (Trezor-shaped words)</h2>" +
@@ -2905,7 +2889,7 @@
           "Do not fund this lab. Do not treat it as Trezor Suite. Do not type these into a funded device."
         ) +
         desc(
-          "The last pad was classroom hex. People on hardware hold SLIP-39 word shares — a different list. Click once to mint a practice 2-of-3, then combine. This tab still never signs."
+          "The last pad split BIP-39 words into classroom hex. People on hardware hold SLIP-39 word shares — a different list. Click once to mint a practice 2-of-3, then combine. This tab still never signs."
         ) +
         callout(
           "warn",
@@ -2927,7 +2911,7 @@
         pauseBtn("I saw Trezor-shaped word shares", !s39)
       );
     }
-    if (step === 3) {
+    if (step === 2) {
       return quizBank([
         {
           q: "What did you split in the classroom hex pad?",
@@ -3003,22 +2987,15 @@
           "Why this exists",
           "Air-gap and 2-of-3 both need a file that is not the backup. This tab checks the file. It never signs and never sends."
         ) +
-        '<label class="field" for="v2PsbtIn">PSBT text (sample or paste)<textarea id="v2PsbtIn" rows="3" spellcheck="false" autocomplete="off" placeholder="Click a sample, or paste cHNidP8…"></textarea></label>' +
-        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
-        '<button type="button" class="btn" id="v2Psbt" data-psbt="min">Inspect sample</button>' +
-        '<button type="button" class="btn secondary" id="v2PsbtStory" data-psbt="story">Inspect another sample</button>' +
-        '<button type="button" class="btn secondary" id="v2PsbtPartial" data-psbt="partial">Inspect a partial sample</button>' +
-        '<button type="button" class="btn secondary" id="v2PsbtInspect">Inspect again</button>' +
-        "</div>" +
-        '<p class="control-help" id="v2PsbtStoryLine">This tab never signs. There is no seed field.</p>' +
-        '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
-        '<div class="v2-psbt-net" id="v2PsbtNet">' +
-        '<p id="v2PsbtNetMsg" class="control-help">Inspect first. Classroom samples have no on-chain id. Public examples below are real history — leak-ack then this tab fetches /api/mempool/tx/ (same origin).</p>' +
-        '<p class="control-help">True public examples (not the classroom PSBT):</p>' +
-        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        '<h3>True transactions that already happened</h3>' +
+        '<p class="control-help">Select one. Tick leak-ack. Then Inspect this transaction. These are public chain history — not the classroom PSBT below.</p>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem" id="v2TxPick">' +
         PSBT_EX_TX.map(function (ex, i) {
+          var on = mem.psbtExI === i;
           return (
-            '<button type="button" class="btn secondary" data-v2-ex-txid="' +
+            '<button type="button" class="btn' +
+            (on ? "" : " secondary") +
+            '" data-v2-ex-txid="' +
             ex.id +
             '" data-v2-ex-i="' +
             i +
@@ -3028,11 +3005,25 @@
           );
         }).join("") +
         "</div>" +
+        '<p id="v2PsbtNetMsg" class="control-help">' +
+        (mem.psbtExI != null && PSBT_EX_TX[mem.psbtExI]
+          ? "Selected: " + PSBT_EX_TX[mem.psbtExI].label + " — " + PSBT_EX_TX[mem.psbtExI].why
+          : "Select Genesis coinbase, First transfer, or Pizza day.") +
+        "</p>" +
         '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
-        '<pre class="out" id="v2PsbtNetLive">Inspect first. No fetch until leak-ack and a real prevout or a public example.</pre>' +
+        '<button type="button" class="btn" id="v2TxInspect">Inspect this transaction</button>' +
+        '<pre class="out" id="v2PsbtNetLive">Select a named tx, tick leak-ack, then inspect. This tab fetches /api/mempool/tx/ (same origin).</pre>' +
         '<a class="btn secondary" id="v2PsbtNetOpen" hidden href="../network.html" data-v2-dock="8">Open Network (public lookup)</a>' +
+        '<label class="field" for="v2PsbtIn">PSBT text (classroom sample or paste)<textarea id="v2PsbtIn" rows="3" spellcheck="false" autocomplete="off" placeholder="Click a sample, or paste cHNidP8…"></textarea></label>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        '<button type="button" class="btn secondary" id="v2Psbt" data-psbt="min">Inspect sample</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtStory" data-psbt="story">Inspect another sample</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtPartial" data-psbt="partial">Inspect a partial sample</button>' +
+        '<button type="button" class="btn secondary" id="v2PsbtInspect">Inspect again</button>' +
         "</div>" +
-        pauseBtn("I inspected the package. No sign.", true)
+        '<p class="control-help" id="v2PsbtStoryLine">Classroom packages have no on-chain id. This tab never signs.</p>' +
+        '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
+        pauseBtn("I inspected a true tx. No sign.", true)
       );
     }
     if (step === 2) {
@@ -5869,7 +5860,16 @@
         mem.shamirDone = false;
         var card = $("v2ShCard");
         if (card) card.innerHTML = wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid");
-        if (pause) pause.disabled = false;
+        var splitBtn = $("v2Sh");
+        if (splitBtn) splitBtn.disabled = false;
+        var comb0 = $("v2ShCombine");
+        if (comb0) comb0.disabled = true;
+        var sout = $("v2ShOut");
+        if (sout) {
+          sout.textContent =
+            "These twelve words are the secret. Stay on this pad. Click Split these words into shares.";
+        }
+        if (pause) pause.disabled = true;
       });
     }
     var shmn = $("v2ShMN");
@@ -5898,6 +5898,7 @@
       mem.shamirDone = false;
       if (out) {
         out.textContent = [
+          "Built from the twelve words still on this pad (not a new screen).",
           "What it is: one practice BIP-39 phrase cut into " + mn.n + " classroom hex shares.",
           "Why: any " + mn.m + " of those " + mn.n + " rebuild the same words. Lose too many pieces and the phrase is gone.",
           "When / where: recovery of ONE secret. Not UC6 (three keys). A share cannot sign a bitcoin spend.",
@@ -6063,18 +6064,57 @@
     }
     document.querySelectorAll("[data-v2-ex-txid]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        var hex = String(btn.getAttribute("data-v2-ex-txid") || "");
         var i = parseInt(btn.getAttribute("data-v2-ex-i") || "0", 10);
-        var ex = PSBT_EX_TX[i] || { id: hex, label: "Public tx", why: "Public history." };
+        mem.psbtExI = i;
+        var ex = PSBT_EX_TX[i];
+        document.querySelectorAll("[data-v2-ex-txid]").forEach(function (b) {
+          b.classList.add("secondary");
+        });
+        btn.classList.remove("secondary");
+        var msg = $("v2PsbtNetMsg");
+        if (msg && ex) {
+          msg.textContent =
+            "Selected: " +
+            ex.label +
+            " — " +
+            ex.why +
+            " Tick leak-ack, then Inspect this transaction.";
+        }
+        var live = $("v2PsbtNetLive");
+        if (live && ex) {
+          live.textContent =
+            "Selected " +
+            ex.label +
+            ". Not fetched yet. Tick leak-ack, then Inspect this transaction.";
+        }
+        var open = $("v2PsbtNetOpen");
+        if (open) {
+          open.hidden = true;
+          open.removeAttribute("href");
+        }
+        psbtNetIds = [];
+      });
+    });
+    var txInsp = $("v2TxInspect");
+    if (txInsp) {
+      txInsp.addEventListener("click", function () {
+        var i = mem.psbtExI;
+        var ex = i != null ? PSBT_EX_TX[i] : null;
+        var live = $("v2PsbtNetLive");
+        if (!ex) {
+          if (live) live.textContent = "Select Genesis coinbase, First transfer, or Pizza day first.";
+          return;
+        }
         paintPsbtNet(
-          [hex],
+          [ex.id],
           ex.label +
             " — " +
             ex.why +
-            " Tick leak-ack to fetch /api/mempool/tx/ on this tab. Not from the classroom PSBT. Never a seed."
+            " Fetching /api/mempool/tx/ on this tab after leak-ack. True chain history, not the classroom PSBT."
         );
+        if (pause) pause.disabled = false;
       });
-    });
+    }
     var uc2q = $("v2Uc2Quiz");
     if (uc2q) {
       uc2q.querySelectorAll("[data-quiz]").forEach(function (btn) {
