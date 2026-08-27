@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "approved pending operator PW S110-S113 + tag",
-  "phase": "init",
+  "phase": "shipped",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-27-v2-w6-mempool-uc7-uc8.md",
-  "task": "0.16.75 V2 mempool UC7 UC8",
+  "spec_id": ".agents/specs/2026-08-27-v2-teach-vs-result.md",
+  "task": "0.16.76 teach vs result",
   "waiver": null
 }
