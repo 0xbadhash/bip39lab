@@ -2326,21 +2326,46 @@
       );
     }
     if (step === 2) {
-      return quiz("When you change the folder path:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "The receive address changes. The recovery words stay the same.",
-          okwhy: "Correct. Only the folder number changes."
+          q: "What does the ' after purpose', coin_type', and account' mean?",
+          opts: [
+            qBad("A typing mark you can ignore. The numbers work the same without it.", "Wrong. The ' is BIP-32 hardened: that folder is locked."),
+            qOk("Those folders are hardened (locked). A child key cannot walk back to the parent.", "Correct. change and index have no ' because they are not hardened."),
+            qBad("It means that folder is optional and can be skipped.", "Wrong. Purpose, coin, and account are required path levels.")
+          ]
         },
         {
-          k: "bad",
-          t: "The twelve words on the card are rewritten.",
-          why: "Wrong. The recovery words stay put. Only the last numbers in the path change."
+          q: "You switch BIP84 to BIP86. The receive address changes. What about the coins?",
+          opts: [
+            qBad("Same coins. Only the address spelling changed.", "Wrong. 84 and 86 are different folders and different piles."),
+            qBad("The green chip must stay the same because the words did not change.", "Wrong. Same words, different purpose — different teaching amount too."),
+            qOk("They are a different pile. Coins sent to the 84 address do not appear on the 86 address.", "Correct. Purpose is a folder, not a font for the same address.")
+          ]
         },
         {
-          k: "bad",
-          t: "A payment is sent on the bitcoin network.",
-          why: "Wrong. Changing a folder is local math. Nothing is sent."
+          q: "Receive shows 0.184 BTC and change shows 0.003 BTC at this index. What is the wallet total here?",
+          opts: [
+            qOk("0.187 BTC — the sum of coins on both folders (same words).", "Correct. A wallet spends receive plus change at this index."),
+            qBad("Only 0.184. Change is leftover and cannot be spent.", "Wrong. Change UTXOs are spendable. The total is the sum."),
+            qBad("Only the larger chip. Wallets keep one balance field.", "Wrong. The wallet adds every coin it controls on both folders.")
+          ]
+        },
+        {
+          q: "You click Change folder so the path ends in /0/1 instead of /0/0. What is true?",
+          opts: [
+            qBad("The twelve words on the card are rewritten.", "Wrong. The recovery words stay put."),
+            qBad("A payment is sent on the bitcoin network.", "Wrong. Changing a folder is local math. Nothing is sent."),
+            qOk("The receive address changes. The recovery words stay the same.", "Correct. Only the folder index changed.")
+          ]
+        },
+        {
+          q: "After a spend, leftover coins usually go to:",
+          opts: [
+            qBad("The same receive address you published, so that chip always grows.", "Wrong. The receive UTXO is spent. Leftover goes to a change address."),
+            qOk("A change address in the change folder (path …/1/n), not back to the same receive address.", "Correct. Receive is money in. Change is leftover after a spend."),
+            qBad("A new recovery phrase generated just for the leftover.", "Wrong. Same words. Different folder. Not a new backup.")
+          ]
         }
       ]);
     }
