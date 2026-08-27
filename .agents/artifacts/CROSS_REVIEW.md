@@ -3,19 +3,18 @@
 Blockers: 0. Obsolete Tier A: 0.
 
 ### Security Guru
-none — leak-ack still gates fetch; classic Lab CSP none; address 404 unknown; no Sign.
+none — no new fetch; teach strings static; objects not mixed into story.
 
 ### Maintainability Expert
-none — shared `v2FetchMempool`.
+none — `teachBox` helper.
 
 ### Obsolete / cleanup (scoped)
 - Tier A: none
-- Tier C: `/sweep` if asked
 
 ### Domain Specialist
-none — SLIP-39 extra ≠ BIP-39 25th; empty extra matches practice hex; inspect story ≠ chain.
+none — story vs object split matches operator principle.
 
 ## Things that look bad but are actually fine
-1. Classroom fee sample if both fetches miss
-2. Practice extra `lab`
-3. Dual stamp
+1. Dual stamp
+2. Blue is callout.done
+3. No Sign

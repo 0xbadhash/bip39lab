@@ -72,6 +72,14 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 blue classroom vs lab/chain result
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-27-v2-teach-vs-result.md`
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g "V2-S13|V2-S33|V2-S34|V2-S39|V2-S40"`
+- **Notes:** grill-me complete; chip 0.17.125-v2
+
+
 ### [DONE] V2 mempool exception + UC7 extra secret + UC8 story/chain
 - **Status:** done
 - **Priority:** P0

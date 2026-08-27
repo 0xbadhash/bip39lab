@@ -216,9 +216,10 @@
   function paintTxInspect(live, data, how, story) {
     var storyEl = $("v2TxStory");
     if (storyEl) {
-      storyEl.textContent = story
-        ? String(story)
+      var body = story
+        ? String(story).replace(/\n/g, " ")
         : "Classroom description of why this tx is famous. The box on the right is only what the explorer returned.";
+      storyEl.innerHTML = "<strong>What this is (classroom)</strong>" + body;
     }
     if (!live) return;
     var st = (data && data.status) || {};
@@ -1547,6 +1548,11 @@
       return pad(
         "<h2>Look at the card, then hide it</h2>" +
         doDont("Treat the numbered card as paper. Next you will type from that paper.", "Do not photograph the card. Do not use a funded phrase.") +
+        teachBox(
+          "Classroom — prove the backup",
+          "<em>What it is:</em> the numbered card is paper. The address is not the backup.<br/><em>Why:</em> same receive address after typing from paper means the copy works.<br/><em>When / where:</em> practice phrase only. No photo. No funded words.<br/><em>How:</em> the grid is the object. Next pad you type it back.",
+          "v2Uc16Teach"
+        ) +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
         '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
@@ -1567,6 +1573,12 @@
     return pad(
       "<h2>Type from paper — prove it works</h2>" +
       doDont("Type the twelve words from the paper copy. Same address means the backup works.", "Do not peek at a screenshot.") +
+      teachBox(
+        "Classroom — same address",
+        "<em>What it is:</em> checksum + receive address from typed words.<br/><em>Why:</em> same address as the card means the paper copy works.<br/><em>How:</em> the message below is the lab result. Do not peek.",
+        "v2Uc16ChkTeach"
+      ) +
+      "<h3>Check (lab result)</h3>" +
       '<button type="button" class="btn secondary" id="v2RestoreHide">Hide the on-screen card</button>' +
       '<div id="v2Card" class="' + (mem.restoreHidden ? "v2-hidden" : "") + '">' + wordGridHtml(mem.mnemonic) + "</div>" +
       '<div class="v2-restore-grid">' + inputs + "</div>" +
@@ -1640,6 +1652,12 @@
       return pad(
         "<h2>Practice receive address (test)</h2>" +
         doDont("Show a tb1 practice address and QR.", "Do not fund a practice mainnet phrase from this tab.") +
+        teachBox(
+          "Classroom — first receive",
+          "<em>What it is:</em> a practice tb1 (or bc1 on main toggle).<br/><em>Why:</em> seeing an address is not funding it.<br/><em>When / where:</em> this tab only. Never fund this practice phrase.<br/><em>How:</em> the address and QR below are lab objects.",
+          "v2Uc19Teach"
+        ) +
+        "<h3>Receive (lab result)</h3>" +
         '<button type="button" class="btn" id="v2Generate">Show receive address</button>' +
         netSelectHtml() +
         '<div id="v2AddrWrap">' + (mem.lastRows ? addrHtml() : "") + "</div>" +
@@ -1651,6 +1669,12 @@
     return pad(
       "<h2>Watch-only second view + simulated credit</h2>" +
       doDont("Same address on a watch list. Simulate 0.000184 tBTC if you stay offline.", "Do not fund the practice mainnet phrase. Real lookup = Network dock.") +
+      teachBox(
+        "Classroom — two views",
+        "<em>What it is:</em> the same receive string on a watch list.<br/><em>Why:</em> unknown is not zero until you opt in to Network.<br/><em>How:</em> the watch line and simulated balance below are lab objects. Real lookup stays on Network.",
+        "v2Uc19WatchTeach"
+      ) +
+      "<h3>Watch list (lab result)</h3>" +
       '<p id="v2WatchSame">Watch-only list: <code>' + (addr || "generate first") + "</code></p>" +
       '<p id="v2SimBal" class="control-help">Balance: unknown (not 0)</p>' +
       '<button type="button" class="btn" id="v2SimRecv">Simulate a test credit</button>' +
@@ -1981,6 +2005,11 @@
     }
     return pad(
       "<h2>Opt-in lookup</h2>" +
+      teachBox(
+        "Classroom — not your node",
+        "<em>What it is:</em> a public explorer is someone else’s view.<br/><em>Why:</em> this tab does not run a Bitcoin node.<br/><em>When / where:</em> Network after leak-ack. Failures stay unknown, never a silent zero.<br/><em>How:</em> the dock below is the object. No JSON dump on this pad.",
+        "v2Uc26Teach"
+      ) +
       "<p>If a lookup fails, show <strong>unknown</strong>. Never a silent zero.</p>" +
       '<a class="btn" href="../network.html" data-v2-dock="26">Open Network (opt-in)</a>' +
       pauseBtn("Unknown is not zero", false)
@@ -1998,6 +2027,11 @@
     return pad(
       "<h2>Change folder</h2>" +
       pathBipSvgHtml() +
+      teachBox(
+        "Classroom — coins are pieces",
+        "<em>What it is:</em> receive vs change are two folders. A total hides separate UTXOs.<br/><em>Why:</em> spending two pieces together can look like one owner.<br/><em>How:</em> the path diagram below is the object. Deep coin control stays on classic Lab.",
+        "v2Uc27Teach"
+      ) +
       "<p class=\"control-help\">Receive is one folder. Change is another. The words stay put. Deep coin control stays on classic Lab.</p>" +
       pauseBtn("I can name receive vs change", false)
     );
@@ -2029,6 +2063,11 @@
     return pad(
       "<h2>Decoy is real</h2>" +
       doDont("An empty decoy is obvious. A forgotten extra secret still loses that vault.", "Do not ask this tab what to do under threat.") +
+      teachBox(
+        "Classroom — decoy is another vault",
+        "<em>What it is:</em> a second extra secret opens a real second wallet.<br/><em>Why:</em> empty decoy is obvious. Forgotten extra still loses that vault.<br/><em>When / where:</em> objects only — not legal or personal-safety advice.<br/><em>How:</em> there is no dump here. The lesson is the two vaults, not a hex blob.",
+        "v2Uc29Teach"
+      ) +
       pauseBtn("Objects only — not advice", false)
     );
   }
@@ -2043,6 +2082,11 @@
     }
     return pad(
       "<h2>Classic BIP-85</h2>" +
+      teachBox(
+        "Classroom — child is not parent backup",
+        "<em>What it is:</em> one master can mint child practice phrases.<br/><em>Why:</em> a child is not a backup of the parent. Do not fund practice children.<br/><em>How:</em> the classic Lab card is the object. This pad does not dump a child mnemonic.",
+        "v2Uc30Teach"
+      ) +
       '<a class="btn" href="../index.html#cardBip85">Open classic child-seed card</a>' +
       pauseBtn("Child is not the parent backup", false)
     );
@@ -2058,6 +2102,11 @@
     }
     return pad(
       "<h2>Open the product room</h2>" +
+      teachBox(
+        "Classroom — Suite vs UC7 hex",
+        "<em>What it is:</em> people hold product word shares at a threshold.<br/><em>Why:</em> UC7 hex is educational, not Trezor Suite.<br/><em>How:</em> the dock below is the object. Combine in the room is recovery, not a cosign.",
+        "v2Uc31Teach"
+      ) +
       '<a class="btn" href="../slip39.html" data-v2-dock="31">Open SLIP-39 room</a>' +
       "<p class=\"control-help\">The hex split in UC7 stays educational. Combine is recovery, not a second signer.</p>" +
       pauseBtn("The room is the source of truth", false)
@@ -2075,6 +2124,12 @@
         desc(
           "SeedXOR-style split is N-of-N: every part is a full BIP-39-looking phrase. Lose one list and the original is gone. That is not UC7 (any 2 of 3 hex) and not UC31 (SLIP-39 people shares)."
         ) +
+        teachBox(
+          "Classroom — what all-parts XOR is",
+          "<em>What it is:</em> N-of-N. Every part looks like a complete 12-word backup.<br/><em>Why:</em> lose one list and the original is gone.<br/><em>When / where:</em> not Shamir 2-of-3 (UC7), not SLIP-39 people shares (UC31), not the SeedXOR.com calculator.<br/><em>How:</em> Part A and Part B below are the objects. You will need both.",
+          "v2XorTeach"
+        ) +
+        "<h3>Parts (lab result)</h3>" +
         '<button type="button" class="btn" id="v2XorSplit">Make two practice parts</button>' +
         '<div class="v2-xor-grid">' +
         '<div><h3>Part A</h3><div id="v2XorA"></div></div>' +
@@ -2090,6 +2145,12 @@
           "Try recover with one part, then with every part.",
           "Do not expect 2-of-3. One missing list fails."
         ) +
+        teachBox(
+          "Classroom — why every part",
+          "<em>What it is:</em> recover needs every list (N-of-N).<br/><em>Why:</em> one missing part fails. That is not Shamir any-M-of-N.<br/><em>How:</em> the line below is the lab result of the recover button you click.",
+          "v2XorRecTeach"
+        ) +
+        "<h3>Recover (lab result)</h3>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn secondary" id="v2XorOne">Recover with part A only</button>' +
         '<button type="button" class="btn" id="v2XorAll">Recover with every part</button>' +
@@ -2172,6 +2233,12 @@
           "Copy the practice policy line. Tick that you would store it with the keys.",
           "Do not fund this string. It is teaching-only."
         ) +
+        teachBox(
+          "Classroom — what a descriptor is",
+          "<em>What it is:</em> the policy string wallets import (script + keys).<br/><em>Why:</em> words alone can fail for multisig and script paths.<br/><em>When / where:</em> store this line with the keys. Lose it and the keys may not be enough.<br/><em>How:</em> the object below is a practice wpkh/wsh line. Not a funded vault.",
+          "v2DescTeach"
+        ) +
+        "<h3>Policy line (lab result)</h3>" +
         '<code class="v2-preview-big" id="v2DescLine">' +
         line +
         "</code>" +
@@ -2204,6 +2271,12 @@
           "Restore these words as BIP-39 to see a practice tb1. Then mark them as Electrum-style: BIP-39 would be the wrong vault.",
           "This tab does not run Electrum’s stretch and will not invent an Electrum address."
         ) +
+        teachBox(
+          "Classroom — English is not enough",
+          "<em>What it is:</em> the same dictionary can still be Electrum’s stretch, not BIP-39.<br/><em>Why:</em> restoring as BIP-39 would be the wrong vault.<br/><em>When / where:</em> this tab will not invent an Electrum address.<br/><em>How:</em> the tb1 below is a BIP-39 practice restore (lab result). The note is the lesson.",
+          "v2ElTeach"
+        ) +
+        "<h3>BIP-39 restore (lab result)</h3>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn" id="v2ElBip39">Restore as BIP-39</button>' +
         '<button type="button" class="btn secondary" id="v2ElElectrum">These words were Electrum-style</button>' +
@@ -2229,6 +2302,11 @@
           "Do not import these words into a funded wallet. Do not send coins to addresses from this phrase."
         ) +
         generateExplainerHtml() +
+        teachBox(
+          "Classroom — words vs address",
+          "<em>What it is:</em> practice BIP-39 words on a numbered card.<br/><em>Why:</em> the receive address is not the backup. The card is.<br/><em>When / where:</em> this tab only. Do not import. Do not fund.<br/><em>How:</em> the grid below is the object. Addresses come later.",
+          "v2Uc1Teach"
+        ) +
         entropyHtml() +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
@@ -2485,6 +2563,11 @@
         desc(
           "Same words. A empty vs B with a test secret. Different receive addresses are two wallets."
         ) +
+        teachBox(
+          "Classroom — what the extra secret is",
+          "<em>What it is:</em> an optional 25th word. Same twelve words + a different extra = a different vault.<br/><em>Why:</em> empty A vs test B must show two receive addresses.<br/><em>When / where:</em> you store the extra apart from the paper card. Forget B and that vault is gone. There is no reset desk.<br/><em>How:</em> the table below is the lab result — two addresses, not a PIN.",
+          "v2CmpTeach"
+        ) +
         '<div class="v2-cmp-split">' +
         '<div class="v2-cmp-face">' +
         ppKeyHtml("v2PpKeyUc3b") +
@@ -2537,6 +2620,12 @@
         desc(
           "Think of a path as a folder inside the backup. Click Change folder to see the next receive address. The numbered card does not change."
         ) +
+        teachBox(
+          "Classroom — what a path is",
+          "<em>What it is:</em> a folder inside the same backup.<br/><em>Why:</em> a new folder is a new address, not a new recovery phrase.<br/><em>When / where:</em> receive index 0, then later indices. The numbered card stays put.<br/><em>How:</em> the path line, table, and green chip below are this folder’s objects — not a chain lookup.",
+          "v2PathTeach"
+        ) +
+        "<h3>This folder (lab result)</h3>" +
         '<p class="v2-path-big" id="v2PathLine">m/84\'/1\'/0\'/0/0</p>' +
         pathPurposeTabsHtml() +
         pathPlayTableHtml() +
@@ -2565,6 +2654,12 @@
         desc(
           "Receive is where new coins arrive. When you spend, the leftover does not stay on that same address — the wallet sends it to a change address in another folder. Same words. Different path. Different amount."
         ) +
+        teachBox(
+          "Classroom — receive vs change",
+          "<em>What it is:</em> two folders on the same words.<br/><em>Why:</em> leftover from a spend goes to change, not back to the receive address.<br/><em>When / where:</em> every spend in a real wallet. This pad only shows the two paths.<br/><em>How:</em> toggle below. Address and amount are lab objects, not a chain lookup.",
+          "v2PathChTeach"
+        ) +
+        "<h3>This folder (lab result)</h3>" +
         '<p class="v2-scene">Example: 0.184 BTC arrives on receive #0. You spend 0.181. The leftover 0.003 goes to change #0 — not back to the receive address.</p>' +
         '<p class="v2-path-big" id="v2PathLine">' + p0 + "</p>" +
         pathPurposeTabsHtml() +
@@ -2676,7 +2771,13 @@
         ) +
         '<p class="control-help">Jargon: xpub ' + termI("XPUB") + " · zpub " + termI("ZPUB") + " · ypub " + termI("YPUB") + " · descriptor " + termI("DESCRIPTOR") + " · watch-only " + termI("WATCHONLY") + "</p>" +
         woTypeTabsHtml() +
+        teachBox(
+          "Classroom — what you export",
+          "<em>What it is:</em> a public viewing key and its descriptor for one BIP folder.<br/><em>Why:</em> a watch app can list addresses without the twelve words.<br/><em>When / where:</em> phone or desktop watch-only. Never paste the recovery phrase into that app.<br/><em>How:</em> pick one BIP tab. The objects below are that folder only.",
+          "v2WoTeach"
+        ) +
         '<p class="control-help" id="v2WoHelp">BIP86 xpub — Taproot account public key (watch-only where supported).</p>' +
+        "<h3>Viewing key and descriptor (lab result)</h3>" +
         '<div id="v2WoList" class="v2-copy-list"></div>' +
         '<pre class="out" id="v2WoOut" hidden></pre>' +
         '<pre class="out" id="v2DescOut">Pick a BIP tab. Only that folder’s viewing key and descriptor show.</pre>' +
@@ -2753,16 +2854,17 @@
       if (cs[i] && cs[i].zpub) zs.push(cs[i].zpub);
     }
     if (zs.length !== 3) {
-      pol.textContent =
-        "Show all three viewing keys first. Then this pad writes the spend rule: any 2 of these 3 people can move coins.";
+      pol.innerHTML =
+        "<strong>Classroom — what 2-of-3 is</strong>Show all three viewing keys first. Then this blue box explains the spend rule; the line below is the recipe object.";
       box.textContent = "The recipe line appears when all three viewing keys exist. This pad does not sign.";
       return;
     }
     var sorted = zs.slice().sort();
-    pol.textContent =
-      "What it is: a 2-of-3 spend rule. Any two of these three people can move the coins. One person alone cannot. Each still keeps a full backup — not scraps of one phrase. " +
-      "Why you need it: a wallet cannot rebuild this vault from the three backups alone. It also needs this recipe (how many must sign, and which three keys, in one agreed order). Lose the recipe and you can be locked out even if the words survive. " +
-      "Where you use it: save it with the three viewing keys (paper or a coordinator / Sparrow watch-only import). You build and spend in a real wallet, not here. Sorted = always the same A–Z key order so everyone gets the same vault. This pad does not sign.";
+    pol.innerHTML =
+      "<strong>Classroom — what 2-of-3 is</strong>" +
+      "<em>What it is:</em> a 2-of-3 spend rule. Any two of these three people can move the coins. One person alone cannot. Each still keeps a full backup — not scraps of one phrase.<br/>" +
+      "<em>Why:</em> a wallet cannot rebuild this vault from the three backups alone. It also needs this recipe. Lose the recipe and you can be locked out even if the words survive.<br/>" +
+      "<em>When / where:</em> save it with the three viewing keys. Sorted = same A–Z key order. This pad does not sign.";
     box.textContent = "wsh(sortedmulti(2," + sorted.join(",") + "))";
   }
 
@@ -2851,12 +2953,12 @@
           ? '<p class="msg-ok" id="v2CsReady">Three zpubs ready. Those are what a 2-of-3 coordinator would see — not the words.</p>'
           : '<p class="control-help">Pause stays locked until each cosigner shows a zpub.</p>') +
         '<h3>The spend rule</h3>' +
-        '<p id="v2MsPolicy" class="status-plain">' +
+        '<div class="v2-callout done" id="v2MsPolicy"><strong>Classroom — what 2-of-3 is</strong>' +
         (ready
-          ? "What it is: a 2-of-3 spend rule. Any two of these three people can move the coins. One person alone cannot."
-          : "Show all three viewing keys first. Then this pad writes the spend rule: any 2 of these 3 people can move coins.") +
-        "</p>" +
-        '<p class="control-help" id="v2MsWhy">The box below is the recipe you would save with the three viewing keys. Sorted means the keys are always listed in the same order so every wallet builds the same vault. This pad does not sign.</p>' +
+          ? "<em>What it is:</em> a 2-of-3 spend rule. Any two of these three people can move the coins. One person alone cannot. Each still keeps a full backup — not scraps of one phrase.<br/><em>Why:</em> a wallet cannot rebuild this vault from the three backups alone. It also needs this recipe (how many must sign, and which three keys, in one agreed order).<br/><em>When / where:</em> save the recipe with the three viewing keys. You build and spend in a real wallet, not here. Sorted = A–Z key order. This pad does not sign."
+          : "Show all three viewing keys first. Then this blue box explains the spend rule; the line below is the recipe object.") +
+        "</div>" +
+        "<h3>Recipe line (lab result)</h3>" +
         '<pre class="out" id="v2MsDesc">' +
         (ready
           ? "wsh(sortedmulti(2,…))"
@@ -2975,9 +3077,15 @@
         (mem.shamirShares ? "" : " disabled") +
         ">Try these M shares</button>" +
         '<pre class="out" id="v2ShTryOut">Paste any M of the printed shares here. Try these M shares checks whether they rebuild the words on this pad. Combine any M still does it for you.</pre>' +
+        '<div class="v2-callout done" id="v2ShStory"><strong>Classroom — what this split is</strong>' +
+        (did
+          ? "Those shares were built from the twelve words on this pad. Hex pieces below. Combine already matched."
+          : "Generate, then Split. This blue box stays the teaching story. Share lines appear in the result box.") +
+        "</div>" +
+        '<h3>Share lines (lab result)</h3>' +
         '<pre class="out" id="v2ShOut">' +
         (did
-          ? "Those shares were built from the phrase on this pad. Combine already matched."
+          ? "Combine already matched. Share lines are in the paste box."
           : has
             ? "The grid is the secret. Click Split these words into shares — stay here."
             : "Generate a practice phrase first. Split stays on this pad.") +
@@ -3021,10 +3129,16 @@
         (mem.slip39Shares ? "" : " disabled") +
         ">Try these 2 shares</button>" +
         '<pre class="out" id="v2S39TryOut">Play in order: mint 3 lists → try 1 (fail) → try 2 (match). Combine any 2 of 3 is the shortcut for the match. Extra secret comes after.</pre>' +
+        teachBox(
+          "Classroom — what SLIP-39 is",
+          "<em>What it is:</em> Trezor-shaped people-share lists (2-of-3), not BIP-39 seeds.<br/><em>Why:</em> hardware wallets do not import the classroom hex from the last pad.<br/><em>When / where:</em> people hold word shares. Lab only. Never fund. Not Suite.<br/><em>How:</em> mint three lists, fail with 1, match with 2. Combine any 2 of 3 is the shortcut.",
+          "v2S39Story"
+        ) +
+        "<h3>Share lists (lab result)</h3>" +
         '<pre class="out" id="v2S39Out">' +
         (ready
           ? "2-of-3 drill done. Next pad: same two shares, with and without an extra secret."
-          : "Click Make practice SLIP-39 shares. You get three word lists. Then try one, then two.") +
+          : "Click Make practice SLIP-39 shares. Master hex and share lines appear here.") +
         "</pre>" +
         pauseBtn("Next: extra secret on the same two shares", !ready)
       );
@@ -3170,8 +3284,7 @@
         '<button type="button" class="btn" id="v2TxInspect">Inspect this transaction</button>' +
         '<div class="v2-s39-pp v2-tx-split">' +
         '<div class="v2-s39-col">' +
-        "<h3>What this is (classroom)</h3>" +
-        '<p class="control-help" id="v2TxStory">Select Genesis coinbase, First transfer, or Pizza day. This column is the teaching story — not the explorer payload.</p>' +
+        '<div class="v2-callout done" id="v2TxStory"><strong>What this is (classroom)</strong>Select Genesis coinbase, First transfer, or Pizza day. This blue box is the teaching story — not the explorer payload.</div>' +
         "</div>" +
         '<div class="v2-s39-col">' +
         "<h3>What the chain says</h3>" +
@@ -3186,7 +3299,9 @@
         '<button type="button" class="btn secondary" id="v2PsbtInspect">Inspect again</button>' +
         "</div>" +
         '<p class="control-help" id="v2PsbtStoryLine">Classroom packages have no on-chain id. This tab never signs.</p>' +
-        '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
+        '<div class="v2-callout done" id="v2PsbtTeach"><strong>Classroom — what a PSBT is</strong>Inspect a sample. This blue box is the teaching story (what / why / when / how). The result box below is only what the parser saw.</div>' +
+        '<h3>What the parser saw</h3>' +
+        '<pre class="out" id="v2PsbtOut">Inspect a sample. Never sign here.</pre>' +
         pauseBtn("I inspected a true tx. No sign.", true)
       );
     }
@@ -3262,8 +3377,13 @@
         desc(
           "Show the BIP-84 watch key for this practice phrase. You should see a zpub (or xpub). You should not see an xprv or the recovery words."
         ) +
-        callout("is", "Public extended key", "You should see an xpub or zpub. You should not see an xprv " + termI("XPRV") + ", or the recovery words.") +
+        teachBox(
+          "Classroom — what an xpub is",
+          "<em>What it is:</em> an account viewing key. It can list future addresses. It cannot spend.<br/><em>Why:</em> anyone with it can see activity. It is still not the recovery words.<br/><em>When / where:</em> watch-only software. Do not publish it casually.<br/><em>How:</em> the string below should start with zpub or xpub — never xprv.",
+          "v2XpubTeach"
+        ) +
         '<button type="button" class="btn" id="v2Xpub">Show account viewing key</button>' +
+        "<h3>Viewing key (lab result)</h3>" +
         '<div id="v2XpubList" class="v2-copy-list"></div>' +
         '<pre class="out" id="v2XpubOut">Public extended key only.</pre>' +
         pauseBtn("I did not see an xprv", false)
@@ -3337,6 +3457,11 @@
         '<div class="fee-bands" id="v2FeeBands" aria-live="polite"></div>' +
         '<pre class="out" id="v2FeeOut"></pre>' +
         '<p class="control-help" id="v2FeeExample"></p></div>' +
+        teachBox(
+          "Classroom — fees vs UTXOs",
+          "<em>What it is:</em> public fee bands and mempool traffic. Not your addresses.<br/><em>Why:</em> fees are paid from UTXOs you spend — not from a separate fee account.<br/><em>When / where:</em> after leak-ack. Higher sat/vB competes when the mempool is full.<br/><em>How:</em> the bands, 140 vB example, and traffic pre below are the objects (live or classroom snapshot).",
+          "v2FeeTeach"
+        ) +
         '<div class="watch-item"><div class="watch-item-title">UTXO reminder</div>' +
         '<p class="control-help">Fees are paid from UTXOs you spend — not from a separate “fee account”. Higher sat/vB competes for block space when the mempool is full.</p></div>' +
         '<div class="watch-item"><div class="watch-item-title">Network traffic (public)</div>' +
@@ -3345,6 +3470,11 @@
         "</div>" +
         '<label class="field" for="v2NetAddr">Optional address (never a seed)<input id="v2NetAddr" type="text" autocomplete="off" spellcheck="false" placeholder="bc1q… or 1… or 3…"/></label>' +
         '<button type="button" class="btn secondary" id="v2NetBal" disabled>Fetch address</button>' +
+        teachBox(
+          "Classroom — unknown is not zero",
+          "<em>What it is:</em> an address-only lookup after leak-ack.<br/><em>Why:</em> 0 sats with status ok means empty (valid). Failures stay unknown — never a silent fake zero.<br/><em>When / where:</em> this table is the same job as Network. Never paste a seed.<br/><em>How:</em> the table below is the object: status, sats, detail.",
+          "v2BalTeach"
+        ) +
         '<p class="control-help teach-only"><strong>0 sats</strong> with status <code>ok</code> means empty (valid). Failures show <code>unknown</code> — never a silent fake zero.</p>' +
         '<p id="v2BalStatus" class="status" aria-live="polite"></p>' +
         '<div class="table-scroll cols-modern">' +
@@ -4650,6 +4780,11 @@
         desc(
           "This track stacks three numbers: pad bits from dice or coin, BIP-39 ENT for the word count you pick, and a teaching estimate of the optional 25th word. They are not one magic total. The pad is the source."
         ) +
+        teachBox(
+          "Classroom — pad first",
+          "<em>What it is:</em> dice/coin pad bits, then BIP-39 word count, then optional 25th word.<br/><em>Why:</em> a longer extra secret does not fix a TOO LOW pad.<br/><em>How:</em> the lock, bits, and practice words below are lab objects.",
+          "v2Uc15Teach"
+        ) +
         entButtonsHtml({ key: true, keyId: "v2PpKeyUc15Start" }) +
         entMintBarHtml() +
         pauseBtn("Next: add a 25th word", !mem.entMnemonic)
@@ -4879,6 +5014,17 @@
     );
   }
 
+  function teachBox(title, body, id) {
+    return (
+      '<div class="v2-callout done"' +
+      (id ? ' id="' + id + '"' : "") +
+      "><strong>" +
+      title +
+      "</strong>" +
+      body +
+      "</div>"
+    );
+  }
   function callout(kind, title, body) {
     return (
       '<div class="v2-callout ' +
@@ -6132,10 +6278,16 @@
         if (try0) try0.disabled = true;
         var box0 = $("v2ShRecombineIn");
         if (box0) box0.value = "";
+        var story0 = $("v2ShStory");
+        if (story0) {
+          story0.innerHTML =
+            "<strong>Classroom — what this split is</strong>These twelve words are the secret on this pad. Split will cut them into hex pieces. The result box will hold share lines only.";
+        }
         var sout = $("v2ShOut");
         if (sout) {
+          paintTone(sout, "");
           sout.textContent =
-            "These twelve words are the secret. Stay on this pad. Click Split these words into shares.";
+            "Not split yet. Click Split these words into shares — stay here.";
         }
         if (pause) pause.disabled = true;
       });
@@ -6164,14 +6316,25 @@
       mem.shamirSecret = ShamirLab.toHex(u8);
       mem.shamirShares = shares;
       mem.shamirDone = false;
+      var story = $("v2ShStory");
+      if (story) {
+        story.innerHTML =
+          "<strong>Classroom — what this split is</strong>" +
+          "Built from the twelve words still on this pad (not a new screen).<br/>" +
+          "<em>What it is:</em> one practice BIP-39 phrase cut into " +
+          mn.n +
+          " classroom hex shares.<br/>" +
+          "<em>Why:</em> any " +
+          mn.m +
+          " of those " +
+          mn.n +
+          " rebuild the same words. Lose too many pieces and the phrase is gone.<br/>" +
+          "<em>When / where:</em> recovery of ONE secret. Not UC6 (three keys). A share cannot sign a bitcoin spend.<br/>" +
+          "<em>How:</em> this tab encoded the words as bytes and Shamir-split them (GF(256) lab). That is not SLIP-39.";
+      }
       if (out) {
         paintTone(out, "");
         out.textContent = [
-          "Built from the twelve words still on this pad (not a new screen).",
-          "What it is: one practice BIP-39 phrase cut into " + mn.n + " classroom hex shares.",
-          "Why: any " + mn.m + " of those " + mn.n + " rebuild the same words. Lose too many pieces and the phrase is gone.",
-          "When / where: recovery of ONE secret. Not UC6 (three keys). A share cannot sign a bitcoin spend.",
-          "How: this tab encoded the words as bytes and Shamir-split them (GF(256) lab). That is not SLIP-39.",
           "Phrase starts: " + phrase.split(/\s+/).slice(0, 3).join(" ") + " …",
           shares.map(ShamirLab.encodeShare).join("\n"),
           "Next: Combine any M, or paste M lines below and Try these M shares. Never fund. Not Trezor Suite."
@@ -6290,13 +6453,11 @@
         mem.slip39TriedTwo = false;
         mem.slip39PpDone = false;
         if (out) {
+          paintTone(out, "");
           out.textContent = [
-            "What it is: practice SLIP-39 word shares (2-of-3). Same format family Trezor uses for people shares.",
-            "Why: hardware wallets do not import the classroom hex from the last pad.",
-            "Lab only. Never fund. Never type these into a funded Trezor. This is not Suite.",
             "Master hex (practice): " + hex,
             shares.map(function (line, i) { return "share " + (i + 1) + ": " + line; }).join("\n"),
-            "These three lists are SLIP-39 shares, not BIP-39 seeds. Copy any two into the boxes (already filled). Try these 2 shares to rebuild the master hex. Combine any 2 of 3 remains the shortcut."
+            "Copy any two into the boxes (already filled). Try 1 (fail) then 2 (match)."
           ].join("\n");
         }
         var si;
@@ -6494,6 +6655,15 @@
         line.textContent = story || "This tab never signs. There is no seed field.";
       }
       var out = $("v2PsbtOut");
+      var teach = $("v2PsbtTeach");
+      if (teach) {
+        teach.innerHTML =
+          "<strong>Classroom — what a PSBT is</strong>" +
+          "<em>What it is:</em> an unfinished bitcoin send (PSBT) you can pass around without the seed.<br/>" +
+          "<em>Why:</em> hot software can build the send; a cold device or a co-signer adds a signature later. Nobody pastes the twelve words.<br/>" +
+          "<em>When / where:</em> air-gap and 2-of-3. Inspect here. Sign on a device you trust. Broadcast from a hot machine you choose.<br/>" +
+          "<em>How you proceed:</em> 1) inspect  2) sign elsewhere  3) broadcast elsewhere. This tab stops at step 1.";
+      }
       if (!out) return;
       if (r.status !== "ok") {
         var refuse = /refus|secret/i.test(String(r.detail || ""));
@@ -6508,13 +6678,8 @@
       }
       var prevs = extractPsbtPrevTxids(src);
       out.textContent = [
-        "What it is: an unfinished bitcoin send (PSBT) you can pass around without the seed.",
-        "Why: hot software can build the send; a cold device or a co-signer adds a signature later. Nobody pastes the twelve words.",
-        "When / where: air-gap and 2-of-3. Inspect here. Sign on a device you trust. Broadcast from a hot machine you choose.",
-        "How you proceed: 1) inspect  2) sign elsewhere  3) broadcast elsewhere. This tab stops at step 1.",
-        "What the parser saw: status ok — the file starts with the PSBT stamp (psbt\\xff). Classroom blob, not a funded spend. Partial signatures counted: " +
-          (r.partialSigs != null ? r.partialSigs : 0) +
-          ".",
+        "status ok — the file starts with the PSBT stamp (psbt\\xff). Classroom blob, not a funded spend.",
+        "Partial signatures counted: " + (r.partialSigs != null ? r.partialSigs : 0) + ".",
         prevs.length
           ? "Prevout txid(s): " + prevs.join(" ")
           : "No on-chain txid or input prevout in this blob.",
@@ -6577,12 +6742,13 @@
         }
         var storyEl = $("v2TxStory");
         if (storyEl && ex) {
-          storyEl.textContent =
+          var body =
             ex.label +
             " — " +
             ex.why +
-            (ex.snap && ex.snap.story ? "\n" + ex.snap.story : "") +
-            "\nThis column is the classroom story. It is not the explorer payload.";
+            (ex.snap && ex.snap.story ? " " + ex.snap.story : "") +
+            " This blue box is the classroom story. It is not the explorer payload.";
+          storyEl.innerHTML = "<strong>What this is (classroom)</strong>" + body;
         }
         var live = $("v2PsbtNetLive");
         if (live && ex) {

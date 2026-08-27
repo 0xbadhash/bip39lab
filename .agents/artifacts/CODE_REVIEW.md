@@ -1,8 +1,7 @@
 # CODE-REVIEW
 
-command: `/code_review` 0.16.75 bundle
+command: `/code_review` 0.16.76 teach vs result
 base: origin/master
-head: working tree → HEAD
 secrets: clean
 
 ## Findings accepted
@@ -15,12 +14,12 @@ None.
 0
 
 ## Follow-ups
-Live nginx sites-available was missing `/v2/` (fixed on host). Keep deploy conf and live conf in sync.
+Ceremony UCs still Do/Don’t only (by design).
 
 ## Smoke
-V2-S41b S43 S47 S48 S49 S50 previously green this session.
+V2-S13 S33 S34 S39 S40 passed this session.
 
 ## Things that look bad but are actually fine
 1. Dual stamp
 2. leftover scripts
-3. mempool.space on V2 CSP by operator request
+3. innerHTML on static teach strings
