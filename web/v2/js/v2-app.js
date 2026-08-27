@@ -2213,9 +2213,9 @@
         ppKeyHtml("v2PpKeyUc3b") +
         "</div>" +
         '<div class="v2-cmp-fields">' +
-        '<label class="field">A · empty extra secret <input id="ppA" type="password" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span id="v2PpCharsA" class="v2-pp-chars">0 chars</span><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span>' +
+        '<label class="field">A · empty extra secret <input id="ppA" type="password" value="" placeholder="leave empty" autocomplete="off" spellcheck="false" name="v2PpEmpty"/><span class="v2-pp-meta"><span id="v2PpCharsA" class="v2-pp-chars">0 chars</span><span id="v2PpEstA" class="v2-pp-est v2-pp-est-empty">(empty)</span></span>' +
         '<div class="pp-strength-bar v2-pp-bar"><div id="v2PpBarA" class="pp-strength-bar-fill pp-tier-empty" role="progressbar" aria-valuemin="0" aria-valuemax="128" aria-valuenow="0" style="width:0%"></div></div></label>' +
-        '<label class="field">B · test secret <input id="ppB" type="password" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span id="v2PpCharsB" class="v2-pp-chars">4 chars</span><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span>' +
+        '<label class="field">B · test secret <input id="ppB" type="password" value="test" placeholder="test" autocomplete="off" spellcheck="false" name="v2PpTest"/><span class="v2-pp-meta"><span id="v2PpCharsB" class="v2-pp-chars">4 chars</span><span id="v2PpEstB" class="v2-pp-est v2-pp-est-weak">~6 bits · weak (estimate only)</span></span>' +
         '<div class="pp-strength-bar v2-pp-bar"><div id="v2PpBarB" class="pp-strength-bar-fill pp-tier-weak" role="progressbar" aria-valuemin="0" aria-valuemax="128" aria-valuenow="6" style="width:5%"></div></div></label>' +
         "</div>" +
         '<div id="v2CmpOut" class="v2-cmp-out">' +
