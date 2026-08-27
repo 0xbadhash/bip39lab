@@ -28,7 +28,7 @@ Chip **v0.17.125-v2**. Product **0.16.76**. Blue box = teaching. Result = hex/ke
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S39|V2-S40"`
+- green_cmd: `python3 -m pytest tests/test_ac_v2_teach_vs_result.py -q`
 
 ## Threat notes
 
