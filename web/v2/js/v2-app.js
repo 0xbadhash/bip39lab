@@ -2896,12 +2896,12 @@
           "Do not fund this lab. Do not treat it as Trezor Suite. Do not type these into a funded device."
         ) +
         desc(
-          "The last pad split BIP-39 words into classroom hex. People on hardware hold SLIP-39 word shares — a different list. Click once to mint a practice 2-of-3, then combine. This tab still never signs."
+          "The last pad split BIP-39 words into classroom hex. This pad mints three SLIP-39 people-share lists (a different word list than BIP-39). Copy any two into the boxes and try to rebuild the practice master hex. Combine any 2 of 3 still does it for you."
         ) +
         callout(
           "warn",
           "Lab practice",
-          "The words look like a product backup. They are throwaway. Never restore them onto a funded Trezor."
+          "These look like backup words. They are SLIP-39 shares, not a BIP-39 seed. Throwaway. Never type them into a funded Trezor."
         ) +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
@@ -2910,12 +2910,19 @@
         ">Combine any 2 of 3</button>" +
         '<a class="btn secondary" href="../slip39.html" data-v2-dock="7">Open SLIP-39 room</a>' +
         "</div>" +
+        '<label class="field" for="v2S39s0">SLIP-39 share 1 (people words, not BIP-39)<textarea id="v2S39s0" rows="2" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<label class="field" for="v2S39s1">SLIP-39 share 2<textarea id="v2S39s1" rows="2" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<label class="field" for="v2S39s2">SLIP-39 share 3<textarea id="v2S39s2" rows="2" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<button type="button" class="btn secondary" id="v2S39Try"' +
+        (mem.slip39Shares ? "" : " disabled") +
+        ">Try these 2 shares</button>" +
+        '<pre class="out" id="v2S39TryOut">Leave any two lists filled (clear one if you want). Try these 2 shares rebuilds the practice master hex — or fails honestly. Combine any 2 of 3 is the shortcut.</pre>' +
         '<pre class="out" id="v2S39Out">' +
         (s39
           ? "Practice combine already matched. Open the SLIP-39 room for passphrase/groups."
-          : "Click Make practice SLIP-39 shares. Word lists, not hex.") +
+          : "Click Make practice SLIP-39 shares. You get three word lists. Then try any two.") +
         "</pre>" +
-        pauseBtn("I saw Trezor-shaped word shares", !s39)
+        pauseBtn("I rebuilt the practice hex from two shares", !s39)
       );
     }
     if (step === 2) {
@@ -6066,11 +6073,18 @@
             "Lab only. Never fund. Never type these into a funded Trezor. This is not Suite.",
             "Master hex (practice): " + hex,
             shares.map(function (line, i) { return "share " + (i + 1) + ": " + line; }).join("\n"),
-            "Next: Combine any 2 of 3."
+            "These three lists are SLIP-39 shares, not BIP-39 seeds. Copy any two into the boxes (already filled). Try these 2 shares to rebuild the master hex. Combine any 2 of 3 remains the shortcut."
           ].join("\n");
+        }
+        var si;
+        for (si = 0; si < 3; si++) {
+          var el = $("v2S39s" + si);
+          if (el) el.value = shares[si] || "";
         }
         var c = $("v2S39Combine");
         if (c) c.disabled = false;
+        var try39 = $("v2S39Try");
+        if (try39) try39.disabled = false;
         if (pause) pause.disabled = true;
       });
     }
@@ -6094,6 +6108,58 @@
         }
         mem.slip39Done = !!ok;
         if (pause) pause.disabled = !mem.slip39Done;
+      });
+    }
+    var s39Try = $("v2S39Try");
+    if (s39Try) {
+      s39Try.addEventListener("click", function () {
+        var tout = $("v2S39TryOut");
+        if (!window.Slip39Lab || !mem.slip39Hex) {
+          if (tout) tout.textContent = "Make practice SLIP-39 shares first.";
+          return;
+        }
+        var picked = [];
+        var j;
+        for (j = 0; j < 3; j++) {
+          var t = $("v2S39s" + j);
+          var line = t && t.value ? String(t.value).trim().replace(/\s+/g, " ") : "";
+          if (line) picked.push(line);
+        }
+        if (picked.length < 2) {
+          if (tout) {
+            tout.textContent =
+              "Need any 2 of the 3 SLIP-39 word lists. You filled " +
+              picked.length +
+              ". Recovery failed — that is honest. The hex is not rebuilt.";
+          }
+          return;
+        }
+        try {
+          var rec = Slip39Lab.combineShares(picked.slice(0, picked.length), "");
+          var ok = Slip39Lab.matchExpected(rec, mem.slip39Hex);
+          if (tout) {
+            tout.textContent = [
+              "Tried " + picked.length + " pasted SLIP-39 share list(s).",
+              "Recovered master hex: " + rec,
+              "Match practice hex: " + ok,
+              ok
+                ? "Those two (or three) people-share lists rebuild the practice secret."
+                : "Those lists did not rebuild the practice hex. Use two of the three printed shares.",
+              "SLIP-39 shares, not BIP-39 seeds. Lab only. Never fund."
+            ].join("\n");
+          }
+          if (ok) {
+            mem.slip39Done = true;
+            if (pause) pause.disabled = false;
+          }
+        } catch (e) {
+          if (tout) {
+            tout.textContent =
+              "Combine failed (" +
+              (e && e.message ? e.message : e) +
+              "). That is honest — the practice hex was not rebuilt.";
+          }
+        }
       });
     }
     function inspectV2Psbt(raw, story) {

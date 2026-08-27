@@ -1,3 +1,3 @@
 # CROSS-REVIEW
 
-Personas: teacher (manual threshold drill). Blockers: 0.
+Personas: teacher (hand combine). Blockers: 0.
