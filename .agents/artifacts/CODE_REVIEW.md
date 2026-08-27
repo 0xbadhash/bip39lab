@@ -1,18 +1,18 @@
 # CODE-REVIEW
 
 - **command:** `/code_review`
-- **head:** UC7 recovery green/red
-- **secrets:** practice
+- **head:** UC10 Network-matching snapshot
+- **secrets:** leak-ack; self proxy
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-paintTone ok/bad on combine and try.
+Fee bands numeric. Same 140 vB as Network.
 
 p0=0 follow_ups=0
 
 ## Smoke
 
-V2-S39 S44 S40 S45 passed.
+V2-S42 S43 passed.

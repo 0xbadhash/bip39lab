@@ -3172,12 +3172,27 @@
           "A fee snapshot still shows your IP to the host. An address lookup also shows that address. Never the mnemonic."
         ) +
         '<label class="check"><input type="checkbox" id="v2NetAck"/> I understand a public lookup sends my IP (and an address, if I type one) to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
+        "<h3>Fees &amp; traffic</h3>" +
+        '<p class="card-lede teach-only">Optional public snapshot via mempool proxy. Does <strong>not</strong> send any of your addresses — only general fee/mempool stats (still reveals your IP to the host). Public APIs may rate-limit or fail under load; retry later if a fetch errors.</p>' +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
-        '<button type="button" class="btn" id="v2NetSnap" disabled>Fetch fee + traffic</button>' +
+        '<button type="button" class="btn" id="v2NetSnap" disabled>Fetch fee + traffic snapshot</button>' +
         "</div>" +
-        '<pre class="out" id="v2NetOut">' +
-        (on ? "Snapshot already fetched this session. Fetch again if you want a refresh." : "Tick leak-ack, then Fetch fee + traffic.") +
-        "</pre>" +
+        '<p id="v2SnapStatus" class="status" aria-live="polite">' +
+        (on ? "Snapshot already fetched this session. Fetch again if you want a refresh." : "") +
+        "</p>" +
+        '<div id="v2SnapResult" class="watch-list"' +
+        (on ? "" : " hidden") +
+        ">" +
+        '<div class="watch-item"><div class="watch-item-title">Recommended fee rates (sat/vB)</div>' +
+        '<div class="fee-bands" id="v2FeeBands" aria-live="polite"></div>' +
+        '<pre class="out" id="v2FeeOut"></pre>' +
+        '<p class="control-help" id="v2FeeExample"></p></div>' +
+        '<div class="watch-item"><div class="watch-item-title">UTXO reminder</div>' +
+        '<p class="control-help">Fees are paid from UTXOs you spend — not from a separate “fee account”. Higher sat/vB competes for block space when the mempool is full.</p></div>' +
+        '<div class="watch-item"><div class="watch-item-title">Network traffic (public)</div>' +
+        '<pre class="out" id="v2TrafficOut"></pre>' +
+        '<p class="control-help">Educational context only — not financial advice.</p></div>' +
+        "</div>" +
         '<label class="field" for="v2NetAddr">Optional address (never a seed)<input id="v2NetAddr" type="text" autocomplete="off" spellcheck="false" placeholder="bc1q… or 1… or 3…"/></label>' +
         '<button type="button" class="btn secondary" id="v2NetBal" disabled>Fetch address</button>' +
         '<pre class="out" id="v2NetBalOut">Address lookup stays unknown until leak-ack and a valid address. Failures are unknown, not a fake 0.</pre>' +
@@ -6339,44 +6354,137 @@
     var netSnap = $("v2NetSnap");
     if (netSnap) {
       netSnap.addEventListener("click", function () {
-        var out = $("v2NetOut");
+        var st = $("v2SnapStatus");
+        var resBox = $("v2SnapResult");
+        function setSnap(text, kind) {
+          if (!st) return;
+          st.textContent = text;
+          st.className = "status" + (kind ? " " + kind : "");
+        }
         if (!v2NetAckOn()) {
-          if (out) out.textContent = "Tick leak-ack first. This tab did not fetch.";
+          setSnap("Tick leak-ack first. This tab did not fetch.", "err");
           return;
         }
-        if (out) out.textContent = "Fetching /api/mempool fees, tip, mempool…";
+        setSnap("Fetching public fee/traffic data (via lab proxy)…", "");
+        if (resBox) resBox.hidden = true;
+        var vb = 140;
+        function exampleSats(rate) {
+          var a = Number(rate);
+          if (!isFinite(a) || a < 0) return null;
+          return Math.round(a * vb);
+        }
+        function satsToBtc(sats) {
+          var n = Number(sats);
+          if (!isFinite(n)) return "—";
+          return (n / 1e8).toFixed(8);
+        }
         var feesP = v2ApiGet("/v1/fees/recommended", false);
         var tipP = v2ApiGet("/blocks/tip/height", true).catch(function () { return ""; });
         var memP = v2ApiGet("/mempool", false).catch(function () { return null; });
         Promise.all([feesP, tipP, memP])
           .then(function (parts) {
             var fees = parts[0] || {};
+            var keys = ["fastestFee", "halfHourFee", "hourFee", "economyFee", "minimumFee"];
+            var k;
+            for (k = 0; k < keys.length; k++) {
+              if (fees[keys[k]] == null || isNaN(Number(fees[keys[k]]))) {
+                throw new Error("Fees unavailable (invalid payload).");
+              }
+            }
+            var b = {
+              fastestFee: Number(fees.fastestFee),
+              halfHourFee: Number(fees.halfHourFee),
+              hourFee: Number(fees.hourFee),
+              economyFee: Number(fees.economyFee),
+              minimumFee: Number(fees.minimumFee)
+            };
+            var feeOut = $("v2FeeOut");
+            if (feeOut) {
+              feeOut.textContent = [
+                "fastest     " + b.fastestFee + " sat/vB",
+                "halfHour    " + b.halfHourFee + " sat/vB",
+                "hour        " + b.hourFee + " sat/vB",
+                "economy     " + b.economyFee + " sat/vB",
+                "minimum     " + b.minimumFee + " sat/vB"
+              ].join("\n");
+            }
+            var bandsEl = $("v2FeeBands");
+            if (bandsEl) {
+              var items = [
+                ["fastest", b.fastestFee],
+                ["½ hour", b.halfHourFee],
+                ["hour", b.hourFee],
+                ["economy", b.economyFee],
+                ["minimum", b.minimumFee]
+              ];
+              bandsEl.innerHTML = items
+                .map(function (pair) {
+                  var sats = exampleSats(pair[1]);
+                  var satsLabel = sats == null ? "—" : String(sats);
+                  return (
+                    '<div class="fee-band"><strong>' +
+                    pair[1] +
+                    "</strong><span>" +
+                    pair[0] +
+                    " sat/vB</span><span>~" +
+                    satsLabel +
+                    " sats @ " +
+                    vb +
+                    " vB</span></div>"
+                  );
+                })
+                .join("");
+            }
+            var ex = exampleSats(b.halfHourFee);
+            var exFast = exampleSats(b.fastestFee);
+            var feeEx = $("v2FeeExample");
+            if (feeEx) {
+              if (ex == null || exFast == null) {
+                feeEx.textContent =
+                  "Example costs unavailable (invalid fee numbers). Estimates only — real txs vary.";
+              } else {
+                feeEx.textContent =
+                  "Example costs for ~" +
+                  vb +
+                  " vB: halfHour ≈ " +
+                  ex +
+                  " sats; fastest ≈ " +
+                  exFast +
+                  " sats (" +
+                  satsToBtc(ex) +
+                  " / " +
+                  satsToBtc(exFast) +
+                  " BTC). Estimates only — real txs vary.";
+              }
+            }
             var tip = parseInt(String(parts[1] || "").trim(), 10);
             var mp = parts[2] || {};
-            var lines = [
-              "Same-origin /api/mempool (not mempool.space from this tab).",
-              "fastest " + fees.fastestFee + " sat/vB",
-              "halfHour " + fees.halfHourFee + " sat/vB",
-              "hour " + fees.hourFee + " sat/vB",
-              "economy " + fees.economyFee + " sat/vB",
-              "minimum " + fees.minimumFee + " sat/vB",
-              Number.isFinite(tip) ? "Tip block height: " + tip : "Tip height: unknown",
-              mp.count != null ? "Mempool tx count: " + mp.count : "Mempool: unknown",
-              mp.vsize != null ? "Mempool vsize: " + mp.vsize + " vB" : "",
-              "This is not a signature and not a broadcast."
-            ].filter(Boolean);
-            if (out) out.textContent = lines.join("\n");
+            var trafficLines = [];
+            if (isFinite(tip) && tip >= 0) trafficLines.push("Tip block height: " + tip);
+            else trafficLines.push("Tip height: unknown");
+            if (mp.count != null && isFinite(Number(mp.count))) {
+              trafficLines.push("Mempool tx count: " + mp.count);
+              if (mp.vsize != null) trafficLines.push("Mempool vsize: " + mp.vsize + " vB");
+            } else {
+              trafficLines.push("Mempool: unknown");
+            }
+            var trafficOut = $("v2TrafficOut");
+            if (trafficOut) trafficOut.textContent = trafficLines.join("\n");
+            if (resBox) resBox.hidden = false;
+            setSnap("Snapshot OK (public API).", "ok");
             mem.netSnap = true;
             if (pause) pause.disabled = false;
           })
           .catch(function (e) {
             var m = e && e.message ? String(e.message) : String(e);
-            if (out) {
-              out.textContent =
-                "Snapshot unavailable (" + m + "). Unknown is not a fake zero. This tab did not call mempool.space.";
-            }
-            mem.netSnap = true;
-            if (pause) pause.disabled = false;
+            setSnap(
+              /did not answer|could not be reached|unavailable|Failed to fetch/i.test(m)
+                ? "Snapshot failed: " +
+                    m +
+                    " — mempool proxy did not answer. Use https://bip39.catalyxt.xyz (nginx /api/mempool). This is not a fake zero."
+                : "Snapshot failed: " + m + " — mempool did not answer. Public lookup is unavailable — this is not a fake zero.",
+              "err"
+            );
           });
       });
     }

@@ -1,3 +1,3 @@
 # CROSS-REVIEW
 
-Personas: teacher (green/red). Blockers: 0.
+Personas: teacher (same as Network). Blockers: 0.

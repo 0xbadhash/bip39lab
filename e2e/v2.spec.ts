@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.112-v2)", () => {
+test.describe("V2 use-case tracks (0.17.113-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.112-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.112-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.113-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1136,8 +1136,12 @@ test.describe("V2 use-case tracks (0.17.112-v2)", () => {
     await expect(page.locator("#v2NetSnap")).toBeDisabled();
     await page.locator("#v2NetAck").check();
     await page.locator("#v2NetSnap").click();
-    await expect(page.locator("#v2NetOut")).toContainText(/sat\/vB/i);
-    await expect(page.locator("#v2NetOut")).toContainText(/Tip block height: 900000/);
+    await expect(page.locator("#v2SnapStatus")).toContainText(/Snapshot OK/i);
+    await expect(page.locator("#v2FeeOut")).toContainText(/fastest\s+8 sat\/vB/);
+    await expect(page.locator("#v2FeeBands")).toContainText(/fastest/);
+    await expect(page.locator("#v2FeeExample")).toContainText(/140 vB/);
+    await expect(page.locator("#v2TrafficOut")).toContainText(/Tip block height: 900000/);
+    await expect(page.locator("#v2TrafficOut")).toContainText(/Mempool tx count: 1234/);
     const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
     expect(csp || "").toMatch(/connect-src 'self'/);
     expect(csp || "").not.toMatch(/mempool\.space/);
