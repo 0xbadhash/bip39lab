@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.98-v2)", () => {
+test.describe("V2 use-case tracks (0.17.99-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.98-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.98-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.99-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -860,17 +860,23 @@ test.describe("V2 use-case tracks (0.17.98-v2)", () => {
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2WoType [data-wo-type]")).toHaveCount(4);
-    await expect(page.locator('#v2WoType [data-wo-type="84"]')).toHaveClass(/active/);
-    await page.locator("#v2Wo").click();
-    await expect(page.locator("#v2WoOut")).toContainText(/^zpub|zpub/, { timeout: 8000 });
-    await expect(page.locator("#v2WoList [data-copy]")).toHaveCount(1);
-    await expect(page.locator("#v2WoList [data-qr]")).toHaveCount(1);
+    await expect(page.locator('#v2WoType [data-wo-type="86"]')).toHaveClass(/active/);
+    await expect(page.locator('#v2WoType [data-wo-type="86"]')).toContainText(/Taproot/);
+    await expect(page.locator("#v2WoList [data-copy]")).toHaveCount(1, { timeout: 8000 });
+    await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^xpub/);
+    await expect(page.locator("#v2DescOut")).toContainText(/tr\(/);
+    await expect(page.locator("#v2DescOut")).not.toContainText(/wpkh/);
+    await page.locator('#v2WoType [data-wo-type="84"]').click();
+    await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^zpub/);
+    await expect(page.locator("#v2DescOut")).toContainText(/wpkh/);
+    await expect(page.locator("#v2DescOut")).not.toContainText(/tr\(/);
     await page.locator('#v2WoType [data-wo-type="49"]').click();
-    await expect(page.locator("#v2WoOut")).toContainText(/ypub/);
+    await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^ypub/);
+    await expect(page.locator("#v2DescOut")).toContainText(/sh\(wpkh/);
     await page.locator('#v2WoType [data-wo-type="44"]').click();
-    await expect(page.locator("#v2WoOut")).toContainText(/xpub/);
-    await page.locator("#v2DescRefresh").click();
-    await expect(page.locator("#v2DescOut")).toHaveText(/wpkh|tr\(|pkh\(|sh\(/);
+    await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^xpub/);
+    await expect(page.locator("#v2DescOut")).toContainText(/pkh\(/);
+    await expect(page.locator("#v2WoList [data-qr]")).toHaveCount(1);
     await expect(page.locator("#v2DescLine")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });

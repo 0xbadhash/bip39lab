@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 84, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 86, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
   var D6_BITS = 2.58;
   var ENT_PAD_MAX = 200;
   var lastEntDelta = 0;
@@ -2395,32 +2395,14 @@
           "Do not export by typing the recovery phrase into the watch app. That is a full wallet, not watch-only."
         ) +
         desc(
-          "Refresh to see public account keys from this practice phrase (xpub, zpub, ypub). You should not see the recovery words. A zpub is the usual native-segwit viewing key. An xpub is a different prefix (often older wallets)."
+          "One BIP tab at a time — same idea as Path folders. You get that purpose’s viewing key and its descriptor. Not the recovery words."
         ) +
-        callout(
-          "done",
-          "Why you need this (not obvious)",
-          "A watch-only app cannot derive the next receive address from nothing. Export is the hand-off: the vault gives the hot screen a public viewing key, not the seed. Without this, people paste the twelve words into every app that “just wants to show a balance.”"
-        ) +
-        '<p class="control-help">Jargon on this pad: ' +
-        "xpub " + termI("XPUB") +
-        " · zpub " + termI("ZPUB") +
-        " · ypub " + termI("YPUB") +
-        " · descriptor " + termI("DESCRIPTOR") +
-        " · watch-only " + termI("WATCHONLY") +
-        "</p>" +
-        callout(
-          "done",
-          "Public only",
-          "Show one purpose at a time (zpub / xpub / ypub). Refresh descriptors from this practice phrase — public import strings only, not the words."
-        ) +
+        '<p class="control-help">Jargon: xpub ' + termI("XPUB") + " · zpub " + termI("ZPUB") + " · ypub " + termI("YPUB") + " · descriptor " + termI("DESCRIPTOR") + " · watch-only " + termI("WATCHONLY") + "</p>" +
         woTypeTabsHtml() +
-        '<p class="control-help" id="v2WoHelp">BIP84 zpub — usual Sparrow / mobile watch-only import for native segwit.</p>' +
-        '<button type="button" class="btn" id="v2Wo">Show public viewing key</button>' +
+        '<p class="control-help" id="v2WoHelp">BIP86 xpub — Taproot account public key (watch-only where supported).</p>' +
         '<div id="v2WoList" class="v2-copy-list"></div>' +
-        '<pre class="out" id="v2WoOut">Click Show public viewing key — public keys only.</pre>' +
-        '<div class="row" style="margin-top:0.65rem"><button type="button" class="btn secondary" id="v2DescRefresh">Refresh descriptors</button></div>' +
-        '<pre class="out" id="v2DescOut">Click Refresh descriptors — from this practice phrase, not a paste box.</pre>' +
+        '<pre class="out" id="v2WoOut" hidden></pre>' +
+        '<pre class="out" id="v2DescOut">Pick a BIP tab. Only that folder’s viewing key and descriptor show.</pre>' +
         pauseBtn("I saw a viewing key, not the words", false)
       );
     }
@@ -4475,16 +4457,16 @@
 
   function woPurposeNow() {
     var p = mem.woPurpose | 0;
-    return [84, 86, 49, 44].indexOf(p) >= 0 ? p : 84;
+    return [84, 86, 49, 44].indexOf(p) >= 0 ? p : 86;
   }
 
   function woTypeTabsHtml() {
     var cur = woPurposeNow();
     var items = [
-      [84, "BIP84 · zpub"],
-      [86, "BIP86 · xpub"],
-      [49, "BIP49 · ypub"],
-      [44, "BIP44 · xpub"]
+      [86, "BIP86 · Taproot"],
+      [84, "BIP84 · native"],
+      [49, "BIP49 · nested"],
+      [44, "BIP44 · legacy"]
     ];
     var tabs = items
       .map(function (it) {
@@ -4521,28 +4503,32 @@
     if (!pack) return;
     var p = woPurposeNow();
     if ($("v2WoHelp")) $("v2WoHelp").textContent = woHelpText(p);
-    var keys = (pack.keys || []).filter(function (k) { return k.purpose === p; });
+    var keys = (pack.keys || []).filter(function (k) { return Number(k.purpose) === p; });
     var k = keys[0];
     if ($("v2WoOut")) {
-      $("v2WoOut").textContent = k
-        ? k.label + "\n" + k.key + "\n(no xprv)"
-        : "No watch-only key for this purpose.";
+      $("v2WoOut").textContent = k ? k.key : "";
+      $("v2WoOut").hidden = true;
     }
     var list = $("v2WoList");
     if (list) {
       list.innerHTML = k ? copyQrRowHtml(k.label, k.key) : "";
       wireCopyQr(list);
     }
+    paintDescFromPack(pack);
   }
 
   function paintDescFromPack(pack) {
     if (!pack || !window.BIP39Lab || !BIP39Lab.descriptorsFromWatchOnly) return;
+    var p = woPurposeNow();
     var desc = BIP39Lab.descriptorsFromWatchOnly(pack, "main");
-    var block = ((desc && desc.descriptors) || []).map(function (d) {
+    var rows = ((desc && desc.descriptors) || []).filter(function (d) {
+      return Number(d.purpose) === p;
+    });
+    var block = rows.map(function (d) {
       return d.label + "\n" + d.descriptor + (d.note ? "\n(" + d.note + ")" : "");
     }).join("\n\n");
     if ($("v2DescOut")) {
-      $("v2DescOut").textContent = block || "No descriptors from this practice phrase.";
+      $("v2DescOut").textContent = block || "No descriptor for this BIP tab.";
     }
   }
 
@@ -5389,34 +5375,40 @@
         });
       }
     }
+    async function ensureWoPack() {
+      if (!mem.mnemonic || !window.BIP39Lab || !BIP39Lab.exportWatchOnly) return null;
+      if (!mem.woPack) {
+        mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
+      }
+      return mem.woPack;
+    }
     var wo = $("v2Wo");
     if (wo) wo.addEventListener("click", async function () {
-      mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
+      await ensureWoPack();
       paintWoFromPack(mem.woPack);
     });
     var woType = $("v2WoType");
     if (woType) {
       woType.querySelectorAll("[data-wo-type]").forEach(function (btn) {
         btn.addEventListener("click", async function () {
-          mem.woPurpose = parseInt(btn.getAttribute("data-wo-type") || "84", 10) || 84;
+          mem.woPurpose = parseInt(btn.getAttribute("data-wo-type") || "86", 10) || 86;
           woType.querySelectorAll("[data-wo-type]").forEach(function (b) {
             var on = parseInt(b.getAttribute("data-wo-type"), 10) === mem.woPurpose;
             b.classList.toggle("active", on);
             b.setAttribute("aria-selected", on ? "true" : "false");
           });
-          if (!mem.woPack && mem.mnemonic) {
-            mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
-          }
+          await ensureWoPack();
           paintWoFromPack(mem.woPack);
         });
       });
+      ensureWoPack().then(function (pack) {
+        if (pack) paintWoFromPack(pack);
+      }).catch(console.error);
     }
     var descBtn = $("v2DescRefresh");
     if (descBtn) {
       descBtn.addEventListener("click", async function () {
-        if (!mem.woPack && mem.mnemonic) {
-          mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
-        }
+        await ensureWoPack();
         paintDescFromPack(mem.woPack);
       });
     }
@@ -6064,7 +6056,7 @@
 
   function hardRefresh() {
     wipeProgressStore();
-    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 84, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 86, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
     pickerFilter = "start";
     current = { id: 1, step: 0 };
     try {
