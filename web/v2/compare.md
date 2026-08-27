@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
-- **v1:** `/` · product stamp `v0.16.62`
-- **v2:** `/v2/` · chip `v0.17.105-v2` · `/v2/VERSION` `0.17.105-v2` (skew closed 2026-08-27)
+- **v1:** `/` · product stamp `v0.16.63`
+- **v2:** `/v2/` · chip `v0.17.106-v2` · `/v2/VERSION` `0.17.106-v2` (skew closed 2026-08-27)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -48,7 +48,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 - **UC3:** words first; **Compare empty vs test secret**; forget-B beat.
 - **UC4:** **Change folder** is the action (pause until you click). Receive vs change on the next step.
 - **UC5/UC9:** **Copy viewing key** on export rows.
-- **UC6/UC7/UC8:** separate keys vs Shamir shares vs inspect-only PSBT (**Inspect sample**; never Sign). Split then **Combine any 2 of 3**.
+- **UC6/UC7/UC8:** separate keys vs Shamir (phrase first, M-of-N, then practice SLIP-39) vs inspect-only PSBT (**Inspect sample**; never Sign).
 - **Shared / Over time / Advanced** section rails; Shared blurb `1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap`.
 
 ## What landed since 0.16.48 / chip 0.17.53
@@ -76,7 +76,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 - **UC18** inheritance: sealed packet vs chat; open-while-alive; not legal counsel.
 - **UC19** first receive: test address + watch second view + simulated **0.000184 tBTC**; Network dock; never fund practice mainnet.
 - **P1** UC20 metal · UC21 collab · UC22 ceremony · UC23 air-gap loop (tab never signs) · UC24 geo keys · UC25 annual rehearsal.
-- **P2** UC26 own node (no node in-tab) · UC27 UTXO/change · UC28 CoinJoin agnostic · UC29 decoy PP (not advice) · UC30 BIP-85 (classic SoT) · UC31 SLIP-39 dock (`/slip39.html`; UC7 stays hex).
+- **P2** UC26 own node (no node in-tab) · UC27 UTXO/change · UC28 CoinJoin agnostic · UC29 decoy PP (not advice) · UC30 BIP-85 (classic SoT) · UC31 SLIP-39 dock (`/slip39.html`; UC7 also has in-tab practice SLIP-39).
 
 ## What landed since 0.16.45 / chip 0.17.44
 

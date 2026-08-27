@@ -1,7 +1,5 @@
 # CROSS-REVIEW
 
-Personas: security (CSP self not mempool.space), teacher (honest 404), operator (Network stays).
+Personas: teacher (phrase then split), security (never fund SLIP-39), hardware (format ≠ Suite).
 
 Blockers: 0.
-
-Notes: UC10 still teaches “page offline”; this stamp does not reopen UC10.

@@ -104,6 +104,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** pytest + V2 Playwright S34/S37/S38
 - **Notes:** grill-me complete (CEO lock `/tmp/w6-uc8-csp.md`); tag v0.16.62 / chip 0.17.105-v2
 
+### [DONE] V2 UC7 phrase-first Shamir + practice SLIP-39
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-27-v2-uc7-phrase-then-slip39.md`
+- **Plan:** `.agents/specs/2026-08-27-v2-uc7-phrase-then-slip39-plan.md`
+- **Acceptance:**
+  - [x] Phrase first, then M-of-N split/combine with explanation
+  - [x] Practice SLIP-39 word shares + dock
+  - [x] Never fund; no Sign
+- **Smoke:** V2-S39 S40
+- **Notes:** grill-me complete; tag v0.16.63 / chip 0.17.106-v2
+
 ### [OPEN] V2 UC14 dice / coin entropy
 - **Status:** done
 - **Priority:** P0

@@ -720,6 +720,11 @@
     mem.shamirShares = null;
     mem.shamirSecret = "";
     mem.shamirDone = false;
+    mem.shamirMnemonic = "";
+    mem.shamirMN = { m: 2, n: 3 };
+    mem.slip39Shares = null;
+    mem.slip39Hex = "";
+    mem.slip39Done = false;
     mem.metalSeen = {};
     mem.metalPick = "";
     mem.fourOk = false;
@@ -2801,77 +2806,145 @@
 
   async function uc7(step) {
     if (step === 0) {
+      var has = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
       return pad(
-        "<h2>What a share is</h2>" +
+        "<h2>One practice phrase</h2>" +
         doDont(
-          "One secret is cut into practice hex pieces. Any two of three rebuild that same secret. A piece cannot sign.",
-          "This is not multisig (that was UC6). These are not Trezor Suite / SLIP-39 word lists."
+          "Make one throwaway BIP-39 phrase. Next pad cuts that one secret into shares.",
+          "Do not fund it. This is not three cosigner keys (UC6)."
         ) +
         desc(
-          "This is one secret cut into pieces. Any two of three pieces rebuild the same secret. A piece cannot sign a bitcoin spend. That is different from UC6, where each person has a whole key."
+          "Shamir starts from one secret. Generate a practice phrase first. Then we cut that same phrase into pieces. Any M pieces rebuild these words. A piece cannot sign."
         ) +
         callout(
           "done",
-          "One secret, many pieces",
-          "Shamir " +
-            termI("SHAMIR") +
-            " takes one blob and makes N shares " +
-            termI("SHARE") +
-            ".<br />Any M of them rebuild the blob. A share cannot sign a bitcoin spend. Combining shares is recovery, not a 2-person signature."
+          "Phrase first",
+          "Click Generate. You should see twelve English words. That list is the blob we will split. People shares on Trezor use a different word list (SLIP-39) — that comes after the classroom hex split."
         ) +
-        callout(
-          "isnt",
-          "Not the Shamir room yet",
-          "The next pad splits a practice secret in this track. The Shamir room is a longer GF(256) lab — optional, after you have seen split/combine here. It is not SLIP-39 " +
-            termI("SLIP39") +
-            "."
-        ) +
-        pauseBtn("Next: split a practice secret", false)
+        '<button type="button" class="btn" id="v2ShPhrase">Generate practice phrase</button>' +
+        '<div id="v2ShCard">' +
+        (has ? wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid") : wordGridHtml("", "v2ShWordGrid")) +
+        "</div>" +
+        pauseBtn("Next: choose M-of-N and split", !has)
       );
     }
     if (step === 1) {
+      var mn = mem.shamirMN || { m: 2, n: 3 };
       var did = !!(mem.shamirDone);
+      var hasPhrase = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
       return pad(
         "<h2>Split / combine</h2>" +
         doDont(
-          "Split a practice hex secret 2-of-3 and recombine two shares here.",
-          "Do not fund these shares. They are not Trezor SLIP-39."
+          "Pick M-of-N. Click Split. Read the story. Then combine any M shares — same words come back.",
+          "Do not fund these hex shares. They are not Trezor SLIP-39 word lists."
         ) +
         desc(
-          "Click to split a throwaway hex secret into three pieces and rebuild it from two of them. These hex shares are educational. They are not Trezor Suite word shares. Do not fund them."
+          "One click splits the practice phrase into N classroom hex shares. Any M rebuild the same words. This is recovery of one secret, not two people signing."
         ) +
-        callout("warn", "Never fund", "Hex shares in this lab are practice. Do not use them for real funds. They are not Trezor SLIP-39.") +
+        (hasPhrase
+          ? '<p class="control-help">Phrase to split (practice): ' +
+            String(mem.shamirMnemonic).trim().split(/\s+/).slice(0, 3).join(" ") +
+            " …</p>"
+          : '<p class="msg-bad">Go back and generate a phrase first.</p>') +
+        '<label class="field" for="v2ShMN">Threshold<select id="v2ShMN">' +
+        '<option value="2/3"' +
+        (mn.m === 2 && mn.n === 3 ? " selected" : "") +
+        ">2-of-3 (any 2 rebuild)</option>" +
+        '<option value="3/5"' +
+        (mn.m === 3 && mn.n === 5 ? " selected" : "") +
+        ">3-of-5 (any 3 rebuild)</option>" +
+        "</select></label>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
-        '<button type="button" class="btn" id="v2Sh">Split into shares</button>' +
+        '<button type="button" class="btn" id="v2Sh"' +
+        (hasPhrase ? "" : " disabled") +
+        ">Split into shares</button>" +
         '<button type="button" class="btn secondary" id="v2ShCombine"' +
         (mem.shamirShares ? "" : " disabled") +
-        ">Combine any 2 of 3</button>" +
+        ">Combine any M</button>" +
         "</div>" +
         '<pre class="out" id="v2ShOut">' +
-        (did ? "Already split this session. Split again or combine two shares." : "Educational hex. Not SLIP-39 Suite. Never fund.") +
+        (did
+          ? "Already combined this session. Split again if you change M-of-N."
+          : "Click Split. This pad then explains what happened. Educational hex. Not SLIP-39.") +
         "</pre>" +
-        '<p class="control-help">Optional deeper lab (same idea, more controls): ' +
+        '<p class="control-help">Optional longer hex lab: ' +
         '<a href="../shamir.html" data-v2-dock="7">Open Shamir room</a>' +
-        " — educational GF(256) only, not Suite, not UC6 keys.</p>" +
-        pauseBtn("I split and combined any 2 of 3", !did)
+        " — still not Suite.</p>" +
+        pauseBtn("I split and combined any M", !did)
       );
     }
     if (step === 2) {
-      return quiz("The shares you split in this lab are:", [
+      var s39 = !!(mem.slip39Done);
+      return pad(
+        "<h2>Practice SLIP-39 (Trezor-shaped words)</h2>" +
+        doDont(
+          "Make practice SLIP-39 word shares. Combine any 2 of 3. Same format family Trezor uses for people shares.",
+          "Do not fund this lab. Do not treat it as Trezor Suite. Do not type these into a funded device."
+        ) +
+        desc(
+          "The last pad was classroom hex. People on hardware hold SLIP-39 word shares — a different list. Click once to mint a practice 2-of-3, then combine. This tab still never signs."
+        ) +
+        callout(
+          "warn",
+          "Lab practice",
+          "The words look like a product backup. They are throwaway. Never restore them onto a funded Trezor."
+        ) +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
+        '<button type="button" class="btn secondary" id="v2S39Combine"' +
+        (mem.slip39Shares ? "" : " disabled") +
+        ">Combine any 2 of 3</button>" +
+        '<a class="btn secondary" href="../slip39.html" data-v2-dock="7">Open SLIP-39 room</a>' +
+        "</div>" +
+        '<pre class="out" id="v2S39Out">' +
+        (s39
+          ? "Practice combine already matched. Open the SLIP-39 room for passphrase/groups."
+          : "Click Make practice SLIP-39 shares. Word lists, not hex.") +
+        "</pre>" +
+        pauseBtn("I saw Trezor-shaped word shares", !s39)
+      );
+    }
+    if (step === 3) {
+      return quizBank([
         {
-          k: "ok",
-          t: "A classroom split of one secret. They are not the word lists a hardware wallet uses for people.",
-          okwhy: "Correct. These hex pieces teach the idea. They are not a product backup."
+          q: "What did you split in the classroom hex pad?",
+          opts: [
+            qOk("One practice BIP-39 phrase, cut into pieces. Any M pieces rebuild those same words.", "Correct. One secret. Recovery, not two signers."),
+            qBad("Three independent wallets, like UC6.", "Wrong. UC6 is three full keys. Here one phrase is sliced."),
+            qBad("A funded Trezor backup ready to stamp.", "Wrong. Practice only. Never fund.")
+          ]
         },
         {
-          k: "bad",
-          t: "Ready to import into a Trezor as a real backup.",
-          why: "Wrong. These hex pieces are not those word shares."
+          q: "What does M-of-N mean here?",
+          opts: [
+            qOk("N pieces exist. Any M of them rebuild the one secret.", "Correct."),
+            qBad("M people must each sign a bitcoin spend.", "Wrong. That is multisig. A Shamir share cannot sign."),
+            qBad("You need all N pieces, always.", "Wrong. That would be N-of-N. 2-of-3 means any two.")
+          ]
         },
         {
-          k: "bad",
-          t: "A replacement for three people each holding a full key.",
-          why: "Wrong. Combining pieces rebuilds one secret. It is not two people signing."
+          q: "Are the hex shares the same as Trezor SLIP-39?",
+          opts: [
+            qOk("No. Hex is the classroom split. SLIP-39 is a different word list people actually hold.", "Correct."),
+            qBad("Yes. Paste the hex into Trezor Suite.", "Wrong."),
+            qBad("Yes. Same English BIP-39 words.", "Wrong. SLIP-39 uses its own share words.")
+          ]
+        },
+        {
+          q: "What is the SLIP-39 pad for?",
+          opts: [
+            qOk("Practice Trezor-shaped word shares, unfunded. Combine recovers the practice secret.", "Correct. Lab only."),
+            qBad("Signing a PSBT on this tab.", "Wrong. This tab never signs."),
+            qBad("Replacing three cosigner zpubs.", "Wrong. Shares of one secret are not keys.")
+          ]
+        },
+        {
+          q: "Can one share spend bitcoin?",
+          opts: [
+            qOk("No. Combining shares recovers one secret. It is not a signature.", "Correct."),
+            qBad("Yes, if M is 2.", "Wrong."),
+            qBad("Yes, after you open Network.", "Wrong. Lookup is not a sign.")
+          ]
         }
       ]);
     }
@@ -5733,40 +5806,146 @@
         });
       }
     });
+    function utf8DecodeU8(u8) {
+      try {
+        if (typeof TextDecoder !== "undefined") return new TextDecoder("utf-8").decode(u8);
+      } catch (e) { /* fall through */ }
+      var s = "";
+      var i;
+      for (i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+      return s;
+    }
+    function readShamirMN() {
+      var sel = $("v2ShMN");
+      var raw = sel && sel.value ? String(sel.value) : "2/3";
+      var parts = raw.split("/");
+      var m = parseInt(parts[0], 10) || 2;
+      var n = parseInt(parts[1], 10) || 3;
+      mem.shamirMN = { m: m, n: n };
+      return mem.shamirMN;
+    }
+    var shp = $("v2ShPhrase");
+    if (shp) {
+      shp.addEventListener("click", async function () {
+        mem.shamirMnemonic = await BIP39Lab.generateMnemonic(12);
+        mem.shamirShares = null;
+        mem.shamirDone = false;
+        var card = $("v2ShCard");
+        if (card) card.innerHTML = wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid");
+        if (pause) pause.disabled = false;
+      });
+    }
+    var shmn = $("v2ShMN");
+    if (shmn) {
+      shmn.addEventListener("change", function () {
+        readShamirMN();
+      });
+    }
     var sh = $("v2Sh");
     if (sh) sh.addEventListener("click", function () {
+      var out = $("v2ShOut");
       if (!window.ShamirLab) {
-        $("v2ShOut").textContent = "ShamirLab missing.";
+        if (out) out.textContent = "ShamirLab missing.";
         return;
       }
-      var secret = ShamirLab.generatePracticeSecret(16);
-      var u8 = ShamirLab.fromHex(secret);
-      var shares = ShamirLab.splitSecret(u8, 2, 3);
-      mem.shamirSecret = secret;
+      var phrase = String(mem.shamirMnemonic || "").trim();
+      if (!phrase) {
+        if (out) out.textContent = "Generate a practice phrase first.";
+        return;
+      }
+      var mn = readShamirMN();
+      var u8 = ShamirLab.utf8Encode(phrase);
+      var shares = ShamirLab.splitSecret(u8, mn.m, mn.n);
+      mem.shamirSecret = ShamirLab.toHex(u8);
       mem.shamirShares = shares;
       mem.shamirDone = false;
-      $("v2ShOut").textContent =
-        "practice hex (one secret): " + secret + "\n" +
-        shares.map(ShamirLab.encodeShare).join("\n") +
-        "\nA share cannot sign. Next: combine any 2 of 3.";
+      if (out) {
+        out.textContent = [
+          "What it is: one practice BIP-39 phrase cut into " + mn.n + " classroom hex shares.",
+          "Why: any " + mn.m + " of those " + mn.n + " rebuild the same words. Lose too many pieces and the phrase is gone.",
+          "When / where: recovery of ONE secret. Not UC6 (three keys). A share cannot sign a bitcoin spend.",
+          "How: this tab encoded the words as bytes and Shamir-split them (GF(256) lab). That is not SLIP-39.",
+          "Phrase starts: " + phrase.split(/\s+/).slice(0, 3).join(" ") + " …",
+          shares.map(ShamirLab.encodeShare).join("\n"),
+          "Next: Combine any M. Never fund. Not Trezor Suite."
+        ].join("\n");
+      }
       var comb = $("v2ShCombine");
       if (comb) comb.disabled = false;
       if (pause) pause.disabled = true;
     });
     var shc = $("v2ShCombine");
     if (shc) shc.addEventListener("click", function () {
-      if (!window.ShamirLab || !mem.shamirShares || !mem.shamirSecret) {
-        $("v2ShOut").textContent = "Split into shares first.";
+      var out = $("v2ShOut");
+      if (!window.ShamirLab || !mem.shamirShares || !mem.shamirMnemonic) {
+        if (out) out.textContent = "Split into shares first.";
         return;
       }
-      var rec = ShamirLab.combineShares(mem.shamirShares.slice(0, 2));
-      $("v2ShOut").textContent =
-        "combined from 2 of 3: " + ShamirLab.toHex(rec) +
-        "\nmatch original: " + (ShamirLab.toHex(rec) === mem.shamirSecret) +
-        "\nEducational hex. Not SLIP-39 Suite. A share cannot sign.";
-      mem.shamirDone = true;
-      if (pause) pause.disabled = false;
+      var need = (mem.shamirMN && mem.shamirMN.m) || 2;
+      var rec = ShamirLab.combineShares(mem.shamirShares.slice(0, need));
+      var words = utf8DecodeU8(rec).trim();
+      var match = words === String(mem.shamirMnemonic).trim();
+      if (out) {
+        out.textContent = [
+          "Combined any " + need + " of " + ((mem.shamirMN && mem.shamirMN.n) || 3) + ".",
+          "Recovered words: " + words,
+          "Match original phrase: " + match,
+          "Educational hex. Not SLIP-39 Suite. A share cannot sign."
+        ].join("\n");
+      }
+      mem.shamirDone = !!match;
+      if (pause) pause.disabled = !mem.shamirDone;
     });
+    var s39b = $("v2S39");
+    if (s39b) {
+      s39b.addEventListener("click", function () {
+        var out = $("v2S39Out");
+        if (!window.Slip39Lab || typeof Slip39Lab.splitSingleGroup !== "function") {
+          if (out) out.textContent = "Slip39Lab missing. Open the SLIP-39 room.";
+          return;
+        }
+        var hex = Slip39Lab.randomMasterHex(16);
+        var shares = Slip39Lab.splitSingleGroup(hex, 2, 3, "");
+        mem.slip39Hex = hex;
+        mem.slip39Shares = shares;
+        mem.slip39Done = false;
+        if (out) {
+          out.textContent = [
+            "What it is: practice SLIP-39 word shares (2-of-3). Same format family Trezor uses for people shares.",
+            "Why: hardware wallets do not import the classroom hex from the last pad.",
+            "Lab only. Never fund. Never type these into a funded Trezor. This is not Suite.",
+            "Master hex (practice): " + hex,
+            shares.map(function (line, i) { return "share " + (i + 1) + ": " + line; }).join("\n"),
+            "Next: Combine any 2 of 3."
+          ].join("\n");
+        }
+        var c = $("v2S39Combine");
+        if (c) c.disabled = false;
+        if (pause) pause.disabled = true;
+      });
+    }
+    var s39c = $("v2S39Combine");
+    if (s39c) {
+      s39c.addEventListener("click", function () {
+        var out = $("v2S39Out");
+        if (!window.Slip39Lab || !mem.slip39Shares || !mem.slip39Hex) {
+          if (out) out.textContent = "Make practice SLIP-39 shares first.";
+          return;
+        }
+        var rec = Slip39Lab.combineShares(mem.slip39Shares.slice(0, 2), "");
+        var ok = Slip39Lab.matchExpected(rec, mem.slip39Hex);
+        if (out) {
+          out.textContent = [
+            "Combined 2 of 3 SLIP-39 word shares.",
+            "Recovered master hex: " + rec,
+            "Match: " + ok,
+            "Practice only. Not a funded Trezor restore. Open the SLIP-39 room for passphrase/groups."
+          ].join("\n");
+        }
+        mem.slip39Done = !!ok;
+        if (pause) pause.disabled = !mem.slip39Done;
+      });
+    }
     function inspectV2Psbt(raw, story) {
       var box = $("v2PsbtIn");
       if (box && raw != null && String(raw).length) box.value = String(raw);
