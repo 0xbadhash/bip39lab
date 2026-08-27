@@ -95,3 +95,12 @@ def test_network_static_and_lab_csp():
     multi = (ROOT / "web/multisig.html").read_text(encoding="utf-8")
     assert "connect-src 'none'" in multi
     assert "network.html" in multi
+    v2 = (ROOT / "web/v2/index.html").read_text(encoding="utf-8")
+    assert "connect-src 'self'" in v2
+    assert "mempool.space" not in v2
+    assert "connect-src 'none'" not in v2
+    ng = (ROOT / "deploy/nginx-bip39.catalyxt.xyz.conf").read_text(encoding="utf-8")
+    assert "location ^~ /v2/" in ng
+    v2block = ng.split("location ^~ /v2/", 1)[1].split("location /", 1)[0]
+    assert "connect-src 'self'" in v2block
+    assert "mempool.space" not in v2block

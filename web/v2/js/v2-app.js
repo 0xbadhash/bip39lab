@@ -141,23 +141,66 @@
     return ids;
   }
 
+  var psbtNetIds = [];
+
   function paintPsbtNet(ids) {
     var msg = $("v2PsbtNetMsg");
     var ack = $("v2PsbtNetAck");
     var open = $("v2PsbtNetOpen");
+    var live = $("v2PsbtNetLive");
+    psbtNetIds = ids && ids.length ? ids.slice() : [];
     if (!msg || !open) return;
-    if (!ids || !ids.length) {
+    if (!psbtNetIds.length) {
       msg.textContent =
         "This classroom blob has no on-chain txid or input prevout. A public lookup would honestly say not found. This tab did not fetch anything.";
       open.hidden = true;
       open.removeAttribute("href");
       if (ack) ack.checked = false;
+      if (live) live.textContent = "No fetch. Missing txs stay not found — never a fake confirm.";
       return;
     }
     msg.textContent =
-      "Inspect found a prevout txid. Public lookup uses the Network room (mempool proxy / mempool.space). Tick leak-ack, then open Network. This V2 tab still does not fetch.";
-    open.href = "../network.html?txid=" + encodeURIComponent(ids[0]);
+      "Inspect found a prevout txid. Tick leak-ack to look it up on this tab via the same-origin mempool proxy. This tab does not call mempool.space. Network room stays available.";
+    open.href = "../network.html?txid=" + encodeURIComponent(psbtNetIds[0]);
     open.hidden = !(ack && ack.checked);
+    maybeFetchPsbtNet();
+  }
+
+  function maybeFetchPsbtNet() {
+    var live = $("v2PsbtNetLive");
+    var ack = $("v2PsbtNetAck");
+    if (!live) return;
+    if (!psbtNetIds.length) return;
+    var txid = psbtNetIds[0];
+    if (!ack || !ack.checked) {
+      live.textContent =
+        "Tick leak-ack to fetch " + txid.slice(0, 12) + "… from /api/mempool/tx/ on this tab. Never a seed.";
+      return;
+    }
+    live.textContent = "Looking up " + txid + " (same-origin /api/mempool/tx/). Failures stay unknown — never a fake confirm.";
+    fetch("/api/mempool/tx/" + encodeURIComponent(txid), { credentials: "same-origin" })
+      .then(function (res) {
+        if (res.status === 404) {
+          live.textContent =
+            "Not found. That is honest — this id is not on the public chain (classroom samples often 404). Not a fake confirm.";
+          return null;
+        }
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data) return;
+        live.textContent =
+          "Found (public explorer via same-origin proxy). txid " +
+          (data.txid ? String(data.txid) : txid) +
+          (data.confirmed != null ? " confirmed=" + data.confirmed : "") +
+          ". This is not a signature and not a broadcast.";
+      })
+      .catch(function (e) {
+        var m = e && e.message ? String(e.message) : String(e);
+        live.textContent =
+          "Lookup unavailable (" + m + "). Unknown is not a fake zero or a fake confirm. This tab did not call mempool.space.";
+      });
   }
 
   var TRACKS = [
@@ -2874,8 +2917,9 @@
         '<p class="control-help" id="v2PsbtStoryLine">This tab never signs. There is no seed field.</p>' +
         '<pre class="out" id="v2PsbtOut">Inspect structure only. Never sign here.</pre>' +
         '<div class="v2-psbt-net" id="v2PsbtNet">' +
-        '<p id="v2PsbtNetMsg" class="control-help">Inspect first. Public lookup, if any, opens the Network room — this tab does not fetch.</p>' +
+        '<p id="v2PsbtNetMsg" class="control-help">Inspect first. If a prevout exists, leak-ack then this tab fetches /api/mempool/tx/ (same origin). Network room stays open.</p>' +
         '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
+        '<pre class="out" id="v2PsbtNetLive">Inspect first. No fetch until leak-ack and a real prevout.</pre>' +
         '<a class="btn secondary" id="v2PsbtNetOpen" hidden href="../network.html" data-v2-dock="8">Open Network (public lookup)</a>' +
         "</div>" +
         pauseBtn("I inspected the package. No sign.", true)
@@ -5787,9 +5831,11 @@
     if (netAck) {
       netAck.addEventListener("change", function () {
         var open = $("v2PsbtNetOpen");
-        if (!open) return;
-        var href = open.getAttribute("href") || "";
-        open.hidden = !(netAck.checked && /txid=/.test(href));
+        if (open) {
+          var href = open.getAttribute("href") || "";
+          open.hidden = !(netAck.checked && /txid=/.test(href));
+        }
+        maybeFetchPsbtNet();
       });
     }
     var netOpen = $("v2PsbtNetOpen");

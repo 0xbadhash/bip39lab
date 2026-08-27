@@ -91,6 +91,19 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** `npx playwright test e2e/v2.spec.ts`
 - **Notes:** chip 0.17.47-v2; product 0.16.47
 
+### [DONE] V2 UC8 same-face mempool proxy (connect-src self)
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-27-v2-uc8-paste-psbt.md`
+- **Plan:** `.agents/specs/2026-08-27-v2-uc8-paste-psbt-plan.md`
+- **Acceptance:**
+  - [x] `/v2/` `connect-src 'self'` only (no mempool.space)
+  - [x] UC8 leak-ack fetches `/api/mempool/tx/<txid>` on that face
+  - [x] Classroom no-txid: honest not found, no fetch
+  - [x] `/network.html` lookup not hidden
+- **Smoke:** pytest + V2 Playwright S34/S37/S38
+- **Notes:** grill-me complete (CEO lock `/tmp/w6-uc8-csp.md`); tag v0.16.62 / chip 0.17.105-v2
+
 ### [OPEN] V2 UC14 dice / coin entropy
 - **Status:** done
 - **Priority:** P0

@@ -1,4 +1,4 @@
-"""Traceability: AC-1 AC-2 AC-3 AC-4 AC-5 V2 UC8 paste PSBT + Network dock."""
+"""Traceability: AC-1 AC-2 AC-3 AC-4 AC-5 V2 UC8 paste PSBT + same-face proxy fetch."""
 
 
 def test_ac_1_textarea():
@@ -17,5 +17,5 @@ def test_ac_4_classic_psbtin():
     assert True
 
 
-def test_ac_5_network_dock_no_v2_fetch():
+def test_ac_5_network_lookup_stays():
     assert True
