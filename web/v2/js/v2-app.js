@@ -2320,6 +2320,7 @@
         "</div>" +
         "<p>Change folder. Path ends in <code>/1/n</code>. Not a new backup.</p></div>" +
         "</div>" +
+        '<p class="v2-rc-total" id="v2RcTotalLine">Wallet total at this index <span class="v2-amt-chip v2-amt-chip-total" id="v2RcSum">…</span> <span class="control-help" style="display:inline">= receive chip + change chip (teaching only — both folders, same words)</span></p>' +
         '<div class="v2-addr-amt">' +
         '<code class="v2-preview-big" id="v2Tail">Click Show change folder. Words stay. Address and amount switch folders.</code>' +
         '<span class="v2-amt-chip" id="v2FolderAmt" title="Teaching amount — not a chain lookup">…</span>' +
@@ -2913,6 +2914,17 @@
     else if (p === 49) shift = 7;
     else if (p === 44) shift = 11;
     return list[(idx + shift) % n];
+  }
+
+  function addTeachBtc(a, b) {
+    var sa = String(a);
+    var sb = String(b);
+    var pa = ((sa.split(".")[1] || "").length);
+    var pb = ((sb.split(".")[1] || "").length);
+    var p = Math.max(pa, pb, 1);
+    var scale = Math.pow(10, p);
+    var n = Math.round(parseFloat(sa) * scale) + Math.round(parseFloat(sb) * scale);
+    return (n / scale).toFixed(p).replace(/\.?0+$/, "").replace(/\.$/, "") || "0";
   }
 
   function btcFaceHtml(opts) {
@@ -5250,6 +5262,10 @@
           if ($("v2RcAddr1")) $("v2RcAddr1").textContent = chgA;
           if ($("v2RcAmt0")) $("v2RcAmt0").textContent = folderTeachBtc(0, i, purpose) + " BTC";
           if ($("v2RcAmt1")) $("v2RcAmt1").textContent = folderTeachBtc(1, i, purpose) + " BTC";
+          if ($("v2RcSum")) {
+            $("v2RcSum").textContent =
+              addTeachBtc(folderTeachBtc(0, i, purpose), folderTeachBtc(1, i, purpose)) + " BTC";
+          }
           if ($("v2RcRecv")) $("v2RcRecv").classList.toggle("is-on", ch === 0);
           if ($("v2RcChg")) $("v2RcChg").classList.toggle("is-on", ch === 1);
         }
