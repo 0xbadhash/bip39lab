@@ -1,6 +1,7 @@
 # PR Draft: v0.16.73 V2 UC14 extra RNG toys
 
 **Spec:** `.agents/specs/2026-08-27-v2-uc14-rng-toys.md`
+**Plan:** `.agents/specs/2026-08-27-v2-uc14-rng-toys-plan.md`
 
 ## What Problem This Solves
 
@@ -37,7 +38,12 @@ Chip **v0.17.116-v2**. Product **0.16.73**. `#v2Dice10` is **+10 d6 (fast)**. `#
 
 ## Evidence pack
 
-Playwright V2-S15 S46; pytest AC file; CODE-REVIEW.
+| Item | Result |
+|------|--------|
+| hard_gates | CODE-REVIEW, BEHAVIOR-REPORT, spec, red_cmd |
+| smoke | Playwright V2-S0 V2-S15 V2-S46 |
+| pytest | `tests/test_ac_v2_uc14_rng_toys.py` 5 passed |
+| validate | compliance_engine ok |
 
 ## Things that look bad but are actually fine
 
