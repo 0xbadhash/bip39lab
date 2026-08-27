@@ -1,5 +1,5 @@
 # CROSS-REVIEW
 
-Personas: teacher (same-screen origin of shares), explorer (named true txs).
+Personas: privacy (leak-ack), honesty (unknown ≠ 0), scope (no UC8).
 
 Blockers: 0.

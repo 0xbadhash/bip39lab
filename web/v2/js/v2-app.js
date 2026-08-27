@@ -236,7 +236,7 @@
     { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Cut one secret into pieces. Pieces are not cosigners.", done: "Shares rebuild one secret. They are not cosigner keys." },
     { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Read a half-built payment here. Sign and send elsewhere.", done: "You inspect the package here. You sign offline elsewhere. You broadcast from a hot machine. Never paste the seed." },
     { id: 9, level: "Intermediate", title: "xpub privacy", job: "A viewing key cannot spend. It can still leak history.", done: "You saw a public key, not spend words. Do not post it casually." },
-    { id: 10, level: "Advanced", title: "Network leak", job: "This tab stays offline. Balances only if you opt in.", done: "Unknown is not zero. Lookups live on Network, address-only." },
+    { id: 10, level: "Advanced", title: "Network leak", job: "Opt-in public lookup here. Unknown is not zero.", done: "You fetched fees or an address after leak-ack. Address-only. Never the words." },
     { id: 11, level: "Beginner", title: "They hold the keys", job: "A company keeps the keys. You only have a login.", done: "You sorted who holds the keys. A login is not recovery words." },
     { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys are hot. Hardware keeps the seed on the device. Typing the seed into a computer still kills the vault." },
     { id: 13, level: "Beginner", title: "Hot vs cold", job: "Online keys vs offline keys. Brand is not the split.", done: "Daily spend can be hot. Savings stay cold or watch-only. Sort exchange, phone, hardware, watch-only." },
@@ -286,7 +286,7 @@
     7: { is: "One secret cut into practice pieces. Combine to recover.", isnt: "Not Trezor Suite words. A piece cannot sign a spend." },
     8: { is: "Read a half-built payment package offline.", isnt: "This tab never signs and never broadcasts. Never paste the seed." },
     9: { is: "A viewing key lists addresses. It cannot spend.", isnt: "Do not publish it casually. It is not the recovery words." },
-    10: { is: "This page stays offline unless you open Network on purpose.", isnt: "A missing lookup is unknown, not zero coins." },
+    10: { is: "After leak-ack this tab may fetch same-origin /api/mempool. Address-only.", isnt: "A missing lookup is unknown, not zero coins. Never the words." },
     11: { is: "A company keeps the keys. You have a login.", isnt: "If you never got recovery words, you cannot spend on your own." },
     12: { is: "Same words. Phone keys vs a hardware device.", isnt: "USB is not an air-gap. Typing the seed into a computer still kills the vault." },
     13: { is: "Hot means keys can touch the internet. Cold means they do not.", isnt: "Brand name is not the split. Sort the four objects." },
@@ -749,6 +749,7 @@
     mem.slip39Hex = "";
     mem.slip39Done = false;
     mem.psbtExI = null;
+    mem.netSnap = false;
     mem.metalSeen = {};
     mem.metalPick = "";
     mem.fourOk = false;
@@ -938,7 +939,7 @@
     },
     10: {
       atoms: [
-        atom(1, 0, "assets/uc10-atom-offline.svg", "This V2 page stays offline", "<strong>Plan · Page offline</strong><br/>Crypto stays in this tab. CSP connect-src is none."),
+        atom(1, 0, "assets/uc10-atom-offline.svg", "Crypto stays here until you opt in", "<strong>Plan · Opt-in</strong><br/>No lookup until leak-ack. Then same-origin /api/mempool only."),
         atom(2, 1, "assets/uc10-atom-address-only.svg", "Lookups are address-only after opt-in", "<strong>Practice · Address only</strong><br/>Network lookups use addresses you chose. Never the mnemonic."),
         atom(3, 2, "assets/uc10-atom-unknown-not-zero.svg", "A failed lookup is unknown not zero", "<strong>Review · Unknown is not zero</strong><br/>A failed balance lookup must show unknown, never silent 0.")
       ]
@@ -3130,53 +3131,89 @@
   async function uc10(step) {
     if (step === 0) {
       return pad(
-        "<h2>Lab stays offline</h2>" +
+        "<h2>Unknown is not zero</h2>" +
         doDont(
-          "Keep this page offline. If a balance is unknown, treat it as unknown.",
-          "Do not read a missing lookup as zero coins."
+          "If a lookup fails, treat the balance as unknown.",
+          "Do not read a missing lookup as zero coins. Do not send recovery words."
         ) +
         desc(
-          "This page does not call the internet for balances. Crypto stays in this tab. If a later lookup fails, the honest answer is unknown, not zero coins."
+          "This tab does not look anything up until you opt in. After leak-ack it may fetch same-origin /api/mempool (fees, mempool traffic, optional address). Failures stay unknown — never a fake zero. Never the twelve words."
         ) +
-        pauseBtn("Next: open Network only if I opt in", false)
+        pauseBtn("Next: opt-in live lookup on this tab", false)
       );
     }
     if (step === 1) {
+      var on = !!mem.netSnap;
       return pad(
-        "<h2>Explicit opt-in</h2>" +
+        "<h2>Live lookup (same origin)</h2>" +
         doDont(
-          "Look up only addresses you chose, after opt-in on Network.",
-          "Do not send the mnemonic. Lookups are address-only."
+          "Tick leak-ack. Fetch fees and traffic. Optional: one address you chose.",
+          "Do not paste a seed. Do not call mempool.space from this tab. Unknown is not zero."
         ) +
         desc(
-          "Fees and balances live on the Network page after you opt in. Lookups use payment addresses you chose. Never send the recovery words to a balance site."
+          "Same job as the Network room, on this pad. After leak-ack this tab fetches /api/mempool only. Address lookup reveals that address and your IP to the proxy. Classroom practice — never fund from here."
         ) +
         callout(
           "warn",
-          "Network room",
-          "Live fees and balances live on the Network page after you opt in. Lookups are address-only. Never send the mnemonic."
+          "Leak ack",
+          "A fee snapshot still shows your IP to the host. An address lookup also shows that address. Never the mnemonic."
         ) +
-        '<a class="btn" href="../network.html" data-v2-dock="10">Open Network (opt-in)</a>' +
-        '<p class="control-help">When you come back to /v2/, this track opens on Finish. Browser Back also works.</p>' +
-        pauseBtn("Lookups are address-only. Never the words.", false)
+        '<label class="check"><input type="checkbox" id="v2NetAck"/> I understand a public lookup sends my IP (and an address, if I type one) to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
+        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
+        '<button type="button" class="btn" id="v2NetSnap" disabled>Fetch fee + traffic</button>' +
+        "</div>" +
+        '<pre class="out" id="v2NetOut">' +
+        (on ? "Snapshot already fetched this session. Fetch again if you want a refresh." : "Tick leak-ack, then Fetch fee + traffic.") +
+        "</pre>" +
+        '<label class="field" for="v2NetAddr">Optional address (never a seed)<input id="v2NetAddr" type="text" autocomplete="off" spellcheck="false" placeholder="bc1q… or 1… or 3…"/></label>' +
+        '<button type="button" class="btn secondary" id="v2NetBal" disabled>Fetch address</button>' +
+        '<pre class="out" id="v2NetBalOut">Address lookup stays unknown until leak-ack and a valid address. Failures are unknown, not a fake 0.</pre>' +
+        '<p class="control-help">Full Network room (same proxy): ' +
+        '<a href="../network.html" data-v2-dock="10">Open Network</a></p>' +
+        pauseBtn("Lookups are address-only. Unknown is not zero.", !on)
       );
     }
     if (step === 2) {
-      return quiz("If a balance lookup fails, what should the screen say?", [
+      return quizBank([
         {
-          k: "ok",
-          t: "Unknown — not a fake zero.",
-          okwhy: "Correct. A failed lookup is unknown, not an empty wallet."
+          q: "If a balance lookup fails, what should the screen say?",
+          opts: [
+            qOk("Unknown — not a fake zero.", "Correct. A failed lookup is unknown, not an empty wallet."),
+            qBad("0.00000000 bitcoin.", "Wrong. Zero looks like an empty wallet."),
+            qBad("Send the recovery words to the lookup site and retry.", "Wrong. Address only. Never the words.")
+          ]
         },
         {
-          k: "bad",
-          t: "0.00000000 bitcoin.",
-          why: "Wrong. Zero looks like an empty wallet. Failed lookup is unknown."
+          q: "What may this tab fetch after leak-ack?",
+          opts: [
+            qOk("Same-origin /api/mempool — fees, traffic, optional address.", "Correct. connect-src self. Not mempool.space from this tab."),
+            qBad("The twelve recovery words to a public explorer.", "Wrong."),
+            qBad("A signed spend to broadcast.", "Wrong. This tab does not sign or broadcast.")
+          ]
         },
         {
-          k: "bad",
-          t: "Keep retrying and send the recovery words to the lookup site.",
-          why: "Wrong. Lookups use the address only. Never send the words."
+          q: "What does an address lookup leak?",
+          opts: [
+            qOk("That you care about that address, plus your IP, to the proxy host.", "Correct."),
+            qBad("Nothing. Lookups are secret.", "Wrong."),
+            qBad("Your seed, so the host can restore the wallet.", "Wrong. Never the words.")
+          ]
+        },
+        {
+          q: "When is 0 sats honest?",
+          opts: [
+            qOk("When the API returns a valid empty address (status ok).", "Correct. Failures stay unknown."),
+            qBad("Whenever the request fails.", "Wrong. Failure is unknown."),
+            qBad("Always. Missing data means empty.", "Wrong.")
+          ]
+        },
+        {
+          q: "Where do you sign a spend?",
+          opts: [
+            qOk("Not here. This pad only looks up public data after opt-in.", "Correct."),
+            qBad("On Fetch address. That is a signature.", "Wrong."),
+            qBad("Paste the seed into the address box.", "Wrong.")
+          ]
         }
       ]);
     }
@@ -6113,6 +6150,125 @@
             " Fetching /api/mempool/tx/ on this tab after leak-ack. True chain history, not the classroom PSBT."
         );
         if (pause) pause.disabled = false;
+      });
+    }
+    function v2ApiGet(path, asText) {
+      return fetch("/api/mempool" + path, { credentials: "same-origin" }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return asText ? res.text() : res.json();
+      });
+    }
+    function v2NetAckOn() {
+      var a = $("v2NetAck");
+      return !!(a && a.checked);
+    }
+    function v2NetEnable() {
+      var on = v2NetAckOn();
+      ["v2NetSnap", "v2NetBal"].forEach(function (id) {
+        var b = $(id);
+        if (b) b.disabled = !on;
+      });
+    }
+    var netAck10 = $("v2NetAck");
+    if (netAck10) {
+      netAck10.addEventListener("change", v2NetEnable);
+      v2NetEnable();
+    }
+    var netSnap = $("v2NetSnap");
+    if (netSnap) {
+      netSnap.addEventListener("click", function () {
+        var out = $("v2NetOut");
+        if (!v2NetAckOn()) {
+          if (out) out.textContent = "Tick leak-ack first. This tab did not fetch.";
+          return;
+        }
+        if (out) out.textContent = "Fetching /api/mempool fees, tip, mempool…";
+        var feesP = v2ApiGet("/v1/fees/recommended", false);
+        var tipP = v2ApiGet("/blocks/tip/height", true).catch(function () { return ""; });
+        var memP = v2ApiGet("/mempool", false).catch(function () { return null; });
+        Promise.all([feesP, tipP, memP])
+          .then(function (parts) {
+            var fees = parts[0] || {};
+            var tip = parseInt(String(parts[1] || "").trim(), 10);
+            var mp = parts[2] || {};
+            var lines = [
+              "Same-origin /api/mempool (not mempool.space from this tab).",
+              "fastest " + fees.fastestFee + " sat/vB",
+              "halfHour " + fees.halfHourFee + " sat/vB",
+              "hour " + fees.hourFee + " sat/vB",
+              "economy " + fees.economyFee + " sat/vB",
+              "minimum " + fees.minimumFee + " sat/vB",
+              Number.isFinite(tip) ? "Tip block height: " + tip : "Tip height: unknown",
+              mp.count != null ? "Mempool tx count: " + mp.count : "Mempool: unknown",
+              mp.vsize != null ? "Mempool vsize: " + mp.vsize + " vB" : "",
+              "This is not a signature and not a broadcast."
+            ].filter(Boolean);
+            if (out) out.textContent = lines.join("\n");
+            mem.netSnap = true;
+            if (pause) pause.disabled = false;
+          })
+          .catch(function (e) {
+            var m = e && e.message ? String(e.message) : String(e);
+            if (out) {
+              out.textContent =
+                "Snapshot unavailable (" + m + "). Unknown is not a fake zero. This tab did not call mempool.space.";
+            }
+            mem.netSnap = true;
+            if (pause) pause.disabled = false;
+          });
+      });
+    }
+    var netBal = $("v2NetBal");
+    if (netBal) {
+      netBal.addEventListener("click", function () {
+        var bout = $("v2NetBalOut");
+        var inp = $("v2NetAddr");
+        var addr = inp && inp.value ? String(inp.value).trim() : "";
+        if (!v2NetAckOn()) {
+          if (bout) bout.textContent = "Tick leak-ack first. This tab did not fetch.";
+          return;
+        }
+        if (/seed|mnemonic|xprv|abandon /i.test(addr) || (addr && addr.split(/\s+/).length >= 12)) {
+          if (bout) bout.textContent = "Refused. That looked like a seed. Address-only. Never the words.";
+          return;
+        }
+        if (!/^(bc1|[13]|tb1|[mn2])[a-zA-HJ-NP-Z0-9]{14,}$/.test(addr)) {
+          if (bout) bout.textContent = "Need a bitcoin address (bc1… / 1… / 3…). Unknown until then — not a fake 0.";
+          return;
+        }
+        if (bout) bout.textContent = "Looking up " + addr + " via /api/mempool/address/ …";
+        v2ApiGet("/address/" + encodeURIComponent(addr), false)
+          .then(function (data) {
+            var chain = (data && data.chain_stats) || {};
+            if (chain.funded_txo_sum == null && chain.spent_txo_sum == null) {
+              if (bout) {
+                bout.textContent = "Unknown (payload missing sums). Not a fake zero.";
+              }
+              return;
+            }
+            var funded = Number(chain.funded_txo_sum || 0);
+            var spent = Number(chain.spent_txo_sum || 0);
+            var sats = funded - spent;
+            if (bout) {
+              bout.textContent =
+                "Address " +
+                addr +
+                " status ok, " +
+                sats +
+                " sats (chain). 0 with status ok means empty. This is not a seed and not a broadcast.";
+            }
+          })
+          .catch(function (e) {
+            var m = e && e.message ? String(e.message) : String(e);
+            if (/HTTP 404/.test(m)) {
+              if (bout) bout.textContent = "Unknown (not found). That is honest — not a fake 0.";
+            } else {
+              if (bout) {
+                bout.textContent =
+                  "Lookup unavailable (" + m + "). Unknown is not a fake zero. This tab did not call mempool.space.";
+              }
+            }
+          });
       });
     }
     var uc2q = $("v2Uc2Quiz");

@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.108-v2)", () => {
+test.describe("V2 use-case tracks (0.17.109-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.108-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.108-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.109-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1052,6 +1052,70 @@ test.describe("V2 use-case tracks (0.17.108-v2)", () => {
     await expect(page.locator("#v2PsbtNetLive")).toContainText(/Found|txid|block=/i);
     await expect(page.locator("#v2PsbtNetMsg")).toContainText(/First transfer/);
     await expect(page.locator("#v2PsbtNetOpen")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S42 UC10 leak-ack fetches fees via /api/mempool", async ({ page }) => {
+    await page.route("**/api/mempool/**", async (route) => {
+      const url = route.request().url();
+      expect(url).toContain("/api/mempool");
+      expect(url).not.toContain("mempool.space");
+      if (url.includes("/v1/fees/recommended")) {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            fastestFee: 8,
+            halfHourFee: 4,
+            hourFee: 2,
+            economyFee: 1,
+            minimumFee: 1,
+          }),
+        });
+        return;
+      }
+      if (url.includes("/blocks/tip/height")) {
+        await route.fulfill({ status: 200, contentType: "text/plain", body: "900000" });
+        return;
+      }
+      if (/\/api\/mempool\/mempool\/?$/.test(url.split("?")[0])) {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ count: 1234, vsize: 8000000 }),
+        });
+        return;
+      }
+      await route.fulfill({ status: 404, body: "not found" });
+    });
+    await enterV2(page, "/v2/?uc=10");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2NetSnap")).toBeDisabled();
+    await page.locator("#v2NetAck").check();
+    await page.locator("#v2NetSnap").click();
+    await expect(page.locator("#v2NetOut")).toContainText(/sat\/vB/i);
+    await expect(page.locator("#v2NetOut")).toContainText(/Tip block height: 900000/);
+    const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
+    expect(csp || "").toMatch(/connect-src 'self'/);
+    expect(csp || "").not.toMatch(/mempool\.space/);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S43 UC10 address 404 is unknown not zero", async ({ page }) => {
+    await page.route("**/api/mempool/address/**", async (route) => {
+      expect(route.request().url()).not.toContain("mempool.space");
+      await route.fulfill({ status: 404, body: "not found" });
+    });
+    await enterV2(page, "/v2/?uc=10");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2NetAck").check();
+    await page.locator("#v2NetAddr").fill("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
+    await page.locator("#v2NetBal").click();
+    await expect(page.locator("#v2NetBalOut")).toContainText(/unknown/i);
+    await expect(page.locator("#v2NetBalOut")).not.toContainText(/status ok, 0 sats/i);
+    await expect(page.getByRole("link", { name: /Open Network/i })).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 });

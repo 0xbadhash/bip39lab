@@ -116,6 +116,18 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 - **Smoke:** V2-S39 S40
 - **Notes:** grill-me complete; tag v0.16.63 / chip 0.17.106-v2
 
+### [DONE] V2 UC10 live lookup in-tab
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-27-v2-uc10-live-lookup.md`
+- **Plan:** `.agents/specs/2026-08-27-v2-uc10-live-lookup-plan.md`
+- **Acceptance:**
+  - [x] Leak-ack then `/api/mempool` fees/traffic
+  - [x] Address 404 unknown not fake 0
+  - [x] CSP self, no mempool.space, no Sign, UC8 untouched
+- **Smoke:** V2-S42 S43
+- **Notes:** grill-me complete (`/tmp/w6-uc10.md`); tag v0.16.66 / chip 0.17.109-v2
+
 ### [OPEN] V2 UC14 dice / coin entropy
 - **Status:** done
 - **Priority:** P0

@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
-- **v1:** `/` · product stamp `v0.16.65`
-- **v2:** `/v2/` · chip `v0.17.108-v2` · `/v2/VERSION` `0.17.108-v2` (skew closed 2026-08-27)
+- **v1:** `/` · product stamp `v0.16.66`
+- **v2:** `/v2/` · chip `v0.17.109-v2` · `/v2/VERSION` `0.17.109-v2` (skew closed 2026-08-27)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -199,7 +199,7 @@ Do not invent new UCs. Rooms stay SoT.
 | 5 / 9 | Full purpose tabs + `#cardDescriptors` refresh from Lab | **Ported** `#v2WoType` + `#v2DescRefresh` |
 | 6 / 7 | Policy builder; SLIP-39 Suite | **Ported** `#v2MsPolicy` + `wsh(sortedmulti` (Suite still UC31 dock) |
 | 8 | Paste arbitrary PSBT `#cardPsbt` | **Ported** paste/inspect + same-tab `/api/mempool/tx/` after leak-ack (`connect-src 'self'`; no mempool.space) |
-| 10 | Live Network lookup (`connect-src`) | Live lookup in-tab |
+| 10 | Live Network lookup (`connect-src`) | **Ported** in-tab `/api/mempool` after leak-ack (`connect-src 'self'`) |
 | 14 | Extra RNG toys (`+10 d6`, send pad to Lab) | Extra RNG toys |
 | 20–25 | — (jobs were gap) | Vendor drivers (leave) |
 | 26–31 | `#cardBip85` full card; SLIP-39 Suite | Node in-tab; Suite clone |
