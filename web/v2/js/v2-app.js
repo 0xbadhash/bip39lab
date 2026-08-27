@@ -2589,21 +2589,46 @@
       );
     }
     if (step === 2) {
-      return quiz("In a 2-of-3 setup, the three keys are:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "Three separate wallets. Any two people can sign. They are not scraps of one phrase.",
-          okwhy: "Correct. Each person holds a whole seed. Two signatures spend."
+          q: "In a 2-of-3 setup, the three keys are:",
+          opts: [
+            qBad("Three scraps of one recovery phrase.", "Wrong. That would be one secret cut into pieces. Here each person has a full key."),
+            qOk("Three separate wallets. Any two people can sign. They are not scraps of one phrase.", "Correct. Each person holds a whole seed. Two signatures spend."),
+            qBad("A reason to paste the recovery words into chat.", "Wrong. You share public viewing keys to build the vault. The words never go in chat.")
+          ]
         },
         {
-          k: "bad",
-          t: "Three scraps of one recovery phrase.",
-          why: "Wrong. That would be one secret cut into pieces. Here each person has a full key."
+          q: "What do you share to build this vault?",
+          opts: [
+            qOk("The public viewing key from each person (zpub). Never the twelve words.", "Correct. The coordinator sees zpubs. Each person keeps their seed."),
+            qBad("All three recovery phrases, so the coordinator can “just work”.", "Wrong. Pasting the words makes hot seeds, not a 2-of-3 vault."),
+            qBad("One phrase cut into three chat messages.", "Wrong. That is not multisig. Each person has a full backup.")
+          ]
         },
         {
-          k: "bad",
-          t: "A reason to paste the recovery words into chat.",
-          why: "Wrong. You share public viewing keys to build the vault. The words never go in chat."
+          q: "Who can move coins in this 2-of-3?",
+          opts: [
+            qBad("Any one of the three, because they each have a full seed.", "Wrong. One seed is one signature. You need two."),
+            qBad("All three must always sign, or nothing moves.", "Wrong. That would be 3-of-3. Here any two of three is enough."),
+            qOk("Any two of the three. One person alone cannot.", "Correct. That is the spend rule on the policy line.")
+          ]
+        },
+        {
+          q: "Why save the long wsh(sortedmulti…) line with the three viewing keys?",
+          opts: [
+            qBad("You do not. The three word lists are enough to rebuild the vault.", "Wrong. Wallets also need the recipe: how many must sign, and which keys, in one order."),
+            qOk("A wallet needs that recipe to rebuild the same vault. Words alone are not enough.", "Correct. Lose the recipe and you can be locked out even if the words survive."),
+            qBad("It is the password that signs spends on this page.", "Wrong. This pad does not sign. The line is a save-with-the-keys recipe.")
+          ]
+        },
+        {
+          q: "What does “sorted” mean on that recipe?",
+          opts: [
+            qOk("The three keys are always listed in the same order so every wallet builds the same vault.", "Correct. Different order can mean a different address."),
+            qBad("The coins are mixed on the network.", "Wrong. Sorted is about key order in the recipe, not CoinJoin."),
+            qBad("This page signed the spend for you.", "Wrong. This pad never signs.")
+          ]
         }
       ]);
     }
