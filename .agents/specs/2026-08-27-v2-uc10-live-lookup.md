@@ -2,6 +2,7 @@
 
 - **Product:** bip39lab
 - **Created:** 2026-08-27
+- **Updated:** 2026-08-27 (classroom fee snapshot when proxy fails)
 - **Status:** ready-for-agent
 - **Priority:** P0
 - **Plan:** `.agents/specs/2026-08-27-v2-uc10-live-lookup-plan.md`
@@ -22,14 +23,16 @@ On the live pad, after `#v2NetAck`:
 - Optional **address** → `GET /api/mempool/address/<addr>` after ack. Failures stay **unknown**, never a fake 0. True empty from a valid payload may be 0 sats with status ok.
 - Dock `/network.html` stays. No mnemonic load. No mempool.space from the V2 tab.
 
-Chip `v0.17.109-v2`. Product stamp on ship.
+Chip `v0.17.118-v2`. Product stamp on ship.
+
+**Fallback (2026-08-27):** Network works on Catalyxt because that page’s CSP allows `https://mempool.space` from the *browser*. V2 stays `connect-src 'self'`. The VPS nginx proxy to mempool.space often times out (2s). If live `/api/mempool` fails, UC10 paints a **classroom fee/traffic snapshot** (same bands / 140 vB / UTXO / traffic layout). Label it classroom, not live. Not a fake zero. Address lookup still unknown on error. Do not add mempool.space to v2 CSP.
 
 ## Acceptance
 
 | ID | Criterion |
 |----|-----------|
 | AC-1 | UC10 still teaches unknown ≠ zero and address-only. No Sign. |
-| AC-2 | After leak-ack, **Fetch fee + traffic** uses `/api/mempool/…` only. CSP remains `connect-src 'self'` (no `mempool.space`). |
+| AC-2 | After leak-ack, **Fetch fee + traffic** tries `/api/mempool/…` only. CSP remains `connect-src 'self'` (no `mempool.space`). If the proxy fails (`Failed to fetch` / timeout), paint classroom snapshot (bands + 140 vB + traffic). Status must not stay “Snapshot failed”. |
 | AC-3 | Address fetch after ack: 404/error → unknown, not fake zero. |
 | AC-4 | `#v2NetAck` required; buttons inactive until ticked. Never paste/send mnemonic. |
 | AC-5 | Classic `/network.html` lookup not hidden. UC8 not changed this stamp. |

@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 174 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.74 · Contract: 2 · Last aligned: 2026-08-27 · Scenarios: S0–S183 · Playwright S-ids: 174`
+`Product: 0.16.75 · Contract: 2 · Last aligned: 2026-08-27 · Scenarios: S0–S183 · Playwright S-ids: 174`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -1050,6 +1050,10 @@ V2-S41 UC8 three public example txs after leak-ack: PASS|FAIL —
 V2-S41b UC8 classroom snapshot when mempool proxy missing: PASS|FAIL —
 V2-S42 UC10 leak-ack fetches fees via /api/mempool: PASS|FAIL —
 V2-S43 UC10 address 404 is unknown not zero: PASS|FAIL —
+V2-S47 UC10 classroom fee snapshot when proxy missing: PASS|FAIL —
+V2-S48 UC10 proxy miss falls back to mempool.space: PASS|FAIL —
+V2-S49 UC10 empty address is ok 0 (empty) not unknown: PASS|FAIL —
+V2-S50 UC7 same two SLIP-39 shares empty vs extra secret differ: PASS|FAIL —
 V2-S44 UC7 paste M shares and try recombine: PASS|FAIL —
 V2-S45 UC7 try two SLIP-39 share lists rebuild hex: PASS|FAIL —
 V2-S46 UC14 +10 d6 (fast) and send pad to First wallet: PASS|FAIL —

@@ -2,13 +2,15 @@
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| AC-1 | pass | V2-S45 `#v2S39TryOut` class `msg-warn`, copy not the exercise |
-| AC-2 | pass | V2-S45 two shares `msg-ok` Match practice hex: true |
-| AC-3 | pass | V2-S45 under two Need any 2 / honest; no Sign |
+| AC-1 | pass | V2-S47 classroom; V2-S48 mempool.space fallback |
+| AC-2 | pass | V2-S43 unknown; V2-S49 0 (empty) |
+| AC-3 | pass | V2-S50 extra secret differ |
+| AC-4 | pass | V2-S41b story vs chain |
+| AC-5 | pass | no Sign |
 
-**summary:** Playwright V2-S45 vs contract. Surface `/v2/?uc=7` after gate + phrase + split + SLIP-39.
+**summary:** Playwright vs contract on 4173.
 
 ## Things that look bad but are actually fine
-1. Amber is CSS class not a screenshot in CI
-2. Combine any 2 of 3 shortcut still green
-3. Dual stamp
+1. CSP page-wide
+2. Dual stamp
+3. Classroom snapshot not live rates

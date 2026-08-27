@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.117-v2)", () => {
+test.describe("V2 use-case tracks (0.17.122-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.117-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.122-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -956,8 +956,7 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
     await expect(page.locator("#v2PsbtOut")).toContainText(/does not sign/i);
     await expect(page.locator("#v2PsbtNetLive")).toContainText(/No fetch|not found/i);
     const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
-    expect(csp || "").toMatch(/connect-src 'self'/);
-    expect(csp || "").not.toMatch(/mempool\.space/);
+    expect(csp || "").toMatch(/connect-src 'self' https:\/\/mempool\.space/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
@@ -984,8 +983,7 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
     await expect(page.locator("#v2PsbtNetLive")).toContainText(/Found|same-origin|txid/i);
     await expect(page.locator("#v2PsbtNetOpen")).toBeVisible();
     const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
-    expect(csp || "").toMatch(/connect-src 'self'/);
-    expect(csp || "").not.toMatch(/mempool\.space/);
+    expect(csp || "").toMatch(/connect-src 'self' https:\/\/mempool\.space/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
@@ -1070,6 +1068,34 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
+  test("V2-S50 UC7 same two SLIP-39 shares empty vs extra secret differ", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=7");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2ShPhrase").click();
+    await page.locator("#v2Sh").click();
+    await page.locator("#v2ShCombine").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2S39").click();
+    await page.locator("#v2S39s2").fill("");
+    await page.locator("#v2S39Try").click();
+    await expect(page.locator("#v2S39TryOut")).toHaveClass(/msg-ok/);
+    await page.locator("#v2S39s1").fill("");
+    await page.locator("#v2S39Try").click();
+    await expect(page.locator("#v2S39TryOut")).toContainText(/Need any 2|honest/i);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#trackBody h2")).toContainText(/extra secret/i);
+    await expect(page.locator("#v2S39Pp")).toHaveValue("lab");
+    await page.locator("#v2S39PpGo").click();
+    await expect(page.locator("#v2S39HexA")).toContainText(/Recovered hex/i);
+    await expect(page.locator("#v2S39TagA")).toContainText(/MATCHES the practice master/i);
+    await expect(page.locator("#v2S39TagB")).toContainText(/DIFFERENT vault/i);
+    await expect(page.locator("#v2S39PpOut")).toContainText(/not a BIP-39 25th/i);
+    const a = await page.locator("#v2S39HexA").innerText();
+    const b = await page.locator("#v2S39HexB").innerText();
+    expect(a).not.toBe(b);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
   test("V2-S41 UC8 three public example txs after leak-ack", async ({ page }) => {
     await page.route("**/api/mempool/tx/**", async (route) => {
       const url = route.request().url();
@@ -1105,15 +1131,19 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
 
   test("V2-S41b UC8 classroom snapshot when mempool proxy missing", async ({ page }) => {
     await page.route("**/api/mempool/tx/**", (route) => route.abort());
+    await page.route("https://mempool.space/**", (route) => route.abort());
     await enterV2(page, "/v2/?uc=8");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
     await page.locator("[data-v2-ex-txid]").nth(0).click();
     await page.locator("#v2PsbtNetAck").check();
     await page.locator("#v2TxInspect").click();
-    await expect(page.locator("#v2PsbtNetLive")).toContainText(/classroom snapshot/i);
-    await expect(page.locator("#v2PsbtNetLive")).toContainText(/block=0|Genesis|50 BTC/i);
+    await expect(page.locator("#v2TxStory")).toContainText(/Genesis coinbase/i);
+    await expect(page.locator("#v2TxStory")).toContainText(/50 BTC/i);
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/classroom snapshot|On the chain/i);
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/block height: 0|block=0/);
     await expect(page.locator("#v2PsbtNetLive")).not.toContainText(/Failed to fetch/);
+    await expect(page.locator("#v2PsbtNetLive")).not.toContainText(/first bitcoin output/i);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
@@ -1163,14 +1193,15 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
     await expect(page.locator("#v2TrafficOut")).toContainText(/Tip block height: 900000/);
     await expect(page.locator("#v2TrafficOut")).toContainText(/Mempool tx count: 1234/);
     const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
-    expect(csp || "").toMatch(/connect-src 'self'/);
-    expect(csp || "").not.toMatch(/mempool\.space/);
+    expect(csp || "").toMatch(/connect-src 'self' https:\/\/mempool\.space/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
   test("V2-S43 UC10 address 404 is unknown not zero", async ({ page }) => {
     await page.route("**/api/mempool/address/**", async (route) => {
-      expect(route.request().url()).not.toContain("mempool.space");
+      await route.fulfill({ status: 404, body: "not found" });
+    });
+    await page.route("https://mempool.space/**/address/**", async (route) => {
       await route.fulfill({ status: 404, body: "not found" });
     });
     await enterV2(page, "/v2/?uc=10");
@@ -1179,9 +1210,100 @@ test.describe("V2 use-case tracks (0.17.117-v2)", () => {
     await page.locator("#v2NetAck").check();
     await page.locator("#v2NetAddr").fill("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4");
     await page.locator("#v2NetBal").click();
-    await expect(page.locator("#v2NetBalOut")).toContainText(/unknown/i);
-    await expect(page.locator("#v2NetBalOut")).not.toContainText(/status ok, 0 sats/i);
+    await expect(page.locator("#v2BalStatus")).toContainText(/1 unknown\/error/i);
+    await expect(page.locator("#v2BalStatus")).toContainText(/fail-closed/i);
+    await expect(page.locator("#v2BalTableBody")).toContainText(/unknown/i);
+    await expect(page.locator("#v2BalTableBody")).not.toContainText(/0 \(empty\)/);
     await expect(page.getByRole("link", { name: /Open Network/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S49 UC10 empty address is ok 0 (empty) not unknown", async ({ page }) => {
+    const empty = {
+      chain_stats: { funded_txo_sum: 0, spent_txo_sum: 0 },
+    };
+    await page.route("**/api/mempool/address/**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(empty),
+      });
+    });
+    await enterV2(page, "/v2/?uc=10");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2NetAck").check();
+    await page.locator("#v2NetAddr").fill("bc1q20q0l72fukhasulxqng4mkl5clxg9xr3ujlp5r");
+    await page.locator("#v2NetBal").click();
+    await expect(page.locator("#v2BalStatus")).toContainText(/Done: 1 ok, 0 unknown\/error/i);
+    await expect(page.locator("#v2BalTableBody")).toContainText(/bc1q20q0l72fukhasulxqng4mkl5clxg9xr3ujlp5r/);
+    await expect(page.locator("#v2BalTableBody")).toContainText(/ok/);
+    await expect(page.locator("#v2BalTableBody")).toContainText(/0 \(empty\)/);
+    await expect(page.locator("#v2BalTableBody")).toContainText(/valid empty result/i);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S47 UC10 classroom fee snapshot when proxy missing", async ({ page }) => {
+    await page.route("**/api/mempool/**", (route) => route.abort());
+    await page.route("https://mempool.space/**", (route) => route.abort());
+    await enterV2(page, "/v2/?uc=10");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2NetAck").check();
+    await page.locator("#v2NetSnap").click();
+    await expect(page.locator("#v2SnapStatus")).toContainText(/Classroom snapshot/i);
+    await expect(page.locator("#v2SnapStatus")).not.toContainText(/Snapshot failed/i);
+    await expect(page.locator("#v2FeeOut")).toContainText(/fastest\s+8 sat\/vB/);
+    await expect(page.locator("#v2FeeBands")).toContainText(/fastest/);
+    await expect(page.locator("#v2FeeExample")).toContainText(/140 vB/);
+    await expect(page.locator("#v2TrafficOut")).toContainText(/Tip block height: 900000/);
+    await expect(page.locator("#v2TrafficOut")).toContainText(/classroom snapshot/i);
+    const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
+    expect(csp || "").toMatch(/mempool\.space/);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S48 UC10 proxy miss falls back to mempool.space", async ({ page }) => {
+    await page.route("**/api/mempool/**", (route) => route.abort());
+    await page.route("https://mempool.space/**", async (route) => {
+      const url = route.request().url();
+      expect(url).toContain("mempool.space");
+      if (url.includes("/v1/fees/recommended")) {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            fastestFee: 9,
+            halfHourFee: 5,
+            hourFee: 3,
+            economyFee: 1,
+            minimumFee: 1,
+          }),
+        });
+        return;
+      }
+      if (url.includes("/blocks/tip/height")) {
+        await route.fulfill({ status: 200, contentType: "text/plain", body: "900001" });
+        return;
+      }
+      if (/\/mempool\/?$/.test(url.split("?")[0])) {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ count: 99, vsize: 1000 }),
+        });
+        return;
+      }
+      await route.fulfill({ status: 404, body: "not found" });
+    });
+    await enterV2(page, "/v2/?uc=10");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2NetAck").check();
+    await page.locator("#v2NetSnap").click();
+    await expect(page.locator("#v2SnapStatus")).toContainText(/Snapshot OK/i);
+    await expect(page.locator("#v2FeeOut")).toContainText(/fastest\s+9 sat\/vB/);
+    await expect(page.locator("#v2TrafficOut")).toContainText(/Tip block height: 900001/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 

@@ -3,20 +3,19 @@
 Blockers: 0. Obsolete Tier A: 0.
 
 ### Security Guru
-none — textContent paint; no new network; no Sign; practice hex already shown in-track.
+none — leak-ack still gates fetch; classic Lab CSP none; address 404 unknown; no Sign.
 
 ### Maintainability Expert
-none — paintTone now strips msg-warn; CSS next to msg-ok/msg-bad.
+none — shared `v2FetchMempool`.
 
 ### Obsolete / cleanup (scoped)
 - Tier A: none
-- Tier B: none
-- Tier C: whole-repo cruft → `/sweep` if asked
+- Tier C: `/sweep` if asked
 
 ### Domain Specialist
-none — three shares still not the 2-of-3 exercise; two shares still green success.
+none — SLIP-39 extra ≠ BIP-39 25th; empty extra matches practice hex; inspect story ≠ chain.
 
 ## Things that look bad but are actually fine
-1. First wallet vs Lab analog (not this ship)
-2. SLIP-39 library rejects 3 mnemonics for 2-of-3
+1. Classroom fee sample if both fetches miss
+2. Practice extra `lab`
 3. Dual stamp

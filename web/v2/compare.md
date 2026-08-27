@@ -4,7 +4,7 @@
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
 - **v1:** `/` · product stamp `v0.16.72`
-- **v2:** `/v2/` · chip `v0.17.117-v2` · `/v2/VERSION` `0.17.117-v2` (skew closed 2026-08-27)
+- **v2:** `/v2/` · chip `v0.17.120-v2` · `/v2/VERSION` `0.17.120-v2` (skew closed 2026-08-27)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -198,8 +198,8 @@ Do not invent new UCs. Rooms stay SoT.
 | 4 | Live Lab table bind `#cardPathPlay` | **Ported** `#v2PathPlayTable` + `#v2PathPurpose` |
 | 5 / 9 | Full purpose tabs + `#cardDescriptors` refresh from Lab | **Ported** `#v2WoType` + `#v2DescRefresh` |
 | 6 / 7 | Policy builder; SLIP-39 Suite | **Ported** `#v2MsPolicy` + `wsh(sortedmulti` (Suite still UC31 dock) |
-| 8 | Paste arbitrary PSBT `#cardPsbt` | **Ported** paste/inspect + same-tab `/api/mempool/tx/` after leak-ack (`connect-src 'self'`; no mempool.space) |
-| 10 | Live Network lookup (`connect-src`) | **Ported** in-tab `/api/mempool` after leak-ack (`connect-src 'self'`) |
+| 8 | Paste arbitrary PSBT `#cardPsbt` | **Ported** inspect + `/api/mempool` then `mempool.space` after leak-ack |
+| 10 | Live Network lookup (`connect-src`) | **Ported** same: proxy then mempool.space (V2 CSP allows both) |
 | 14 | Extra RNG toys (`+10 d6`, send pad to Lab) | **Ported** `#v2Dice10` + `#v2EntToLab` → First wallet |
 | 20–25 | — (jobs were gap) | Vendor drivers (leave) |
 | 26–31 | `#cardBip85` full card; SLIP-39 Suite | Node in-tab; Suite clone |

@@ -1,21 +1,15 @@
-# Behavior contract — UC7 amber three-share
+# Behavior contract — 0.16.75 V2 mempool / UC7 / UC8
 
 - **Product:** bip39lab
-- **Target:** `/v2/?uc=7`
-- **Setup:** static lab, ack overlay, gate start
+- **Target:** `/v2/?uc=8` `/v2/?uc=7` `/v2/?uc=10`
 
 ## User tasks
 
-1. As a user, I can fill all three SLIP-39 boxes and Try.
-   - **Expect:** amber/orange “not the exercise” (`msg-warn`), not green success.
-   - **Anti-cheat:** do not treat three lists as drill pass.
-
-2. As a user, I can clear one box and Try two.
-   - **Expect:** green match when those two are practice shares.
-
-3. As a user, I can clear down to one box.
-   - **Expect:** red honest fail.
+1. UC10 fee snap after leak-ack paints bands (live or classroom).
+2. UC10 address empty → table ok / 0 (empty); 404 → unknown.
+3. UC7 extra pad: empty MATCHES, lab DIFFERENT.
+4. UC8 Genesis: story left, chain right (txid/block).
 
 ## Must not
-
 - Sign / fund / persist mnemonic
+- Fake zero on address failure

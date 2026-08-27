@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 86, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 86, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "", slip39TriedOne: false, slip39TriedTwo: false, slip39PpDone: false };
   var D6_BITS = 2.58;
   var ENT_PAD_MAX = 200;
   var lastEntDelta = 0;
@@ -214,23 +214,61 @@
   }
 
   function paintTxInspect(live, data, how, story) {
+    var storyEl = $("v2TxStory");
+    if (storyEl) {
+      storyEl.textContent = story
+        ? String(story)
+        : "Classroom description of why this tx is famous. The box on the right is only what the explorer returned.";
+    }
     if (!live) return;
     var st = (data && data.status) || {};
-    var vinN = data && data.vin && data.vin.length != null ? data.vin.length : "";
-    var voutN = data && data.vout && data.vout.length != null ? data.vout.length : "";
+    var vin = (data && data.vin) || [];
+    var vout = (data && data.vout) || [];
+    var vinN = vin.length != null ? vin.length : "";
+    var voutN = vout.length != null ? vout.length : "";
+    var outLines = [];
+    var oi;
+    for (oi = 0; oi < vout.length; oi++) {
+      var sat = vout[oi] && vout[oi].value != null ? Number(vout[oi].value) : NaN;
+      if (isFinite(sat)) {
+        outLines.push("output " + oi + ": " + sat + " sats (" + (sat / 1e8).toFixed(8) + " BTC)");
+      }
+    }
+    var via = how === "live" ? (v2LastMempoolVia || "public explorer") : "classroom snapshot";
     var lines = [
       how === "live"
-        ? "Found (live /api/mempool/tx/). Public explorer via same-origin proxy."
-        : "Inspected from the classroom snapshot (live /api/mempool proxy did not answer). This is real mainnet history, not a fake confirm. This tab did not call mempool.space.",
-      story || "",
+        ? "On the chain (live " + via + ")."
+        : "On the chain (classroom snapshot — live lookup missed). Real mainnet facts, not a fake confirm.",
       "txid " + ((data && data.txid) || ""),
-      st.confirmed != null ? "confirmed=" + st.confirmed : "",
-      st.block_height != null ? "block=" + st.block_height : "",
-      vinN !== "" ? "inputs=" + vinN : "",
-      voutN !== "" ? "outputs=" + voutN : "",
+      st.confirmed != null ? "confirmed: " + st.confirmed : "",
+      st.block_height != null ? "block height: " + st.block_height : "",
+      vinN !== "" ? "inputs: " + vinN : "",
+      voutN !== "" ? "outputs: " + voutN : "",
+      outLines.join("\n"),
       "This is not a signature and not a broadcast."
     ];
     live.textContent = lines.filter(Boolean).join("\n");
+  }
+
+  var MEMPOOL_PUBLIC = "https://mempool.space/api";
+  var v2LastMempoolVia = "";
+  function v2FetchMempool(path, asText) {
+    function once(base) {
+      var cred = base.indexOf("https://") === 0 ? "omit" : "same-origin";
+      var via = base.indexOf("https://") === 0 ? "mempool.space" : "/api/mempool";
+      return fetch(base + path, { credentials: cred }).then(function (res) {
+        if (!res.ok) {
+          var err = new Error("HTTP " + res.status);
+          err.status = res.status;
+          throw err;
+        }
+        v2LastMempoolVia = via;
+        return asText ? res.text() : res.json();
+      });
+    }
+    return once("/api/mempool").catch(function () {
+      return once(MEMPOOL_PUBLIC);
+    });
   }
 
   function maybeFetchPsbtNet() {
@@ -242,36 +280,29 @@
     var ex = findExTx(txid);
     if (!ack || !ack.checked) {
       live.textContent =
-        "Tick leak-ack, then Inspect this transaction. Live /api/mempool if the proxy is up; otherwise the classroom snapshot for Genesis / First transfer / Pizza day.";
+        "Tick leak-ack, then Inspect this transaction. Live lookup via /api/mempool, then mempool.space; classroom snapshot if both miss.";
       return;
     }
-    live.textContent = "Looking up " + txid + " (same-origin /api/mempool/tx/)…";
-    fetch("/api/mempool/tx/" + encodeURIComponent(txid), { credentials: "same-origin" })
-      .then(function (res) {
-        if (res.status === 404) {
-          if (ex && ex.snap) {
-            paintTxInspect(live, ex.snap, "snap", ex.label + " — " + ex.why + " " + (ex.snap.story || ""));
-            return null;
-          }
-          live.textContent =
-            "Not found. That is honest — this id is not on the public chain (classroom samples often 404). Not a fake confirm.";
-          return null;
-        }
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.json();
-      })
+    live.textContent = "Looking up " + txid + " (proxy, then mempool.space)…";
+    v2FetchMempool("/tx/" + encodeURIComponent(txid), false)
       .then(function (data) {
         if (!data) return;
-        var story = ex ? ex.label + " — " + ex.why + (ex.snap && ex.snap.story ? " " + ex.snap.story : "") : "";
+        var story = ex ? ex.label + " — " + ex.why + (ex.snap && ex.snap.story ? "\n" + ex.snap.story : "") : "";
         paintTxInspect(live, data, "live", story);
       })
-      .catch(function () {
+      .catch(function (e) {
         if (ex && ex.snap) {
-          paintTxInspect(live, ex.snap, "snap", ex.label + " — " + ex.why + " " + (ex.snap.story || ""));
+          paintTxInspect(live, ex.snap, "snap", ex.label + " — " + ex.why + "\n" + (ex.snap.story || ""));
+          return;
+        }
+        var m = e && e.message ? String(e.message) : String(e);
+        if (/HTTP 404/.test(m)) {
+          live.textContent =
+            "Not found. That is honest — this id is not on the public chain (classroom samples often 404). Not a fake confirm.";
           return;
         }
         live.textContent =
-          "Lookup unavailable. Unknown is not a fake zero or a fake confirm. This tab did not call mempool.space. Pick Genesis coinbase, First transfer, or Pizza day for a classroom snapshot.";
+          "Lookup unavailable. Unknown is not a fake zero or a fake confirm. Pick Genesis coinbase, First transfer, or Pizza day for a classroom snapshot.";
       });
   }
 
@@ -702,7 +733,7 @@
       4: ["Folders", "Toggle path", "Quiz", "Finish"],
       5: ["Public only", "Export", "Quiz", "Finish"],
       6: ["Show 2-of-3", "Three full seeds", "Quiz", "Finish"],
-      7: ["What a share is", "Split / combine", "Quiz", "Finish"],
+      7: ["Phrase + hex", "SLIP-39 2-of-3", "Extra secret", "Quiz", "Finish"],
       8: ["Air-gap model", "Inspect sample", "Quiz", "Finish"],
       9: ["Cannot spend", "Export viewing key", "Quiz", "Finish"],
       10: ["Stay offline", "Opt-in Network", "Quiz", "Finish"],
@@ -743,7 +774,7 @@
       4: ["Path = folder", "BIP purpose", "Index / change"],
       5: ["Watch-only", "zpub/xpub", "Never the seed"],
       6: ["M-of-N", "Public keys", "Not Shamir"],
-      7: ["Threshold shares", "Not cosigners", "Edu hex only"],
+      7: ["Threshold shares", "2-of-3 lists", "Extra secret ≠ 25th"],
       8: ["PSBT package", "Never sign here", "Broadcast elsewhere"],
       9: ["Viewing key", "Cannot spend", "Still leaks history"],
       10: ["Page stays offline", "Address only", "Unknown is not zero"],
@@ -797,6 +828,9 @@
     mem.slip39Shares = null;
     mem.slip39Hex = "";
     mem.slip39Done = false;
+    mem.slip39TriedOne = false;
+    mem.slip39TriedTwo = false;
+    mem.slip39PpDone = false;
     mem.psbtExI = null;
     mem.netSnap = false;
     mem.metalSeen = {};
@@ -2878,6 +2912,24 @@
     return finishHtml(6);
   }
 
+  function slip39CheckHtml() {
+    function li(ok, text) {
+      return (
+        '<li class="' +
+        (ok ? "is-on" : "is-off") +
+        '">' +
+        (ok ? "Done · " : "To do · ") +
+        text +
+        "</li>"
+      );
+    }
+    return (
+      li(!!(mem.slip39Shares && mem.slip39Shares.length >= 3), "3 SLIP-39 lists minted") +
+      li(!!mem.slip39TriedOne, "Try 1 list — must fail") +
+      li(!!mem.slip39TriedTwo, "Try 2 lists — must match")
+    );
+  }
+
   async function uc7(step) {
     if (step === 0) {
       var has = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
@@ -2937,21 +2989,24 @@
       );
     }
     if (step === 1) {
-      var s39 = !!(mem.slip39Done);
+      var ready = !!(mem.slip39TriedOne && mem.slip39TriedTwo);
       return pad(
         "<h2>Practice SLIP-39 (Trezor-shaped words)</h2>" +
         doDont(
-          "Make practice SLIP-39 word shares. Combine any 2 of 3. Same format family Trezor uses for people shares.",
+          "Mint three people lists. Try one list (must fail). Try two (must match). Then we add an extra secret on the next pad.",
           "Do not fund this lab. Do not treat it as Trezor Suite. Do not type these into a funded device."
         ) +
         desc(
-          "The last pad split BIP-39 words into classroom hex. This pad mints three SLIP-39 people-share lists (a different word list than BIP-39). Copy any two into the boxes and try to rebuild the practice master hex. Combine any 2 of 3 still does it for you."
+          "The last pad split BIP-39 words into classroom hex. This pad mints three SLIP-39 people-share lists (a different word list than BIP-39). Play the 2-of-3: three papers, one paper is not enough, any two rebuild."
         ) +
         callout(
           "warn",
           "Lab practice",
           "These look like backup words. They are SLIP-39 shares, not a BIP-39 seed. Throwaway. Never type them into a funded Trezor."
         ) +
+        '<ul class="v2-s39-check" id="v2S39Check">' +
+        slip39CheckHtml() +
+        "</ul>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
         '<button type="button" class="btn secondary" id="v2S39Combine"' +
@@ -2965,16 +3020,54 @@
         '<button type="button" class="btn secondary" id="v2S39Try"' +
         (mem.slip39Shares ? "" : " disabled") +
         ">Try these 2 shares</button>" +
-        '<pre class="out" id="v2S39TryOut">The exercise is exactly two of the three lists. Clear one box, then Try these 2 shares. All three together is the full backup — correct, but not the drill. Combine any 2 of 3 is the shortcut.</pre>' +
+        '<pre class="out" id="v2S39TryOut">Play in order: mint 3 lists → try 1 (fail) → try 2 (match). Combine any 2 of 3 is the shortcut for the match. Extra secret comes after.</pre>' +
         '<pre class="out" id="v2S39Out">' +
-        (s39
-          ? "Practice combine already matched. Open the SLIP-39 room for passphrase/groups."
-          : "Click Make practice SLIP-39 shares. You get three word lists. Then try any two.") +
+        (ready
+          ? "2-of-3 drill done. Next pad: same two shares, with and without an extra secret."
+          : "Click Make practice SLIP-39 shares. You get three word lists. Then try one, then two.") +
         "</pre>" +
-        pauseBtn("I rebuilt the practice hex from two shares", !s39)
+        pauseBtn("Next: extra secret on the same two shares", !ready)
       );
     }
     if (step === 2) {
+      var ppDone = !!mem.slip39PpDone;
+      var have = !!(mem.slip39Shares && mem.slip39Shares.length >= 2 && mem.slip39Hex);
+      return pad(
+        "<h2>Same two shares, extra secret</h2>" +
+        doDont(
+          "Unlock the same two SLIP-39 lists twice: once with no extra secret, once with a practice extra. Read the two hexes. They must differ.",
+          "Do not treat this extra string as a BIP-39 25th word. Do not fund either hex. This is lab encryption, not a new share."
+        ) +
+        desc(
+          "BIP-39’s optional 25th word stretches a seed into another wallet. SLIP-39’s extra secret encrypts the master at split time. Same two people papers + a different extra = a different recovered hex. Empty extra is how you just rebuilt the practice master. Type lab in the extra box (practice only)."
+        ) +
+        callout(
+          "warn",
+          "Not a fourth share",
+          "The extra secret is not paper share 4. One list still fails even if you know the extra. Two lists without the extra open vault A. Two lists with lab open vault B."
+        ) +
+        (have
+          ? '<p class="control-help">Using share 1 and share 2 from the last pad. Same papers both columns.</p>' +
+            '<div class="v2-s39-pp">' +
+            '<div class="v2-s39-col">' +
+            "<h3>Without extra secret</h3>" +
+            '<p class="control-help">Empty extra — the unlock you already practised.</p>' +
+            '<pre class="out" id="v2S39HexA">Click Compare both unlocks.</pre>' +
+            '<p id="v2S39TagA" class="control-help">—</p>' +
+            "</div>" +
+            '<div class="v2-s39-col">' +
+            "<h3>With extra secret</h3>" +
+            '<label class="field" for="v2S39Pp">Practice extra (not a 25th word)<input id="v2S39Pp" type="text" value="lab" autocomplete="off" spellcheck="false"/></label>' +
+            '<pre class="out" id="v2S39HexB">Click Compare both unlocks.</pre>' +
+            '<p id="v2S39TagB" class="control-help">—</p>' +
+            "</div></div>" +
+            '<button type="button" class="btn" id="v2S39PpGo">Compare both unlocks</button>' +
+            '<pre class="out" id="v2S39PpOut">Same two shares. Two extras. Two hexes. If they match, you typed an empty extra on the right.</pre>'
+          : '<p class="msg-bad">Make three SLIP-39 lists and finish the 2-of-3 drill on the previous pad first.</p>') +
+        pauseBtn("Same papers, extra secret = another vault", !ppDone)
+      );
+    }
+    if (step === 3) {
       return quizBank([
         {
           q: "What did you split in the classroom hex pad?",
@@ -3001,18 +3094,18 @@
           ]
         },
         {
-          q: "What is the SLIP-39 pad for?",
+          q: "You unlock the same two SLIP-39 lists once with no extra secret and once with lab. The two hexes:",
           opts: [
-            qOk("Practice Trezor-shaped word shares, unfunded. Combine recovers the practice secret.", "Correct. Lab only."),
-            qBad("Signing a PSBT on this tab.", "Wrong. This tab never signs."),
-            qBad("Replacing three cosigner zpubs.", "Wrong. Shares of one secret are not keys.")
+            qOk("Differ. Same people papers, extra secret = another vault. Not a BIP-39 25th word.", "Correct. SLIP-39 encrypts the master. Empty extra rebuilt the practice hex. lab did not."),
+            qBad("Must match, because two of three already succeeded.", "Wrong. The extra secret is a second lock, not a fourth paper."),
+            qBad("Are the BIP-39 25th word on this pad.", "Wrong. A 25th word is a different stretch. This extra is SLIP-39 encryption.")
           ]
         },
         {
-          q: "Can one share spend bitcoin?",
+          q: "Can one SLIP-39 list plus the extra secret spend bitcoin?",
           opts: [
-            qOk("No. Combining shares recovers one secret. It is not a signature.", "Correct."),
-            qBad("Yes, if M is 2.", "Wrong."),
+            qOk("No. One list still fails. Combining is recovery, not a signature. Lab only.", "Correct. Threshold is still 2. Extra secret is not a missing share."),
+            qBad("Yes — the extra secret counts as the second share.", "Wrong. It is not paper share 2."),
             qBad("Yes, after you open Network.", "Wrong. Lookup is not a sign.")
           ]
         }
@@ -3073,9 +3166,17 @@
           ? "Selected: " + PSBT_EX_TX[mem.psbtExI].label + " — " + PSBT_EX_TX[mem.psbtExI].why
           : "Select Genesis coinbase, First transfer, or Pizza day.") +
         "</p>" +
-        '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
+        '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to this site’s proxy and/or mempool.space. Never a seed. Opt-in leak ack.</label>' +
         '<button type="button" class="btn" id="v2TxInspect">Inspect this transaction</button>' +
-        '<pre class="out" id="v2PsbtNetLive">Select a named tx, tick leak-ack, then inspect. This tab fetches /api/mempool/tx/ (same origin).</pre>' +
+        '<div class="v2-s39-pp v2-tx-split">' +
+        '<div class="v2-s39-col">' +
+        "<h3>What this is (classroom)</h3>" +
+        '<p class="control-help" id="v2TxStory">Select Genesis coinbase, First transfer, or Pizza day. This column is the teaching story — not the explorer payload.</p>' +
+        "</div>" +
+        '<div class="v2-s39-col">' +
+        "<h3>What the chain says</h3>" +
+        '<pre class="out" id="v2PsbtNetLive">Tick leak-ack, then Inspect. This column is only txid / confirm / block / in / out from the explorer (or classroom snapshot if live missed).</pre>' +
+        "</div></div>" +
         '<a class="btn secondary" id="v2PsbtNetOpen" hidden href="../network.html" data-v2-dock="8">Open Network (public lookup)</a>' +
         '<label class="field" for="v2PsbtIn">PSBT text (classroom sample or paste)<textarea id="v2PsbtIn" rows="3" spellcheck="false" autocomplete="off" placeholder="Click a sample, or paste cHNidP8…"></textarea></label>' +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
@@ -3210,17 +3311,17 @@
         "<h2>Live lookup (same origin)</h2>" +
         doDont(
           "Tick leak-ack. Fetch fees and traffic. Optional: one address you chose.",
-          "Do not paste a seed. Do not call mempool.space from this tab. Unknown is not zero."
+          "Do not paste a seed. Unknown is not zero."
         ) +
         desc(
-          "Same job as the Network room, on this pad. After leak-ack this tab fetches /api/mempool only. Address lookup reveals that address and your IP to the proxy. Classroom practice — never fund from here."
+          "Same job as the Network room. After leak-ack this tab tries /api/mempool, then mempool.space (browser, like Network). If both miss, a classroom Fees & traffic snapshot still paints. Address lookup stays unknown on error. Never fund from here."
         ) +
         callout(
           "warn",
           "Leak ack",
           "A fee snapshot still shows your IP to the host. An address lookup also shows that address. Never the mnemonic."
         ) +
-        '<label class="check"><input type="checkbox" id="v2NetAck"/> I understand a public lookup sends my IP (and an address, if I type one) to the mempool proxy. Never a seed. Opt-in leak ack.</label>' +
+        '<label class="check"><input type="checkbox" id="v2NetAck"/> I understand a public lookup sends my IP (and an address, if I type one) to this site’s proxy and/or mempool.space. Never a seed. Opt-in leak ack.</label>' +
         "<h3>Fees &amp; traffic</h3>" +
         '<p class="card-lede teach-only">Optional public snapshot via mempool proxy. Does <strong>not</strong> send any of your addresses — only general fee/mempool stats (still reveals your IP to the host). Public APIs may rate-limit or fail under load; retry later if a fetch errors.</p>' +
         '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
@@ -3244,7 +3345,14 @@
         "</div>" +
         '<label class="field" for="v2NetAddr">Optional address (never a seed)<input id="v2NetAddr" type="text" autocomplete="off" spellcheck="false" placeholder="bc1q… or 1… or 3…"/></label>' +
         '<button type="button" class="btn secondary" id="v2NetBal" disabled>Fetch address</button>' +
-        '<pre class="out" id="v2NetBalOut">Address lookup stays unknown until leak-ack and a valid address. Failures are unknown, not a fake 0.</pre>' +
+        '<p class="control-help teach-only"><strong>0 sats</strong> with status <code>ok</code> means empty (valid). Failures show <code>unknown</code> — never a silent fake zero.</p>' +
+        '<p id="v2BalStatus" class="status" aria-live="polite"></p>' +
+        '<div class="table-scroll cols-modern">' +
+        '<table class="addr-table" id="v2BalTable">' +
+        "<thead><tr><th>#</th><th>Address</th><th>Status</th><th>Balance (sats)</th><th>Detail</th></tr></thead>" +
+        '<tbody id="v2BalTableBody"><tr class="empty-row"><td colspan="5">No balances yet — acknowledge, add an address, then Fetch.</td></tr></tbody>' +
+        "</table></div>" +
+        '<pre class="out" id="v2NetBalOut" hidden>Address lookup stays unknown until leak-ack and a valid address. Failures are unknown, not a fake 0.</pre>' +
         '<p class="control-help">Full Network room (same proxy): ' +
         '<a href="../network.html" data-v2-dock="10">Open Network</a></p>' +
         pauseBtn("Lookups are address-only. Unknown is not zero.", !on)
@@ -3263,7 +3371,7 @@
         {
           q: "What may this tab fetch after leak-ack?",
           opts: [
-            qOk("Same-origin /api/mempool — fees, traffic, optional address.", "Correct. connect-src self. Not mempool.space from this tab."),
+            qOk("Fees, traffic, optional address — lab proxy, then mempool.space. Never the words.", "Correct. Same exception as Network. Still no seed."),
             qBad("The twelve recovery words to a public explorer.", "Wrong."),
             qBad("A signed spend to broadcast.", "Wrong. This tab does not sign or broadcast.")
           ]
@@ -6178,6 +6286,9 @@
         mem.slip39Hex = hex;
         mem.slip39Shares = shares;
         mem.slip39Done = false;
+        mem.slip39TriedOne = false;
+        mem.slip39TriedTwo = false;
+        mem.slip39PpDone = false;
         if (out) {
           out.textContent = [
             "What it is: practice SLIP-39 word shares (2-of-3). Same format family Trezor uses for people shares.",
@@ -6198,6 +6309,8 @@
         var try39 = $("v2S39Try");
         if (try39) try39.disabled = false;
         if (pause) pause.disabled = true;
+        var chk = $("v2S39Check");
+        if (chk) chk.innerHTML = slip39CheckHtml();
       });
     }
     var s39c = $("v2S39Combine");
@@ -6220,7 +6333,10 @@
           ].join("\n");
         }
         mem.slip39Done = !!ok;
-        if (pause) pause.disabled = !mem.slip39Done;
+        if (ok) mem.slip39TriedTwo = true;
+        var chk = $("v2S39Check");
+        if (chk) chk.innerHTML = slip39CheckHtml();
+        if (pause) pause.disabled = !(mem.slip39TriedOne && mem.slip39TriedTwo);
       });
     }
     var s39Try = $("v2S39Try");
@@ -6239,13 +6355,17 @@
           if (line) picked.push(line);
         }
         if (picked.length < 2) {
+          mem.slip39TriedOne = true;
           if (tout) {
             paintTone(tout, "bad");
             tout.textContent =
               "Need any 2 of the 3 SLIP-39 word lists. You filled " +
               picked.length +
-              ". Recovery failed — that is honest. The hex is not rebuilt.";
+              ". Recovery failed — that is honest. The hex is not rebuilt. Extra secret would not save a single list.";
           }
+          var chk1 = $("v2S39Check");
+          if (chk1) chk1.innerHTML = slip39CheckHtml();
+          if (pause) pause.disabled = !(mem.slip39TriedOne && mem.slip39TriedTwo);
           return;
         }
         try {
@@ -6284,7 +6404,10 @@
           }
           if (ok) {
             mem.slip39Done = true;
-            if (pause) pause.disabled = false;
+            mem.slip39TriedTwo = true;
+            var chk2 = $("v2S39Check");
+            if (chk2) chk2.innerHTML = slip39CheckHtml();
+            if (pause) pause.disabled = !(mem.slip39TriedOne && mem.slip39TriedTwo);
           }
         } catch (e) {
           if (tout) {
@@ -6294,6 +6417,70 @@
               (e && e.message ? e.message : e) +
               "). That is honest — the practice hex was not rebuilt.";
           }
+        }
+      });
+    }
+    var s39PpGo = $("v2S39PpGo");
+    if (s39PpGo) {
+      s39PpGo.addEventListener("click", function () {
+        var out = $("v2S39PpOut");
+        var aEl = $("v2S39HexA");
+        var bEl = $("v2S39HexB");
+        var tagA = $("v2S39TagA");
+        var tagB = $("v2S39TagB");
+        if (!window.Slip39Lab || !mem.slip39Shares || !mem.slip39Hex) {
+          if (out) out.textContent = "Finish the 2-of-3 SLIP-39 drill first.";
+          return;
+        }
+        var extra = (($("v2S39Pp") && $("v2S39Pp").value) || "").trim();
+        var pair = mem.slip39Shares.slice(0, 2);
+        var hexA = "";
+        var hexB = "";
+        try {
+          hexA = Slip39Lab.combineShares(pair, "");
+        } catch (eA) {
+          hexA = "";
+        }
+        try {
+          hexB = Slip39Lab.combineShares(pair, extra);
+        } catch (eB) {
+          hexB = "";
+        }
+        var matchA = !!(hexA && Slip39Lab.matchExpected(hexA, mem.slip39Hex));
+        var matchB = !!(hexB && Slip39Lab.matchExpected(hexB, mem.slip39Hex));
+        var differ = !!(hexA && hexB && hexA !== hexB);
+        if (aEl) {
+          paintTone(aEl, matchA ? "ok" : "bad");
+          aEl.textContent = "Recovered hex:\n" + (hexA || "(failed)");
+        }
+        if (bEl) {
+          paintTone(bEl, matchB ? "ok" : differ ? "warn" : "bad");
+          bEl.textContent = "Recovered hex:\n" + (hexB || "(failed)");
+        }
+        if (tagA) {
+          tagA.textContent = matchA
+            ? "MATCHES the practice master (empty extra)."
+            : "Does not match the practice master.";
+        }
+        if (tagB) {
+          tagB.textContent = matchB
+            ? "Also matches — you probably left the extra empty. Type lab."
+            : differ
+              ? "DIFFERENT vault. Same two papers. Extra secret changed the hex."
+              : "Did not recover a distinct hex.";
+        }
+        if (out) {
+          var okDemo = matchA && differ && !matchB;
+          paintTone(out, okDemo ? "ok" : extra ? "warn" : "bad");
+          out.textContent = [
+            "Same two SLIP-39 lists. Two extras. Two results.",
+            "Without extra: " + (matchA ? "matches practice hex." : "no match."),
+            "With extra “" + extra + "”: " + (matchB ? "matches practice (extra was empty or unused)." : differ ? "different hex — another vault." : "no distinct result."),
+            "This extra is SLIP-39 encryption, not a BIP-39 25th word, not a fourth share.",
+            "One list would still fail. Practice only. Never fund."
+          ].join("\n");
+          mem.slip39PpDone = !!okDemo;
+          if (pause) pause.disabled = !mem.slip39PpDone;
         }
       });
     }
@@ -6386,19 +6573,21 @@
         btn.classList.remove("secondary");
         var msg = $("v2PsbtNetMsg");
         if (msg && ex) {
-          msg.textContent =
-            "Selected: " +
+          msg.textContent = "Selected: " + ex.label + ". Tick leak-ack, then Inspect this transaction.";
+        }
+        var storyEl = $("v2TxStory");
+        if (storyEl && ex) {
+          storyEl.textContent =
             ex.label +
             " — " +
             ex.why +
-            " Tick leak-ack, then Inspect this transaction.";
+            (ex.snap && ex.snap.story ? "\n" + ex.snap.story : "") +
+            "\nThis column is the classroom story. It is not the explorer payload.";
         }
         var live = $("v2PsbtNetLive");
         if (live && ex) {
           live.textContent =
-            "Selected " +
-            ex.label +
-            ". Not fetched yet. Tick leak-ack, then Inspect this transaction.";
+            "Not fetched yet. Tick leak-ack, then Inspect. This column will show only chain fields (txid, confirm, block, in/out).";
         }
         var open = $("v2PsbtNetOpen");
         if (open) {
@@ -6429,10 +6618,108 @@
       });
     }
     function v2ApiGet(path, asText) {
-      return fetch("/api/mempool" + path, { credentials: "same-origin" }).then(function (res) {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return asText ? res.text() : res.json();
-      });
+      return v2FetchMempool(path, asText);
+    }
+    var UC10_FEE_CLASSROOM = {
+      fastestFee: 8,
+      halfHourFee: 4,
+      hourFee: 2,
+      economyFee: 1,
+      minimumFee: 1,
+      tip: 900000,
+      count: 1234,
+      vsize: 8000000
+    };
+    function paintUc10FeeSnap(b, tip, mp, live) {
+      var vb = 140;
+      function exampleSats(rate) {
+        var a = Number(rate);
+        if (!isFinite(a) || a < 0) return null;
+        return Math.round(a * vb);
+      }
+      function satsToBtc(sats) {
+        var n = Number(sats);
+        if (!isFinite(n)) return "—";
+        return (n / 1e8).toFixed(8);
+      }
+      var feeOut = $("v2FeeOut");
+      if (feeOut) {
+        feeOut.textContent = [
+          "fastest     " + b.fastestFee + " sat/vB",
+          "halfHour    " + b.halfHourFee + " sat/vB",
+          "hour        " + b.hourFee + " sat/vB",
+          "economy     " + b.economyFee + " sat/vB",
+          "minimum     " + b.minimumFee + " sat/vB"
+        ].join("\n");
+      }
+      var bandsEl = $("v2FeeBands");
+      if (bandsEl) {
+        var items = [
+          ["fastest", b.fastestFee],
+          ["½ hour", b.halfHourFee],
+          ["hour", b.hourFee],
+          ["economy", b.economyFee],
+          ["minimum", b.minimumFee]
+        ];
+        bandsEl.innerHTML = items
+          .map(function (pair) {
+            var sats = exampleSats(pair[1]);
+            var satsLabel = sats == null ? "—" : String(sats);
+            return (
+              '<div class="fee-band"><strong>' +
+              pair[1] +
+              "</strong><span>" +
+              pair[0] +
+              " sat/vB</span><span>~" +
+              satsLabel +
+              " sats @ " +
+              vb +
+              " vB</span></div>"
+            );
+          })
+          .join("");
+      }
+      var ex = exampleSats(b.halfHourFee);
+      var exFast = exampleSats(b.fastestFee);
+      var feeEx = $("v2FeeExample");
+      if (feeEx) {
+        if (ex == null || exFast == null) {
+          feeEx.textContent =
+            "Example costs unavailable (invalid fee numbers). Estimates only — real txs vary.";
+        } else {
+          feeEx.textContent =
+            "Example costs for ~" +
+            vb +
+            " vB: halfHour ≈ " +
+            ex +
+            " sats; fastest ≈ " +
+            exFast +
+            " sats (" +
+            satsToBtc(ex) +
+            " / " +
+            satsToBtc(exFast) +
+            " BTC). Estimates only — real txs vary." +
+            (live
+              ? ""
+              : " Classroom sample — not today’s live mempool.");
+        }
+      }
+      var trafficLines = [];
+      if (isFinite(tip) && tip >= 0) trafficLines.push("Tip block height: " + tip);
+      else trafficLines.push("Tip height: unknown");
+      if (mp && mp.count != null && isFinite(Number(mp.count))) {
+        trafficLines.push("Mempool tx count: " + mp.count);
+        if (mp.vsize != null) trafficLines.push("Mempool vsize: " + mp.vsize + " vB");
+      } else {
+        trafficLines.push("Mempool: unknown");
+      }
+      if (!live) {
+        trafficLines.push("Classroom snapshot (same layout as Network). Live proxy and mempool.space did not answer. Not a fake zero.");
+      }
+      var trafficOut = $("v2TrafficOut");
+      if (trafficOut) trafficOut.textContent = trafficLines.join("\n");
+      var resBox = $("v2SnapResult");
+      if (resBox) resBox.hidden = false;
     }
     function v2NetAckOn() {
       var a = $("v2NetAck");
@@ -6466,16 +6753,16 @@
         }
         setSnap("Fetching public fee/traffic data (via lab proxy)…", "");
         if (resBox) resBox.hidden = true;
-        var vb = 140;
-        function exampleSats(rate) {
-          var a = Number(rate);
-          if (!isFinite(a) || a < 0) return null;
-          return Math.round(a * vb);
-        }
-        function satsToBtc(sats) {
-          var n = Number(sats);
-          if (!isFinite(n)) return "—";
-          return (n / 1e8).toFixed(8);
+        function finishSnap(b, tip, mp, live) {
+          paintUc10FeeSnap(b, tip, mp, live);
+          setSnap(
+            live
+              ? "Snapshot OK (public API)."
+              : "Classroom snapshot (live proxy did not answer). Same Fees & traffic layout as Network. Not today’s rates. Not a fake zero.",
+            live ? "ok" : "warn"
+          );
+          mem.netSnap = true;
+          if (pause) pause.disabled = false;
         }
         var feesP = v2ApiGet("/v1/fees/recommended", false);
         var tipP = v2ApiGet("/blocks/tip/height", true).catch(function () { return ""; });
@@ -6497,146 +6784,143 @@
               economyFee: Number(fees.economyFee),
               minimumFee: Number(fees.minimumFee)
             };
-            var feeOut = $("v2FeeOut");
-            if (feeOut) {
-              feeOut.textContent = [
-                "fastest     " + b.fastestFee + " sat/vB",
-                "halfHour    " + b.halfHourFee + " sat/vB",
-                "hour        " + b.hourFee + " sat/vB",
-                "economy     " + b.economyFee + " sat/vB",
-                "minimum     " + b.minimumFee + " sat/vB"
-              ].join("\n");
-            }
-            var bandsEl = $("v2FeeBands");
-            if (bandsEl) {
-              var items = [
-                ["fastest", b.fastestFee],
-                ["½ hour", b.halfHourFee],
-                ["hour", b.hourFee],
-                ["economy", b.economyFee],
-                ["minimum", b.minimumFee]
-              ];
-              bandsEl.innerHTML = items
-                .map(function (pair) {
-                  var sats = exampleSats(pair[1]);
-                  var satsLabel = sats == null ? "—" : String(sats);
-                  return (
-                    '<div class="fee-band"><strong>' +
-                    pair[1] +
-                    "</strong><span>" +
-                    pair[0] +
-                    " sat/vB</span><span>~" +
-                    satsLabel +
-                    " sats @ " +
-                    vb +
-                    " vB</span></div>"
-                  );
-                })
-                .join("");
-            }
-            var ex = exampleSats(b.halfHourFee);
-            var exFast = exampleSats(b.fastestFee);
-            var feeEx = $("v2FeeExample");
-            if (feeEx) {
-              if (ex == null || exFast == null) {
-                feeEx.textContent =
-                  "Example costs unavailable (invalid fee numbers). Estimates only — real txs vary.";
-              } else {
-                feeEx.textContent =
-                  "Example costs for ~" +
-                  vb +
-                  " vB: halfHour ≈ " +
-                  ex +
-                  " sats; fastest ≈ " +
-                  exFast +
-                  " sats (" +
-                  satsToBtc(ex) +
-                  " / " +
-                  satsToBtc(exFast) +
-                  " BTC). Estimates only — real txs vary.";
-              }
-            }
             var tip = parseInt(String(parts[1] || "").trim(), 10);
             var mp = parts[2] || {};
-            var trafficLines = [];
-            if (isFinite(tip) && tip >= 0) trafficLines.push("Tip block height: " + tip);
-            else trafficLines.push("Tip height: unknown");
-            if (mp.count != null && isFinite(Number(mp.count))) {
-              trafficLines.push("Mempool tx count: " + mp.count);
-              if (mp.vsize != null) trafficLines.push("Mempool vsize: " + mp.vsize + " vB");
-            } else {
-              trafficLines.push("Mempool: unknown");
-            }
-            var trafficOut = $("v2TrafficOut");
-            if (trafficOut) trafficOut.textContent = trafficLines.join("\n");
-            if (resBox) resBox.hidden = false;
-            setSnap("Snapshot OK (public API).", "ok");
-            mem.netSnap = true;
-            if (pause) pause.disabled = false;
+            finishSnap(b, tip, mp, true);
           })
-          .catch(function (e) {
-            var m = e && e.message ? String(e.message) : String(e);
-            setSnap(
-              /did not answer|could not be reached|unavailable|Failed to fetch/i.test(m)
-                ? "Snapshot failed: " +
-                    m +
-                    " — mempool proxy did not answer. Use https://bip39.catalyxt.xyz (nginx /api/mempool). This is not a fake zero."
-                : "Snapshot failed: " + m + " — mempool did not answer. Public lookup is unavailable — this is not a fake zero.",
-              "err"
+          .catch(function () {
+            var c = UC10_FEE_CLASSROOM;
+            finishSnap(
+              {
+                fastestFee: c.fastestFee,
+                halfHourFee: c.halfHourFee,
+                hourFee: c.hourFee,
+                economyFee: c.economyFee,
+                minimumFee: c.minimumFee
+              },
+              c.tip,
+              { count: c.count, vsize: c.vsize },
+              false
             );
           });
       });
     }
+    function paintUc10BalRows(rows, miss) {
+      var tbody = $("v2BalTableBody");
+      var st = $("v2BalStatus");
+      var bout = $("v2NetBalOut");
+      if (tbody) {
+        tbody.innerHTML = "";
+        if (!rows.length) {
+          tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No balances yet.</td></tr>';
+        } else {
+          rows.forEach(function (r, i) {
+            var tr = document.createElement("tr");
+            var bal =
+              r.satoshis == null
+                ? "—"
+                : r.status === "ok" && r.satoshis === 0
+                  ? "0 (empty)"
+                  : String(r.satoshis);
+            [String(i), r.address, r.status, bal, r.detail || ""].forEach(function (text, j) {
+              var td = document.createElement("td");
+              td.textContent = text;
+              if (j === 1) td.className = "addr";
+              if (j === 3 && r.status === "ok" && r.satoshis === 0) {
+                td.className = "bal-zero-ok";
+                td.title = "Valid empty balance — API returned ok with 0 sats";
+              }
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+        }
+      }
+      var okN = rows.filter(function (r) { return r.status === "ok"; }).length;
+      var unk = rows.length - okN;
+      var line = miss
+        ? miss
+        : "Done: " + okN + " ok, " + unk + " unknown/error (fail-closed; no fake zeros on failure).";
+      if (st) {
+        st.textContent = line;
+        st.className = "status" + (miss ? " err" : unk ? "" : " ok");
+      }
+      if (bout) {
+        bout.hidden = true;
+        bout.textContent = line + " " + rows.map(function (r) {
+          return r.address + " " + r.status + " " + (r.satoshis == null ? "—" : r.satoshis);
+        }).join("; ");
+      }
+    }
     var netBal = $("v2NetBal");
     if (netBal) {
       netBal.addEventListener("click", function () {
-        var bout = $("v2NetBalOut");
+        var st = $("v2BalStatus");
         var inp = $("v2NetAddr");
         var addr = inp && inp.value ? String(inp.value).trim() : "";
         if (!v2NetAckOn()) {
-          if (bout) bout.textContent = "Tick leak-ack first. This tab did not fetch.";
+          if (st) {
+            st.textContent = "Tick leak-ack first. This tab did not fetch.";
+            st.className = "status err";
+          }
           return;
         }
         if (/seed|mnemonic|xprv|abandon /i.test(addr) || (addr && addr.split(/\s+/).length >= 12)) {
-          if (bout) bout.textContent = "Refused. That looked like a seed. Address-only. Never the words.";
+          paintUc10BalRows([], "Refused. That looked like a seed. Address-only. Never the words.");
           return;
         }
         if (!/^(bc1|[13]|tb1|[mn2])[a-zA-HJ-NP-Z0-9]{14,}$/.test(addr)) {
-          if (bout) bout.textContent = "Need a bitcoin address (bc1… / 1… / 3…). Unknown until then — not a fake 0.";
+          paintUc10BalRows([], "Need a bitcoin address (bc1… / 1… / 3…). Unknown until then — not a fake 0.");
           return;
         }
-        if (bout) bout.textContent = "Looking up " + addr + " via /api/mempool/address/ …";
+        if (st) {
+          st.textContent = "Fetching 1 address…";
+          st.className = "status";
+        }
         v2ApiGet("/address/" + encodeURIComponent(addr), false)
           .then(function (data) {
             var chain = (data && data.chain_stats) || {};
             if (chain.funded_txo_sum == null && chain.spent_txo_sum == null) {
-              if (bout) {
-                bout.textContent = "Unknown (payload missing sums). Not a fake zero.";
-              }
+              paintUc10BalRows([{
+                address: addr,
+                status: "unknown",
+                satoshis: null,
+                detail: "missing chain_stats sums"
+              }]);
               return;
             }
             var funded = Number(chain.funded_txo_sum || 0);
             var spent = Number(chain.spent_txo_sum || 0);
-            var sats = funded - spent;
-            if (bout) {
-              bout.textContent =
-                "Address " +
-                addr +
-                " status ok, " +
-                sats +
-                " sats (chain). 0 with status ok means empty. This is not a seed and not a broadcast.";
+            if (!isFinite(funded) || !isFinite(spent)) {
+              paintUc10BalRows([{
+                address: addr,
+                status: "unknown",
+                satoshis: null,
+                detail: "non-numeric chain_stats"
+              }]);
+              return;
             }
+            var sats = funded - spent;
+            var via = v2LastMempoolVia || "mempool.space";
+            var detail = via;
+            if (sats === 0) {
+              detail = via + " · 0 sats is a valid empty result (not a fetch error)";
+            }
+            paintUc10BalRows([{
+              address: addr,
+              status: "ok",
+              satoshis: sats,
+              detail: detail
+            }]);
           })
           .catch(function (e) {
             var m = e && e.message ? String(e.message) : String(e);
-            if (/HTTP 404/.test(m)) {
-              if (bout) bout.textContent = "Unknown (not found). That is honest — not a fake 0.";
-            } else {
-              if (bout) {
-                bout.textContent =
-                  "Lookup unavailable (" + m + "). Unknown is not a fake zero. This tab did not call mempool.space.";
-              }
-            }
+            paintUc10BalRows([{
+              address: addr,
+              status: "unknown",
+              satoshis: null,
+              detail: /HTTP 404/.test(m) ? "not found" : m
+            }]);
           });
       });
     }

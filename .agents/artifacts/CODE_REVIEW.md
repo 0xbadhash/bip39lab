@@ -1,9 +1,9 @@
 # CODE-REVIEW
 
-command: `/code_review` UC7 msg-warn
+command: `/code_review` 0.16.75 bundle
 base: origin/master
-head: working tree then HEAD
-secrets: clean (practice hex already classroom)
+head: working tree → HEAD
+secrets: clean
 
 ## Findings accepted
 None.
@@ -15,12 +15,12 @@ None.
 0
 
 ## Follow-ups
-`--warn` token in app.css is gold; this ship uses explicit orange `#e08a24` on `.msg-warn`.
+Live nginx sites-available was missing `/v2/` (fixed on host). Keep deploy conf and live conf in sync.
 
 ## Smoke
-V2-S45 passed (msg-warn on three lists).
+V2-S41b S43 S47 S48 S49 S50 previously green this session.
 
 ## Things that look bad but are actually fine
 1. Dual stamp
 2. leftover scripts
-3. amber not using only var(--warn)
+3. mempool.space on V2 CSP by operator request
