@@ -1,18 +1,20 @@
 # CODE-REVIEW
 
-- **command:** `/code_review`
-- **head:** UC8 classroom tx snapshots
-- **secrets:** public history
-- **engine:** same session
+command: UC14 RNG toys vs origin/master
+base: HEAD (pre-commit)
+secrets: none (practice pad in RAM)
 
-## Accepted P0
+## Findings accepted
+None.
 
-**none**
+## Findings rejected
+None.
 
-Fallback only for the three named txs.
+## P0 count
+0
 
-p0=0 follow_ups=0
+## Follow-ups
+Classic Lab `#btnEntToLab` unchanged. UC10 fetch off-nginx still out of this ship.
 
 ## Smoke
-
-V2-S41 S41b passed.
+V2-S0, V2-S15, V2-S46 passed.

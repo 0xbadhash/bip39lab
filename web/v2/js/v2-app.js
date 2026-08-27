@@ -4138,7 +4138,11 @@
       "</p>" +
       '<div id="v2EntWords">' +
       (mem.entMnemonic ? wordGridHtml(mem.entMnemonic) : "") +
-      "</div>"
+      "</div>" +
+      '<div class="row" style="flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem">' +
+      '<button type="button" class="btn secondary" id="v2EntToLab" title="Optional: paste practice words into First wallet for more demos">Optional: put practice words on First wallet</button>' +
+      "</div>" +
+      '<p class="control-help" id="v2EntToLabNote" style="margin:0.5rem 0 0">For a proper random demo phrase, use First wallet → Generate (OS CSPRNG) instead of this pad.</p>'
     );
   }
 
@@ -4226,7 +4230,7 @@
       '<div class="row v2-gen-bar">' +
       '<div class="v2-gen-left">' +
       '<button type="button" class="btn" id="v2Dice">Roll d6 (simulated)</button>' +
-      '<button type="button" class="btn secondary" id="v2Dice10">+10 d6</button>' +
+      '<button type="button" class="btn secondary" id="v2Dice10" title="Ten simulated d6 at once — practice only">+10 d6 (fast)</button>' +
       '<button type="button" class="btn secondary" id="v2Coin">Flip coin (simulated)</button>' +
       "</div></div>" +
       '<pre class="out" id="v2EntLog">' +
@@ -5709,6 +5713,31 @@
       return true;
     }
     if ($("v2EntMint")) $("v2EntMint").addEventListener("click", function () { mintFromPad(); });
+    if ($("v2EntToLab")) {
+      $("v2EntToLab").addEventListener("click", function () {
+        var m = (mem.entMnemonic || "").trim();
+        var labNote = $("v2EntToLabNote");
+        if (!m) {
+          if (labNote) labNote.textContent = "Build practice words from the pad first.";
+          return;
+        }
+        if (!confirm(
+          "Put these PRACTICE words on First wallet?\n\n" +
+            "• They stay TEST DATA only — never fund them\n" +
+            "• Overwrites whatever is currently in First wallet\n\n" +
+            "Use this only to keep experimenting offline (derive, restore drills)."
+        )) {
+          return;
+        }
+        mem.mnemonic = m;
+        mem.lastRows = null;
+        if (labNote) {
+          labNote.textContent = "First wallet holds PRACTICE pad words (TEST DATA). Do not fund this phrase.";
+        }
+        setGated(1);
+        startTrack(1);
+      });
+    }
     var entWc = $("v2EntWc");
     if (entWc) {
       entWc.addEventListener("change", function () {

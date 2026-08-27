@@ -72,6 +72,16 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 UC14 extra RNG toys
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-27-v2-uc14-rng-toys.md`
+- **Acceptance:**
+  - [x] `#v2Dice10` labelled +10 d6 (fast)
+  - [x] `#v2EntToLab` copies practice words onto First wallet after confirm
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g "V2-S15|V2-S46"`
+- **Notes:** grill-me complete; CEO lock `/tmp/w6-uc14.md`; chip 0.17.116-v2
+
 ### [DONE] V2 UC2 PP example pad
 - **Status:** done
 - **Spec:** `.agents/specs/2026-08-25-v2-uc2-pp-example.md`

@@ -4,7 +4,7 @@
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
 - **v1:** `/` · product stamp `v0.16.72`
-- **v2:** `/v2/` · chip `v0.17.115-v2` · `/v2/VERSION` `0.17.115-v2` (skew closed 2026-08-27)
+- **v2:** `/v2/` · chip `v0.17.116-v2` · `/v2/VERSION` `0.17.116-v2` (skew closed 2026-08-27)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -151,7 +151,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | **6 / 7** Multisig / Shamir | Full rooms | In-track 2-of-3 / hex 2-of-3 + **dock** | Policy builder; SLIP-39 Suite |
 | **8 / 10** PSBT / Network | `#cardPsbt` / `/network.html` | Three samples, inspect-only; Open Network + **dock** | Paste arbitrary PSBT; live lookup (`connect-src`) |
 | **11–13** | Glossary only | Interactive labs (five-question UC11 quiz) | — |
-| **14** | `#cardEntPad` | Dice/coin, 12–24 mint, lock vs **this** length, 5-quiz | Extra RNG toys |
+| **14** | `#cardEntPad` | Dice/coin, **+10 d6 (fast)**, 12–24 mint, send pad → First wallet, lock vs **this** length, 5-quiz | — |
 | **15** | PP + pad split | Dice · bits · lock · **key**; PP 128 chars; stable Estimate | Not a substitute for OS CSPRNG |
 | **16** | Restore (gap) | Hide card, type from paper, checksum + same address | — |
 | **17** | Amount tiers (gap) | Place 0.001 / 0.184 / 2.0 | — |
@@ -200,7 +200,7 @@ Do not invent new UCs. Rooms stay SoT.
 | 6 / 7 | Policy builder; SLIP-39 Suite | **Ported** `#v2MsPolicy` + `wsh(sortedmulti` (Suite still UC31 dock) |
 | 8 | Paste arbitrary PSBT `#cardPsbt` | **Ported** paste/inspect + same-tab `/api/mempool/tx/` after leak-ack (`connect-src 'self'`; no mempool.space) |
 | 10 | Live Network lookup (`connect-src`) | **Ported** in-tab `/api/mempool` after leak-ack (`connect-src 'self'`) |
-| 14 | Extra RNG toys (`+10 d6`, send pad to Lab) | Extra RNG toys |
+| 14 | Extra RNG toys (`+10 d6`, send pad to Lab) | **Ported** `#v2Dice10` + `#v2EntToLab` → First wallet |
 | 20–25 | — (jobs were gap) | Vendor drivers (leave) |
 | 26–31 | `#cardBip85` full card; SLIP-39 Suite | Node in-tab; Suite clone |
 | 32 | No SeedXOR card (Shamir/SLIP rooms only) | XOR of live Lab mnemonic |

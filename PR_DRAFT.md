@@ -1,54 +1,48 @@
-# PR Draft: v0.16.72 UC8 inspect classroom snapshots
+# PR Draft: v0.16.73 V2 UC14 extra RNG toys
 
-**Spec:** `.agents/specs/2026-08-27-v2-uc8-paste-psbt.md`
-**Plan:** `.agents/specs/2026-08-27-v2-uc8-paste-psbt-plan.md`
+**Spec:** `.agents/specs/2026-08-27-v2-uc14-rng-toys.md`
 
 ## What Problem This Solves
 
-Inspect this transaction failed with Failed to fetch whenever `/api/mempool` was missing.
+V2 UC14 leftover vs classic entropy pad: `+10 d6` copy and send pad to Lab.
 
 ## Why This Change Was Made
 
-Operator: inspect must work offline as a static tx or live fetch.
+WINDOW 6 UC14 CEO lock. V2 has no Lab tab — send pad lands practice words on First wallet.
 
 ## User Impact
 
-Chip **v0.17.115-v2**. Product **0.16.72**. Genesis / First transfer / Pizza day always inspectable. Live proxy if present; else classroom snapshot of real mainnet facts. No mempool.space on v2 CSP.
+Chip **v0.17.116-v2**. Product **0.16.73**. `#v2Dice10` is **+10 d6 (fast)**. `#v2EntToLab` copies pad words onto UC1 after confirm. Practice only. No Sign. UC10 untouched.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 | V2-S34 `test_ac_1_textarea` |
-| AC-2 | V2-S41 S41b `test_ac_2_inspect_paste` |
-| AC-3 | V2-S34 `test_ac_3_refuse_secret` |
-| AC-4 | CSP self `test_ac_4_classic_psbtin` |
-| AC-5 | Network dock `test_ac_5_network_lookup_stays` |
+| AC-1 | V2-S15 V2-S46 `test_ac_1_dice10` |
+| AC-2 | V2-S46 `test_ac_2_send_pad` |
+| AC-3 | V2-S46 sessionStorage `test_ac_3_practice_only` |
+| AC-4 | V2-S0 classic Lab `test_ac_4_classic_toys` |
+| AC-5 | no UC10 files `test_ac_5_no_uc10` |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S41"`
+- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S15|V2-S46"`
 
 ## Threat notes
 
-- secrets: public txids
-- xss: textContent
-- csrf: GET
+- secrets: mnemonic stays in memory; not sessionStorage
+- xss: word grid existing path
+- csrf: n/a
 
 ## Evidence pack
 
-hard_gates; Playwright V2-S41 S41b; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
+Playwright V2-S15 S46; pytest AC file; CODE-REVIEW.
 
 ## Things that look bad but are actually fine
 
-1. Snapshot is real history, not a fake confirm
-2. Dual stamp 0.16.72 vs 0.17.115-v2
+1. First wallet is the Lab analog on V2
+2. Dual stamp 0.16.73 vs 0.17.116-v2
 3. leftover scripts uncommitted
 4. no Sign
-5. CSP still self
-6. Random pasted txids without snap still unknown if proxy down
-
-## Cross-review
-
-Blockers 0.
+5. dice remain Math.random classroom toys

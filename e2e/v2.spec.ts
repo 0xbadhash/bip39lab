@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.115-v2)", () => {
+test.describe("V2 use-case tracks (0.17.116-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.115-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.115-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.116-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1181,6 +1181,31 @@ test.describe("V2 use-case tracks (0.17.115-v2)", () => {
     await expect(page.locator("#v2NetBalOut")).toContainText(/unknown/i);
     await expect(page.locator("#v2NetBalOut")).not.toContainText(/status ok, 0 sats/i);
     await expect(page.getByRole("link", { name: /Open Network/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S46 UC14 +10 d6 (fast) and send pad to First wallet", async ({ page }) => {
+    page.on("dialog", (d) => d.accept());
+    await enterV2(page, "/v2/?uc=14");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Dice10")).toBeVisible();
+    await expect(page.locator("#v2Dice10")).toHaveText(/\+10 d6 \(fast\)/);
+    await page.locator("#v2Dice10").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2EntMint").click();
+    await expect(page.locator("#v2EntWords .ww")).toHaveCount(12);
+    await expect(page.locator("#v2EntToLab")).toBeVisible();
+    const words = await page.locator("#v2EntWords .ww").allTextContents();
+    await page.locator("#v2EntToLab").click();
+    await expect(page.locator("#v2Card .ww")).toHaveCount(12);
+    await expect(page.locator("#trackBody h2")).toContainText(/Make practice words/i);
+    const dest = await page.locator("#v2Card .ww").allTextContents();
+    expect(dest.join(" ")).toBe(words.join(" "));
+    const store = await page.evaluate(() => sessionStorage.getItem("bip39lab.v2") || "");
+    expect(store).not.toMatch(/abandon|mnemonic/i);
+    for (const w of words) {
+      expect(store.includes(w)).toBeFalsy();
+    }
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 });
