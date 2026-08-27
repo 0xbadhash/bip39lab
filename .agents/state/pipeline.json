@@ -1,7 +1,7 @@
 {
   "card_id": null,
   "note": "approved pending operator PW S110-S113 + tag",
-  "phase": "shipped",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-27-v2-uc10-live-lookup.md",
   "task": "0.16.61 V2 UC8 network dock",
