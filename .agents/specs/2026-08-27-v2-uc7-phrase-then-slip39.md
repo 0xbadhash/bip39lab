@@ -27,7 +27,7 @@ Chip `v0.17.106-v2`. Product stamp on ship.
 |----|-----------|
 | AC-1 | UC7 step 0: Generate practice 12-word phrase **and** M-of-N split/combine on the **same** pad. Word grid stays. Pause locked until combine matches. |
 | AC-2 | M-of-N 2-of-3 / 3-of-5. Split explains those words became the shares. **Combine any M** still auto-picks M shares. `#v2ShRecombineIn` + **Try these M shares** rebuilds from pasted `share:index:hex` lines (or honest fail). Not Trezor hex. |
-| AC-3 | Next pad: three SLIP-39 share lists. **Combine any 2 of 3** auto. `#v2S39s0–2` + **Try these 2 shares** rebuilds master hex from any two lists (or honest fail). Dock `/slip39.html`. Practice / never fund. |
+| AC-3 | Next pad: three SLIP-39 share lists. **Combine any 2 of 3** auto. **Try these 2 shares**: exactly two lists is the exercise (green on match). All three: tell the learner the lists are correct but that is not the exercise — clear one. One list: honest fail. Dock `/slip39.html`. |
 | AC-4 | No Sign. UC6/UC8 unchanged. Classic `/` unchanged except cache-bust. |
 | AC-5 | Quiz still teaches hex ≠ SLIP-39 / share cannot sign. |
 

@@ -2916,7 +2916,7 @@
         '<button type="button" class="btn secondary" id="v2S39Try"' +
         (mem.slip39Shares ? "" : " disabled") +
         ">Try these 2 shares</button>" +
-        '<pre class="out" id="v2S39TryOut">Leave any two lists filled (clear one if you want). Try these 2 shares rebuilds the practice master hex — or fails honestly. Combine any 2 of 3 is the shortcut.</pre>' +
+        '<pre class="out" id="v2S39TryOut">The exercise is exactly two of the three lists. Clear one box, then Try these 2 shares. All three together is the full backup — correct, but not the drill. Combine any 2 of 3 is the shortcut.</pre>' +
         '<pre class="out" id="v2S39Out">' +
         (s39
           ? "Practice combine already matched. Open the SLIP-39 room for passphrase/groups."
@@ -6169,17 +6169,36 @@
           return;
         }
         try {
-          var rec = Slip39Lab.combineShares(picked.slice(0, picked.length), "");
+          if (picked.length >= 3) {
+            var rec3 = Slip39Lab.combineShares(picked.slice(0, 2), "");
+            var ok3 = Slip39Lab.matchExpected(rec3, mem.slip39Hex);
+            if (tout) {
+              paintTone(tout, ok3 ? "" : "bad");
+              tout.textContent = ok3
+                ? [
+                    "These three lists are correct — they are the full 2-of-3 backup (practice hex " + rec3 + ").",
+                    "That is not the exercise. The exercise is to provide only 2 shares: clear one box and Try these 2 shares.",
+                    "Any two of the three should rebuild. Combine any 2 of 3 is the shortcut.",
+                    "SLIP-39 shares, not BIP-39 seeds. Lab only. Never fund."
+                  ].join("\n")
+                : [
+                    "You filled all three lists, but they are not the practice shares.",
+                    "Match practice hex: false. That is honest — not a fake secret."
+                  ].join("\n");
+            }
+            return;
+          }
+          var rec = Slip39Lab.combineShares(picked.slice(0, 2), "");
           var ok = Slip39Lab.matchExpected(rec, mem.slip39Hex);
           if (tout) {
             paintTone(tout, ok ? "ok" : "bad");
             tout.textContent = [
-              "Tried " + picked.length + " pasted SLIP-39 share list(s).",
+              "Tried exactly 2 SLIP-39 share lists (the 2-of-3 exercise).",
               "Recovered master hex: " + rec,
               "Match practice hex: " + ok,
               ok
-                ? "Those two (or three) people-share lists rebuild the practice secret."
-                : "Those lists did not rebuild the practice hex. Use two of the three printed shares.",
+                ? "Those two people-share lists rebuild the practice secret. That is the drill."
+                : "Those two lists did not rebuild the practice hex. Use two of the three printed shares.",
               "SLIP-39 shares, not BIP-39 seeds. Lab only. Never fund."
             ].join("\n");
           }

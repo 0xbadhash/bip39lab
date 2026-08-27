@@ -2,10 +2,10 @@
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| AC-1 | pass | S42 |
-| AC-2 | pass | Snapshot OK; bands; 140 vB; tip |
-| AC-3 | pass | S43 |
-| AC-4 | pass | snap disabled until ack |
-| AC-5 | pass | Open Network |
+| AC-1 | pass | S39 |
+| AC-2 | pass | S44 |
+| AC-3 | pass | S45 three not exercise; two green |
+| AC-4 | pass | no Sign |
+| AC-5 | pass | quiz |
 
-**summary:** V2-S42 S43 passed.
+**summary:** V2-S45 passed.

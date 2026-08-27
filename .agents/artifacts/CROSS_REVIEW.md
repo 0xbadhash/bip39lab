@@ -1,3 +1,3 @@
 # CROSS-REVIEW
 
-Personas: teacher (same as Network). Blockers: 0.
+Personas: teacher (2-of-3 drill). Blockers: 0.

@@ -1,53 +1,53 @@
-# PR Draft: v0.16.70 UC10 Network-matching fee snapshot
+# PR Draft: v0.16.71 UC7 SLIP-39 three lists is not the exercise
 
-**Spec:** `.agents/specs/2026-08-27-v2-uc10-live-lookup.md`
-**Plan:** `.agents/specs/2026-08-27-v2-uc10-live-lookup-plan.md`
+**Spec:** `.agents/specs/2026-08-27-v2-uc7-phrase-then-slip39.md`
+**Plan:** `.agents/specs/2026-08-27-v2-uc7-phrase-then-slip39-plan.md`
 
 ## What Problem This Solves
 
-UC10 dump was not the Lab Fees & traffic snapshot. Failed to fetch hid the real layout.
+Pasting all three SLIP-39 shares either errored or counted as the drill. The exercise is 2-of-3.
 
 ## Why This Change Was Made
 
-Operator: return the same snapshot as `/network.html` (bands, example 140 vB, UTXO reminder, tip/mempool counts).
+Operator: three shares are correct but not the exercise; provide only two.
 
 ## User Impact
 
-Chip **v0.17.113-v2**. Product **0.16.70**. Same copy and bands as Network. Still `/api/mempool` only (self). Snapshot OK on Catalyxt nginx.
+Chip **v0.17.114-v2**. Product **0.16.71**. Three boxes: “correct full backup, not the exercise.” Exactly two: green on match. One: red. Combine any 2 of 3 stays.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 | V2-S42 `test_ac_1_unknown_not_zero` |
-| AC-2 | V2-S42 Snapshot OK bands `test_ac_2_fees_self` |
-| AC-3 | V2-S43 `test_ac_3_address_unknown` |
-| AC-4 | ack gate `test_ac_4_ack_gate` |
-| AC-5 | Open Network `test_ac_5_network_room_stays` |
+| AC-1 | V2-S39 `test_ac_1_phrase_first` |
+| AC-2 | V2-S44 `test_ac_2_m_of_n_split` |
+| AC-3 | V2-S40 S45 `test_ac_3_slip39_practice` |
+| AC-4 | no Sign `test_ac_4_no_sign` |
+| AC-5 | quiz `test_ac_5_quiz` |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S42|V2-S43"`
+- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S45"`
 
 ## Threat notes
 
-- secrets: IP leak on snapshot; address optional
-- xss: fee numbers via textContent / numeric HTML
-- csrf: GET
+- secrets: practice shares
+- xss: textContent
+- csrf: none
 
 ## Evidence pack
 
-hard_gates; Playwright V2-S42 S43; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
+hard_gates; Playwright V2-S45; pytest; CODE-REVIEW; BEHAVIOR-REPORT; CROSS-REVIEW.
 
 ## Things that look bad but are actually fine
 
-1. localhost without nginx still cannot snapshot
-2. Dual stamp 0.16.70 vs 0.17.113-v2
+1. Library refuses 3 mnemonics for 2-of-3 — we check first 2 then teach
+2. Dual stamp 0.16.71 vs 0.17.114-v2
 3. leftover scripts uncommitted
 4. no Sign
-5. CSP still self, no mempool.space
-6. 140 vB example matches Network
+5. Combine any 2 of 3 still auto
+6. Three lists not green
 
 ## Cross-review
 

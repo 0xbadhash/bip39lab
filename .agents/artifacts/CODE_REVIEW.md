@@ -1,18 +1,18 @@
 # CODE-REVIEW
 
 - **command:** `/code_review`
-- **head:** UC10 Network-matching snapshot
-- **secrets:** leak-ack; self proxy
+- **head:** UC7 SLIP-39 3 lists not the exercise
+- **secrets:** practice
 - **engine:** same session
 
 ## Accepted P0
 
 **none**
 
-Fee bands numeric. Same 140 vB as Network.
+Do not call combine with 3 mnemonics.
 
 p0=0 follow_ups=0
 
 ## Smoke
 
-V2-S42 S43 passed.
+V2-S45 passed.
