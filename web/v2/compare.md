@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-26
-- **v1:** `/` · product stamp `v0.16.58`
-- **v2:** `/v2/` · chip `v0.17.92-v2` · `/v2/VERSION` `0.17.92-v2` (skew closed 2026-08-26)
+- **v1:** `/` · product stamp `v0.16.59`
+- **v2:** `/v2/` · chip `v0.17.98-v2` · `/v2/VERSION` `0.17.98-v2` (skew closed 2026-08-27)
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -196,7 +196,7 @@ Do not invent new UCs. Rooms stay SoT.
 | 1 | Paste mnemonic; full 44/49/84/86 address matrix `#card-addresses` | **Ported** `#v2PasteMn` + `#v2AddrType` 44/49/84/86 |
 | 3 | Masked PP strength bar on `#cardCmpPp` | **Ported** `#ppA/#ppB` password + `#v2PpBarA/B` |
 | 4 | Live Lab table bind `#cardPathPlay` | **Ported** `#v2PathPlayTable` + `#v2PathPurpose` |
-| 5 / 9 | Full purpose tabs + `#cardDescriptors` refresh from Lab | Full purpose tabs |
+| 5 / 9 | Full purpose tabs + `#cardDescriptors` refresh from Lab | **Ported** `#v2WoType` + `#v2DescRefresh` |
 | 6 / 7 | Policy builder; SLIP-39 Suite | Policy builder; Suite (UC31 docks only) |
 | 8 | Paste arbitrary PSBT `#cardPsbt` | Arbitrary paste |
 | 10 | Live Network lookup (`connect-src`) | Live lookup in-tab |

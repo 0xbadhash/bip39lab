@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 84, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
   var D6_BITS = 2.58;
   var ENT_PAD_MAX = 200;
   var lastEntDelta = 0;
@@ -2412,11 +2412,15 @@
         callout(
           "done",
           "Public only",
-          "Refresh to show watch-only keys from this practice phrase. You should see xpub or zpub, not the twelve words. Lines under --- output descriptors --- are the same public material as an import string (wpkh / tr / sh / pkh) — click (i) on descriptor."
+          "Show one purpose at a time (zpub / xpub / ypub). Refresh descriptors from this practice phrase — public import strings only, not the words."
         ) +
+        woTypeTabsHtml() +
+        '<p class="control-help" id="v2WoHelp">BIP84 zpub — usual Sparrow / mobile watch-only import for native segwit.</p>' +
         '<button type="button" class="btn" id="v2Wo">Show public viewing key</button>' +
         '<div id="v2WoList" class="v2-copy-list"></div>' +
         '<pre class="out" id="v2WoOut">Click Show public viewing key — public keys only.</pre>' +
+        '<div class="row" style="margin-top:0.65rem"><button type="button" class="btn secondary" id="v2DescRefresh">Refresh descriptors</button></div>' +
+        '<pre class="out" id="v2DescOut">Click Refresh descriptors — from this practice phrase, not a paste box.</pre>' +
         pauseBtn("I saw a viewing key, not the words", false)
       );
     }
@@ -4469,6 +4473,79 @@
     );
   }
 
+  function woPurposeNow() {
+    var p = mem.woPurpose | 0;
+    return [84, 86, 49, 44].indexOf(p) >= 0 ? p : 84;
+  }
+
+  function woTypeTabsHtml() {
+    var cur = woPurposeNow();
+    var items = [
+      [84, "BIP84 · zpub"],
+      [86, "BIP86 · xpub"],
+      [49, "BIP49 · ypub"],
+      [44, "BIP44 · xpub"]
+    ];
+    var tabs = items
+      .map(function (it) {
+        var on = it[0] === cur;
+        return (
+          '<button type="button" class="seg-tab' +
+          (on ? " active" : "") +
+          '" data-wo-type="' +
+          it[0] +
+          '" aria-selected="' +
+          (on ? "true" : "false") +
+          '">' +
+          it[1] +
+          "</button>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="seg-block v2-wo-type" id="v2WoType">' +
+      '<div class="seg-tabs" role="tablist" aria-label="Watch-only key type one at a time">' +
+      tabs +
+      "</div></div>"
+    );
+  }
+
+  function woHelpText(p) {
+    if (p === 86) return "BIP86 xpub — Taproot account public key (watch-only where supported).";
+    if (p === 49) return "BIP49 ypub — nested segwit account (older wallets).";
+    if (p === 44) return "BIP44 xpub — legacy P2PKH account public key.";
+    return "BIP84 zpub — usual Sparrow / mobile watch-only import for native segwit.";
+  }
+
+  function paintWoFromPack(pack) {
+    if (!pack) return;
+    var p = woPurposeNow();
+    if ($("v2WoHelp")) $("v2WoHelp").textContent = woHelpText(p);
+    var keys = (pack.keys || []).filter(function (k) { return k.purpose === p; });
+    var k = keys[0];
+    if ($("v2WoOut")) {
+      $("v2WoOut").textContent = k
+        ? k.label + "\n" + k.key + "\n(no xprv)"
+        : "No watch-only key for this purpose.";
+    }
+    var list = $("v2WoList");
+    if (list) {
+      list.innerHTML = k ? copyQrRowHtml(k.label, k.key) : "";
+      wireCopyQr(list);
+    }
+  }
+
+  function paintDescFromPack(pack) {
+    if (!pack || !window.BIP39Lab || !BIP39Lab.descriptorsFromWatchOnly) return;
+    var desc = BIP39Lab.descriptorsFromWatchOnly(pack, "main");
+    var block = ((desc && desc.descriptors) || []).map(function (d) {
+      return d.label + "\n" + d.descriptor + (d.note ? "\n(" + d.note + ")" : "");
+    }).join("\n\n");
+    if ($("v2DescOut")) {
+      $("v2DescOut").textContent = block || "No descriptors from this practice phrase.";
+    }
+  }
+
   function copyQrRowHtml(label, value) {
     if (!value) return "";
     return (
@@ -5314,23 +5391,35 @@
     }
     var wo = $("v2Wo");
     if (wo) wo.addEventListener("click", async function () {
-      var pack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
-      var desc = BIP39Lab.descriptorsFromWatchOnly(pack, "main");
-      var keyBlock = (pack.keys || []).map(function (k) { return k.label + "\n" + k.key; }).join("\n\n");
-      var descBlock = ((desc && desc.descriptors) || []).map(function (d) {
-        return d.label + "\n" + d.descriptor + (d.note ? "\n(" + d.note + ")" : "");
-      }).join("\n\n");
-      $("v2WoOut").textContent = keyBlock + (descBlock ? "\n\n--- output descriptors ---\n\n" + descBlock : "");
-      var list = $("v2WoList");
-      if (list) {
-        list.innerHTML = (pack.keys || [])
-          .map(function (k) {
-            return copyQrRowHtml(k.label, k.key);
-          })
-          .join("");
-        wireCopyQr(list);
-      }
+      mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
+      paintWoFromPack(mem.woPack);
     });
+    var woType = $("v2WoType");
+    if (woType) {
+      woType.querySelectorAll("[data-wo-type]").forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          mem.woPurpose = parseInt(btn.getAttribute("data-wo-type") || "84", 10) || 84;
+          woType.querySelectorAll("[data-wo-type]").forEach(function (b) {
+            var on = parseInt(b.getAttribute("data-wo-type"), 10) === mem.woPurpose;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          if (!mem.woPack && mem.mnemonic) {
+            mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
+          }
+          paintWoFromPack(mem.woPack);
+        });
+      });
+    }
+    var descBtn = $("v2DescRefresh");
+    if (descBtn) {
+      descBtn.addEventListener("click", async function () {
+        if (!mem.woPack && mem.mnemonic) {
+          mem.woPack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main", account: 0 });
+        }
+        paintDescFromPack(mem.woPack);
+      });
+    }
     var xp = $("v2Xpub");
     if (xp) xp.addEventListener("click", async function () {
       var pack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main" });
@@ -5975,7 +6064,7 @@
 
   function hardRefresh() {
     wipeProgressStore();
-    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
+    mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: emptyCosigners(), maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 84, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "" };
     pickerFilter = "start";
     current = { id: 1, step: 0 };
     try {

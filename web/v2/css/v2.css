@@ -772,6 +772,13 @@ td .v2-pp-est {
   margin: 0.25rem 0 0.15rem;
   height: 6px;
 }
+.v2-wo-type {
+  margin: 0.45rem 0 0.25rem;
+}
+.v2-wo-type .seg-tab {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+}
 .v2-path-purpose {
   margin: 0.35rem 0 0.25rem;
 }
