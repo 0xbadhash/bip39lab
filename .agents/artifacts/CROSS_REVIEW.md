@@ -3,18 +3,18 @@
 Blockers: 0. Obsolete Tier A: 0.
 
 ### Security Guru
-none — no new fetch; teach strings static; objects not mixed into story.
+none — same leak-ack + `/api/mempool` then mempool.space; no mnemonic persist; no Sign.
 
 ### Maintainability Expert
-none — `teachBox` helper.
+none blocking — new rows are data; decode is localized.
 
 ### Obsolete / cleanup (scoped)
 - Tier A: none
 
 ### Domain Specialist
-none — story vs object split matches operator principle.
+none — OP_RETURN ASCII vs witness `ord` vs OP_13 are distinct; rune 0 skipped (zero txid).
 
 ## Things that look bad but are actually fine
 1. Dual stamp
-2. Blue is callout.done
+2. Six buttons vs “three examples” copy elsewhere
 3. No Sign

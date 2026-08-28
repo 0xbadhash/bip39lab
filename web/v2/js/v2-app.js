@@ -75,6 +75,60 @@
         vout: [{}, {}],
         story: "Pizza day: 10,000 BTC paid for two pizzas. 1 input, 2 outputs. Confirmed in block 57044. Public history, not a classroom fake."
       }
+    },
+    {
+      id: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
+      label: "OP_RETURN note",
+      why: "Block 308570. A nulldata output stores ASCII on every full node. Not a payment to a person.",
+      snap: {
+        txid: "8bae12b5f4c088d940733dcd1455efc6a3a69cf9340e17a981286d3778615684",
+        status: { confirmed: true, block_height: 308570 },
+        vin: [{}],
+        vout: [
+          {
+            value: 0,
+            scriptpubkey_type: "op_return",
+            scriptpubkey_asm: "OP_RETURN OP_PUSHBYTES_19 636861726c6579206c6f766573206865696469"
+          },
+          { value: 200000, scriptpubkey_type: "p2pkh" }
+        ],
+        story:
+          "Classic OP_RETURN example. Output 0 is unspendable (0 sats) and carries the ASCII string “charley loves heidi”. Nodes may prune the UTXO; the bytes stay in the block forever. Not a token. Not a signature."
+      }
+    },
+    {
+      id: "6fb976ab49dcec017f1e201e84395983204ae1a7c2abf7ced0a85d692e442799",
+      label: "Inscription 0",
+      why: "Block 767430. First Ordinal inscription — a PNG in Taproot witness, not OP_RETURN.",
+      snap: {
+        txid: "6fb976ab49dcec017f1e201e84395983204ae1a7c2abf7ced0a85d692e442799",
+        status: { confirmed: true, block_height: 767430 },
+        vin: [{ witness: ["00", "0063036f7264010109696d6167652f706e67"] }],
+        vout: [{ value: 9678, scriptpubkey_type: "v0_p2wpkh" }],
+        story:
+          "Casey Rodarmor, 14 Dec 2022. Inscription 0 is a 793-byte image/png (sugar skull) in an OP_FALSE OP_IF “ord” envelope in the input witness. The output is a normal P2WPKH of 9,678 sats. The file is on every node that keeps witness data. Not a BIP-39 backup."
+      }
+    },
+    {
+      id: "f03cba9cbfb76889ad7c2cb1e0c8a6f9178bc3331d1e8fa861eb90e4c3f4b744",
+      label: "Runestone etch",
+      why: "Block 840000 (4th halving). Runes protocol: OP_RETURN OP_13 runestone.",
+      snap: {
+        txid: "f03cba9cbfb76889ad7c2cb1e0c8a6f9178bc3331d1e8fa861eb90e4c3f4b744",
+        status: { confirmed: true, block_height: 840000 },
+        vin: [{}],
+        vout: [
+          { value: 546, scriptpubkey_type: "v1_p2tr" },
+          { value: 546, scriptpubkey_type: "v1_p2tr" },
+          {
+            value: 0,
+            scriptpubkey_type: "op_return",
+            scriptpubkey_asm: "OP_RETURN OP_PUSHNUM_13 OP_PUSHBYTES_45 020704ec8fc781e9e694a2e8b3b09094e5930701"
+          }
+        ],
+        story:
+          "Halving block 840000. This etch is UNCOMMON•GOODS•ARE•NOT•RARE (rune id 840000:1619). Output 2 is a 0-sat OP_RETURN with OP_13 — that prefix marks a Runestone, not ASCII love-notes and not an ordinal envelope. Practice inspect only. This tab does not mint runes."
+      }
     }
   ];
 
@@ -213,6 +267,73 @@
     return null;
   }
 
+  function hexToAsciiPrintable(hex) {
+    var h = String(hex || "").replace(/[^0-9a-f]/gi, "");
+    if (h.length < 2 || h.length % 2) return "";
+    var s = "";
+    var i;
+    for (i = 0; i < h.length; i += 2) {
+      var c = parseInt(h.slice(i, i + 2), 16);
+      if (c >= 32 && c <= 126) s += String.fromCharCode(c);
+      else s += "·";
+    }
+    return s;
+  }
+  function opReturnNotes(vout) {
+    var notes = [];
+    var i;
+    for (i = 0; i < (vout || []).length; i++) {
+      var o = vout[i] || {};
+      var typ = String(o.scriptpubkey_type || o.type || "");
+      var asm = String(o.scriptpubkey_asm || (o.scriptPubKey && o.scriptPubKey.asm) || "");
+      if (typ !== "op_return" && typ !== "nulldata" && asm.indexOf("OP_RETURN") < 0) continue;
+      var hexParts = [];
+      var bits = asm.split(/\s+/);
+      var b;
+      for (b = 0; b < bits.length; b++) {
+        if (/^[0-9a-f]+$/i.test(bits[b]) && bits[b].length >= 8 && bits[b].length % 2 === 0) hexParts.push(bits[b]);
+      }
+      var hex = hexParts.join("");
+      var ascii = hexToAsciiPrintable(hex);
+      var rune = /\bOP_PUSHNUM_13\b|\bOP_13\b/.test(asm);
+      if (rune) {
+        notes.push("output " + i + ": OP_RETURN OP_13 runestone (Runes protocol payload, not ASCII). hex " + (hex.slice(0, 24) || "…") + (hex.length > 24 ? "…" : ""));
+      } else if (ascii && /[a-zA-Z]/.test(ascii)) {
+        notes.push("output " + i + ": OP_RETURN ASCII “" + ascii.replace(/·+$/g, "") + "” (nulldata, 0 sats, unspendable)");
+      } else {
+        notes.push("output " + i + ": OP_RETURN data" + (hex ? " hex " + hex.slice(0, 32) + (hex.length > 32 ? "…" : "") : ""));
+      }
+    }
+    return notes;
+  }
+  function witnessNotes(vin) {
+    var notes = [];
+    var i;
+    for (i = 0; i < (vin || []).length; i++) {
+      var w = (vin[i] && vin[i].witness) || [];
+      var blob = Array.isArray(w) ? w.join("") : String(w || "");
+      var asm = String((vin[i] && (vin[i].inner_witnessscript_asm || vin[i].witnessscript_asm)) || "");
+      var hay = (blob + " " + asm).toLowerCase();
+      if (hay.indexOf("6f7264") < 0 && hay.indexOf(" op_if ") < 0) continue;
+      var mime = "";
+      var bits = asm.split(/\s+/);
+      var b;
+      for (b = 0; b < bits.length; b++) {
+        if (/^[0-9a-f]+$/i.test(bits[b]) && bits[b].length >= 8 && bits[b].length % 2 === 0 && bits[b] !== "6f7264") {
+          var a = hexToAsciiPrintable(bits[b]);
+          if (/^(text|image|application)\//i.test(a)) mime = a.replace(/·/g, "");
+        }
+      }
+      notes.push(
+        "input " +
+          i +
+          " witness: ordinal envelope (OP_FALSE OP_IF “ord”)." +
+          (mime ? " content-type " + mime + "." : "") +
+          " File lives in witness, not OP_RETURN."
+      );
+    }
+    return notes;
+  }
   function paintTxInspect(live, data, how, story) {
     var storyEl = $("v2TxStory");
     if (storyEl) {
@@ -231,10 +352,21 @@
     var oi;
     for (oi = 0; oi < vout.length; oi++) {
       var sat = vout[oi] && vout[oi].value != null ? Number(vout[oi].value) : NaN;
+      var typ = (vout[oi] && (vout[oi].scriptpubkey_type || vout[oi].type)) || "";
       if (isFinite(sat)) {
-        outLines.push("output " + oi + ": " + sat + " sats (" + (sat / 1e8).toFixed(8) + " BTC)");
+        outLines.push(
+          "output " +
+            oi +
+            ": " +
+            sat +
+            " sats (" +
+            (sat / 1e8).toFixed(8) +
+            " BTC)" +
+            (typ ? " type=" + typ : "")
+        );
       }
     }
+    var extra = opReturnNotes(vout).concat(witnessNotes(vin));
     var via = how === "live" ? (v2LastMempoolVia || "public explorer") : "classroom snapshot";
     var lines = [
       how === "live"
@@ -246,6 +378,7 @@
       vinN !== "" ? "inputs: " + vinN : "",
       voutN !== "" ? "outputs: " + voutN : "",
       outLines.join("\n"),
+      extra.length ? "On-chain data:\n" + extra.join("\n") : "",
       "This is not a signature and not a broadcast."
     ];
     live.textContent = lines.filter(Boolean).join("\n");
@@ -303,7 +436,7 @@
           return;
         }
         live.textContent =
-          "Lookup unavailable. Unknown is not a fake zero or a fake confirm. Pick Genesis coinbase, First transfer, or Pizza day for a classroom snapshot.";
+          "Lookup unavailable. Unknown is not a fake zero or a fake confirm. Pick a named example (Genesis, OP_RETURN, Inscription 0, Runestone…) for a classroom snapshot.";
       });
   }
 
@@ -3278,13 +3411,13 @@
         '<p id="v2PsbtNetMsg" class="control-help">' +
         (mem.psbtExI != null && PSBT_EX_TX[mem.psbtExI]
           ? "Selected: " + PSBT_EX_TX[mem.psbtExI].label + " — " + PSBT_EX_TX[mem.psbtExI].why
-          : "Select Genesis coinbase, First transfer, or Pizza day.") +
+          : "Select a named example. The first three are payments. The next three carry extra on-chain data (OP_RETURN, inscription, runestone).") +
         "</p>" +
         '<label class="check"><input type="checkbox" id="v2PsbtNetAck"/> I understand a public lookup sends this txid and my IP to this site’s proxy and/or mempool.space. Never a seed. Opt-in leak ack.</label>' +
         '<button type="button" class="btn" id="v2TxInspect">Inspect this transaction</button>' +
         '<div class="v2-s39-pp v2-tx-split">' +
         '<div class="v2-s39-col">' +
-        '<div class="v2-callout done" id="v2TxStory"><strong>What this is (classroom)</strong>Select Genesis coinbase, First transfer, or Pizza day. This blue box is the teaching story — not the explorer payload.</div>' +
+        '<div class="v2-callout done" id="v2TxStory"><strong>What this is (classroom)</strong>Select a named example. Payments (Genesis / Hal / Pizza) vs data (OP_RETURN / inscription / runestone). This blue box is the teaching story — not the explorer payload.</div>' +
         "</div>" +
         '<div class="v2-s39-col">' +
         "<h3>What the chain says</h3>" +
@@ -6770,7 +6903,7 @@
         var ex = i != null ? PSBT_EX_TX[i] : null;
         var live = $("v2PsbtNetLive");
         if (!ex) {
-          if (live) live.textContent = "Select Genesis coinbase, First transfer, or Pizza day first.";
+          if (live) live.textContent = "Select a named example first.";
           return;
         }
         paintPsbtNet(

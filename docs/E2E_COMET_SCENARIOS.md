@@ -35,7 +35,7 @@ surfaces:
   - id: v2
     path: /v2/
     playwright: e2e/v2.spec.ts
-scenarios: S0–S183 · Playwright 174 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S183 · Playwright 175 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 174 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.76 · Contract: 2 · Last aligned: 2026-08-27 · Scenarios: S0–S183 · Playwright S-ids: 174`
+`Product: 0.16.77 · Contract: 2 · Last aligned: 2026-08-28 · Scenarios: S0–S183 · Playwright S-ids: 175`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -82,7 +82,7 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **174** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **175** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
 **Comet/Perplexity score sheet:** **S0–S183** (scenario IDs below; Playwright titles map 1:1 where listed).
 
@@ -1048,6 +1048,7 @@ V2-S39 UC7 phrase first then M-of-N split/combine: PASS|FAIL —
 V2-S40 UC7 practice SLIP-39 word shares: PASS|FAIL —
 V2-S41 UC8 three public example txs after leak-ack: PASS|FAIL —
 V2-S41b UC8 classroom snapshot when mempool proxy missing: PASS|FAIL —
+V2-S41c UC8 OP_RETURN inscription runestone snapshots decode extra data: PASS|FAIL —
 V2-S42 UC10 leak-ack fetches fees via /api/mempool: PASS|FAIL —
 V2-S43 UC10 address 404 is unknown not zero: PASS|FAIL —
 V2-S47 UC10 classroom fee snapshot when proxy missing: PASS|FAIL —

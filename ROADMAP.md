@@ -72,6 +72,13 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 UC8 extra named txs (OP_RETURN / inscription / rune)
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-28-v2-uc8-data-txs.md`
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g "V2-S41"`
+- **Notes:** grill-me complete; chip 0.17.126-v2
+
 ### [DONE] V2 blue classroom vs lab/chain result
 - **Status:** done
 - **Priority:** P0

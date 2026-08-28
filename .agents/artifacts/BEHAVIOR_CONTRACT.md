@@ -1,12 +1,12 @@
-# Behavior contract — 0.16.76 teach vs result
+# Behavior contract — 0.16.77 UC8 extra named txs
 
-- **Target:** `/v2/` UC6 UC7 UC8
+- **Target:** `/v2/` UC8 inspect
 
 ## User tasks
 
-1. UC7 split: blue story, share lines in result.
-2. UC8 inspect sample: blue PSBT story, parser in result.
-3. UC6: blue 2-of-3, `wsh(sortedmulti` in recipe.
+1. See six named txs including OP_RETURN, Inscription 0, Runestone.
+2. Inspect offline via classroom snap; extra data in live pane.
+3. Story stays in blue `#v2TxStory`.
 
 ## Must not
-- Sign / fund
+- Sign / fund / mint runes

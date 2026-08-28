@@ -2,15 +2,15 @@
 
 | ID | Result | Evidence |
 |----|--------|----------|
-| AC-1 | pass | V2-S39 v2ShStory vs v2ShOut |
-| AC-2 | pass | V2-S34 v2PsbtTeach |
-| AC-3 | pass | V2-S33 v2MsPolicy / v2MsDesc |
-| AC-4 | pass | V2-S40 v2S39Story / Master hex |
-| AC-5 | pass | no Sign |
+| AC-1 | pass | V2-S41 six named buttons |
+| AC-2 | pass | V2-S41c OP_RETURN ASCII in live pane |
+| AC-3 | pass | V2-S41c ord + OP_13 |
+| AC-4 | pass | no Sign; chip 0.17.126-v2 |
+| AC-5 | pass | git status no scripts/*.py |
 
-**summary:** Playwright 4173.
+**summary:** Playwright S41 group vs 4173; pytest AC stubs.
 
 ## Things that look bad but are actually fine
 1. Dual stamp
-2. Ceremony UCs skipped
-3. Classroom snapshot still labelled
+2. Snapshot MIME is truncated witness prefix
+3. S41 mock live JSON still works for First transfer

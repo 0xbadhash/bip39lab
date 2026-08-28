@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.125-v2)", () => {
+test.describe("V2 use-case tracks (0.17.126-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.125-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.125-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.126-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1121,10 +1121,13 @@ test.describe("V2 use-case tracks (0.17.125-v2)", () => {
     await enterV2(page, "/v2/?uc=8");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
-    await expect(page.locator("[data-v2-ex-txid]")).toHaveCount(3);
+    await expect(page.locator("[data-v2-ex-txid]")).toHaveCount(6);
     await expect(page.locator("[data-v2-ex-txid]").nth(0)).toContainText(/Genesis coinbase/);
     await expect(page.locator("[data-v2-ex-txid]").nth(1)).toContainText(/First transfer/);
     await expect(page.locator("[data-v2-ex-txid]").nth(2)).toContainText(/Pizza day/);
+    await expect(page.locator("[data-v2-ex-txid]").nth(3)).toContainText(/OP_RETURN note/);
+    await expect(page.locator("[data-v2-ex-txid]").nth(4)).toContainText(/Inscription 0/);
+    await expect(page.locator("[data-v2-ex-txid]").nth(5)).toContainText(/Runestone etch/);
     await page.locator("[data-v2-ex-txid]").nth(1).click();
     await page.locator("#v2PsbtNetAck").check();
     await page.locator("#v2TxInspect").click();
@@ -1149,6 +1152,29 @@ test.describe("V2 use-case tracks (0.17.125-v2)", () => {
     await expect(page.locator("#v2PsbtNetLive")).toContainText(/block height: 0|block=0/);
     await expect(page.locator("#v2PsbtNetLive")).not.toContainText(/Failed to fetch/);
     await expect(page.locator("#v2PsbtNetLive")).not.toContainText(/first bitcoin output/i);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S41c UC8 OP_RETURN inscription runestone snapshots decode extra data", async ({ page }) => {
+    await page.route("**/api/mempool/tx/**", (route) => route.abort());
+    await page.route("https://mempool.space/**", (route) => route.abort());
+    await enterV2(page, "/v2/?uc=8");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2PsbtNetAck").check();
+    await page.locator("[data-v2-ex-txid]").nth(3).click();
+    await page.locator("#v2TxInspect").click();
+    await expect(page.locator("#v2TxStory")).toContainText(/OP_RETURN|charley loves heidi/i);
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/On-chain data/i);
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/charley loves heidi/i);
+    await page.locator("[data-v2-ex-txid]").nth(4).click();
+    await page.locator("#v2TxInspect").click();
+    await expect(page.locator("#v2TxStory")).toContainText(/Inscription 0|ordinal/i);
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/ord|inscription|witness/i);
+    await page.locator("[data-v2-ex-txid]").nth(5).click();
+    await page.locator("#v2TxInspect").click();
+    await expect(page.locator("#v2TxStory")).toContainText(/Runestone|840000|halving/i);
+    await expect(page.locator("#v2PsbtNetLive")).toContainText(/runestone|OP_13/i);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
