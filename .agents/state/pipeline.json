@@ -1,8 +1,8 @@
 {
   "card_id": null,
   "note": "ready for review 0.16.78",
-  "phase": "ready_for_review",
-  "score": 100.0,
+  "phase": "approved",
+  "score": 100,
   "spec_id": ".agents/specs/2026-08-28-v2-uc18-heir-drill.md",
   "task": "0.16.78 UC18 heir drill",
   "waiver": null
