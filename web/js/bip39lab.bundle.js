@@ -7867,6 +7867,10 @@ zoo`.split("\n");
     if (/xprv|yprv|zprv|tprv|mnemonic|WIF|5[HJK]/i.test(t)) {
       return { status: "error", detail: "refusing private keys / seed material in descriptor box" };
     }
+    var seedWords = t.split(/\s+/).filter(Boolean);
+    if (seedWords.length >= 12 && seedWords.every(function (w) { return /^[a-z]+$/i.test(w); }) && t.indexOf("(") < 0) {
+      return { status: "error", detail: "refusing private keys / seed material in descriptor box" };
+    }
     const kinds = [];
     if (/wpkh\s*\(/i.test(t)) kinds.push("wpkh (native segwit)");
     if (/tr\s*\(/i.test(t)) kinds.push("tr (taproot)");
@@ -8042,6 +8046,7 @@ zoo`.split("\n");
     generateMnemonic: async (n) => generate(n),
     validateMnemonic: async (m) => validate(m),
     mnemonicFromEntropyBytes: (bytes) => mnemonicFromEntropyBytes(bytes),
+    mnemonicToEntropyBytes: (m) => mnemonicToEntropy(m, wordlist),
     deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
     exportWatchOnly: async (m, p, options) => exportWatchOnly(m, p, options),
     descriptorsFromWatchOnly: (wo, network) => descriptorsFromWatchOnly(wo, network),

@@ -2,9 +2,9 @@
 
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
-- **As of:** 2026-08-26
-- **v1:** `/` · product stamp `v0.16.72`
-- **v2:** `/v2/` · chip `v0.17.120-v2` · `/v2/VERSION` `0.17.120-v2` (skew closed 2026-08-27)
+- **As of:** 2026-08-28
+- **v1:** `/` · product stamp `v0.16.79`
+- **v2:** `/v2/` · chip `v0.17.128-v2` · `/v2/VERSION` `0.17.128-v2`
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -13,6 +13,30 @@ Live compare.md lags until deploy. This repo file is source of truth.
 V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a second crypto stack. Classic `/` is unchanged.
 
 ---
+
+## What landed since 0.16.79 / chip 0.17.128
+
+- **Map vs leftover:** per-track “Still Lab-only” now matches leftover ports. Ported rows are Yes, not a fake remaining list.
+- **UC34** refresh from this phrase (`#v2DescRefreshLab`) + paste/explain (`#v2DescPaste` / `#v2DescExplain`). Public only. Refuse xprv / seed / WIF. Copy on each descriptor line. Playwright **V2-S25 / V2-S53**.
+- **UC32** XOR of the live 12-word card. If the card is not 12 words, offer a 12-word practice card. Hide one part fails. Combine all restores the same words. Playwright **V2-S23 / V2-S52**.
+- **UC20** rail already live (paper → metals → 4 letters → solid vs tiles vs photo). No shop grid. Left alone.
+- **UC19 P3 skipped this loop:** default remains simulated 0.000184 tBTC + Network dock. No in-track leak-ack lookup on UC19.
+
+## What landed since 0.16.78 / chip 0.17.127
+
+- **UC18 if I cannot speak (redo):** not a lecture. Four failing heir kits (chat, words without extra secret, one key of three, first try later). Packet is a **map** (shape + descriptor + where objects live + next drill date). Refuse live words, extra secret in the same envelope, chat screenshot. Open-while-alive: fail once, then sit with them. Not a will. Not UC33. Playwright **V2-S51**.
+- **Teach vs result:** blue `teachBox` = what/why/when/how. Hex / table / txid / kit fail line = lab object.
+
+## What landed since 0.16.77 / chip 0.17.126
+
+- **UC8 inspect:** six named public txs — Genesis, First transfer, Pizza, **OP_RETURN note**, **Inscription 0**, **Runestone etch**. Classroom snap if proxy + mempool.space miss. **V2-S41 / S41b / S41c**.
+
+## What landed since 0.16.75–0.16.76 / chip 0.17.122–0.17.125
+
+- **V2 CSP** `connect-src 'self' https://mempool.space` (page-wide; same as Network). Classic Lab stays `connect-src 'none'`.
+- **UC10** fee/traffic snapshot + address table like Network; classroom snap if both fetches miss.
+- **UC7** extra-secret pad after SLIP-39; amber three-share warning; Shamir story vs hex.
+- Blue classroom vs result on payload tracks (UC6–UC8, UC7 SLIP-39).
 
 ## What landed since 0.16.54 / chip 0.17.88
 
@@ -94,7 +118,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 - **Clear secrets** — red, top-right header, every view.
 - **Do / Do not** then `desc()`. Blue `done` callouts. Green = Do.
 - Force-exit on every Finish. Rail + concept chips jump back.
-- Dual stamp: product `v0.16.x` · V2 chip `0.17.N-v2`.
+- Dual stamp: product `v0.16.79` · V2 chip `0.17.128-v2`. Blue classroom vs lab/chain result on payload tracks.
 - Plan / Practice / Review atoms on UC1–UC31.
 
 ---
@@ -109,7 +133,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | Copy + QR addresses | UC1 `#v2AddrGrid` |
 | Path SVG + change chain | UC4 |
 | Watch-only copy/QR | UC5 / UC9 |
-| PSBT samples (3) | UC8 inspect-only |
+| PSBT + six named txs | UC8 inspect-only |
 | Compare A/B table | UC3 after verdict |
 | Room return-dock | UC6 / UC7 / UC10 → Finish |
 | Dice / coin ENT | UC14 |
@@ -119,7 +143,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 | Hot vs cold sort | UC13 |
 | Restore drill | UC16 |
 | Amount tiers | UC17 |
-| Inheritance dry-run | UC18 |
+| Heir object drill (not a will) | UC18 |
 | First receive (sim tBTC) | UC19 |
 | P1 metal…rehearsal | UC20–25 |
 | P2 node…SLIP-39 | UC26–31 |
@@ -143,32 +167,33 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 
 | UC | v1 home | v2 now | Still Lab-only |
 |----|---------|--------|----------------|
-| **1** First wallet | `#card-mnemonic` | Generate 12–24, OS entropy, copy/QR, Test/Mainnet | Paste mnemonic; full 44/49/84/86 matrix |
-| **2** Paper backup | Strip + print | Card ack, do/do-not + PP example + generate, print not-air-gap | — |
-| **3** Passphrase | `#cardCmpPp` | A/B + verdict + estimate table; key still | Masked PP strength bar |
-| **4** Path | `#cardPathPlay` | Index, **change 0/1**, BIP 44/49/84/86 SVG | Live Lab table bind |
-| **5 / 9** Watch / xpub | Tabs + QR | Labelled export + **copy/QR rows** | Full purpose tabs |
-| **6 / 7** Multisig / Shamir | Full rooms | In-track 2-of-3 / hex 2-of-3 + **dock** | Policy builder; SLIP-39 Suite |
-| **8 / 10** PSBT / Network | `#cardPsbt` / `/network.html` | Three samples, inspect-only; Open Network + **dock** | Paste arbitrary PSBT; live lookup (`connect-src`) |
-| **11–13** | Glossary only | Interactive labs (five-question UC11 quiz) | — |
-| **14** | `#cardEntPad` | Dice/coin, **+10 d6 (fast)**, 12–24 mint, send pad → First wallet, lock vs **this** length, 5-quiz | — |
-| **15** | PP + pad split | Dice · bits · lock · **key**; PP 128 chars; stable Estimate | Not a substitute for OS CSPRNG |
-| **16** | Restore (gap) | Hide card, type from paper, checksum + same address | — |
+| **1** First wallet | `#card-mnemonic` | Generate 12–24, paste `#v2PasteMn`, `#v2AddrType` 44/49/84/86, copy/QR, Test/Mainnet | Theme / Extra help / Classroom (leave on `/`) |
+| **2** Paper backup | Strip + print | Card ack, do/do-not + PP example + generate | — |
+| **3** Passphrase | `#cardCmpPp` | A/B + `#ppA/#ppB` + `#v2PpBarA/B` | — |
+| **4** Path | `#cardPathPlay` | `#v2PathPlayTable` + `#v2PathPurpose` | — |
+| **5 / 9** Watch / xpub | Tabs + QR | `#v2WoType` + viewing key + descriptor copy/QR. UC9 is leak copy on the same object | — |
+| **6 / 7** Multisig / Shamir | Full rooms | `#v2MsPolicy` + `wsh(sortedmulti` ; hex + practice SLIP-39 | Suite clone (UC31 dock) |
+| **8 / 10** PSBT / Network | `#cardPsbt` / `/network.html` | Six named txs; inspect; leak-ack fetch | Classic Lab CSP `none`; no Sign |
+| **11–13** | Glossary only | Interactive labs | — |
+| **14** | `#cardEntPad` | `#v2Dice10` + `#v2EntToLab` | — |
+| **15** | PP + pad split | Dice · bits · lock · key | OS CSPRNG (leave) |
+| **16** | Restore (gap) | Hide card, type from paper | — |
 | **17** | Amount tiers (gap) | Place 0.001 / 0.184 / 2.0 | — |
-| **18** | Inheritance (gap) | Sealed vs chat; 2-of-3 people; open-while-alive | Legal counsel |
-| **19** | First receive (gap) | Sim tBTC + watch + Network dock | Live mempool in-tab |
-| **20–25** | P1 jobs (gap) | Metal, collab, ceremony, loop, geo, calendar | Vendor drivers |
-| **26–31** | P2 jobs (gap) | Node honesty, UTXO, mix, decoy, BIP-85, SLIP-39 dock | Node in-tab; Suite clone |
-| **32** SeedXOR | No dedicated card | All-parts 12-word lists + quiz | XOR of live Lab mnemonic |
-| **33** Timelock FSM | No dedicated card | 90-day classroom timer; no Sign | Live CSV signer (forbidden) |
-| **34** Descriptor policy | `#cardDescriptors` + `#cardDescExplain` | Practice wpkh/wsh + ack | Lab refresh + paste/explain |
-| **35** Electrum-looking | BIP-39 restore only | Wrong-vault teach; no Electrum address | Electrum KDF (forbidden) |
+| **18** | Inheritance (gap) | Heir kits + map packet + open-while-alive | A will / legal counsel (forbidden) |
+| **19** | First receive (gap) | Sim 0.000184 tBTC + Network dock | **P3 skipped:** no in-track leak-ack lookup this ship |
+| **20** | Metal (gap) | Paper fails · metals · 4-letter plate · solid vs tiles vs photo | Vendor USB drivers (leave) |
+| **21–25** | P1 jobs | Collab, ceremony, loop, geo, calendar | Vendor drivers |
+| **26–31** | P2 jobs | Node honesty, UTXO, mix, decoy, BIP-85 dock, SLIP-39 dock | Node in-tab; Suite clone |
+| **32** SeedXOR | No dedicated card | Live 12-word XOR split / hide-one fail / combine | SeedXOR.com calculator (leave) |
+| **33** Timelock FSM | No dedicated card | 90-day classroom timer | Live CSV signer (forbidden) |
+| **34** Descriptor policy | `#cardDescriptors` + `#cardDescExplain` | `#v2DescRefreshLab` + `#v2DescPaste` + `#v2DescExplain` | Private descriptors (refused) |
+| **35** Electrum-looking | BIP-39 restore only | Wrong-vault teach | Electrum KDF (forbidden) |
 
 ---
 
 ## Still leave on `/`
 
-Theme, Extra help, Classroom, First-hour rail, full BIP-85 card, ops wall (`#cardOps`), full address matrix, SLIP-39 Suite implementation, Network live lookup, funded storage.
+Theme, Extra help, Classroom, First-hour rail, `#cardOps`, vendor USB drivers, node in-tab, SLIP-39 Suite clone, Electrum KDF, live CSV signer, a will.
 
 V2 now **points at** BIP-85 (UC30) and SLIP-39 (UC31 dock). Rooms stay SoT.
 
@@ -180,7 +205,7 @@ V2 now **points at** BIP-85 (UC30) and SLIP-39 (UC31 dock). Rooms stay SoT.
 
 ## Forensic tracks (shipped)
 
-Hard no still: fund practice mainnet; sign/broadcast real PSBT here; paste a real seed; inheritance as legal counsel.
+Hard no still: fund practice mainnet; Sign/broadcast real PSBT; paste a funded seed; legal counsel.
 
 **Spec:** `.agents/specs/2026-08-25-v2-p0-p2-tracks.md`
 
@@ -198,14 +223,16 @@ Do not invent new UCs. Rooms stay SoT.
 | 4 | Live Lab table bind `#cardPathPlay` | **Ported** `#v2PathPlayTable` + `#v2PathPurpose` |
 | 5 / 9 | Full purpose tabs + `#cardDescriptors` refresh from Lab | **Ported** `#v2WoType` + `#v2DescRefresh` |
 | 6 / 7 | Policy builder; SLIP-39 Suite | **Ported** `#v2MsPolicy` + `wsh(sortedmulti` (Suite still UC31 dock) |
-| 8 | Paste arbitrary PSBT `#cardPsbt` | **Ported** inspect + `/api/mempool` then `mempool.space` after leak-ack |
+| 8 | Paste arbitrary PSBT `#cardPsbt` | **Ported** inspect + six named txs + `/api/mempool` then `mempool.space` after leak-ack |
 | 10 | Live Network lookup (`connect-src`) | **Ported** same: proxy then mempool.space (V2 CSP allows both) |
 | 14 | Extra RNG toys (`+10 d6`, send pad to Lab) | **Ported** `#v2Dice10` + `#v2EntToLab` → First wallet |
-| 20–25 | — (jobs were gap) | Vendor drivers (leave) |
-| 26–31 | `#cardBip85` full card; SLIP-39 Suite | Node in-tab; Suite clone |
-| 32 | No SeedXOR card (Shamir/SLIP rooms only) | XOR of live Lab mnemonic |
+| 18 | — (job was gap) | **Ported** heir kits + map packet + open-while-alive (`#v2InhBuild` / `#v2InhTryLive`) |
+| 19 | Live address lookup on Network | **Skipped P3** — sim tBTC + dock only |
+| 20 | Materials lab | **Ported** paper · metals · 4-letter · solid vs tiles vs photo |
+| 26–31 | `#cardBip85` full card; SLIP-39 Suite | Node in-tab; Suite clone (leave) |
+| 32 | No SeedXOR card | **Ported** live 12-word XOR (`#v2XorSplit` / `#v2XorHide` / `#v2XorAll`) |
 | 33 | No CSV/timelock card | Live CSV signer (forbidden) |
-| 34 | `#cardDescriptors` + `#cardDescExplain` (Lab refresh + paste/explain) | Lab-phrase descriptor refresh + explain paste |
+| 34 | `#cardDescriptors` + `#cardDescExplain` | **Ported** `#v2DescRefreshLab` + `#v2DescPaste` + `#v2DescExplain` |
 | 35 | Restore is BIP-39 only | Electrum KDF (forbidden) |
 | chrome | Theme, Extra help, Classroom, First-hour rail, `#cardOps` | Leave on `/` |
 

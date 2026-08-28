@@ -472,9 +472,9 @@
     { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second extra secret opens a real second vault.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
     { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child phrases. Classic Lab is the full card.", done: "A child is not a backup of the parent. Do not fund practice children." },
     { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "People hold word shares. UC7 hex stays educational.", done: "Suite lives in the SLIP-39 room. Combine is recovery, not a cosign." },
-    { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Every part is a full 12-word list. You need all of them.", done: "N-of-N, not Shamir 2-of-3, not SLIP-39. Each part looks like a backup." },
+    { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Split this 12-word card. Every part is required.", done: "You split the live 12-word card, saw combine fail without every part, and restored the same words." },
     { id: 33, level: "Advanced", title: "Timelock dead-man (practice)", job: "Heir cannot spend until a timer expires. Owner refresh resets it.", done: "Educational timer only. This tab never signs. Not legal counsel." },
-    { id: 34, level: "Advanced", title: "Descriptor / policy backup", job: "Save the policy string with the keys. Words alone can fail.", done: "You saw a practice wpkh/wsh line. Keys without policy can be unspendable." },
+    { id: 34, level: "Advanced", title: "Descriptor / policy backup", job: "Refresh a public descriptor from this phrase and explain one line.", done: "You refreshed a public descriptor from the practice phrase and explained one line. You did not paste a private key." },
     { id: 35, level: "Advanced", title: "Electrum-looking words", job: "English words can still be Electrum, not BIP-39.", done: "BIP-39 restore is the wrong vault. This tab does not run Electrum." }
   ];
 
@@ -522,9 +522,9 @@
     29: { is: "A second extra secret opens a real second vault.", isnt: "Not legal or personal-safety advice." },
     30: { is: "One master can mint child phrases. Classic Lab is the full card.", isnt: "A child is not a backup of the parent. Do not fund practice children." },
     31: { is: "People hold product word shares. Dock the SLIP-39 room.", isnt: "UC7 hex is educational, not Suite." },
-    32: { is: "Every XOR part is a full 12-word list. You need all of them.", isnt: "Not Shamir 2-of-3. Not SLIP-39. Not the SeedXOR.com calculator." },
+    32: { is: "Split this 12-word card into full-looking parts. Recover needs every part.", isnt: "This is not Shamir 2-of-3. This is not SLIP-39. This is not the SeedXOR.com calculator." },
     33: { is: "A practice timer. Heir spend stays locked until it expires. Refresh resets.", isnt: "This tab never signs or broadcasts. Not a live CSV wallet. Not legal counsel." },
-    34: { is: "Back up the policy string with the keys.", isnt: "Words alone can fail for multisig and script paths. Not UC5 export." },
+    34: { is: "Refresh a public descriptor from the practice phrase and explain one line.", isnt: "Do not paste a private key, seed, or WIF. Words alone can fail for scripted vaults." },
     35: { is: "English words can still be Electrum’s stretch, not BIP-39.", isnt: "BIP-39 restore is the wrong vault. This tab does not compute Electrum addresses." }
   };
 
@@ -892,9 +892,9 @@
       29: ["Second vault", "Decoy is real", "Quiz", "Finish"],
       30: ["Parent vs child", "Classic BIP-85", "Quiz", "Finish"],
       31: ["People + threshold", "Dock Suite", "Quiz", "Finish"],
-      32: ["All parts look like seeds", "Need every part", "Quiz", "Finish"],
+      32: ["What SeedXOR is", "Split this phrase", "Show parts", "Combine", "Quiz", "Finish"],
       33: ["Arm the timer", "Tick / refresh / heir", "Quiz", "Finish"],
-      34: ["Policy is an object", "Save the descriptor", "Quiz", "Finish"],
+      34: ["Practice shape", "Refresh from this phrase", "Paste and explain", "Quiz", "Finish"],
       35: ["Looks like BIP-39", "Wrong restore", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
@@ -933,9 +933,9 @@
       29: ["Two vaults", "Duress copy", "Not advice"],
       30: ["Child mnemonic", "Parent stays", "Lab #cardBip85"],
       31: ["SLIP-39 words", "Not UC7 hex", "Room dock"],
-      32: ["Full-phrase parts", "N-of-N", "Not Shamir"],
+      32: ["N-of-N parts", "Split this card", "All parts required"],
       33: ["Arm", "Expire", "Refresh"],
-      34: ["Policy string", "With the keys", "Not words only"],
+      34: ["Public descriptor", "Refresh from phrase", "Explain one line"],
       35: ["Same English", "BIP-39 restore", "Wrong vault"]
     };
     return c[id] || ["A", "B", "C"];
@@ -976,7 +976,14 @@
     mem.xorA = "";
     mem.xorB = "";
     mem.xorOrig = "";
+    mem.xorSrc = "";
     mem.xorAll = false;
+    mem.xorFail = false;
+    mem.descRefreshed = false;
+    mem.descExplained = false;
+    mem.descNote = "";
+    mem.descExplain = "";
+    mem.descPackRows = null;
     mem.tl = { armed: false, ticks: 0, expired: false };
     mem.tlHeirTried = false;
     mem.inh = null;
@@ -1313,10 +1320,11 @@
       ]
     },
     32: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 3) return 2; return 3; },
       atoms: [
         atom(1, 0, "assets/uc7-atom-one-secret.svg", "Each part looks like a full backup", "<strong>Plan · Full lists</strong><br/>SeedXOR-style N-of-N: every part is twelve words."),
-        atom(2, 1, "assets/uc7-atom-m-pieces.svg", "You need every part", "<strong>Practice · All parts</strong><br/>One missing list and the secret does not come back."),
-        atom(3, 2, "assets/uc7-atom-share-no-sign.svg", "Not Shamir, not SLIP-39", "<strong>Review · Different job</strong><br/>UC7 is threshold hex. UC31 is Suite words. This is all-parts.")
+        atom(2, 1, "assets/uc7-atom-m-pieces.svg", "You need every part", "<strong>Practice · All parts</strong><br/>Split this 12-word card. One missing list fails."),
+        atom(3, 4, "assets/uc7-atom-share-no-sign.svg", "Not Shamir, not SLIP-39", "<strong>Review · Different job</strong><br/>UC7 is threshold hex. This is all-parts XOR of the live card.")
       ]
     },
     33: {
@@ -1327,10 +1335,11 @@
       ]
     },
     34: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 2) return 2; return 3; },
       atoms: [
         atom(1, 0, "assets/uc5-atom-viewing-key.svg", "Policy is a string you can lose", "<strong>Plan · Descriptor</strong><br/>wpkh / wsh / sortedmulti. Keys without the script can fail."),
-        atom(2, 1, "assets/uc5-atom-viewing-key.svg", "Save the line with the keys", "<strong>Practice · Backup the policy</strong><br/>Not the same job as exporting a watch-only key."),
-        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Not UC6 three seeds", "<strong>Review · Extra object</strong><br/>Cosigners still need the output script recorded.")
+        atom(2, 1, "assets/uc5-atom-viewing-key.svg", "Refresh from this phrase, then explain", "<strong>Practice · Public only</strong><br/>Refresh a watch-only descriptor. Refuse xprv, seed, and WIF."),
+        atom(3, 3, "assets/uc6-atom-not-shamir.svg", "Not UC5 export alone", "<strong>Review · Extra object</strong><br/>UC5 shows a viewing key. This track is the policy line wallets import.")
       ]
     },
     35: {
@@ -1632,6 +1641,7 @@
       ],
       32: [
         { q: "How many SeedXOR-style parts do you need?", opts: [qOk("All of them. Each part looks like a complete 12-word backup.", "Correct. N-of-N, not 2-of-3."), qBad("Any two of three, like Shamir in UC7.", "Wrong. That is threshold Shamir, not all-parts XOR.")] },
+        { q: "If the live card is 24 words, what should this drill do?", opts: [qOk("Say so, and offer a 12-word practice card. Do not silently cut the 24 words.", "Correct."), qBad("Use the first 12 words of the 24-word card.", "Wrong. That would silently truncate.")] },
         { q: "Is this the same as SLIP-39 people shares?", opts: [qOk("No. SLIP-39 is a different word product. This job is full BIP-39-looking lists, all required.", "Correct."), qBad("Yes. Same words as Trezor Suite.", "Wrong.")] },
         { q: "Does this tab replace the SeedXOR.com calculator?", opts: [qOk("No. Classroom N-of-N only. Do not fund these parts.", "Correct."), qBad("Yes. Export and fund the XOR result.", "Wrong.")] }
       ],
@@ -1643,7 +1653,8 @@
       34: [
         { q: "What extra object does a scripted vault need besides keys?", opts: [qOk("The policy string (descriptor): which script, which keys, which paths.", "Correct."), qBad("Only the twelve words. Scripts are optional.", "Wrong. Without the policy, keys can be unspendable.")] },
         { q: "Is this the same as watch-only export in UC5?", opts: [qOk("No. Watch-only is a viewing key. This job is recording the spend policy.", "Correct."), qBad("Yes. Same button.", "Wrong.")] },
-        { q: "Should you fund the practice descriptor?", opts: [qOk("Do not. Practice string only.", "Correct."), qBad("Yes, a small amount to test.", "Wrong.")] }
+        { q: "Should you fund the practice descriptor?", opts: [qOk("Do not. Practice string only.", "Correct."), qBad("Yes, a small amount to test.", "Wrong.")] },
+        { q: "What happens if you paste an xprv or a seed into Explain?", opts: [qOk("The lab refuses it in red. Public descriptors only.", "Correct."), qBad("It still explains the spend policy.", "Wrong. Private material is refused.")] }
       ],
       35: [
         { q: "Twelve English words always mean BIP-39?", opts: [qOk("No. Electrum can use the same dictionary with a different stretch.", "Correct."), qBad("Yes. If they look English, BIP-39 restore is always right.", "Wrong.")] },
@@ -1657,6 +1668,8 @@
   async function ucJob(id, step) {
     if (id === 20) return uc20(step);
     if (id === 18) return uc18(step);
+    if (id === 32) return uc32(step);
+    if (id === 34) return uc34(step);
     if (step === 2) return quizBank(jobQuizzes(id));
     if (step === 3) return finishHtml(id);
     if (id === 16) return uc16(step);
@@ -1673,9 +1686,7 @@
     if (id === 29) return uc29(step);
     if (id === 30) return uc30(step);
     if (id === 31) return uc31(step);
-    if (id === 32) return uc32(step);
     if (id === 33) return uc33(step);
-    if (id === 34) return uc34(step);
     if (id === 35) return uc35(step);
     return "";
   }
@@ -2383,57 +2394,125 @@
     );
   }
 
+  function xorWordCount(m) {
+    return String(m || "").trim().split(/\s+/).filter(Boolean).length;
+  }
+
+  function xorBytes(a, b) {
+    var n = Math.min(a.length, b.length);
+    var o = new Uint8Array(n);
+    var i;
+    for (i = 0; i < n; i++) o[i] = a[i] ^ b[i];
+    return o;
+  }
+
+  function xorSrcPhrase() {
+    return mem.xorSrc || "";
+  }
+
+  function xorCanSplit() {
+    return xorWordCount(xorSrcPhrase()) === 12;
+  }
+
   async function uc32(step) {
+    var src = xorSrcPhrase();
+    var nLive = xorWordCount(mem.mnemonic);
     if (step === 0) {
       return pad(
-        "<h2>All parts look like seeds</h2>" +
+        "<h2>What SeedXOR is</h2>" +
         doDont(
-          "Make two practice 12-word parts. Each list looks like a complete backup. You will need both.",
+          "Treat every part as a full 12-word card. Recover needs every part.",
           "Do not treat one list as a Shamir share. Do not fund these parts. This is not the SeedXOR.com calculator."
         ) +
-        desc(
-          "SeedXOR-style split is N-of-N: every part is a full BIP-39-looking phrase. Lose one list and the original is gone. That is not UC7 (any 2 of 3 hex) and not UC31 (SLIP-39 people shares)."
-        ) +
         teachBox(
-          "Classroom — what all-parts XOR is",
-          "<em>What it is:</em> N-of-N. Every part looks like a complete 12-word backup.<br/><em>Why:</em> lose one list and the original is gone.<br/><em>When / where:</em> not Shamir 2-of-3 (UC7), not SLIP-39 people shares (UC31), not the SeedXOR.com calculator.<br/><em>How:</em> Part A and Part B below are the objects. You will need both.",
+          "Classroom — N-of-N, not Shamir",
+          "<em>What it is:</em> XOR of entropy. Each part looks like a complete BIP-39 backup.<br/><em>Why:</em> lose one list and the original is gone.<br/><em>When / where:</em> not UC7 (any M of N hex), not UC31 (SLIP-39 people shares).<br/><em>How:</em> the next pads split this 12-word card. There is no Network and no QR of parts.",
           "v2XorTeach"
         ) +
-        "<h3>Parts (lab result)</h3>" +
-        '<button type="button" class="btn" id="v2XorSplit">Make two practice parts</button>' +
-        '<div class="v2-xor-grid">' +
-        '<div><h3>Part A</h3><div id="v2XorA"></div></div>' +
-        '<div><h3>Part B</h3><div id="v2XorB"></div></div>' +
-        "</div>" +
-        pauseBtn("Next: recover needs every part", !(mem.xorA && mem.xorB))
+        pauseBtn("Next: split this phrase", false)
       );
     }
     if (step === 1) {
+      if (nLive === 12 && !mem.xorSrc) mem.xorSrc = mem.mnemonic;
+      src = xorSrcPhrase();
       return pad(
-        "<h2>Need every part</h2>" +
+        "<h2>Split this phrase</h2>" +
         doDont(
-          "Try recover with one part, then with every part.",
+          "Split the live 12-word practice card. If the card is not 12 words, make a 12-word card for this drill.",
+          "Do not silently cut a 24-word card. Do not fund XOR parts."
+        ) +
+        teachBox(
+          "Classroom — this card",
+          "<em>What it is:</em> the 12-word source for the XOR.<br/><em>Why:</em> 24-word entropy is a different length. This drill is 12 words only.<br/><em>How:</em> the button below splits entropy with the Lab bundle. Parts stay in this tab.",
+          "v2XorSplitTeach"
+        ) +
+        "<h3>Source (lab)</h3>" +
+        '<p class="control-help" id="v2XorSrcMsg">' +
+        (nLive === 12
+          ? "Live First-wallet card is 12 words. This drill can use it."
+          : nLive
+            ? "Live card is " + nLive + " words. This drill needs 12. It will not cut the live card."
+            : "No live card yet. Make a 12-word practice card for this drill.") +
+        "</p>" +
+        (xorCanSplit()
+          ? ""
+          : '<button type="button" class="btn" id="v2XorMake12">Make a 12-word practice card for this drill</button>') +
+        '<button type="button" class="btn" id="v2XorSplit"' +
+        (xorCanSplit() ? "" : " disabled") +
+        ">Split this 12-word card</button>" +
+        '<div id="v2XorSplitOut" class="control-help">' +
+        (mem.xorA && mem.xorB ? "Split done. Next pad shows the two parts." : "Split is not done yet.") +
+        "</div>" +
+        pauseBtn("Next: show parts", !(mem.xorA && mem.xorB))
+      );
+    }
+    if (step === 2) {
+      return pad(
+        "<h2>Show parts</h2>" +
+        doDont(
+          "Look at two numbered 12-word cards. Every part is required.",
+          "Do not photograph the parts. Do not QR them. Do not send them to Network."
+        ) +
+        "<h3>Parts (lab result)</h3>" +
+        '<div class="v2-xor-grid">' +
+        '<div><h3>Part 1</h3><div id="v2XorA">' +
+        wordGridHtml(mem.xorA || "") +
+        "</div></div>" +
+        '<div><h3>Part 2</h3><div id="v2XorB">' +
+        wordGridHtml(mem.xorB || "") +
+        "</div></div>" +
+        "</div>" +
+        '<p class="control-help">Each part looks like a backup. You still need both. That is not Shamir 2-of-3.</p>' +
+        pauseBtn("Next: combine", !(mem.xorA && mem.xorB))
+      );
+    }
+    if (step === 3) {
+      return pad(
+        "<h2>Combine</h2>" +
+        doDont(
+          "Hide one part (should fail). Then combine all parts. The words must match the source card.",
           "Do not expect 2-of-3. One missing list fails."
         ) +
         teachBox(
           "Classroom — why every part",
-          "<em>What it is:</em> recover needs every list (N-of-N).<br/><em>Why:</em> one missing part fails. That is not Shamir any-M-of-N.<br/><em>How:</em> the line below is the lab result of the recover button you click.",
+          "<em>What it is:</em> recover XORs every part back to the source entropy.<br/><em>Why:</em> one missing list fails. That is not Shamir any-M-of-N.<br/><em>How:</em> red and green lines below are lab results.",
           "v2XorRecTeach"
         ) +
         "<h3>Recover (lab result)</h3>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
-        '<button type="button" class="btn secondary" id="v2XorOne">Recover with part A only</button>' +
-        '<button type="button" class="btn" id="v2XorAll">Recover with every part</button>' +
+        '<button type="button" class="btn secondary" id="v2XorHide">Hide one part (should fail)</button>' +
+        '<button type="button" class="btn" id="v2XorAll">Combine all parts</button>' +
         "</div>" +
         '<div id="v2XorNeedAll" class="control-help">' +
         (mem.xorAll
-          ? "All parts present. Classroom original shown. N-of-N, not Shamir."
+          ? "All parts present. Source words restored. N-of-N, not Shamir."
           : "You need every part.") +
         "</div>" +
-        pauseBtn("N-of-N, not Shamir", !mem.xorAll)
+        pauseBtn("N-of-N, not Shamir", !(mem.xorFail && mem.xorAll))
       );
     }
-    return null;
+    if (step === 4) return quizBank(jobQuizzes(32));
+    return finishHtml(32);
   }
 
   function uc33(step) {
@@ -2480,43 +2559,70 @@
   }
 
   function uc34(step) {
+    var line =
+      mem.descLine ||
+      "wpkh([00000000/84h/1h/0h]tpubD6NzVbNrCqUK1practice00000000000000000000000000000000000000000000000000/0/*)#labonly";
     if (step === 0) {
       return pad(
-        "<h2>Policy is an object</h2>" +
+        "<h2>Practice shape</h2>" +
         doDont(
-          "A scripted vault needs the descriptor: which script and which keys. Record that string with the keys.",
+          "A scripted vault needs the descriptor: which script and which keys.",
           "Do not assume the twelve words rebuild every wallet. Multisig and miniscript can fail without the policy."
-        ) +
-        desc(
-          "UC5 exports a viewing key. UC6 makes three full seeds. This job is the output descriptor — the policy line wallets import. Lose it and the keys may not be enough."
-        ) +
-        pauseBtn("Next: save a practice descriptor", false)
-      );
-    }
-    if (step === 1) {
-      var line =
-        mem.descLine ||
-        "wpkh([00000000/84h/1h/0h]tpubD6NzVbNrCqUK1practice00000000000000000000000000000000000000000000000/0/*)#labonly";
-      return pad(
-        "<h2>Save the descriptor</h2>" +
-        doDont(
-          "Copy the practice policy line. Tick that you would store it with the keys.",
-          "Do not fund this string. It is teaching-only."
         ) +
         teachBox(
           "Classroom — what a descriptor is",
-          "<em>What it is:</em> the policy string wallets import (script + keys).<br/><em>Why:</em> words alone can fail for multisig and script paths.<br/><em>When / where:</em> store this line with the keys. Lose it and the keys may not be enough.<br/><em>How:</em> the object below is a practice wpkh/wsh line. Not a funded vault.",
+          "<em>What it is:</em> the policy string wallets import (script + keys).<br/><em>Why:</em> words alone can fail for scripted paths.<br/><em>When / where:</em> store this line with the keys.<br/><em>How:</em> the object below is a practice wpkh line. Next pad refreshes from this phrase.",
           "v2DescTeach"
         ) +
-        "<h3>Policy line (lab result)</h3>" +
+        "<h3>Practice line (lab result)</h3>" +
         '<code class="v2-preview-big" id="v2DescLine">' +
         line +
         "</code>" +
-        '<label class="check"><input type="checkbox" id="v2DescAck"/> I would store this policy string with the keys (practice tick)</label>' +
-        pauseBtn("Policy saved with keys (practice)", !mem.descAck)
+        pauseBtn("Next: refresh from this phrase", false)
       );
     }
-    return null;
+    if (step === 1) {
+      return pad(
+        "<h2>Refresh from this phrase</h2>" +
+        doDont(
+          "Refresh public descriptors from the practice phrase. Copy each line.",
+          "Do not paste a private descriptor. Do not export xprv."
+        ) +
+        teachBox(
+          "Classroom — public only",
+          "<em>What it is:</em> watch-only output descriptors from this phrase.<br/><em>Why:</em> UC5 showed a viewing key. This pad is the importable policy line.<br/><em>How:</em> the rows below are lab objects. A throwaway phrase is labelled if no live card exists.",
+          "v2DescRefreshTeach"
+        ) +
+        '<button type="button" class="btn" id="v2DescRefreshLab">Refresh descriptors from this phrase</button>' +
+        '<p class="control-help" id="v2DescSrcNote">' +
+        (mem.descNote || "Not refreshed yet.") +
+        "</p>" +
+        '<div id="v2DescList" class="v2-copy-list"></div>' +
+        pauseBtn("Next: paste and explain", !mem.descRefreshed)
+      );
+    }
+    if (step === 2) {
+      return pad(
+        "<h2>Paste and explain</h2>" +
+        doDont(
+          "Paste a public descriptor. Explain this descriptor.",
+          "Do not paste xprv, a seed, or WIF."
+        ) +
+        teachBox(
+          "Classroom — explain vs object",
+          "<em>What it is:</em> a classroom parse of script kinds on a public line.<br/><em>Why:</em> private keys in this box are a leak.<br/><em>How:</em> the blue box stays teaching. The pre below is the result.",
+          "v2DescExplainTeach"
+        ) +
+        '<label class="field" for="v2DescPaste">Public descriptor<textarea id="v2DescPaste" rows="3" autocomplete="off" spellcheck="false" placeholder="wpkh(zpub…/0/*)"></textarea></label>' +
+        '<button type="button" class="btn" id="v2DescExplain">Explain this descriptor</button>' +
+        '<pre class="out" id="v2DescExplainOut">' +
+        (mem.descExplain || "Paste a public line, then explain.") +
+        "</pre>" +
+        pauseBtn("I explained a public line", !mem.descExplained)
+      );
+    }
+    if (step === 3) return quizBank(jobQuizzes(34));
+    return finishHtml(34);
   }
 
   async function uc35(step) {
@@ -5606,9 +5712,25 @@
     var next = nid ? TRACKS.filter(function (x) { return x.id === nid; })[0] : null;
     return pad(
       "<h2>Finish</h2>" +
-      callout("isnt", id === 20 ? "Do not photograph the plate" : "Do not send coins", "This is practice. Then you may open the next track.") +
+      callout(
+        "isnt",
+        id === 20
+          ? "Do not photograph the plate"
+          : id === 34
+            ? "Do not paste a private descriptor"
+            : id === 32
+              ? "Do not fund XOR parts"
+              : "Do not send coins",
+        "This is practice. Then you may open the next track."
+      ) +
       '<label class="check"><input type="checkbox" id="v2Exit"/> ' +
-      (id === 20 ? "I will not photograph the plate" : "I will not send coins to these addresses") +
+      (id === 20
+        ? "I will not photograph the plate"
+        : id === 34
+          ? "I will not paste a private descriptor"
+          : id === 32
+            ? "I will not fund XOR parts"
+            : "I will not send coins to these addresses") +
       "</label>" +
       '<div class="row"><button type="button" class="btn" id="v2Finish" disabled>Mark ' +
       (t ? t.title : "track") +
@@ -7664,39 +7786,169 @@
         renderTrack();
       });
     }
-    if ($("v2XorSplit")) {
-      $("v2XorSplit").addEventListener("click", async function () {
+    if ($("v2XorMake12")) {
+      $("v2XorMake12").addEventListener("click", async function () {
         if (!window.BIP39Lab) return;
-        mem.xorOrig = await BIP39Lab.generateMnemonic(12);
-        mem.xorA = await BIP39Lab.generateMnemonic(12);
-        mem.xorB = await BIP39Lab.generateMnemonic(12);
-        if ($("v2XorA")) $("v2XorA").innerHTML = wordGridHtml(mem.xorA);
-        if ($("v2XorB")) $("v2XorB").innerHTML = wordGridHtml(mem.xorB);
-        if (pause) pause.disabled = false;
+        mem.xorSrc = await BIP39Lab.generateMnemonic(12);
+        mem.xorA = "";
+        mem.xorB = "";
+        mem.xorAll = false;
+        mem.xorFail = false;
+        renderTrack();
       });
     }
-    if ($("v2XorOne")) {
-      $("v2XorOne").addEventListener("click", function () {
+    if ($("v2XorSplit")) {
+      $("v2XorSplit").addEventListener("click", async function () {
+        var B = window.BIP39Lab;
+        var src = xorSrcPhrase();
+        var o = $("v2XorSplitOut");
+        if (!B || typeof B.mnemonicToEntropyBytes !== "function" || typeof B.mnemonicFromEntropyBytes !== "function") {
+          if (o) o.textContent = "XOR API missing. Hard-refresh the page.";
+          return;
+        }
+        if (xorWordCount(src) !== 12) {
+          if (o) o.textContent = "Need a 12-word source first.";
+          return;
+        }
+        try {
+          var orig = B.mnemonicToEntropyBytes(src);
+          var a = new Uint8Array(orig.length);
+          (window.crypto || crypto).getRandomValues(a);
+          var b = xorBytes(orig, a);
+          mem.xorOrig = src;
+          mem.xorA = B.mnemonicFromEntropyBytes(a);
+          mem.xorB = B.mnemonicFromEntropyBytes(b);
+          mem.xorAll = false;
+          mem.xorFail = false;
+          if (o) {
+            o.className = "msg-ok";
+            o.textContent = "Split done. Two 12-word parts. Next pad shows them. Do not fund.";
+          }
+          if (pause) pause.disabled = false;
+        } catch (err) {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = String(err && err.message ? err.message : err);
+          }
+        }
+      });
+    }
+    if ($("v2XorHide") || $("v2XorOne")) {
+      var hideBtn = $("v2XorHide") || $("v2XorOne");
+      hideBtn.addEventListener("click", function () {
+        mem.xorFail = true;
+        mem.xorAll = false;
         var o = $("v2XorNeedAll");
         if (o) {
           o.className = "msg-bad";
           o.textContent = "Not enough parts. N-of-N needs every list. One 12-word part is not Shamir 2-of-3.";
         }
+        if (pause) pause.disabled = true;
       });
     }
     if ($("v2XorAll")) {
       $("v2XorAll").addEventListener("click", function () {
-        mem.xorAll = true;
+        var B = window.BIP39Lab;
         var o = $("v2XorNeedAll");
-        if (o) {
-          o.className = "msg-ok";
-          o.id = "v2XorNeedAll";
-          o.textContent =
-            "All parts present. Classroom original: " +
-            (mem.xorOrig || "(generate parts first)") +
-            " — N-of-N, not Shamir. Do not fund.";
+        if (!mem.xorA || !mem.xorB || !B || typeof B.mnemonicToEntropyBytes !== "function") {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = "Split first.";
+          }
+          return;
         }
-        if (pause) pause.disabled = false;
+        try {
+          var ea = B.mnemonicToEntropyBytes(mem.xorA);
+          var eb = B.mnemonicToEntropyBytes(mem.xorB);
+          var rec = B.mnemonicFromEntropyBytes(xorBytes(ea, eb));
+          var src = (mem.xorOrig || xorSrcPhrase()).replace(/\s+/g, " ").trim();
+          var same = rec.replace(/\s+/g, " ").trim() === src;
+          if (!same) {
+            if (o) {
+              o.className = "msg-bad";
+              o.textContent = "Combine did not match the source card.";
+            }
+            return;
+          }
+          mem.xorAll = true;
+          if (o) {
+            o.className = "msg-ok";
+            o.textContent =
+              "All parts present. Source words restored. N-of-N, not Shamir. Do not fund.";
+          }
+          if (pause) pause.disabled = !(mem.xorFail && mem.xorAll);
+        } catch (err) {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = String(err && err.message ? err.message : err);
+          }
+        }
+      });
+    }
+    if ($("v2DescRefreshLab")) {
+      $("v2DescRefreshLab").addEventListener("click", async function () {
+        var B = window.BIP39Lab;
+        var note = $("v2DescSrcNote");
+        var list = $("v2DescList");
+        if (!B || typeof B.exportWatchOnly !== "function" || typeof B.descriptorsFromWatchOnly !== "function") {
+          if (note) note.textContent = "Descriptor API missing.";
+          return;
+        }
+        var throwaway = false;
+        if (!mem.mnemonic) {
+          mem.mnemonic = await B.generateMnemonic(12);
+          throwaway = true;
+        }
+        var wo = await B.exportWatchOnly(mem.mnemonic, "", {
+          account: 0,
+          network: mem.network === "main" ? "main" : "test"
+        });
+        var pack = B.descriptorsFromWatchOnly(wo, mem.network === "main" ? "main" : "test");
+        var rows = (pack && pack.descriptors) || [];
+        mem.descPackRows = rows;
+        mem.descRefreshed = rows.length > 0;
+        mem.descNote = throwaway
+          ? "Throwaway 12-word practice phrase generated for this pad. Not a funded seed."
+          : "Using the live practice phrase already on this tab.";
+        if (note) note.textContent = mem.descNote;
+        if (list) {
+          list.innerHTML = rows
+            .map(function (d) {
+              return copyQrRowHtml(d.label, d.descriptor).replace(">Copy viewing key<", ">Copy descriptor<");
+            })
+            .join("");
+          wireCopyQr(list);
+        }
+        if (rows[0]) mem.descLine = rows[0].descriptor;
+        if (pause) pause.disabled = !mem.descRefreshed;
+      });
+    }
+    if (mem.descPackRows && $("v2DescList") && !$("v2DescList").innerHTML) {
+      $("v2DescList").innerHTML = mem.descPackRows
+        .map(function (d) {
+          return copyQrRowHtml(d.label, d.descriptor).replace(">Copy viewing key<", ">Copy descriptor<");
+        })
+        .join("");
+      wireCopyQr($("v2DescList"));
+    }
+    if ($("v2DescExplain")) {
+      $("v2DescExplain").addEventListener("click", function () {
+        var B = window.BIP39Lab;
+        var raw = ($("v2DescPaste") && $("v2DescPaste").value) || "";
+        var out = $("v2DescExplainOut");
+        if (!B || typeof B.explainDescriptor !== "function") {
+          if (out) out.textContent = "API missing.";
+          return;
+        }
+        var r = B.explainDescriptor(raw);
+        var refuse = r.status !== "ok";
+        mem.descExplain = r.status + ": " + r.detail;
+        mem.descExplained = r.status === "ok";
+        if (out) {
+          out.className = refuse ? "out msg-bad" : "out msg-ok";
+          out.textContent = mem.descExplain;
+        }
+        if (pause) pause.disabled = !mem.descExplained;
       });
     }
     function paintTl() {

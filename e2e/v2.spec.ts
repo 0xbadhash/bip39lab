@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.127-v2)", () => {
+test.describe("V2 use-case tracks (0.17.128-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.127-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.126-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.128-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -716,15 +716,21 @@ test.describe("V2 use-case tracks (0.17.127-v2)", () => {
   test("V2-S23 UC32 SeedXOR needs every part", async ({ page }) => {
     await enterV2(page, "/v2/?uc=32");
     await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2XorTeach")).toContainText(/N-of-N/i);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2XorMake12").click();
     await page.locator("#v2XorSplit").click();
+    await expect(page.locator("#v2XorSplitOut")).toContainText(/Split done/i);
+    await page.locator("#v2Pause").click();
     await expect(page.locator("#v2XorA .ww")).toHaveCount(12);
     await expect(page.locator("#v2XorB .ww")).toHaveCount(12);
     await page.locator("#v2Pause").click();
-    await page.locator("#v2XorOne").click();
+    await page.locator("#v2XorHide").click();
     await expect(page.locator("#v2XorNeedAll")).toContainText(/Not enough/i);
     await page.locator("#v2XorAll").click();
     await expect(page.locator("#v2XorNeedAll")).toContainText(/All parts/i);
     await expect(page.locator("#v2XorNeedAll")).toContainText(/N-of-N/i);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
   test("V2-S24 UC33 timelock FSM no signer", async ({ page }) => {
@@ -748,11 +754,21 @@ test.describe("V2 use-case tracks (0.17.127-v2)", () => {
   test("V2-S25 UC34 descriptor ack", async ({ page }) => {
     await enterV2(page, "/v2/?uc=34");
     await page.locator("#btnGateStart").click();
-    await page.locator("#v2Pause").click();
     await expect(page.locator("#v2DescLine")).toContainText(/wpkh/);
-    await expect(page.locator("#v2Pause")).toBeDisabled();
-    await page.locator("#v2DescAck").check();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2DescRefreshLab").click();
+    await expect(page.locator("#v2DescList [data-copy]").first()).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("#v2DescList")).toContainText(/wpkh\(|tr\(|pkh\(/);
+    const pub = (await page.locator("#v2DescList .v2-copy-val").first().textContent()) || "";
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2DescPaste").fill("xprv9s21ZrQH143Kpractice");
+    await page.locator("#v2DescExplain").click();
+    await expect(page.locator("#v2DescExplainOut")).toContainText(/refus/i);
+    await page.locator("#v2DescPaste").fill(pub || "wpkh(tpubD6NzVbNrCqUK1practice/0/*)");
+    await page.locator("#v2DescExplain").click();
+    await expect(page.locator("#v2DescExplainOut")).toContainText(/ok|wpkh|tr|pkh|public/i);
     await expect(page.locator("#v2Pause")).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
   test("V2-S26 UC35 Electrum vs BIP-39 restore", async ({ page }) => {
@@ -1360,6 +1376,45 @@ test.describe("V2 use-case tracks (0.17.127-v2)", () => {
     for (const w of words) {
       expect(store.includes(w)).toBeFalsy();
     }
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S52 UC32 split live 12-word then drop-one fails then combine matches", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=32");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2XorSrcMsg")).toContainText(/12|No live/i);
+    await page.locator("#v2XorMake12").click();
+    await page.locator("#v2XorSplit").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2XorA .ww")).toHaveCount(12);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2XorAll").click();
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    await page.locator("#v2XorHide").click();
+    await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-bad/);
+    await page.locator("#v2XorAll").click();
+    await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S53 UC34 refresh from phrase + refuse private + explain", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=34");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.getByRole("button", { name: "Refresh descriptors from this phrase" })).toBeVisible();
+    await page.locator("#v2DescRefreshLab").click();
+    await expect(page.locator("#v2DescSrcNote")).toContainText(/Throwaway|live practice/i);
+    await expect(page.locator("#v2DescList [data-copy]").first()).toBeVisible({ timeout: 8000 });
+    const pub = await page.locator("#v2DescList .v2-copy-val").first().textContent();
+    await page.locator("#v2Pause").click();
+    await expect(page.getByRole("button", { name: "Explain this descriptor" })).toBeVisible();
+    await page.locator("#v2DescPaste").fill("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
+    await page.locator("#v2DescExplain").click();
+    await expect(page.locator("#v2DescExplainOut")).toContainText(/refus/i);
+    await page.locator("#v2DescPaste").fill(String(pub || "wpkh(tpub/0/*)"));
+    await page.locator("#v2DescExplain").click();
+    await expect(page.locator("#v2DescExplainOut")).not.toContainText(/refus/i);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
