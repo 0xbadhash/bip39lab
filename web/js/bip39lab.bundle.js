@@ -7906,6 +7906,26 @@ zoo`.split("\n");
     }
     return entropyToMnemonic(arr, wordlist);
   }
+  function deriveBip85Bip39Child(mnemonic, opts) {
+    opts = opts || {};
+    const index = opts.index == null ? 0 : Number(opts.index) || 0;
+    if (!validateMnemonic(mnemonic, wordlist)) {
+      throw new Error("parent mnemonic invalid");
+    }
+    const seed = mnemonicToSeedSync(mnemonic, "");
+    const hd = HDKey.fromMasterSeed(seed);
+    const node = hd.derive("m/83696968'/39'/0'/12'/" + index + "'");
+    const priv = node.privateKey;
+    if (!priv) throw new Error("BIP-85 private key missing");
+    const raw = hmac(sha512, utf8ToBytes("bip-entropy-from-k"), priv);
+    const child = entropyToMnemonic(raw.slice(0, 16), wordlist);
+    return {
+      mnemonic: child,
+      path: "m/83696968'/39'/0'/12'/" + index + "'",
+      index,
+      words: 12
+    };
+  }
   function b58decode(s) {
     const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     let n = 0n;
@@ -8047,6 +8067,7 @@ zoo`.split("\n");
     validateMnemonic: async (m) => validate(m),
     mnemonicFromEntropyBytes: (bytes) => mnemonicFromEntropyBytes(bytes),
     mnemonicToEntropyBytes: (m) => mnemonicToEntropy(m, wordlist),
+    deriveBip85Bip39Child: (m, opts) => deriveBip85Bip39Child(m, opts),
     deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
     exportWatchOnly: async (m, p, options) => exportWatchOnly(m, p, options),
     descriptorsFromWatchOnly: (wo, network) => descriptorsFromWatchOnly(wo, network),

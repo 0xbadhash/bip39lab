@@ -449,7 +449,7 @@
     { id: 6, level: "Intermediate", title: "Shared custody multisig", job: "Two of three people can spend. Each keeps their own words.", done: "These are separate keys. They are not pieces of one phrase." },
     { id: 7, level: "Intermediate", title: "Split secret Shamir", job: "Cut one secret into pieces. Pieces are not cosigners.", done: "Shares rebuild one secret. They are not cosigner keys." },
     { id: 8, level: "Intermediate", title: "PSBT / air-gap", job: "Read a half-built payment here. Sign and send elsewhere.", done: "You inspect the package here. You sign offline elsewhere. You broadcast from a hot machine. Never paste the seed." },
-    { id: 9, level: "Intermediate", title: "xpub privacy", job: "A viewing key cannot spend. It can still leak history.", done: "You saw a public key, not spend words. Do not post it casually." },
+    { id: 9, level: "Intermediate", title: "xpub privacy", job: "A viewing key cannot spend. It still shows every future receive.", done: "You saw forum and support leaks fail. One invoice is not the whole account. Five future addresses appeared. Spend still failed. UC5 already taught export." },
     { id: 10, level: "Advanced", title: "Network leak", job: "Opt-in public lookup here. Unknown is not zero.", done: "You fetched fees or an address after leak-ack. Address-only. Never the words." },
     { id: 11, level: "Beginner", title: "They hold the keys", job: "A company keeps the keys. You only have a login.", done: "You sorted who holds the keys. A login is not recovery words." },
     { id: 12, level: "Beginner", title: "Hot wallet vs hardware signer", job: "Same words, different where they live.", done: "Phone keys are hot. Hardware keeps the seed on the device. Typing the seed into a computer still kills the vault." },
@@ -467,10 +467,10 @@
     { id: 24, level: "Intermediate", title: "Geographic keys", job: "Home, elsewhere, a person — not two keys in one building.", done: "Three keys not clustered in one building." },
     { id: 25, level: "Beginner", title: "Annual rehearsal", job: "Put restore and inheritance drills on a calendar.", done: "Prove-the-backup and open-while-alive are scheduled this year." },
     { id: 26, level: "Advanced", title: "Own node", job: "A public explorer is someone else’s view, not your node.", done: "This tab does not run a node. Lookups stay opt-in Network." },
-    { id: 27, level: "Advanced", title: "UTXO / coin control", job: "Coins are pieces. Change is another folder.", done: "You can point at receive vs change and say why mixing pieces leaks." },
+    { id: 27, level: "Advanced", title: "UTXO / coin control", job: "Spend one practice coin. Change returns to a different folder.", done: "You saw a spend consume one piece and return change to a different folder. The words stayed the same." },
     { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Mixing is optional. It does not replace backup.", done: "You know mixing is extra privacy, not a custody substitute." },
     { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "A second extra secret opens a real second vault.", done: "Decoy is another real vault. This is not legal or personal-safety advice." },
-    { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "One master can mint child phrases. Classic Lab is the full card.", done: "A child is not a backup of the parent. Do not fund practice children." },
+    { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "Mint one practice child. The parent card is still required.", done: "You minted one practice child and you know it does not replace the parent card." },
     { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "People hold word shares. UC7 hex stays educational.", done: "Suite lives in the SLIP-39 room. Combine is recovery, not a cosign." },
     { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Split this 12-word card. Every part is required.", done: "You split the live 12-word card, saw combine fail without every part, and restored the same words." },
     { id: 33, level: "Advanced", title: "Timelock dead-man (practice)", job: "Heir cannot spend until a timer expires. Owner refresh resets it.", done: "Educational timer only. This tab never signs. Not legal counsel." },
@@ -499,7 +499,7 @@
     6: { is: "Two of three people sign. Each has a full phrase.", isnt: "This is not cutting one phrase into pieces (that is Shamir)." },
     7: { is: "One secret cut into practice pieces. Combine to recover.", isnt: "Not Trezor Suite words. A piece cannot sign a spend." },
     8: { is: "Read a half-built payment package offline.", isnt: "This tab never signs and never broadcasts. Never paste the seed." },
-    9: { is: "A viewing key lists addresses. It cannot spend.", isnt: "Do not publish it casually. It is not the recovery words." },
+    9: { is: "Prove the leak: one account key shows future receives. It still cannot spend.", isnt: "Do not post the account key. This is not a second export pad. UC5 already showed the viewing key." },
     10: { is: "After leak-ack this tab may fetch same-origin /api/mempool. Address-only.", isnt: "A missing lookup is unknown, not zero coins. Never the words." },
     11: { is: "A company keeps the keys. You have a login.", isnt: "If you never got recovery words, you cannot spend on your own." },
     12: { is: "Same words. Phone keys vs a hardware device.", isnt: "USB is not an air-gap. Typing the seed into a computer still kills the vault." },
@@ -517,10 +517,10 @@
     24: { is: "Home, elsewhere, a person — three sites.", isnt: "Do not put two keys in one building." },
     25: { is: "Schedule restore and inheritance drills this year.", isnt: "A document you never run is a hope." },
     26: { is: "A public explorer is someone else’s view.", isnt: "This tab does not run your node." },
-    27: { is: "Coins are pieces. Change is another folder.", isnt: "The total is not one coin." },
+    27: { is: "Spend one practice coin. Change returns to the change folder. Words stay put.", isnt: "Do not treat the total as one coin. This tab does not broadcast." },
     28: { is: "Inputs spent together can look like one owner.", isnt: "Mixing does not replace backup. No mixer brand here." },
     29: { is: "A second extra secret opens a real second vault.", isnt: "Not legal or personal-safety advice." },
-    30: { is: "One master can mint child phrases. Classic Lab is the full card.", isnt: "A child is not a backup of the parent. Do not fund practice children." },
+    30: { is: "Mint one practice child from this parent. The parent card is still required.", isnt: "A child is not a backup of the parent. Do not fund practice children. The full matrix lives on classic Lab." },
     31: { is: "People hold product word shares. Dock the SLIP-39 room.", isnt: "UC7 hex is educational, not Suite." },
     32: { is: "Split this 12-word card into full-looking parts. Recover needs every part.", isnt: "This is not Shamir 2-of-3. This is not SLIP-39. This is not the SeedXOR.com calculator." },
     33: { is: "A practice timer. Heir spend stays locked until it expires. Refresh resets.", isnt: "This tab never signs or broadcasts. Not a live CSV wallet. Not legal counsel." },
@@ -869,7 +869,7 @@
       6: ["Show 2-of-3", "Three full seeds", "Quiz", "Finish"],
       7: ["Phrase + hex", "SLIP-39 2-of-3", "Extra secret", "Quiz", "Finish"],
       8: ["Air-gap model", "Inspect sample", "Quiz", "Finish"],
-      9: ["Cannot spend", "Export viewing key", "Quiz", "Finish"],
+      9: ["What the leak is", "Fail kits", "Five future addresses", "Quiz", "Finish"],
       10: ["Stay offline", "Opt-in Network", "Quiz", "Finish"],
       11: ["Who is they", "Company app", "You hold", "Quiz", "Finish"],
       12: ["Hot wallet on phone", "Hardware signer", "Quiz", "Finish"],
@@ -887,10 +887,10 @@
       24: ["Three sites", "Place three keys", "Quiz", "Finish"],
       25: ["Plans go stale", "Schedule drills", "Quiz", "Finish"],
       26: ["Not your node", "Opt-in lookup", "Quiz", "Finish"],
-      27: ["Coins are pieces", "Change folder", "Quiz", "Finish"],
+      27: ["Coins are pieces", "Two practice coins", "Spend one, change returns", "Quiz", "Finish"],
       28: ["Common input", "Mixing is not custody", "Quiz", "Finish"],
       29: ["Second vault", "Decoy is real", "Quiz", "Finish"],
-      30: ["Parent vs child", "Classic BIP-85", "Quiz", "Finish"],
+      30: ["Child is not a parent backup", "Mint one practice child", "Show child words + path", "Quiz", "Finish"],
       31: ["People + threshold", "Dock Suite", "Quiz", "Finish"],
       32: ["What SeedXOR is", "Split this phrase", "Show parts", "Combine", "Quiz", "Finish"],
       33: ["Arm the timer", "Tick / refresh / heir", "Quiz", "Finish"],
@@ -910,7 +910,7 @@
       6: ["M-of-N", "Public keys", "Not Shamir"],
       7: ["Threshold shares", "2-of-3 lists", "Extra secret ≠ 25th"],
       8: ["PSBT package", "Never sign here", "Broadcast elsewhere"],
-      9: ["Viewing key", "Cannot spend", "Still leaks history"],
+      9: ["Cannot steal", "Account camera", "One invoice is not the account"],
       10: ["Page stays offline", "Address only", "Unknown is not zero"],
       11: ["They hold", "You hold", "Not BIP-39"],
       12: ["Hot software", "Hardware", "USB is not air-gap"],
@@ -928,10 +928,10 @@
       24: ["Home", "Elsewhere", "Not one building"],
       25: ["Calendar", "UC16 restore", "UC18 open-alive"],
       26: ["No node in this tab", "Unknown is not zero", "Network dock"],
-      27: ["UTXO pieces", "Change chain", "Do not mix casually"],
+      27: ["Coins are pieces", "Select one coin", "Change folder"],
       28: ["Heuristics", "Optional mix", "Still need keys"],
       29: ["Two vaults", "Duress copy", "Not advice"],
-      30: ["Child mnemonic", "Parent stays", "Lab #cardBip85"],
+      30: ["Child is not backup", "Mint child #0", "Parent still required"],
       31: ["SLIP-39 words", "Not UC7 hex", "Room dock"],
       32: ["N-of-N parts", "Split this card", "All parts required"],
       33: ["Arm", "Expire", "Refresh"],
@@ -984,6 +984,9 @@
     mem.descNote = "";
     mem.descExplain = "";
     mem.descPackRows = null;
+    mem.leak = null;
+    mem.bip85 = null;
+    mem.utxo = null;
     mem.tl = { armed: false, ticks: 0, expired: false };
     mem.tlHeirTried = false;
     mem.inh = null;
@@ -1156,10 +1159,11 @@
       ]
     },
     9: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 2) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc9-atom-watch-only.svg", "An xpub is watch-only", "<strong>Plan · Watch-only</strong><br/>An account xpub or zpub derives receive addresses without spending."),
-        atom(2, 1, "assets/uc9-atom-cannot-spend.svg", "An xpub cannot sign or steal coins", "<strong>Practice · Cannot spend</strong><br/>Publishing an xpub does not let anyone steal coins immediately."),
-        atom(3, 2, "assets/uc9-atom-leaks-history.svg", "Publishing an xpub leaks future addresses", "<strong>Review · Leaks history</strong><br/>It still leaks future addresses and activity. Do not publish it casually.")
+        atom(1, 0, "assets/uc9-atom-cannot-spend.svg", "A viewing key cannot steal coins", "<strong>Plan · Cannot spend</strong><br/>UC5 already exported the key. This track is the leak, not a second export."),
+        atom(2, 1, "assets/uc9-atom-leaks-history.svg", "The same key is a camera on future receives", "<strong>Practice · Account camera</strong><br/>Forum posts, support tickets, and “it cannot spend so it is public” all leak the gap."),
+        atom(3, 3, "assets/uc9-atom-watch-only.svg", "One invoice is not the account", "<strong>Review · Smaller leak</strong><br/>One receive string is not the whole chain. Five future addresses prove the gap. Spend still fails.")
       ]
     },
     10: {
@@ -1285,10 +1289,11 @@
       ]
     },
     27: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 2) return 2; return 3; },
       atoms: [
         atom(1, 0, "assets/uc4-atom-path-folder.svg", "UTXOs are pieces", "<strong>Plan · Pieces</strong><br/>A wallet total hides which coins you spend."),
-        atom(2, 1, "assets/uc4-atom-index.svg", "Change is a folder", "<strong>Practice · Change chain</strong><br/>Path …/1/n is change. Mixing inputs links history."),
-        atom(3, 2, "assets/uc4-atom-words-stay.svg", "Deep coin control stays in Lab", "<strong>Review · Thin pad</strong><br/>This track names the job. Full UTXO toys stay on /.")
+        atom(2, 1, "assets/uc4-atom-index.svg", "Spend one piece; change uses folder 1", "<strong>Practice · One coin</strong><br/>Pay from 0.05. Change returns to …/1/0. Words stay put."),
+        atom(3, 3, "assets/uc4-atom-words-stay.svg", "Not Lab coin-control tools", "<strong>Review · Classroom only</strong><br/>Fake amounts. No broadcast. Deep coin control stays on classic Lab.")
       ]
     },
     28: {
@@ -1306,10 +1311,11 @@
       ]
     },
     30: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 2) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Parent can mint children", "<strong>Plan · BIP-85</strong><br/>One master, many child mnemonics. Classic Lab #cardBip85."),
-        atom(2, 1, "assets/uc1-atom-one-to-many.svg", "Child is not the parent backup", "<strong>Practice · Child ≠ parent</strong><br/>Losing the parent loses the children."),
-        atom(3, 2, "assets/uc1-atom-phrase-ne-address.svg", "Do not fund practice children", "<strong>Review · Practice</strong><br/>SoT remains the classic card, not this track.")
+        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Parent can mint children", "<strong>Plan · BIP-85</strong><br/>One master, one practice child. Full matrix on classic Lab."),
+        atom(2, 1, "assets/uc1-atom-one-to-many.svg", "Mint child number 0", "<strong>Practice · One child</strong><br/>Application 39. Twelve English words. Losing the parent loses the child."),
+        atom(3, 3, "assets/uc1-atom-phrase-ne-address.svg", "Parent backup is still required", "<strong>Review · Not a backup</strong><br/>Do not fund the child. Dock remains #cardBip85.")
       ]
     },
     31: {
@@ -1616,7 +1622,7 @@
       ],
       27: [
         { q: "What is a wallet balance made of?", opts: [qOk("A sum of leftover pieces (coins) from earlier payments.", "Correct. Not one giant coin."), qBad("One single coin that never splits.", "Wrong.")] },
-        { q: "What is the change folder?", opts: [qOk("Another folder under the same words. The recovery phrase does not change.", "Correct."), qBad("A brand-new recovery phrase for change.", "Wrong.")] },
+        { q: "When you spend one piece, where does leftover value go?", opts: [qOk("To a change address in folder 1. The recovery words stay the same.", "Correct."), qBad("To a brand-new recovery phrase.", "Wrong. Change is another folder, not a new seed.")] },
         { q: "Should you always mix every leftover piece into one spend?", opts: [qOk("No. Spending pieces together can link their history. Mixing is a choice.", "Correct."), qBad("Yes. Always dump every piece into one payment.", "Wrong. That can leak history.")] }
       ],
       28: [
@@ -1631,7 +1637,7 @@
       ],
       30: [
         { q: "What is a child phrase made from a master?", opts: [qOk("A derived phrase. If the parent is lost, the children are lost too.", "Correct. A child is not a backup of the parent."), qBad("An independent backup of the parent phrase.", "Wrong.")] },
-        { q: "Where is the full child-phrase tool?", opts: [qOk("On classic Lab, not as a replacement for this teaching track.", "Correct."), qBad("This V2 track replaces classic Lab.", "Wrong. Rooms stay the full instruments.")] },
+        { q: "Where is the full child-phrase matrix?", opts: [qOk("On classic Lab #cardBip85. This track mints one practice child only.", "Correct."), qBad("This V2 track replaces classic Lab.", "Wrong. Rooms stay the full instruments.")] },
         { q: "Should you fund practice child phrases?", opts: [qOk("Do not. They are practice.", "Correct."), qBad("Yes, send a tiny amount.", "Wrong.")] }
       ],
       31: [
@@ -1668,6 +1674,8 @@
   async function ucJob(id, step) {
     if (id === 20) return uc20(step);
     if (id === 18) return uc18(step);
+    if (id === 27) return uc27(step);
+    if (id === 30) return uc30(step);
     if (id === 32) return uc32(step);
     if (id === 34) return uc34(step);
     if (step === 2) return quizBank(jobQuizzes(id));
@@ -1681,10 +1689,8 @@
     if (id === 24) return uc24(step);
     if (id === 25) return uc25(step);
     if (id === 26) return uc26(step);
-    if (id === 27) return uc27(step);
     if (id === 28) return uc28(step);
     if (id === 29) return uc29(step);
-    if (id === 30) return uc30(step);
     if (id === 31) return uc31(step);
     if (id === 33) return uc33(step);
     if (id === 35) return uc35(step);
@@ -2297,25 +2303,77 @@
     );
   }
 
-  function uc27(step) {
+  async function uc27(step) {
+    var u = mem.utxo || {};
     if (step === 0) {
       return pad(
         "<h2>Coins are pieces</h2>" +
-        doDont("A total hides separate coin pieces. Spending two pieces together can link them.", "Do not treat the number in the corner as one coin.") +
-        pauseBtn("Next: look at the change folder", false)
+        doDont(
+          "Treat a total as leftover pieces (UTXOs), not one bank balance.",
+          "Do not treat the number in the corner as one coin. This tab does not broadcast."
+        ) +
+        teachBox(
+          "Classroom — pieces, not a balance",
+          "<em>What it is:</em> two classroom coins from the same words.<br/><em>Why:</em> spending two pieces together can look like one owner.<br/><em>How:</em> next pads pick one coin. Fake amounts only. Deep coin control stays on classic Lab.",
+          "v2Uc27Teach"
+        ) +
+        pauseBtn("Next: two practice coins", false)
       );
     }
-    return pad(
-      "<h2>Change folder</h2>" +
-      pathBipSvgHtml() +
-      teachBox(
-        "Classroom — coins are pieces",
-        "<em>What it is:</em> receive vs change are two folders. A total hides separate UTXOs.<br/><em>Why:</em> spending two pieces together can look like one owner.<br/><em>How:</em> the path diagram below is the object. Deep coin control stays on classic Lab.",
-        "v2Uc27Teach"
-      ) +
-      "<p class=\"control-help\">Receive is one folder. Change is another. The words stay put. Deep coin control stays on classic Lab.</p>" +
-      pauseBtn("I can name receive vs change", false)
-    );
+    if (step === 1) {
+      return pad(
+        "<h2>Two practice coins</h2>" +
+        doDont(
+          "Select the 0.05 coin. Leave the 0.13 coin unspent.",
+          "Do not mix both coins into one spend on this pad."
+        ) +
+        teachBox(
+          "Classroom — pick one piece",
+          "<em>What it is:</em> two fake tBTC leftovers on receive indexes 0 and 1.<br/><em>Why:</em> a wallet total of 0.18 hides two coins.<br/><em>How:</em> the grid is the object. Next pad shows change.",
+          "v2UtxoGridTeach"
+        ) +
+        '<div class="v2-utxo-grid" id="v2UtxoGrid">' +
+        '<button type="button" class="v2-metal-card' +
+        (u.picked === "a" ? " is-on" : "") +
+        '" id="v2UtxoPick"><strong>0.05 tBTC</strong><span>Receive index 0. Select this coin to pay 0.04.</span></button>' +
+        '<div class="v2-metal-card"><strong>0.13 tBTC</strong><span>Receive index 1. Leave this piece unspent.</span></div>' +
+        "</div>" +
+        '<div id="v2UtxoPickOut" class="control-help">' +
+        (u.picked === "a" ? "Selected: 0.05 coin. Next pad pays 0.04 and returns change." : "Select the 0.05 coin.") +
+        "</div>" +
+        pauseBtn("Next: spend one, change returns", u.picked !== "a")
+      );
+    }
+    if (step === 2) {
+      await ensurePhrase();
+      var ch = u.changeAddr || "";
+      return pad(
+        "<h2>Spend one, change returns</h2>" +
+        doDont(
+          "Show the change address. The recovery words stay the same.",
+          "Do not broadcast. A new receive address is not a new seed."
+        ) +
+        teachBox(
+          "Classroom — change folder",
+          "<em>What it is:</em> pay 0.04 from the 0.05 piece. 0.01 returns on the change chain (path …/1/0).<br/><em>Why:</em> leftover value cannot stay on the spent piece.<br/><em>How:</em> the address below is the object. Words do not change.",
+          "v2UtxoChangeTeach"
+        ) +
+        '<p class="control-help" id="v2UtxoWords">Practice words unchanged: ' +
+        xorWordCount(mem.mnemonic) +
+        " words on this card.</p>" +
+        '<button type="button" class="btn" id="v2UtxoChange">Show change address</button>' +
+        "<h3>Change (lab result)</h3>" +
+        '<p id="v2UtxoChangeOut"><code>' +
+        (ch || "Not shown yet.") +
+        "</code></p>" +
+        '<p class="control-help" id="v2UtxoPath">' +
+        (u.changePath || "Path appears after you show change.") +
+        "</p>" +
+        pauseBtn("Change went to a different folder", !u.shownChange)
+      );
+    }
+    if (step === 3) return quizBank(jobQuizzes(27));
+    return finishHtml(27);
   }
 
   function uc28(step) {
@@ -2354,23 +2412,79 @@
   }
 
   function uc30(step) {
+    var b = mem.bip85 || {};
     if (step === 0) {
       return pad(
-        "<h2>Parent vs child</h2>" +
-        doDont("One master can mint child practice phrases. The full card lives on classic Lab.", "A child is not a backup of the parent. Do not fund practice children.") +
-        pauseBtn("Next: open classic BIP-85 if I need it", false)
+        "<h2>Child is not a parent backup</h2>" +
+        doDont(
+          "Treat a BIP-85 child as a derived phrase. If the parent is lost, the child is lost too.",
+          "Do not fund practice children. Do not treat the child as a second copy of the parent card."
+        ) +
+        teachBox(
+          "Classroom — parent still required",
+          "<em>What it is:</em> one master can mint child practice phrases (application 39, child number 0).<br/><em>Why:</em> a child is not a backup of the parent.<br/><em>When / where:</em> this track mints one child. The full matrix lives on classic Lab #cardBip85.<br/><em>How:</em> next pad uses the Lab bundle. No Network.",
+          "v2Uc30Teach"
+        ) +
+        pauseBtn("Next: mint one practice child", false)
       );
     }
-    return pad(
-      "<h2>Classic BIP-85</h2>" +
-      teachBox(
-        "Classroom — child is not parent backup",
-        "<em>What it is:</em> one master can mint child practice phrases.<br/><em>Why:</em> a child is not a backup of the parent. Do not fund practice children.<br/><em>How:</em> the classic Lab card is the object. This pad does not dump a child mnemonic.",
-        "v2Uc30Teach"
-      ) +
-      '<a class="btn" href="../index.html#cardBip85">Open classic child-seed card</a>' +
-      pauseBtn("Child is not the parent backup", false)
-    );
+    if (step === 1) {
+      var n = xorWordCount(mem.mnemonic);
+      var parentOk = n === 12 || n === 24;
+      return pad(
+        "<h2>Mint one practice child</h2>" +
+        doDont(
+          "Mint practice child number 0 from this parent.",
+          "Do not build the full application and index matrix here."
+        ) +
+        teachBox(
+          "Classroom — child number 0",
+          "<em>What it is:</em> BIP-39 English, 12-word child, application 39, language 0, index 0.<br/><em>Why:</em> one child is enough to see the job.<br/><em>How:</em> parent is the live card if it is 12 or 24 English words. Otherwise this pad makes a throwaway parent and says so.",
+          "v2Bip85MintTeach"
+        ) +
+        '<p class="control-help" id="v2Bip85ParentNote">' +
+        (parentOk
+          ? "Live parent is " + n + " words. This mint can use it."
+          : "No 12- or 24-word parent yet. Mint will generate a throwaway parent and say so.") +
+        "</p>" +
+        '<button type="button" class="btn" id="v2Bip85Mint">Mint practice child #0</button>' +
+        '<div id="v2Bip85MintOut" class="control-help">' +
+        (b.child ? "Child minted. Next pad shows the words and path." : "Not minted yet.") +
+        "</div>" +
+        pauseBtn("Next: show child words + path", !b.child)
+      );
+    }
+    if (step === 2) {
+      return pad(
+        "<h2>Show child words + path</h2>" +
+        doDont(
+          "Read the numbered child card. Show that the parent is still required.",
+          "Do not fund this child. Copy is allowed. No Network."
+        ) +
+        "<h3>Child number 0 (lab result)</h3>" +
+        '<p class="control-help" id="v2Bip85Path">' +
+        (b.path
+          ? "Plain English: child number 0 (application 39, twelve English words). Path " + b.path + "."
+          : "Mint first.") +
+        "</p>" +
+        '<div id="v2Bip85Card">' +
+        wordGridHtml(b.child || "") +
+        "</div>" +
+        '<button type="button" class="btn secondary" id="v2Bip85Copy"' +
+        (b.child ? "" : " disabled") +
+        ">Copy child words</button>" +
+        '<button type="button" class="btn" id="v2Bip85Parent">Show parent is still required</button>' +
+        '<div id="v2Bip85NeedOut" class="control-help">' +
+        (b.parentAck
+          ? "Parent backup is still required. Losing the parent loses this child. Do not fund."
+          : "Show that the parent is still required.") +
+        "</div>" +
+        '<a class="btn secondary" href="../index.html#cardBip85">Open classic BIP-85 card (full matrix)</a>' +
+        pauseBtn("Parent is still required", !(b.child && b.parentAck))
+      );
+    }
+    if (step === 3) return quizBank(jobQuizzes(30));
+    return finishHtml(30);
   }
 
   function uc31(step) {
@@ -3728,59 +3842,137 @@
     return finishHtml(8);
   }
 
+  function leakState() {
+    if (!mem.leak) mem.leak = { kits: {}, gap: false, spendFail: false, kitMsg: "", gapRows: [] };
+    return mem.leak;
+  }
+
+  function leakKitsDone() {
+    var k = leakState().kits;
+    return !!(k.forum && k.support && k.public && k.invoice);
+  }
+
   async function uc9(step) {
+    var st = leakState();
+    function kitBtn(id, title, teaser) {
+      return (
+        '<button type="button" class="v2-metal-card v2-inh-kit' +
+        (st.kits[id] ? " is-on" : "") +
+        '" data-leak-kit="' +
+        id +
+        '"><strong>' +
+        title +
+        "</strong><span>" +
+        teaser +
+        "</span></button>"
+      );
+    }
     if (step === 0) {
       return pad(
-        "<h2>xpub is not spend</h2>" +
+        "<h2>What the leak is</h2>" +
         doDont(
-          "Treat an account xpub as watch-only: software can derive receive addresses.",
-          "Do not publish an xpub casually. It cannot sign, but it leaks future addresses and history. It is not the recovery phrase."
+          "Treat the account viewing key as a camera on every future receive. UC5 already showed how to export it.",
+          "Do not post it. Do not treat “cannot spend” as “safe to publish”. This pad does not export the key again."
         ) +
-        desc(
-          "An account xpub or zpub can list future payment addresses. It cannot move coins. It is still private in another way: anyone with it can see activity. It is not the recovery words."
+        teachBox(
+          "Classroom — camera, not a spender",
+          "<em>What it is:</em> the same public account key UC5 exported.<br/><em>Why:</em> it cannot sign, so coins stay put. It can still list every receive that account will ever use.<br/><em>When / where:</em> forums, support tickets, screenshots, “it is public because it cannot steal”.<br/><em>How:</em> next pads are fail kits and a gap list. There is no second export row.",
+          "v2LeakTeach"
         ) +
-        pauseBtn("Next: show the account viewing key", false)
+        pauseBtn("Next: fail kits", false)
       );
     }
     if (step === 1) {
-      await ensurePhrase();
       return pad(
-        "<h2>Export account xpub. " + termI("XPUB") + " " + termI("ZPUB") + "</h2>" +
+        "<h2>Fail kits</h2>" +
         doDont(
-          "Show the BIP-84 watch key. You should see a zpub or xpub.",
-          "Do not expect an xprv or the twelve words on this pad."
-        ) +
-        desc(
-          "Show the BIP-84 watch key for this practice phrase. You should see a zpub (or xpub). You should not see an xprv or the recovery words."
+          "Tap each kit. Next stays off until all four are seen.",
+          "Do not confuse one invoice address with the whole account key."
         ) +
         teachBox(
-          "Classroom — what an xpub is",
-          "<em>What it is:</em> an account viewing key. It can list future addresses. It cannot spend.<br/><em>Why:</em> anyone with it can see activity. It is still not the recovery words.<br/><em>When / where:</em> watch-only software. Do not publish it casually.<br/><em>How:</em> the string below should start with zpub or xpub — never xprv.",
-          "v2XpubTeach"
+          "Classroom — four mistakes",
+          "<em>What it is:</em> places people paste a zpub without thinking.<br/><em>Why:</em> one receive string is a small leak. The account key is the whole future gap.<br/><em>How:</em> the red and amber lines are lab results. UC5 already refused pasting the twelve words into a watch app.",
+          "v2LeakKitTeach"
         ) +
-        '<button type="button" class="btn" id="v2Xpub">Show account viewing key</button>' +
-        "<h3>Viewing key (lab result)</h3>" +
-        '<div id="v2XpubList" class="v2-copy-list"></div>' +
-        '<pre class="out" id="v2XpubOut">Public extended key only.</pre>' +
-        pauseBtn("I did not see an xprv", false)
+        "<h3>Kits (lab)</h3>" +
+        '<div class="v2-metal-grid v2-inh-grid">' +
+        kitBtn("forum", "Forum post", "Paste the account key in a public thread") +
+        kitBtn("support", "Support ticket", "Send the account key to a help desk") +
+        kitBtn("public", "Cannot steal, so public", "Treat watch-only as safe to publish") +
+        kitBtn("invoice", "One invoice address", "Print one receive string for this payment") +
+        "</div>" +
+        '<div id="v2LeakKitOut" class="control-help">' +
+        (st.kitMsg || "Tap a kit. The result names the leak size.") +
+        "</div>" +
+        pauseBtn("I saw the four kits", !leakKitsDone())
       );
     }
     if (step === 2) {
-      return quiz("If you publish a viewing key (xpub):", [
+      await ensurePhrase();
+      var rows = (st.gapRows || [])
+        .map(function (row, i) {
+          var addr = row.bip84_p2wpkh || row.address || "";
+          return (
+            "<tr><td>" +
+            i +
+            "</td><td><code>" +
+            addr +
+            "</code></td></tr>"
+          );
+        })
+        .join("");
+      return pad(
+        "<h2>Five future addresses</h2>" +
+        doDont(
+          "Show five receive addresses from this practice card. Then try to spend with the viewing key.",
+          "Do not export the account key again. UC5 already did that. Do not fund these addresses."
+        ) +
+        teachBox(
+          "Classroom — the gap list",
+          "<em>What it is:</em> index 0 through 4 on the same account.<br/><em>Why:</em> anyone with the viewing key can build this list without the twelve words.<br/><em>How:</em> the table is the object. Spend still fails. No zpub copy row on this pad.",
+          "v2LeakGapTeach"
+        ) +
+        '<button type="button" class="btn" id="v2LeakGap">Show five future receive addresses</button>' +
+        '<button type="button" class="btn secondary" id="v2LeakSpend">Try to spend with the viewing key</button>' +
+        "<h3>Gap list (lab result)</h3>" +
+        '<table class="v2-leak-table" id="v2LeakTable"><thead><tr><th>Index</th><th>Receive</th></tr></thead><tbody>' +
+        (rows || "<tr><td colspan=\"2\">Not shown yet.</td></tr>") +
+        "</tbody></table>" +
+        '<div id="v2LeakGapOut" class="control-help">' +
+        (st.gapMsg || "Show the list. Then try to spend.") +
+        "</div>" +
+        pauseBtn("Gap shown. Spend failed.", !(st.gap && st.spendFail))
+      );
+    }
+    if (step === 3) {
+      return quizBank([
         {
-          k: "ok",
-          t: "Nobody can spend with it, but they can see future addresses and activity.",
-          okwhy: "Correct. Watch-only and leaky — not spend."
+          q: "If you publish the account viewing key, what can a stranger do?",
+          opts: [
+            qOk("They cannot spend. They can list future receive addresses and watch activity.", "Correct. Camera, not a spender."),
+            qBad("They can steal the coins immediately.", "Wrong. The viewing key cannot sign.")
+          ]
         },
         {
-          k: "bad",
-          t: "Anyone can steal the coins immediately.",
-          why: "Wrong. A viewing key cannot sign. It can still leak history."
+          q: "How is one invoice address different from the account key?",
+          opts: [
+            qOk("One receive string is this payment. The account key is every future index on that chain.", "Correct."),
+            qBad("They are the same leak. Print either one.", "Wrong. The account key is the whole gap.")
+          ]
         },
         {
-          k: "bad",
-          t: "It is the same secret as the twelve recovery words.",
-          why: "Wrong. The viewing key cannot spend. The words can."
+          q: "Should this track export the viewing key again?",
+          opts: [
+            qOk("No. UC5 already exported it. This track is the leak drill.", "Correct."),
+            qBad("Yes. Show zpub copy and QR here too.", "Wrong. That would be a second export pad.")
+          ]
+        },
+        {
+          q: "Is “it cannot spend” a reason to post the key?",
+          opts: [
+            qOk("No. Cannot steal is not the same as private.", "Correct."),
+            qBad("Yes. Watch-only means public.", "Wrong.")
+          ]
         }
       ]);
     }
@@ -5720,7 +5912,9 @@
             ? "Do not paste a private descriptor"
             : id === 32
               ? "Do not fund XOR parts"
-              : "Do not send coins",
+              : id === 30
+                ? "Do not fund this child"
+                : "Do not send coins",
         "This is practice. Then you may open the next track."
       ) +
       '<label class="check"><input type="checkbox" id="v2Exit"/> ' +
@@ -5730,7 +5924,9 @@
           ? "I will not paste a private descriptor"
           : id === 32
             ? "I will not fund XOR parts"
-            : "I will not send coins to these addresses") +
+            : id === 30
+              ? "I will not fund this child. Parent backup is still required."
+              : "I will not send coins to these addresses") +
       "</label>" +
       '<div class="row"><button type="button" class="btn" id="v2Finish" disabled>Mark ' +
       (t ? t.title : "track") +
@@ -6564,17 +6760,75 @@
         paintDescFromPack(mem.woPack);
       });
     }
-    var xp = $("v2Xpub");
-    if (xp) xp.addEventListener("click", async function () {
-      var pack = await BIP39Lab.exportWatchOnly(mem.mnemonic, "", { network: "main" });
-      var k = (pack.keys || []).filter(function (x) { return x.purpose === 84; })[0] || pack.keys[0];
-      $("v2XpubOut").textContent = k.label + "\n" + k.key + "\n(no xprv)";
-      var xl = $("v2XpubList");
-      if (xl) {
-        xl.innerHTML = copyQrRowHtml(k.label, k.key);
-        wireCopyQr(xl);
-      }
+    document.querySelectorAll("[data-leak-kit]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-leak-kit");
+        var st = leakState();
+        st.kits[id] = true;
+        document.querySelectorAll("[data-leak-kit]").forEach(function (b) {
+          b.classList.toggle("is-on", !!st.kits[b.getAttribute("data-leak-kit")]);
+        });
+        var lines = {
+          forum: "Fail. A public thread keeps the account key. Strangers can list every future receive.",
+          support: "Fail. The help desk now has the camera on this account. That is not one invoice.",
+          public: "Fail. Cannot steal is not the same as private. The key still shows the gap.",
+          invoice: "Smaller leak. One receive string is this payment. It is not the whole account key."
+        };
+        var o = $("v2LeakKitOut");
+        var invoice = id === "invoice";
+        if (o) {
+          o.className = invoice ? "msg-warn" : "msg-bad";
+          o.textContent = lines[id] || "";
+        }
+        st.kitMsg = lines[id] || "";
+        if (pause) pause.disabled = !leakKitsDone();
+      });
     });
+    if ($("v2LeakGap")) {
+      $("v2LeakGap").addEventListener("click", async function () {
+        await ensurePhrase();
+        var st = leakState();
+        var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", {
+          network: "test",
+          count: 5,
+          account: 0,
+          change: 0
+        });
+        st.gapRows = r.rows || [];
+        st.gap = st.gapRows.length >= 5;
+        var tb = document.querySelector("#v2LeakTable tbody");
+        if (tb) {
+          tb.innerHTML = st.gapRows
+            .map(function (row, i) {
+              var addr = row.bip84_p2wpkh || row.address || "";
+              return "<tr><td>" + i + "</td><td><code>" + addr + "</code></td></tr>";
+            })
+            .join("");
+        }
+        var o = $("v2LeakGapOut");
+        if (o) {
+          o.className = st.gap ? "msg-ok" : "msg-bad";
+          o.textContent = st.gap
+            ? "Five future receives from this card. Anyone with the viewing key can build this list. UC5 already exported the key."
+            : "Could not derive.";
+        }
+        st.gapMsg = o ? o.textContent : "";
+        if (pause) pause.disabled = !(st.gap && st.spendFail);
+      });
+    }
+    if ($("v2LeakSpend")) {
+      $("v2LeakSpend").addEventListener("click", function () {
+        var st = leakState();
+        st.spendFail = true;
+        var o = $("v2LeakGapOut");
+        if (o) {
+          o.className = "msg-bad";
+          o.textContent = "Fail. The viewing key cannot sign. Coins stay put. The gap list still leaked. No Sign on this tab.";
+        }
+        st.gapMsg = o ? o.textContent : "";
+        if (pause) pause.disabled = !(st.gap && st.spendFail);
+      });
+    }
     document.querySelectorAll("[data-cs-gen]").forEach(function (btn) {
       btn.addEventListener("click", async function () {
         var i = parseInt(btn.getAttribute("data-cs-gen"), 10);
@@ -7949,6 +8203,107 @@
           out.textContent = mem.descExplain;
         }
         if (pause) pause.disabled = !mem.descExplained;
+      });
+    }
+    if ($("v2Bip85Mint")) {
+      $("v2Bip85Mint").addEventListener("click", async function () {
+        var B = window.BIP39Lab;
+        var o = $("v2Bip85MintOut");
+        var note = $("v2Bip85ParentNote");
+        if (!B || typeof B.deriveBip85Bip39Child !== "function") {
+          if (o) o.textContent = "BIP-85 API missing. Hard-refresh the page.";
+          return;
+        }
+        var n = xorWordCount(mem.mnemonic);
+        var throwaway = !(n === 12 || n === 24);
+        if (throwaway) {
+          mem.mnemonic = await B.generateMnemonic(12);
+        }
+        try {
+          var pack = B.deriveBip85Bip39Child(mem.mnemonic, { index: 0 });
+          mem.bip85 = {
+            child: pack.mnemonic,
+            path: pack.path,
+            parent: mem.mnemonic,
+            throwaway: throwaway,
+            parentAck: false
+          };
+          if (note) {
+            note.textContent = throwaway
+              ? "Throwaway 12-word parent generated for this pad. Not a funded seed."
+              : "Using the live practice parent already on this tab.";
+          }
+          if (o) {
+            o.className = "msg-ok";
+            o.textContent = "Child minted. Next pad shows the words and path. Do not fund.";
+          }
+          if (pause) pause.disabled = false;
+        } catch (err) {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = String(err && err.message ? err.message : err);
+          }
+        }
+      });
+    }
+    if ($("v2Bip85Parent")) {
+      $("v2Bip85Parent").addEventListener("click", function () {
+        mem.bip85 = mem.bip85 || {};
+        mem.bip85.parentAck = true;
+        var o = $("v2Bip85NeedOut");
+        if (o) {
+          o.className = "msg-ok";
+          o.textContent =
+            "Parent backup is still required. Losing the parent loses this child. Do not fund.";
+        }
+        if (pause) pause.disabled = !(mem.bip85.child && mem.bip85.parentAck);
+      });
+    }
+    if ($("v2Bip85Copy")) {
+      $("v2Bip85Copy").addEventListener("click", function () {
+        var t = (mem.bip85 && mem.bip85.child) || "";
+        if (t && navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(t).catch(function () {});
+        }
+      });
+    }
+    if ($("v2UtxoPick")) {
+      $("v2UtxoPick").addEventListener("click", function () {
+        mem.utxo = mem.utxo || {};
+        mem.utxo.picked = "a";
+        mem.utxo.shownChange = false;
+        document.getElementById("v2UtxoPick").classList.add("is-on");
+        var o = $("v2UtxoPickOut");
+        if (o) o.textContent = "Selected: 0.05 coin. Next pad pays 0.04 and returns change.";
+        if (pause) pause.disabled = false;
+      });
+    }
+    if ($("v2UtxoChange")) {
+      $("v2UtxoChange").addEventListener("click", async function () {
+        await ensurePhrase();
+        mem.utxo = mem.utxo || {};
+        var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", {
+          network: "test",
+          count: 1,
+          account: 0,
+          change: 1
+        });
+        var addr = r.rows && r.rows[0] ? r.rows[0].bip84_p2wpkh || "" : "";
+        var path =
+          typeof BIP39Lab.formatPath === "function"
+            ? BIP39Lab.formatPath(84, "test", 0, 1, 0)
+            : "m/84'/1'/0'/1/0";
+        mem.utxo.changeAddr = addr;
+        mem.utxo.changePath = path;
+        mem.utxo.shownChange = !!addr;
+        mem.utxo.parentWords = mem.mnemonic;
+        var out = $("v2UtxoChangeOut");
+        if (out) out.innerHTML = "<code>" + addr + "</code>";
+        var p = $("v2UtxoPath");
+        if (p) p.textContent = "Change path " + path + ". Words unchanged. Pay 0.04 from 0.05. Leftover 0.01 on change.";
+        var w = $("v2UtxoWords");
+        if (w) w.textContent = "Practice words unchanged: " + xorWordCount(mem.mnemonic) + " words on this card.";
+        if (pause) pause.disabled = !mem.utxo.shownChange;
       });
     }
     function paintTl() {

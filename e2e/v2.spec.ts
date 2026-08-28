@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.128-v2)", () => {
+test.describe("V2 use-case tracks (0.17.130-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -31,7 +31,7 @@ test.describe("V2 use-case tracks (0.17.128-v2)", () => {
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.128-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.130-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -1415,6 +1415,66 @@ test.describe("V2 use-case tracks (0.17.128-v2)", () => {
     await page.locator("#v2DescPaste").fill(String(pub || "wpkh(tpub/0/*)"));
     await page.locator("#v2DescExplain").click();
     await expect(page.locator("#v2DescExplainOut")).not.toContainText(/refus/i);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S54 UC9 leak kits, five future addresses, spend fails", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=9");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2LeakTeach")).toContainText(/no second export/i);
+    await expect(page.locator("#v2Xpub")).toHaveCount(0);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("[data-leak-kit]")).toHaveCount(4);
+    await page.locator("[data-leak-kit='forum']").click();
+    await expect(page.locator("#v2LeakKitOut")).toHaveClass(/msg-bad/);
+    await page.locator("[data-leak-kit='support']").click();
+    await page.locator("[data-leak-kit='public']").click();
+    await page.locator("[data-leak-kit='invoice']").click();
+    await expect(page.locator("#v2LeakKitOut")).toHaveClass(/msg-warn/);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2LeakGap")).toBeVisible();
+    await expect(page.locator("#v2Xpub")).toHaveCount(0);
+    await page.locator("#v2LeakSpend").click();
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    await page.locator("#v2LeakGap").click();
+    await expect(page.locator("#v2LeakTable tbody tr")).toHaveCount(5);
+    await expect(page.locator("#v2LeakTable")).toContainText(/tb1/i);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S55 UC30 mint practice child #0; child is not parent backup", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=30");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Uc30Teach")).toContainText(/not a backup of the parent/i);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2Bip85Mint").click();
+    await expect(page.locator("#v2Bip85MintOut")).toContainText(/Child minted/i);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2Bip85Card .ww")).toHaveCount(12);
+    await expect(page.locator("#v2Bip85Path")).toContainText(/child number 0/i);
+    await expect(page.locator("#v2Bip85Path")).toContainText(/83696968/);
+    await page.locator("#v2Bip85Parent").click();
+    await expect(page.locator("#v2Bip85NeedOut")).toContainText(/Parent backup is still required/i);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+    await expect(page.locator("a[href*='cardBip85']")).toBeVisible();
+  });
+
+  test("V2-S56 UC27 select 0.05 coin then change path folder 1", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=27");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Uc27Teach")).toContainText(/pieces/i);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2UtxoPick").click();
+    await expect(page.locator("#v2UtxoPickOut")).toContainText(/0\.05/);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2UtxoChange").click();
+    await expect(page.locator("#v2UtxoChangeOut")).toContainText(/tb1/i);
+    await expect(page.locator("#v2UtxoPath")).toContainText(/84'/);
+    await expect(page.locator("#v2UtxoPath")).toContainText(/1\/0/);
+    await expect(page.locator("#v2UtxoWords")).toContainText(/unchanged/i);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
