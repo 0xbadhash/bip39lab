@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 175 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.77 · Contract: 2 · Last aligned: 2026-08-28 · Scenarios: S0–S183 · Playwright S-ids: 175`
+`Product: 0.16.78 · Contract: 2 · Last aligned: 2026-08-28 · Scenarios: S0–S183 · Playwright S-ids: 175`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -1058,6 +1058,7 @@ V2-S50 UC7 same two SLIP-39 shares empty vs extra secret differ: PASS|FAIL —
 V2-S44 UC7 paste M shares and try recombine: PASS|FAIL —
 V2-S45 UC7 try two SLIP-39 share lists rebuild hex: PASS|FAIL —
 V2-S46 UC14 +10 d6 (fast) and send pad to First wallet: PASS|FAIL —
+V2-S51 UC18 heir kits, map packet, open while alive: PASS|FAIL —
 
 Playwright S-id index (keep in sync with e2e/*.ts): S0 S0b S0c S1 S10 S100 S101 S102 S103 S104 S105 S106 S107 S108 S11 S110 S111 S112 S113 S114 S115 S116 S117 S118 S119 S11b S12 S120 S121 S12b S130 S131 S132 S133 S134 S135 S13b S13c S13d S14 S140 S141 S142 S143 S144 S145 S15 S150 S151 S152 S153 S154 S15b S16 S160 S161 S162 S163 S164 S165 S166 S17 S170 S171 S172 S173 S174 S17b S18 S180 S181 S182 S183 S18b S18c S19 S1b S2 S20 S20b S21 S22 S23 S24 S25 S26 S27 S28 S29 S2b S3 S30 S31 S32 S33 S34 S35 S36 S37 S38 S39 S39b S4 S40 S40b S41 S42 S43 S44 S44b S45 S46 S47 S48 S48b S49 S5 S50 S51 S52 S53 S54 S55 S56 S57 S57b S57c S58 S59 S6 S60 S60b S61 S62 S63 S64 S65 S66 S67 S68 S69 S7 S70 S71 S72 S73 S74 S75 S76 S77 S78 S79 S8 S80 S81 S82 S83 S84 S85 S86 S87 S88 S89 S9 S90 S91 S92 S93 S95 S96 S98 S99 V2-S0 V2-S1 V2-S2 V2-S3 V2-S4 V2-S6 V2-S7 V2-S8 V2-S9 V2-S10 V2-S11 V2-S12 V2-S13 V2-S14 V2-S15 V2-S16 V2-S17 V2-S18 V2-S19 V2-S20 V2-S21 V2-S22 V2-S23 V2-S24 V2-S25 V2-S26 V2-S27 V2-S28 V2-S29 V2-S30 V2-S31 V2-S32 V2-S33 V2-S34 V2-S35 V2-S36 V2-S37
 

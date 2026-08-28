@@ -1,12 +1,12 @@
-# Behavior contract — 0.16.77 UC8 extra named txs
+# Behavior contract — 0.16.78 UC18 heir drill
 
-- **Target:** `/v2/` UC8 inspect
+- **Target:** `/v2/?uc=18`
 
 ## User tasks
 
-1. See six named txs including OP_RETURN, Inscription 0, Runestone.
-2. Inspect offline via classroom snap; extra data in live pane.
-3. Story stays in blue `#v2TxStory`.
+1. Tap four failing heir kits; Next stays off until all four.
+2. Build a map packet (shape + desc/where/date; refuse seed/pp/chat).
+3. Fail a heir try, then sit-with-them only if packet OK.
 
 ## Must not
-- Sign / fund / mint runes
+- Sign / fund / will / legal counsel

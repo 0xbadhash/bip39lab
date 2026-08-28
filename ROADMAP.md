@@ -72,6 +72,13 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [DONE] V2 UC18 heir object drill
+- **Status:** done
+- **Priority:** P0
+- **Spec:** `.agents/specs/2026-08-28-v2-uc18-heir-drill.md`
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g "V2-S51"`
+- **Notes:** grill-me complete; chip 0.17.127-v2
+
 ### [DONE] V2 UC8 extra named txs (OP_RETURN / inscription / rune)
 - **Status:** done
 - **Priority:** P0

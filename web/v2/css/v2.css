@@ -1274,6 +1274,18 @@ td .v2-pp-est {
 @media (max-width: 720px) {
   .v2-hold-split { grid-template-columns: 1fr; }
 }
+.v2-inh-grid {
+  grid-template-columns: 1fr 1fr;
+}
+#v2InhPackOut {
+  white-space: pre-wrap;
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line, rgba(0,0,0,0.18));
+  border-radius: 8px;
+  font-size: 0.88rem;
+  background: var(--panel, #111820);
+}
 @media (max-width: 640px) {
   .v2-hw-grid { grid-template-columns: 1fr; }
 }

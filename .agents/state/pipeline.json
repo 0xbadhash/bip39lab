@@ -1,9 +1,9 @@
 {
   "card_id": null,
-  "note": "init after v0.16.77 docs sync",
-  "phase": "init",
+  "note": "ready for review 0.16.78",
+  "phase": "ready_for_review",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-28-v2-uc8-data-txs.md",
-  "task": "0.16.77 UC8 extra named txs",
+  "spec_id": ".agents/specs/2026-08-28-v2-uc18-heir-drill.md",
+  "task": "0.16.78 UC18 heir drill",
   "waiver": null
 }

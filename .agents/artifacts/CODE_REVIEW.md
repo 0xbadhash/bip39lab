@@ -1,6 +1,6 @@
 # CODE-REVIEW
 
-command: `/code_review` 0.16.77 UC8 extra named txs
+command: `/code_review` 0.16.78 UC18 heir drill
 base: origin/master
 secrets: clean
 
@@ -8,19 +8,19 @@ secrets: clean
 None.
 
 ## Findings rejected
-- **v2-app.js already ≫ 1k lines.** Pre-existing. Decode helpers sit next to `paintTxInspect` / `PSBT_EX_TX`. Splitting a module this ship would mix a refactor with curriculum. Follow-up: extract inspect helpers later, not in this dual-stamp.
+- **v2-app.js ≫ 1k lines.** Pre-existing. UC18 helpers sit next to the track. Extract later.
 
 ## P0 count
 0
 
 ## Follow-ups
-Optional extract of UC8 inspect helpers.
+UC21 / UC24 / UC25 still lecture-thin (out of this ship).
 
 ## Smoke
-V2-S41 S41b S41c this session.
+V2-S51 passed this session.
 
 ## Things that look bad but are actually fine
-1. Dual stamp 0.16.77 vs 0.17.126-v2
+1. Dual stamp 0.16.78 vs 0.17.127-v2
 2. leftover scripts uncommitted
-3. Classroom snaps are not live chain bytes
-4. innerHTML teachBox unchanged
+3. `ucJob` special-case like UC20
+4. innerHTML static teach strings

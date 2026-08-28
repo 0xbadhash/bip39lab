@@ -3,18 +3,18 @@
 Blockers: 0. Obsolete Tier A: 0.
 
 ### Security Guru
-none — same leak-ack + `/api/mempool` then mempool.space; no mnemonic persist; no Sign.
+none — no new fetch; kit clicks do not persist mnemonic; no Sign.
 
 ### Maintainability Expert
-none blocking — new rows are data; decode is localized.
+none blocking — `mem.inh` reset in `startTrack`.
 
 ### Obsolete / cleanup (scoped)
-- Tier A: none
+- Tier A: none (old `#v2InhChat` / checkbox path removed)
 
 ### Domain Specialist
-none — OP_RETURN ASCII vs witness `ord` vs OP_13 are distinct; rune 0 skipped (zero txid).
+none — missing 25th, 1-of-3, packet ≠ seed+pp, open-while-alive vs will are distinct from UC16/UC33.
 
 ## Things that look bad but are actually fine
 1. Dual stamp
-2. Six buttons vs “three examples” copy elsewhere
+2. Five quiz items vs three on older job tracks
 3. No Sign

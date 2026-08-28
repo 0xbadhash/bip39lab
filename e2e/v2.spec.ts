@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.126-v2)", () => {
+test.describe("V2 use-case tracks (0.17.127-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -1362,4 +1362,36 @@ test.describe("V2 use-case tracks (0.17.126-v2)", () => {
     }
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
+
+  test("V2-S51 UC18 heir kits, map packet, open while alive", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=18");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#trackBody h2")).toContainText(/Heirs fail on objects/i);
+    await expect(page.locator("#v2InhTeach")).toContainText(/not probate/i);
+    await expect(page.locator("[data-inh-kit]")).toHaveCount(4);
+    await page.locator("[data-inh-kit='chat']").click();
+    await expect(page.locator("#v2InhKitOut")).toContainText(/Chat is a copy/i);
+    await page.locator("[data-inh-kit='nopass']").click();
+    await expect(page.locator("#v2InhKitOut")).toContainText(/extra secret/i);
+    await page.locator("[data-inh-kit='onekey']").click();
+    await page.locator("[data-inh-kit='later']").click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2InhPackTeach")).toContainText(/not a second copy/i);
+    await page.locator("[data-inh-shape='keys']").click();
+    await page.locator("[data-inh-pack='desc']").click();
+    await page.locator("[data-inh-pack='where']").click();
+    await page.locator("[data-inh-pack='date']").click();
+    await page.locator("#v2InhBuild").click();
+    await expect(page.locator("#v2InhPackOut")).toContainText(/Packet OK/i);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2InhTryLive").click();
+    await expect(page.locator("#v2InhLiveOut")).toContainText(/Fail at least once/i);
+    await page.locator("#v2InhTryNopass").click();
+    await expect(page.locator("#v2InhLiveOut")).toHaveClass(/msg-bad/);
+    await page.locator("#v2InhTryLive").click();
+    await expect(page.locator("#v2InhLiveOut")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
 });

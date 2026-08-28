@@ -73,7 +73,7 @@ V2 reuses `bip39lab.bundle.js` + `shamir-core.js`. Gaps are surface, not a secon
 - **P0–P2 tracks UC16–UC31** are interactive labs (not lectures). Picker **UC1–UC31**.
 - **UC16** restore drill: hide card, type words, checksum + same address.
 - **UC17** amount tiers: 0.001 phone · 0.184 HWW · 2.0 2-of-3; exchange/all-phone traps.
-- **UC18** inheritance: sealed packet vs chat; open-while-alive; not legal counsel.
+- **UC18** if I cannot speak: four failing heir kits; packet is a map (not seed+25th); open-while-alive after a fail; not a will.
 - **UC19** first receive: test address + watch second view + simulated **0.000184 tBTC**; Network dock; never fund practice mainnet.
 - **P1** UC20 metal · UC21 collab · UC22 ceremony · UC23 air-gap loop (tab never signs) · UC24 geo keys · UC25 annual rehearsal.
 - **P2** UC26 own node (no node in-tab) · UC27 UTXO/change · UC28 CoinJoin agnostic · UC29 decoy PP (not advice) · UC30 BIP-85 (classic SoT) · UC31 SLIP-39 dock (`/slip39.html`; UC7 also has in-tab practice SLIP-39).

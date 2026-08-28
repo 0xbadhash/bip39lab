@@ -458,7 +458,7 @@
     { id: 15, level: "Beginner", title: "Pad then a 25th word", job: "Roll the pad first. A longer extra secret does not fix a short pad.", done: "You rolled the pad first, then added a 25th word. A longer extra secret does not fix a weak pad." },
     { id: 16, level: "Starter", title: "Prove the backup works", job: "Hide the card. Type from paper. Same receive address.", done: "Same receive address from typed words. No photo. Practice phrase only." },
     { id: 17, level: "Beginner", title: "Choose setup by amount", job: "Match daily, mid, and large to different objects.", done: "Daily on a hot spend. Mid on hardware. Large as 2-of-3. Not all on an exchange." },
-    { id: 18, level: "Intermediate", title: "If I cannot speak", job: "Name who holds what if you cannot speak.", done: "Holders named. You practiced opening while alive. No seed in chat. Not legal advice." },
+    { id: 18, level: "Intermediate", title: "If I cannot speak", job: "Watch an heir fail on missing objects while you can still fix it.", done: "You saw chat, a missing extra secret, and one-of-three keys fail. The packet holds a map, not the live seed. Not a will." },
     { id: 19, level: "Beginner", title: "See a first receive", job: "Show a practice receive, then a second watch view.", done: "Same address on two views. Unknown is not zero. Never fund this practice phrase." },
     { id: 20, level: "Beginner", title: "Metal backup", job: "Paper burns. Pick a metal that survives fire and flood — and know which metals fail.", done: "You can name a safe metal, reject aluminium, accept 4-letter stamps, and still refuse any photo of the plate." },
     { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold two keys. A partner holds one.", done: "You can say who can freeze, who can steal, and how that differs from friends 2-of-3." },
@@ -508,7 +508,7 @@
     15: { is: "Roll the pad first. Then maybe an extra secret.", isnt: "A longer extra secret does not fix a short pad." },
     16: { is: "Hide the card. Type from paper. Same receive address.", isnt: "Do not photograph the card. Do not use a funded phrase." },
     17: { is: "Match how much to which object.", isnt: "Do not put daily, mid, and large all on an exchange." },
-    18: { is: "Name who holds what if you cannot speak.", isnt: "Do not put a seed in chat. This is not legal counsel." },
+    18: { is: "Rehearse the objects an heir needs. Fail in front of you.", isnt: "Do not put a seed in chat. This is not a will or legal counsel." },
     19: { is: "A practice receive, then a second watch view.", isnt: "Do not fund this practice phrase on mainnet." },
     20: { is: "Practice choosing a fire- and flood-resistant object for a funded seed.", isnt: "A shop, a product review site, or permission to photograph any plate." },
     21: { is: "You hold two keys. A partner or service holds one.", isnt: "Not the same threat model as three friends DIY." },
@@ -878,7 +878,7 @@
       15: ["Pad + words", "Add passphrase", "Quiz", "Finish"],
       16: ["Hide the card", "Type from paper", "Quiz", "Finish"],
       17: ["How much", "Place amounts", "Quiz", "Finish"],
-      18: ["Name holders", "Open while alive", "Quiz", "Finish"],
+      18: ["Heirs fail on objects", "Build the packet", "Open while alive", "Quiz", "Finish"],
       19: ["Receive address", "Watch + credit", "Quiz", "Finish"],
       20: ["Paper fails", "Metals compared", "4 letters are enough", "Solid plate rules", "Quiz", "Finish"],
       21: ["You hold two", "Name freeze vs steal", "Quiz", "Finish"],
@@ -919,7 +919,7 @@
       15: ["Pad is the source", "Passphrase extra", "Does not fix pad"],
       16: ["Hide the screen", "Checksum", "Same address"],
       17: ["Daily hot", "Mid hardware", "Large 2-of-3"],
-      18: ["Sealed packet", "2-of-3 people", "Not legal counsel"],
+      18: ["Missing objects", "Packet is a map", "Open while alive"],
       19: ["Test address", "Second view", "Unknown is not zero"],
       20: ["Paper fails", "Aluminium bad · stainless good", "Plate is still secret"],
       21: ["You hold 2", "Service can freeze", "Not DIY same threat"],
@@ -979,6 +979,7 @@
     mem.xorAll = false;
     mem.tl = { armed: false, ticks: 0, expired: false };
     mem.tlHeirTried = false;
+    mem.inh = null;
     mem.descAck = false;
     mem.elBip = false;
     mem.elNote = "";
@@ -1212,10 +1213,11 @@
       ]
     },
     18: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 2) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc6-atom-three-phrases.svg", "People hold keys or sealed packets", "<strong>Plan · Who holds</strong><br/>Heir + you + lawyer/safe. Descriptor travels with the keys."),
-        atom(2, 1, "assets/uc6-atom-mofn.svg", "Open the packet while you are alive", "<strong>Practice · Open while alive</strong><br/>A dry-run proves someone can reconstruct without a chat seed."),
-        atom(3, 2, "assets/uc11-atom-not-a-wallet.svg", "This is not legal counsel", "<strong>Review · Not counsel</strong><br/>The lab does not draft a will. It rehearses the objects.")
+        atom(1, 0, "assets/uc6-atom-three-phrases.svg", "Heirs fail on missing objects", "<strong>Plan · Missing kit</strong><br/>Words without the extra secret. One key of three. A chat screenshot. Fail now, not later."),
+        atom(2, 1, "assets/uc6-atom-mofn.svg", "The packet is a map, not a second seed", "<strong>Practice · Packet</strong><br/>Descriptor, where keys live, next drill date. Never the live words plus the extra secret in the same envelope."),
+        atom(3, 3, "assets/uc11-atom-not-a-wallet.svg", "Open it while you can still talk", "<strong>Review · Alive</strong><br/>This tab is not a will. UC16 restores. UC6 is keys. UC7 is shares. UC33 is a timer.")
       ]
     },
     19: {
@@ -1557,9 +1559,11 @@
         { q: "Should daily, mid, and large amounts all live on the same phone?", opts: [qOk("No. Different amounts should live on different objects.", "Correct. Brand on a box does not make a phone cold."), qBad("Yes, if the app’s box said hardware.", "Wrong. Keys on a phone are hot.")] }
       ],
       18: [
-        { q: "Should you send the recovery words in a family chat?", opts: [qOk("No. Chat is not a vault. Use a sealed packet or named key holders.", "Correct."), qBad("Yes, if the group is only family.", "Wrong. Chat apps are not a backup.")] },
-        { q: "When should you practise opening the backup?", opts: [qOk("While you are alive, so you can still fix mistakes.", "Correct. A dry run now beats a first try after death."), qBad("Wait until after death so heirs can figure it out.", "Wrong. Then nobody can ask you what went wrong.")] },
-        { q: "Is this track legal advice for a will?", opts: [qOk("No. It only names objects and holders. It is not a lawyer.", "Correct."), qBad("Yes. A court should follow these screens.", "Wrong. This is a teaching lab, not legal counsel.")] }
+        { q: "They have the twelve words. You used a hidden extra secret. They do not. What happens?", opts: [qOk("They open an empty vault. The funded one stays locked.", "Correct. The extra secret is a second object. If it dies with you, so does that vault."), qBad("The twelve words are enough. The extra secret is only a PIN.", "Wrong. Empty extra secret and a real extra secret are two different wallets.")] },
+        { q: "What belongs in the sealed packet?", opts: [qOk("A map: who holds which key or share, the policy string, and a date to open it while you are alive.", "Correct. The packet is instructions, not a second copy of the live seed plus extra secret."), qBad("The live recovery words and the extra secret, together, emailed to the family.", "Wrong. That is a leak, and one envelope then holds the whole vault.")] },
+        { q: "Heir has one key of a 2-of-3 vault. Can they spend?", opts: [qOk("No. One key cannot meet two-of-three.", "Correct. Same trap as one Shamir share: a piece is not the vault."), qBad("Yes. Any family key should be enough in an emergency.", "Wrong. Then it was never 2-of-3.")] },
+        { q: "When should someone first try to open the backup?", opts: [qOk("While you can still talk, so a missing object shows up now.", "Correct."), qBad("After you cannot speak, so it stays secret until then.", "Wrong. Then nobody can ask you which object is missing.")] },
+        { q: "Is this track a will?", opts: [qOk("No. It rehearses objects. It is not legal counsel.", "Correct. A court does not follow these screens."), qBad("Yes. Screenshot these pads for probate.", "Wrong.")] }
       ],
       19: [
         { q: "Should you send real bitcoin to this practice address?", opts: [qOk("Never. This phrase is for teaching only.", "Correct."), qBad("Yes, a small amount is fine to test.", "Wrong. Do not fund a practice phrase.")] },
@@ -1652,11 +1656,11 @@
 
   async function ucJob(id, step) {
     if (id === 20) return uc20(step);
+    if (id === 18) return uc18(step);
     if (step === 2) return quizBank(jobQuizzes(id));
     if (step === 3) return finishHtml(id);
     if (id === 16) return uc16(step);
     if (id === 17) return uc17(step);
-    if (id === 18) return uc18(step);
     if (id === 19) return uc19(step);
     if (id === 21) return uc21(step);
     if (id === 22) return uc22(step);
@@ -1756,27 +1760,160 @@
     );
   }
 
+  function inhState() {
+    if (!mem.inh) {
+      mem.inh = {
+        kits: {},
+        shape: "",
+        pack: { desc: false, where: false, date: false, seed: false, pp: false, chat: false },
+        packed: false,
+        failTry: false,
+        liveOk: false
+      };
+    }
+    return mem.inh;
+  }
+
+  function inhKitsDone() {
+    var k = inhState().kits;
+    return !!(k.chat && k.nopass && k.onekey && k.later);
+  }
+
+  function inhPackOk() {
+    var st = inhState();
+    var p = st.pack;
+    return !!(st.shape && p.desc && p.where && p.date && !p.seed && !p.pp && !p.chat);
+  }
+
   function uc18(step) {
-    if (step === 0) {
-      return pad(
-        "<h2>Who holds what</h2>" +
-        doDont("Name you, an heir, and a lawyer or safe. Keep instructions with the keys, not a live seed.", "Do not put a seed in chat or email.") +
-        '<div class="v2-hold-split">' +
-        '<div class="v2-hold-col v2-hold-col-one"><h3>Sealed packet</h3><p>Paper instructions, not the live seed in chat.</p></div>' +
-        '<div class="v2-hold-col v2-hold-col-ms"><h3>2-of-3 people</h3><p>You · heir · lawyer/safe. Independent keys.</p></div>' +
-        "</div>" +
-        '<button type="button" class="btn secondary" id="v2InhChat">Try sending the seed in email</button>' +
-        '<div id="v2InhOut"></div>' +
-        pauseBtn("Name the holders. Next: open while alive.", false)
+    var st = inhState();
+    function kitBtn(id, title, teaser) {
+      var on = !!st.kits[id];
+      return (
+        '<button type="button" class="v2-metal-card v2-inh-kit' +
+        (on ? " is-on" : "") +
+        '" data-inh-kit="' +
+        id +
+        '"><strong>' +
+        title +
+        "</strong><span>" +
+        teaser +
+        "</span></button>"
       );
     }
-    return pad(
-      "<h2>Open while alive</h2>" +
-      doDont("Dry-run reconstruction now.", "Do not wait until nobody can debug it. This is not legal counsel.") +
-      '<label class="check"><input type="checkbox" id="v2InhLive"/> We opened the packet / combined 2-of-3 while I am alive (practice).</label>' +
-      '<div id="v2InhLiveOut"></div>' +
-      pauseBtn("I rehearsed opening while alive", true)
-    );
+    function shapeBtn(id, title, teaser) {
+      return (
+        '<button type="button" class="v2-metal-card' +
+        (st.shape === id ? " is-on" : "") +
+        '" data-inh-shape="' +
+        id +
+        '"><strong>' +
+        title +
+        "</strong><span>" +
+        teaser +
+        "</span></button>"
+      );
+    }
+    function packBtn(id, title, teaser) {
+      var on = !!st.pack[id];
+      return (
+        '<button type="button" class="v2-metal-card v2-inh-pack' +
+        (on ? " is-on" : "") +
+        '" data-inh-pack="' +
+        id +
+        '"><strong>' +
+        title +
+        "</strong><span>" +
+        teaser +
+        "</span></button>"
+      );
+    }
+    if (step === 0) {
+      return pad(
+        "<h2>Heirs fail on objects</h2>" +
+        doDont(
+          "Tap each broken kit. Next stays off until you have seen the four failures.",
+          "Do not treat this as a will. Do not put a seed in chat."
+        ) +
+        teachBox(
+          "Classroom — if I cannot speak",
+          "<em>What it is:</em> a dry-run of objects, not probate.<br/><em>Why:</em> people do not fail because they did not care. They fail because a piece is missing and you are not there to name it.<br/><em>When:</em> while you can still talk.<br/><em>How:</em> the buttons below are lab kits. The red/green line is the result.",
+          "v2InhTeach"
+        ) +
+        "<h3>Heir kits (lab)</h3>" +
+        '<div class="v2-metal-grid v2-inh-grid">' +
+        kitBtn("chat", "Family chat", "Twelve words in a group thread") +
+        kitBtn("nopass", "Words, no extra secret", "You used a 25th. They did not get it.") +
+        kitBtn("onekey", "One key of three", "2-of-3 vault. Heir holds one.") +
+        kitBtn("later", "First try later", "Nobody opens anything until you cannot speak") +
+        "</div>" +
+        '<div id="v2InhKitOut" class="control-help">' +
+        (st.kitMsg || "Tap a kit. The result line names the missing object.") +
+        "</div>" +
+        pauseBtn("I saw the four failures", !inhKitsDone())
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Build the packet</h2>" +
+        doDont(
+          "Pick a shape. Put a map in the envelope: policy, where objects live, next drill date.",
+          "Do not put the live words and the extra secret in the same packet. Do not paste a chat screenshot."
+        ) +
+        teachBox(
+          "Classroom — packet vs seed",
+          "<em>What it is:</em> sealed instructions that travel with the keys, not a second copy of the vault.<br/><em>Why:</em> one envelope that holds words plus extra secret is the whole wallet in one fire or one leak.<br/><em>How:</em> shape and ticks below are lab objects. The table is the result.",
+          "v2InhPackTeach"
+        ) +
+        "<h3>Custody shape</h3>" +
+        '<div class="v2-metal-grid">' +
+        shapeBtn("packet", "One signer, sealed map", "Metal / paper stays where you put it. Packet says how to find it.") +
+        shapeBtn("keys", "2-of-3 keys (UC6)", "Three people. Each holds a full phrase. Packet holds the descriptor.") +
+        shapeBtn("shares", "2-of-3 shares (UC7)", "Shares rebuild one secret. Packet says how to combine. Shares stay apart.") +
+        "</div>" +
+        "<h3>Envelope contents (toggle)</h3>" +
+        '<div class="v2-metal-grid v2-inh-grid">' +
+        packBtn("desc", "Policy / descriptor", "Need — which script, which keys") +
+        packBtn("where", "Where each object lives", "Need — home / elsewhere / person") +
+        packBtn("date", "Next open-while-alive date", "Need — a calendar, not a hope") +
+        packBtn("seed", "Live recovery words", "Never — that is the vault") +
+        packBtn("pp", "Extra secret (25th)", "Never in the same envelope as the words") +
+        packBtn("chat", "Chat screenshot", "Never — that is a leak") +
+        "</div>" +
+        '<button type="button" class="btn" id="v2InhBuild">Build practice packet</button>' +
+        '<pre id="v2InhPackOut" class="v2-pre">' +
+        (st.packText || "Result: packet table after you build.") +
+        "</pre>" +
+        pauseBtn("Packet is a map", !st.packed || !inhPackOk())
+      );
+    }
+    if (step === 2) {
+      return pad(
+        "<h2>Open while alive</h2>" +
+        doDont(
+          "Fail at least once, then sit with them and open the real kit.",
+          "Do not wait until you cannot debug it. A success label is not a signed spend. Not legal counsel."
+        ) +
+        teachBox(
+          "Classroom — watch them fail",
+          "<em>What it is:</em> the heir tries incomplete kits while you can still name the missing piece.<br/><em>Why:</em> UC16 proves you can restore. This pad proves someone else can, with the objects you actually left.<br/><em>How:</em> red/green lines are lab results. UC33 is a timer. This is people.",
+          "v2InhLiveTeach"
+        ) +
+        "<h3>Heir tries (lab)</h3>" +
+        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
+        '<button type="button" class="btn secondary" id="v2InhTryChat">Try with the chat screenshot</button>' +
+        '<button type="button" class="btn secondary" id="v2InhTryNopass">Try words, no extra secret</button>' +
+        '<button type="button" class="btn secondary" id="v2InhTryOne">Try with one key</button>' +
+        '<button type="button" class="btn" id="v2InhTryLive">Sit with them (packet + enough objects)</button>' +
+        "</div>" +
+        '<div id="v2InhLiveOut" class="control-help">' +
+        (st.liveMsg || "Fail first. Then open it with you in the room.") +
+        "</div>" +
+        pauseBtn("I watched them fail, then open it", !(st.failTry && st.liveOk))
+      );
+    }
+    if (step === 3) return quizBank(jobQuizzes(18));
+    return finishHtml(18);
   }
 
   async function uc19(step) {
@@ -7372,24 +7509,119 @@
         if (pause) pause.disabled = !ok;
       });
     });
-    if ($("v2InhChat")) {
-      $("v2InhChat").addEventListener("click", function () {
-        var o = $("v2InhOut");
+    document.querySelectorAll("[data-inh-kit]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-inh-kit");
+        var st = inhState();
+        st.kits[id] = true;
+        document.querySelectorAll("[data-inh-kit]").forEach(function (b) {
+          b.classList.toggle("is-on", !!st.kits[b.getAttribute("data-inh-kit")]);
+        });
+        var lines = {
+          chat: "Fail. Chat is a copy you cannot unsend. The words are now in someone else's backup of the thread.",
+          nopass: "Fail. They rebuild the empty extra-secret wallet. The funded vault stays shut. The extra secret is a second object.",
+          onekey: "Fail. One key cannot meet two-of-three. One Shamir share cannot rebuild the secret either.",
+          later: "Fail. The first missing object shows up when you cannot name it. Debug now."
+        };
+        var o = $("v2InhKitOut");
         if (o) {
           o.className = "msg-bad";
-          o.textContent = "Fail. Do not put a seed in email or chat. Use a sealed packet or key holders.";
+          o.textContent = lines[id] || "";
         }
+        st.kitMsg = lines[id] || "";
+        if (pause) pause.disabled = !inhKitsDone();
+      });
+    });
+    document.querySelectorAll("[data-inh-shape]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var st = inhState();
+        st.shape = btn.getAttribute("data-inh-shape") || "";
+        st.packed = false;
+        document.querySelectorAll("[data-inh-shape]").forEach(function (b) {
+          b.classList.toggle("is-on", b.getAttribute("data-inh-shape") === st.shape);
+        });
+        if (pause) pause.disabled = true;
+      });
+    });
+    document.querySelectorAll("[data-inh-pack]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var st = inhState();
+        var id = btn.getAttribute("data-inh-pack");
+        st.pack[id] = !st.pack[id];
+        st.packed = false;
+        btn.classList.toggle("is-on", !!st.pack[id]);
+        if (pause) pause.disabled = true;
+      });
+    });
+    if ($("v2InhBuild")) {
+      $("v2InhBuild").addEventListener("click", function () {
+        var st = inhState();
+        var p = st.pack;
+        var shapeLine =
+          st.shape === "keys"
+            ? "Shape: 2-of-3 keys. Packet holds the descriptor. People hold keys."
+            : st.shape === "shares"
+              ? "Shape: 2-of-3 shares. Packet holds how to combine. Shares stay apart."
+              : st.shape === "packet"
+                ? "Shape: one signer. Packet is a map to the metal/paper. Not a chat copy of the words."
+                : "Shape: none. Pick one.";
+        var lines = [
+          shapeLine,
+          "Policy / descriptor: " + (p.desc ? "yes" : "missing"),
+          "Where objects live: " + (p.where ? "yes" : "missing"),
+          "Next open-while-alive date: " + (p.date ? "yes" : "missing"),
+          "Live recovery words in envelope: " + (p.seed ? "YES — refuse" : "no (correct)"),
+          "Extra secret in same envelope: " + (p.pp ? "YES — refuse" : "no (correct)"),
+          "Chat screenshot: " + (p.chat ? "YES — refuse" : "no (correct)")
+        ];
+        if (p.seed && p.pp) {
+          lines.push("Refuse: words + extra secret in one envelope is the whole vault.");
+        }
+        var ok = inhPackOk();
+        lines.push(ok ? "Packet OK. Map only. Practice, not a will." : "Packet refused. Need shape + map ticks. Never seed, extra secret, or chat.");
+        st.packText = lines.join("\n");
+        st.packed = ok;
+        var pre = $("v2InhPackOut");
+        if (pre) pre.textContent = st.packText;
+        if (pause) pause.disabled = !ok;
       });
     }
-    if ($("v2InhLive")) {
-      $("v2InhLive").addEventListener("change", function () {
-        var o = $("v2InhLiveOut");
-        if ($("v2InhLive").checked) {
-          if (o) o.textContent = "Rehearsed while alive. Not legal counsel.";
-          if (pause) pause.disabled = false;
-        } else if (pause) pause.disabled = true;
-      });
+    function inhTry(kind) {
+      var st = inhState();
+      var o = $("v2InhLiveOut");
+      var msg = "";
+      var cls = "msg-bad";
+      if (kind === "chat") {
+        st.failTry = true;
+        msg = "Fail. The thread is not a vault. Anyone with the backup of the chat has the words.";
+      } else if (kind === "nopass") {
+        st.failTry = true;
+        msg = "Fail. They open the empty extra-secret wallet. The funded one never appears.";
+      } else if (kind === "one") {
+        st.failTry = true;
+        msg = "Fail. One key cannot spend a 2-of-3. Sit with them and name who holds the second key.";
+      } else if (kind === "live") {
+        if (!st.packed || !inhPackOk()) {
+          msg = "No. Build a valid packet on the previous pad first (map only, no seed in the envelope).";
+        } else if (!st.failTry) {
+          msg = "Fail at least once first. The lesson is the missing object, not a green tick.";
+        } else {
+          st.liveOk = true;
+          cls = "msg-ok";
+          msg = "Pass (practice). You watched them open the map while you can still name a missing object. Not a will. No Sign.";
+        }
+      }
+      st.liveMsg = msg;
+      if (o) {
+        o.className = cls;
+        o.textContent = msg;
+      }
+      if (pause) pause.disabled = !(st.failTry && st.liveOk);
     }
+    if ($("v2InhTryChat")) $("v2InhTryChat").addEventListener("click", function () { inhTry("chat"); });
+    if ($("v2InhTryNopass")) $("v2InhTryNopass").addEventListener("click", function () { inhTry("nopass"); });
+    if ($("v2InhTryOne")) $("v2InhTryOne").addEventListener("click", function () { inhTry("one"); });
+    if ($("v2InhTryLive")) $("v2InhTryLive").addEventListener("click", function () { inhTry("live"); });
     if ($("v2SimRecv")) {
       $("v2SimRecv").addEventListener("click", function () {
         mem.simRecv = true;
