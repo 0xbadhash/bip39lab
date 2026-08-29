@@ -16,12 +16,14 @@ def _idx(s: str, needle: str) -> int:
 
 def test_ac_1_shamir_order_and_try_colour() -> None:
     ids = [
+        "v2ShWc",
+        "v2ShPhrase",
         "v2ShStory",
         "v2ShMN",
         'id="v2Sh"',
         "v2ShTry",
-        "v2ShTryHelp",
         "v2ShCombine",
+        "v2ShTryHelp",
     ]
     pos = [_idx(APP, x) for x in ids]
     assert pos == sorted(pos)
@@ -33,11 +35,12 @@ def test_ac_2_slip_order_checklist() -> None:
     ids = [
         "Lab practice",
         "v2S39Story",
+        'id="v2S39"',
         "v2-share-line",
         "v2S39Try",
+        "v2S39Combine",
         "v2S39TryHelp",
         "v2S39Check",
-        "v2S39Combine",
     ]
     pos = [_idx(APP, x) for x in ids]
     assert pos == sorted(pos)
@@ -47,6 +50,7 @@ def test_ac_2_slip_order_checklist() -> None:
 
 def test_ac_3_css_and_one_line_shares() -> None:
     assert "button.btn.btn-try" in CSS
+    assert ".v2-try-row" in CSS
     assert ".v2-combine-right" in CSS
     assert ".v2-share-line" in CSS
     assert APP.count('class="v2-share-line" rows="1"') >= 3

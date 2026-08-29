@@ -42,22 +42,45 @@ button.btn.btn-try:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
+.v2-try-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.85rem;
+  margin: 0.35rem 0 0.15rem;
+}
+.v2-try-row .btn.btn-try {
+  margin: 0;
+}
 .v2-combine-right {
   display: flex;
   justify-content: flex-end;
   margin: 0.15rem 0 0.85rem;
 }
+.v2-try-row .v2-combine-right {
+  margin: 0 0 0 auto;
+}
 .v2-share-line,
 textarea.v2-share-line {
-  min-height: 2.05rem;
-  height: 2.05rem;
-  max-height: 2.2rem;
+  min-height: 2.15rem;
+  height: 2.15rem;
+  max-height: 2.15rem;
   resize: none;
   white-space: nowrap;
   overflow-x: auto;
-  line-height: 1.35;
-  padding-top: 0.35rem;
-  padding-bottom: 0.35rem;
+  overflow-y: hidden;
+  line-height: 1.25;
+  padding-top: 0.32rem;
+  padding-bottom: 0.32rem;
+  cursor: text;
+}
+textarea.out.v2-s39-print {
+  display: block;
+  width: 100%;
+  min-height: 9rem;
+  resize: vertical;
+  cursor: text;
 }
 .v2-s39-check li.is-off { color: var(--muted); }
 .v2-s39-pp {
@@ -1994,24 +2017,28 @@ pre.out.msg-warn {
   margin: 0 0 0.65rem;
   line-height: 1.45;
 }
-.v2-callout strong {
+.v2-callout > strong {
   display: block;
   margin: 0 0 0.25rem;
   font-size: 0.82rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
+.v2-callout .help-tip {
+  display: inline-flex;
+  vertical-align: middle;
+}
 .v2-callout.is {
   border-color: var(--ok);
   background: rgba(34, 160, 107, 0.12);
   border-left-width: 4px;
 }
-.v2-callout.is strong { color: var(--ok); }
+.v2-callout.is > strong { color: var(--ok); }
 .v2-callout.one-line {
   white-space: nowrap;
   overflow-x: auto;
 }
-.v2-callout.one-line strong {
+.v2-callout.one-line > strong {
   display: inline;
   margin: 0 0.35rem 0 0;
   font-size: inherit;
@@ -2028,19 +2055,19 @@ pre.out.msg-warn {
   background: var(--bad-soft);
   border-left-width: 4px;
 }
-.v2-callout.isnt strong { color: var(--bad); }
+.v2-callout.isnt > strong { color: var(--bad); }
 .v2-callout.done {
   border-color: var(--accent);
   background: var(--accent-soft);
   border-left-width: 4px;
 }
-.v2-callout.done strong { color: var(--focus); }
+.v2-callout.done > strong { color: var(--focus); }
 .v2-callout.warn {
   border-color: var(--warn);
   background: var(--warn-soft);
   border-left-width: 4px;
 }
-.v2-callout.warn strong { color: var(--warn); }
+.v2-callout.warn > strong { color: var(--warn); }
 .v2-pad > h2 + .v2-donot {
   margin-top: 0.45rem;
 }

@@ -1,12 +1,11 @@
 # BEHAVIOR-REPORT
 
-Surface: source-order AC + prior Playwright UC7 ids (S39/S40/S44/S45/S50).
-
 | Clause | Result |
 |--------|--------|
-| Shamir order classroom → split → Try → help → Combine | pass |
-| SLIP yellow → classroom → one-line shares → Try → checklist → Combine | pass |
-| Try coloured (`btn-try`) | pass |
+| UC1 one BIP-39 classroom + spec link + entropy teach | pass (S1) |
+| Paste random 12 English → checksum fail; golden works | pass (S27) |
+| Shamir odd-hex extra still match | pass (S44) |
+| UC16 12 default + 24 restore cells | pass (S17/S17b) |
 | No Sign | pass |
 
-Anti-cheat: Combine still requires minted shares (disabled until shares exist).
+Anti-cheat: invalid paste leaves card empty (`—`).

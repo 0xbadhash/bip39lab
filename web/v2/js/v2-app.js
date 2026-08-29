@@ -1441,7 +1441,25 @@
       .join("");
   }
 
-  function entropyHtml() {
+  function entropyTeachHtml() {
+    return teachBox(
+      "Classroom — what “Entropy 128 bits” means",
+      "Imagine a huge bag of secret coin-flips. How mixed-up that bag is — how hard it is to guess — is called entropy " +
+        inlineI(
+          "entropy",
+          "A grown-up word for “how random.” More entropy = harder to guess the words. It is not a second password and not a bitcoin address."
+        ) +
+        ". A 12-word list uses about 128 of those flips. A 24-word list uses about 256. More flips means a longer list that is harder to guess. This computer asks the operating system " +
+        inlineI(
+          "operating system",
+          "The program that runs your computer (Windows, macOS, Linux…). Here it is the mixer that picks the secret flips. That mixer is strong. A later dice game in this lab is only pretend-weak, for class."
+        ) +
+        " to mix the bag. The line under this box is a meter: 12 words → 128, 24 words → 256. Practice only. Do not send real money to these words.",
+      "v2EntropyWhat"
+    );
+  }
+
+  function entropyMeterHtml() {
     var n = mem.wordCount || 12;
     if (mem.mnemonic) {
       var wn = mem.mnemonic.trim().split(/\s+/).filter(Boolean).length;
@@ -1458,16 +1476,20 @@
       " bits</span>" +
       "<span> · " +
       n +
-      "-word BIP-39 English. Longer phrase = more random bits from the operating system. Practice only. Do not fund it.</span>" +
+      "-word English list. Meter: this many secret coin-flips of randomness from this computer. Longer list = more flips. Practice only.</span>" +
       "</p></div>"
     );
   }
 
+  function entropyHtml(withTeach) {
+    return (withTeach === false ? "" : entropyTeachHtml()) + entropyMeterHtml();
+  }
+
   function replaceOsEntropy() {
     var wrap = $("v2OsEnt");
-    var html = entropyHtml();
-    if (wrap) wrap.outerHTML = html;
-    else if ($("v2Entropy")) $("v2Entropy").outerHTML = html;
+    var meter = entropyMeterHtml();
+    if (wrap) wrap.outerHTML = meter;
+    else if ($("v2Entropy")) $("v2Entropy").outerHTML = meter;
   }
 
   function wordGridHtml(m, gridId) {
@@ -1697,6 +1719,14 @@
     return "";
   }
 
+  function restoreWordCount() {
+    var w = (mem.mnemonic || "").split(/\s+/).filter(Boolean);
+    if (w.length === 12 || w.length === 15 || w.length === 18 || w.length === 21 || w.length === 24) {
+      return w.length;
+    }
+    return mem.wordCount || 12;
+  }
+
   async function uc16(step) {
     if (step === 0) {
       return pad(
@@ -1704,15 +1734,16 @@
         doDont("Treat the numbered card as paper. Next you will type from that paper.", "Do not photograph the card. Do not use a funded phrase.") +
         teachBox(
           "Classroom — prove the backup",
-          "<em>What it is:</em> the numbered card is paper. The address is not the backup.<br/><em>Why:</em> same receive address after typing from paper means the copy works.<br/><em>When / where:</em> practice phrase only. No photo. No funded words.<br/><em>How:</em> the grid is the object. Next pad you type it back.",
+          "<em>What it is:</em> the numbered card is paper. The address is not the backup.<br/><em>Why:</em> same receive address after typing from paper means the copy works.<br/><em>When / where:</em> practice phrase only. No photo. No funded words.<br/><em>How:</em> pick 12–24, generate, then type that same card back.",
           "v2Uc16Teach"
         ) +
+        wordCountSelectHtml() +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
         '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
         inlineI(
           "Generate to fill this backup",
-          "Click Make practice words to fill the numbered card. This is a throwaway phrase so you can practise typing it back. Do not fund it."
+          "Word count sits above this button. Click Make practice words to fill the numbered card. Throwaway. Do not fund it."
         ) +
         "</div></div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
@@ -1720,13 +1751,18 @@
       );
     }
     var words = (mem.mnemonic || "").split(/\s+/).filter(Boolean);
+    var nRest = restoreWordCount();
     var inputs = "";
-    for (var i = 0; i < 12; i++) {
+    var i;
+    for (i = 0; i < nRest; i++) {
       inputs += '<label class="v2-restore-cell">#' + (i + 1) + '<input id="v2RestoreW' + i + '" autocomplete="off" spellcheck="false"/></label>';
     }
     return pad(
       "<h2>Type from paper — prove it works</h2>" +
-      doDont("Type the twelve words from the paper copy. Same address means the backup works.", "Do not peek at a screenshot.") +
+      doDont(
+        "Type the " + nRest + " words from the paper copy. Same address means the backup works.",
+        "Do not peek at a screenshot."
+      ) +
       teachBox(
         "Classroom — same address",
         "<em>What it is:</em> checksum + receive address from typed words.<br/><em>Why:</em> same address as the card means the paper copy works.<br/><em>How:</em> the message below is the lab result. Do not peek.",
@@ -2788,16 +2824,27 @@
       return pad(
         "<h2>Make practice words</h2>" +
         doDont(
-          "Make practice words in this tab and look at the numbered card first.",
-          "Do not import these words into a funded wallet. Do not send coins to addresses from this phrase."
+          "Make practice words here. Look at the numbered card first.",
+          "Do not import these words into a real money wallet. Do not send coins here."
         ) +
         generateExplainerHtml() +
         teachBox(
-          "Classroom — words vs address",
-          "<em>What it is:</em> practice BIP-39 words on a numbered card.<br/><em>Why:</em> the receive address is not the backup. The card is.<br/><em>When / where:</em> this tab only. Do not import. Do not fund.<br/><em>How:</em> the grid below is the object. Addresses come later.",
-          "v2Uc1Teach"
+          "Classroom — the word card vs the mailbox",
+          "You will get a numbered list of English words to write on paper. Grown-ups call that BIP-39 " +
+            inlineI(
+              "BIP-39",
+              "A Bitcoin rulebook. A computer’s secret random bits become 12 to 24 dictionary words. A small extra check (checksum) helps catch a typo. Words are easier to copy than a giant number."
+            ) +
+            ". That card is the secret backup — like a locker combo. Later we show a receive address " +
+            inlineI(
+              "address",
+              "A public mailbox string (tb1… on test, bc1… on real bitcoin). You may show a mailbox. Never show the locker combo (the words). If you lose the card, the mailbox cannot bring the words back."
+            ) +
+            ". The mailbox is not the backup. The card is. These words are for class only. " +
+            '<a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki" target="_blank" rel="noopener noreferrer" id="v2Bip39Spec">BIP-39 spec</a>.',
+          "v2Bip39What"
         ) +
-        entropyHtml() +
+        entropyHtml(true) +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar" id="v2GenRow">' +
         '<div class="v2-gen-left">' +
@@ -2810,7 +2857,7 @@
         '<div class="row" style="margin-top:0.45rem">' +
         '<button type="button" class="btn secondary" id="v2PasteApply">Use pasted practice words</button>' +
         "</div>" +
-        '<p id="v2PasteMsg" class="control-help">Paste a practice BIP-39 phrase only. Do not paste a funded backup.</p>' +
+        '<p id="v2PasteMsg" class="control-help">Paste a real BIP-39 practice list (the last bits are a check). Random English words usually fail. Do not paste a funded backup.</p>' +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
         '<div id="v2AddrWrap" class="v2-hidden"></div>' +
         pauseBtn("I have the numbered card", !mem.mnemonic)
@@ -2827,7 +2874,7 @@
         desc(
           "This screen is only about looking at the numbered cells. Each cell has a number and a word. That grid is what you would write on paper as a backup. It is practice. It is not a funded wallet."
         ) +
-        entropyHtml() +
+        entropyHtml(false) +
         wordGridHtml(mem.mnemonic) +
         '<label class="check"><input type="checkbox" id="v2CardAck" ' + (mem.cardAck ? "checked" : "") + "/> I have looked at the card</label>" +
         pauseBtn("Next: show receive addresses", !mem.cardAck)
@@ -2844,10 +2891,10 @@
           "Do not send coins to these practice addresses."
         ) +
         desc(
-          "The numbered card is the secret. The receive string is public. They are not the same thing. Test uses tb1… Mainnet uses bc1… Click Show receive addresses. This is not a wallet you should fund.",
+          "The numbered card is the secret locker combo. The receive string (tb1… on test, bc1… on real bitcoin) is only a mailbox. Click Show receive addresses to see mailboxes. Do not send real money to them.",
           "v2DeriveHelp"
         ) +
-        entropyHtml() +
+        entropyHtml(false) +
         pipeHtml(true, derived, derived) +
         '<div id="v2Card">' +
         wordGridHtml(mem.mnemonic) +
@@ -2879,9 +2926,9 @@
           "Do not fund any of these practice phrases or their addresses."
         ) +
         desc(
-          "Try a different length: 12, 15, 18, 21, or 24 words. A longer phrase uses more random bits from the operating system. Each new phrase is still practice. Do not send money to it or to addresses that come from it."
+          "Try 12, 15, 18, 21, or 24 words. A longer list is like more secret coin-flips — harder to guess. Still practice. Do not send money to it."
         ) +
-        entropyHtml() +
+        entropyHtml(false) +
         wordCountSelectHtml() +
         '<div class="row v2-gen-bar">' +
         '<div class="v2-gen-left">' +
@@ -3541,6 +3588,7 @@
           "Same pad",
           "Generate, then Split, without leaving this screen. The readout names the phrase the shares were built from. SLIP-39 (Trezor-shaped words) is the next pad — a different list."
         ) +
+        wordCountSelectHtml("v2ShWc", mem.shamirWordCount || 12) +
         '<button type="button" class="btn" id="v2ShPhrase">Generate practice phrase</button>' +
         '<div id="v2ShCard">' +
         (has ? wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid") : wordGridHtml("", "v2ShWordGrid")) +
@@ -3571,15 +3619,16 @@
         "</pre>" +
         '<label class="field" for="v2ShRecombineIn">Paste M share lines (share:index:hex)' +
         '<textarea id="v2ShRecombineIn" rows="4" spellcheck="false" autocomplete="off" placeholder="share:1:…\nshare:2:…"></textarea></label>' +
+        '<div class="v2-try-row">' +
         '<button type="button" class="btn btn-try" id="v2ShTry"' +
         (mem.shamirShares ? "" : " disabled") +
         ">Try these M shares</button>" +
-        '<p class="control-help" id="v2ShTryHelp">Paste any M of the printed shares here. Try these M shares checks whether they rebuild the words on this pad. Combine any M still does it for you.</p>' +
         '<div class="v2-combine-right">' +
         '<button type="button" class="btn secondary" id="v2ShCombine"' +
         (mem.shamirShares ? "" : " disabled") +
         ">Combine any M</button>" +
-        "</div>" +
+        "</div></div>" +
+        '<p class="control-help" id="v2ShTryHelp">Paste any M of the printed shares here. Try these M shares checks whether some M of what you pasted rebuild the words on this pad — a wrong extra share does not cancel two good ones. Combine any M still does it for you.</p>' +
         '<pre class="out" id="v2ShTryOut">Result of Try these M shares appears here.</pre>' +
         '<p class="control-help">Optional longer hex lab: ' +
         '<a href="../shamir.html" data-v2-dock="7">Open Shamir room</a>' +
@@ -3598,7 +3647,6 @@
         desc(
           "The last pad split BIP-39 words into classroom hex. This pad mints three SLIP-39 people-share lists (a different word list than BIP-39). Play the 2-of-3: three papers, one paper is not enough, any two rebuild."
         ) +
-        '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
         callout(
           "warn",
           "Lab practice",
@@ -3609,28 +3657,31 @@
           "<em>What it is:</em> Trezor-shaped people-share lists (2-of-3), not BIP-39 seeds.<br/><em>Why:</em> hardware wallets do not import the classroom hex from the last pad.<br/><em>When / where:</em> people hold word shares. Lab only. Never fund. Not Suite.<br/><em>How:</em> mint three lists, fail with 1, match with 2. Combine any 2 of 3 is the shortcut.",
           "v2S39Story"
         ) +
+        '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
         '<p class="control-help">Click Make practice SLIP-39 shares.</p>' +
-        '<label class="field" for="v2S39s0">SLIP-39 share 1 (people words, not BIP-39)<textarea id="v2S39s0" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<label class="field" for="v2S39s0">SLIP-39 share 1 — edit this pad (clear to try 1)<textarea id="v2S39s0" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
         '<label class="field" for="v2S39s1">SLIP-39 share 2<textarea id="v2S39s1" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
         '<label class="field" for="v2S39s2">SLIP-39 share 3<textarea id="v2S39s2" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
-        "<h3>Share lists (lab result)</h3>" +
-        '<pre class="out" id="v2S39Out">' +
+        '<p class="control-help">Edit the three boxes <em>or</em> the printout below. Delete a list and Try (1 must fail, any 2 must match). Combine any 2 of 3 is the shortcut.</p>' +
+        "<h3>Share lists (lab result) — editable practice pad</h3>" +
+        '<textarea class="out v2-s39-print" id="v2S39Out" rows="7" spellcheck="false" autocomplete="off">' +
         (ready
           ? "2-of-3 drill done. Next pad: same two shares, with and without an extra secret."
-          : "Click Make practice SLIP-39 shares. Master hex and share lines appear here.") +
-        "</pre>" +
+          : "Click Make practice SLIP-39 shares. Master hex and share lines appear here. Delete a share line here to Try 2 of 3.") +
+        "</textarea>" +
+        '<div class="v2-try-row">' +
         '<button type="button" class="btn btn-try" id="v2S39Try"' +
         (mem.slip39Shares ? "" : " disabled") +
         ">Try these 2 shares</button>" +
-        '<p class="control-help" id="v2S39TryHelp">Play in order: mint 3 lists → try 1 (fail) → try 2 (match). Combine any 2 of 3 is the shortcut for the match. Extra secret comes after.</p>' +
-        '<ul class="v2-s39-check" id="v2S39Check">' +
-        slip39CheckHtml() +
-        "</ul>" +
         '<div class="v2-combine-right">' +
         '<button type="button" class="btn secondary" id="v2S39Combine"' +
         (mem.slip39Shares ? "" : " disabled") +
         ">Combine any 2 of 3</button>" +
-        "</div>" +
+        "</div></div>" +
+        '<p class="control-help" id="v2S39TryHelp">Play in order: mint 3 lists → try 1 (fail) → try 2 (match). Combine any 2 of 3 is the shortcut for the match. Extra secret comes after.</p>' +
+        '<ul class="v2-s39-check" id="v2S39Check">' +
+        slip39CheckHtml() +
+        "</ul>" +
         '<pre class="out" id="v2S39TryOut">Result of Try these 2 shares appears here.</pre>' +
         '<a class="btn secondary" href="../slip39.html" data-v2-dock="7">Open SLIP-39 room</a>' +
         pauseBtn("Next: extra secret on the same two shares", !ready)
@@ -5487,9 +5538,9 @@
       '<span class="help-tip-panel action-hover-panel" id="overlayMnemonic" hidden>' +
       "<strong>BIP-39 mnemonic (English words only)</strong>. " +
       '<span class="control-help" style="display:block;margin-top:0.35rem">' +
-      "A mnemonic in this lab is a BIP-39 recovery phrase: a checksummed list of words from the official English wordlist " +
-      "(12, 15, 18, 21, or 24 words). The list is English only. This is practice material in this browser tab. " +
-      "It is not a funded wallet. Do not import these words into a wallet you use for real money." +
+      "These are practice English words (12 to 24) from the BIP-39 dictionary. A checksum is a small extra check so a typo gets caught. " +
+      "This is a class fake locker combo — not a real money wallet. " +
+      '<a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki" target="_blank" rel="noopener noreferrer">BIP-39 spec (grown-up page)</a>.' +
       "</span></span></span></" +
       tag +
       ">"
@@ -5509,10 +5560,8 @@
   function generateExplainerHtml() {
     return (
       '<p class="control-help v2-step-desc" id="v2GenHelp">' +
-      "This tab asks the operating system for random bits (a cryptographically strong random number generator), " +
-      "then turns those bits into practice recovery words. " +
-      "Do not send money to these words or to addresses that come from them. " +
-      "Nothing leaves this browser tab." +
+      "The Generate button asks this computer for a secret mix of random bits, then turns that mix into practice English words. " +
+      "Treat it like a fake locker combo for class — not real money. Nothing is sent to the internet." +
       "</p>"
     );
   }
@@ -6152,6 +6201,10 @@
         renderTrack();
         return;
       }
+      if (current.id === 16) {
+        mem.restoreOk = false;
+        mem.restoreHidden = false;
+      }
       if (current.id === 16 || current.id === 19) {
         await deriveNow();
         if (mem.lastRows && mem.lastRows[0]) {
@@ -6188,7 +6241,11 @@
         if (!valid) {
           if (msg) {
             msg.className = "msg-bad";
-            msg.textContent = "That is not a valid English BIP-39 phrase. Generate practice words instead. Do not paste a funded backup.";
+            msg.textContent = !okLen
+              ? "Need 12, 15, 18, 21, or 24 words. You pasted " + n + ". Generate practice words, or paste a real BIP-39 list. Do not paste a funded backup."
+              : "Those " +
+                n +
+                " words look English, but they failed the BIP-39 check. A real backup has a tiny extra check (a checksum) so a typo gets caught. Random dictionary words usually fail that check. Generate practice words here. Do not paste a funded backup.";
           }
           return;
         }
@@ -6902,6 +6959,13 @@
       for (i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
       return s;
     }
+    function readShamirWordCount() {
+      var sel = $("v2ShWc");
+      var n = parseInt(sel && sel.value, 10) || mem.shamirWordCount || 12;
+      if ([12, 15, 18, 21, 24].indexOf(n) < 0) n = 12;
+      mem.shamirWordCount = n;
+      return n;
+    }
     function readShamirMN() {
       var sel = $("v2ShMN");
       var raw = sel && sel.value ? String(sel.value) : "2/3";
@@ -6911,10 +6975,34 @@
       mem.shamirMN = { m: m, n: n };
       return mem.shamirMN;
     }
+    function kSubsets(items, k) {
+      var acc = [];
+      function walk(start, picked) {
+        if (picked.length === k) {
+          acc.push(picked.slice());
+          return;
+        }
+        var i;
+        for (i = start; i < items.length; i++) {
+          picked.push(items[i]);
+          walk(i + 1, picked);
+          picked.pop();
+        }
+      }
+      walk(0, []);
+      return acc;
+    }
+    var shwc = $("v2ShWc");
+    if (shwc) {
+      shwc.addEventListener("change", function () {
+        readShamirWordCount();
+      });
+    }
     var shp = $("v2ShPhrase");
     if (shp) {
       shp.addEventListener("click", async function () {
-        mem.shamirMnemonic = await BIP39Lab.generateMnemonic(12);
+        var wc = readShamirWordCount();
+        mem.shamirMnemonic = await BIP39Lab.generateMnemonic(wc);
         mem.shamirShares = null;
         mem.shamirDone = false;
         var card = $("v2ShCard");
@@ -6930,7 +7018,9 @@
         var story0 = $("v2ShStory");
         if (story0) {
           story0.innerHTML =
-            "<strong>Classroom — what this split is</strong>These twelve words are the secret on this pad. Split will cut them into hex pieces. The result box will hold share lines only.";
+            "<strong>Classroom — what this split is</strong>These " +
+            wc +
+            " words are the secret on this pad. Split will cut them into hex pieces. The result box will hold share lines only.";
         }
         var sout = $("v2ShOut");
         if (sout) {
@@ -6969,7 +7059,9 @@
       if (story) {
         story.innerHTML =
           "<strong>Classroom — what this split is</strong>" +
-          "Built from the twelve words still on this pad (not a new screen).<br/>" +
+          "Built from the " +
+          phrase.split(/\s+/).filter(Boolean).length +
+          " words still on this pad (not a new screen).<br/>" +
           "<em>What it is:</em> one practice BIP-39 phrase cut into " +
           mn.n +
           " classroom hex shares.<br/>" +
@@ -7041,46 +7133,78 @@
           return;
         }
         var parsed = [];
+        var skipped = [];
         var i;
-        try {
-          for (i = 0; i < lines.length; i++) parsed.push(ShamirLab.parseShare(lines[i]));
-        } catch (e) {
+        for (i = 0; i < lines.length; i++) {
+          try {
+            parsed.push(ShamirLab.parseShare(lines[i]));
+          } catch (e) {
+            skipped.push(
+              "line " +
+                (i + 1) +
+                " (" +
+                (e && e.message ? e.message : e) +
+                ")"
+            );
+          }
+        }
+        if (parsed.length < need) {
           if (tout) {
             paintTone(tout, "bad");
             tout.textContent =
-              "Could not read a share line (" +
-              (e && e.message ? e.message : e) +
-              "). Format is share:<index>:<hex>. Recovery failed — that is honest.";
+              "Need at least " +
+              need +
+              " readable share:<index>:<hex> lines. Parsed " +
+              parsed.length +
+              (skipped.length ? "; skipped: " + skipped.join("; ") : "") +
+              ". Recovery failed — that is honest.";
           }
           return;
         }
-        try {
-          var rec = ShamirLab.combineShares(parsed.slice(0, Math.max(need, parsed.length)));
-          var words = utf8DecodeU8(rec).trim();
-          var match = words === String(mem.shamirMnemonic).trim();
-          if (tout) {
-            paintTone(tout, match ? "ok" : "bad");
+        var want = String(mem.shamirMnemonic).trim();
+        var subsets = kSubsets(parsed, need);
+        var hit = null;
+        var lastErr = "";
+        var si;
+        for (si = 0; si < subsets.length; si++) {
+          try {
+            var rec = ShamirLab.combineShares(subsets[si]);
+            var words = utf8DecodeU8(rec).trim();
+            if (words === want) {
+              hit = { words: words, used: subsets[si] };
+              break;
+            }
+          } catch (e2) {
+            lastErr = e2 && e2.message ? e2.message : String(e2);
+          }
+        }
+        if (tout) {
+          if (hit) {
+            var idxs = hit.used
+              .map(function (sh) {
+                return sh.index;
+              })
+              .join(", ");
+            paintTone(tout, "ok");
             tout.textContent = [
               "Tried " + parsed.length + " pasted share(s); threshold M=" + need + ".",
-              "Recovered words: " + words,
-              "Match original phrase: " + match,
-              match
-                ? "These pieces rebuild the phrase on this pad."
-                : "These pieces did not rebuild the phrase. Try a different M of the printed shares.",
+              "Any " + need + " working shares are enough. Used indices " + idxs +
+                (parsed.length > need ? " (skipped a share that did not fit)." : "."),
+              "Recovered words: " + hit.words,
+              "Match original phrase: true",
+              "These pieces rebuild the phrase on this pad.",
               "Educational hex. Not SLIP-39. A share cannot sign."
             ].join("\n");
-          }
-          if (match) {
             mem.shamirDone = true;
             if (pause) pause.disabled = false;
-          }
-        } catch (e2) {
-          if (tout) {
+          } else {
             paintTone(tout, "bad");
-            tout.textContent =
-              "Combine failed (" +
-              (e2 && e2.message ? e2.message : e2) +
-              "). That is honest — not a fake secret.";
+            tout.textContent = [
+              "Tried " + parsed.length + " pasted share(s); no set of " + need + " rebuilt the phrase.",
+              lastErr ? "Last combine error: " + lastErr : "Garbage extra shares do not help if fewer than M are genuine.",
+              "Recovery failed — that is honest.",
+              "Educational hex. Not SLIP-39. A share cannot sign."
+            ].join("\n");
           }
         }
       });
@@ -7103,11 +7227,13 @@
         mem.slip39PpDone = false;
         if (out) {
           paintTone(out, "");
-          out.textContent = [
+          var dump = [
             "Master hex (practice): " + hex,
             shares.map(function (line, i) { return "share " + (i + 1) + ": " + line; }).join("\n"),
-            "Copy any two into the boxes (already filled). Try 1 (fail) then 2 (match)."
+            "Edit this pad or the three boxes. Delete a share line, then Try 1 (fail) or any 2 (match)."
           ].join("\n");
+          if (out.tagName === "TEXTAREA") out.value = dump;
+          else out.textContent = dump;
         }
         var si;
         for (si = 0; si < 3; si++) {
@@ -7133,9 +7259,11 @@
         }
         var rec = Slip39Lab.combineShares(mem.slip39Shares.slice(0, 2), "");
         var ok = Slip39Lab.matchExpected(rec, mem.slip39Hex);
-        if (out) {
-          paintTone(out, ok ? "ok" : "bad");
-          out.textContent = [
+        var tout = $("v2S39TryOut");
+        var target = tout || out;
+        if (target) {
+          paintTone(target, ok ? "ok" : "bad");
+          target.textContent = [
             "Combined 2 of 3 SLIP-39 word shares.",
             "Recovered master hex: " + rec,
             "Match: " + ok,
@@ -7157,13 +7285,24 @@
           if (tout) tout.textContent = "Make practice SLIP-39 shares first.";
           return;
         }
-        var picked = [];
+        var boxes = [];
         var j;
         for (j = 0; j < 3; j++) {
           var t = $("v2S39s" + j);
           var line = t && t.value ? String(t.value).trim().replace(/\s+/g, " ") : "";
-          if (line) picked.push(line);
+          if (line) boxes.push(line);
         }
+        var printed = [];
+        var dump = $("v2S39Out");
+        var dumpRaw = dump && dump.tagName === "TEXTAREA" ? dump.value : dump && dump.textContent;
+        String(dumpRaw || "")
+          .split(/\n+/)
+          .forEach(function (ln) {
+            var m = /^share\s*\d+\s*:\s*(.+)$/i.exec(String(ln || "").trim());
+            if (m && m[1].trim()) printed.push(m[1].trim().replace(/\s+/g, " "));
+          });
+        var picked =
+          printed.length && (!boxes.length || printed.length < boxes.length) ? printed : boxes;
         if (picked.length < 2) {
           mem.slip39TriedOne = true;
           if (tout) {
@@ -7814,8 +7953,9 @@
     if ($("v2RestoreFill")) {
       $("v2RestoreFill").addEventListener("click", function () {
         var w = (mem.mnemonic || "").split(/\s+/).filter(Boolean);
+        var n = restoreWordCount();
         var i;
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < n; i++) {
           var inp = $("v2RestoreW" + i);
           if (inp) inp.value = w[i] || "";
         }
@@ -7824,7 +7964,8 @@
     if ($("v2RestoreCheck")) {
       $("v2RestoreCheck").addEventListener("click", async function () {
         var typed = [];
-        for (var i = 0; i < 12; i++) {
+        var n = restoreWordCount();
+        for (var i = 0; i < n; i++) {
           var inp = $("v2RestoreW" + i);
           typed.push(inp ? String(inp.value || "").trim().toLowerCase() : "");
         }

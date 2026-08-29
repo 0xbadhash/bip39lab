@@ -3,20 +3,19 @@
 base: origin/master
 
 ## Security Guru
-None. Practice shares; CSP unchanged; no Sign; no mnemonic persist.
+None. Invalid mnemonic still refused. No Sign. CSP unchanged.
 
 ## Maintainability Expert
-None in-scope. Obsolete scan (touched): no dead ids; `v2ShTry`/`v2S39Try` still wired. Whole-repo cruft → `/sweep` later.
+None in-scope. Obsolete scan (touched): `v2Uc1Teach` removed (one box). Share-line CSS live. Whole-repo cruft → `/sweep` later.
 
 ### Obsolete / cleanup (scoped)
-- Tier A: 0
-- `btn-try` / `v2-combine-right` / `v2-share-line` are live.
+- Tier A: 0 (`v2Uc1Teach` gone; ids `v2Bip39What` / `v2EntropyWhat` live)
 
 ## Domain Specialist
-None. Try is the 2-of-3 exercise; Combine is the shortcut; classroom hex ≠ Suite.
+None. Checksum fail-closed is correct. Shamir any-M-subset is the 2-of-3 job.
 
 ## Blocker count
 0
 
 ## Follow-ups
-Full classic e2e 232; UC19 P3; Suite clone (do not).
+Kid-voice on other UCs. Full 232 e2e.
