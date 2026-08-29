@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "shipped",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-29-v2-uc1-uc7-classroom.md",
-  "task": "0.16.82 UC1/UC7/UC16",
+  "task": "init after v0.16.82",
   "waiver": null
 }
