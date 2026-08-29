@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "init",
-  "score": 100,
-  "spec_id": ".agents/specs/2026-08-28-v2-uc18-heir-drill.md",
-  "task": "0.16.78 UC18 heir drill",
+  "phase": "shipped",
+  "score": 100.0,
+  "spec_id": ".agents/specs/2026-08-29-v2-uc7-layout.md",
+  "task": "0.16.81 UC7 layout",
   "waiver": null
 }
