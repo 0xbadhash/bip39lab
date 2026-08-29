@@ -3545,6 +3545,11 @@
         '<div id="v2ShCard">' +
         (has ? wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid") : wordGridHtml("", "v2ShWordGrid")) +
         "</div>" +
+        '<div class="v2-callout done" id="v2ShStory"><strong>Classroom — what this split is</strong>' +
+        (did
+          ? "Those shares were built from the twelve words on this pad. Hex pieces are the result. Combine already matched."
+          : "Generate, then Split. This blue box stays the teaching story. Share lines appear in the result box.") +
+        "</div>" +
         '<label class="field" for="v2ShMN">Threshold<select id="v2ShMN">' +
         '<option value="2/3"' +
         (mn.m === 2 && mn.n === 3 ? " selected" : "") +
@@ -3553,26 +3558,10 @@
         (mn.m === 3 && mn.n === 5 ? " selected" : "") +
         ">3-of-5 (any 3 rebuild)</option>" +
         "</select></label>" +
-        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
         '<button type="button" class="btn" id="v2Sh"' +
         (has ? "" : " disabled") +
         ">Split these words into shares</button>" +
-        '<button type="button" class="btn secondary" id="v2ShCombine"' +
-        (mem.shamirShares ? "" : " disabled") +
-        ">Combine any M</button>" +
-        "</div>" +
-        '<label class="field" for="v2ShRecombineIn">Paste M share lines (share:index:hex), then try' +
-        '<textarea id="v2ShRecombineIn" rows="4" spellcheck="false" autocomplete="off" placeholder="share:1:…\nshare:2:…"></textarea></label>' +
-        '<button type="button" class="btn secondary" id="v2ShTry"' +
-        (mem.shamirShares ? "" : " disabled") +
-        ">Try these M shares</button>" +
-        '<pre class="out" id="v2ShTryOut">Paste any M of the printed shares here. Try these M shares checks whether they rebuild the words on this pad. Combine any M still does it for you.</pre>' +
-        '<div class="v2-callout done" id="v2ShStory"><strong>Classroom — what this split is</strong>' +
-        (did
-          ? "Those shares were built from the twelve words on this pad. Hex pieces below. Combine already matched."
-          : "Generate, then Split. This blue box stays the teaching story. Share lines appear in the result box.") +
-        "</div>" +
-        '<h3>Share lines (lab result)</h3>' +
+        "<h3>Share lines (lab result)</h3>" +
         '<pre class="out" id="v2ShOut">' +
         (did
           ? "Combine already matched. Share lines are in the paste box."
@@ -3580,6 +3569,18 @@
             ? "The grid is the secret. Click Split these words into shares — stay here."
             : "Generate a practice phrase first. Split stays on this pad.") +
         "</pre>" +
+        '<label class="field" for="v2ShRecombineIn">Paste M share lines (share:index:hex)' +
+        '<textarea id="v2ShRecombineIn" rows="4" spellcheck="false" autocomplete="off" placeholder="share:1:…\nshare:2:…"></textarea></label>' +
+        '<button type="button" class="btn btn-try" id="v2ShTry"' +
+        (mem.shamirShares ? "" : " disabled") +
+        ">Try these M shares</button>" +
+        '<p class="control-help" id="v2ShTryHelp">Paste any M of the printed shares here. Try these M shares checks whether they rebuild the words on this pad. Combine any M still does it for you.</p>' +
+        '<div class="v2-combine-right">' +
+        '<button type="button" class="btn secondary" id="v2ShCombine"' +
+        (mem.shamirShares ? "" : " disabled") +
+        ">Combine any M</button>" +
+        "</div>" +
+        '<pre class="out" id="v2ShTryOut">Result of Try these M shares appears here.</pre>' +
         '<p class="control-help">Optional longer hex lab: ' +
         '<a href="../shamir.html" data-v2-dock="7">Open Shamir room</a>' +
         " — still not Suite.</p>" +
@@ -3597,39 +3598,41 @@
         desc(
           "The last pad split BIP-39 words into classroom hex. This pad mints three SLIP-39 people-share lists (a different word list than BIP-39). Play the 2-of-3: three papers, one paper is not enough, any two rebuild."
         ) +
+        '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
         callout(
           "warn",
           "Lab practice",
           "These look like backup words. They are SLIP-39 shares, not a BIP-39 seed. Throwaway. Never type them into a funded Trezor."
         ) +
-        '<ul class="v2-s39-check" id="v2S39Check">' +
-        slip39CheckHtml() +
-        "</ul>" +
-        '<div class="row" style="flex-wrap:wrap;gap:0.45rem">' +
-        '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
-        '<button type="button" class="btn secondary" id="v2S39Combine"' +
-        (mem.slip39Shares ? "" : " disabled") +
-        ">Combine any 2 of 3</button>" +
-        '<a class="btn secondary" href="../slip39.html" data-v2-dock="7">Open SLIP-39 room</a>' +
-        "</div>" +
-        '<label class="field" for="v2S39s0">SLIP-39 share 1 (people words, not BIP-39)<textarea id="v2S39s0" rows="2" spellcheck="false" autocomplete="off"></textarea></label>' +
-        '<label class="field" for="v2S39s1">SLIP-39 share 2<textarea id="v2S39s1" rows="2" spellcheck="false" autocomplete="off"></textarea></label>' +
-        '<label class="field" for="v2S39s2">SLIP-39 share 3<textarea id="v2S39s2" rows="2" spellcheck="false" autocomplete="off"></textarea></label>' +
-        '<button type="button" class="btn secondary" id="v2S39Try"' +
-        (mem.slip39Shares ? "" : " disabled") +
-        ">Try these 2 shares</button>" +
-        '<pre class="out" id="v2S39TryOut">Play in order: mint 3 lists → try 1 (fail) → try 2 (match). Combine any 2 of 3 is the shortcut for the match. Extra secret comes after.</pre>' +
         teachBox(
           "Classroom — what SLIP-39 is",
           "<em>What it is:</em> Trezor-shaped people-share lists (2-of-3), not BIP-39 seeds.<br/><em>Why:</em> hardware wallets do not import the classroom hex from the last pad.<br/><em>When / where:</em> people hold word shares. Lab only. Never fund. Not Suite.<br/><em>How:</em> mint three lists, fail with 1, match with 2. Combine any 2 of 3 is the shortcut.",
           "v2S39Story"
         ) +
+        '<p class="control-help">Click Make practice SLIP-39 shares.</p>' +
+        '<label class="field" for="v2S39s0">SLIP-39 share 1 (people words, not BIP-39)<textarea id="v2S39s0" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<label class="field" for="v2S39s1">SLIP-39 share 2<textarea id="v2S39s1" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
+        '<label class="field" for="v2S39s2">SLIP-39 share 3<textarea id="v2S39s2" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
         "<h3>Share lists (lab result)</h3>" +
         '<pre class="out" id="v2S39Out">' +
         (ready
           ? "2-of-3 drill done. Next pad: same two shares, with and without an extra secret."
           : "Click Make practice SLIP-39 shares. Master hex and share lines appear here.") +
         "</pre>" +
+        '<button type="button" class="btn btn-try" id="v2S39Try"' +
+        (mem.slip39Shares ? "" : " disabled") +
+        ">Try these 2 shares</button>" +
+        '<p class="control-help" id="v2S39TryHelp">Play in order: mint 3 lists → try 1 (fail) → try 2 (match). Combine any 2 of 3 is the shortcut for the match. Extra secret comes after.</p>' +
+        '<ul class="v2-s39-check" id="v2S39Check">' +
+        slip39CheckHtml() +
+        "</ul>" +
+        '<div class="v2-combine-right">' +
+        '<button type="button" class="btn secondary" id="v2S39Combine"' +
+        (mem.slip39Shares ? "" : " disabled") +
+        ">Combine any 2 of 3</button>" +
+        "</div>" +
+        '<pre class="out" id="v2S39TryOut">Result of Try these 2 shares appears here.</pre>' +
+        '<a class="btn secondary" href="../slip39.html" data-v2-dock="7">Open SLIP-39 room</a>' +
         pauseBtn("Next: extra secret on the same two shares", !ready)
       );
     }

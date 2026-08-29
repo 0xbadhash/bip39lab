@@ -7864,7 +7864,10 @@ zoo`.split("\n");
   function explainDescriptor(text) {
     const t = String(text || "").trim();
     if (!t) return { status: "error", detail: "empty" };
-    if (/xprv|yprv|zprv|tprv|mnemonic|WIF|5[HJK]/i.test(t)) {
+    if (/\b[xyz]prv|\btprv|\bWIF\b/i.test(t)) {
+      return { status: "error", detail: "refusing private keys / seed material in descriptor box" };
+    }
+    if (/\b5[HJK][1-9A-HJ-NP-Za-km-z]{40,}/.test(t) && !/\b[xyz]pub|\btpub|\(/i.test(t)) {
       return { status: "error", detail: "refusing private keys / seed material in descriptor box" };
     }
     var seedWords = t.split(/\s+/).filter(Boolean);

@@ -1,20 +1,22 @@
 # CROSS-REVIEW
 
-Blockers: 0. Obsolete Tier A: 0.
+base: origin/master
 
-### Security Guru
-none — no new fetch; kit clicks do not persist mnemonic; no Sign.
+## Security Guru
+None. Practice shares; CSP unchanged; no Sign; no mnemonic persist.
 
-### Maintainability Expert
-none blocking — `mem.inh` reset in `startTrack`.
+## Maintainability Expert
+None in-scope. Obsolete scan (touched): no dead ids; `v2ShTry`/`v2S39Try` still wired. Whole-repo cruft → `/sweep` later.
 
 ### Obsolete / cleanup (scoped)
-- Tier A: none (old `#v2InhChat` / checkbox path removed)
+- Tier A: 0
+- `btn-try` / `v2-combine-right` / `v2-share-line` are live.
 
-### Domain Specialist
-none — missing 25th, 1-of-3, packet ≠ seed+pp, open-while-alive vs will are distinct from UC16/UC33.
+## Domain Specialist
+None. Try is the 2-of-3 exercise; Combine is the shortcut; classroom hex ≠ Suite.
 
-## Things that look bad but are actually fine
-1. Dual stamp
-2. Five quiz items vs three on older job tracks
-3. No Sign
+## Blocker count
+0
+
+## Follow-ups
+Full classic e2e 232; UC19 P3; Suite clone (do not).

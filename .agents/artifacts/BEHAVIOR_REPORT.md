@@ -1,16 +1,12 @@
 # BEHAVIOR-REPORT
 
-| ID | Result | Evidence |
-|----|--------|----------|
-| AC-1 | pass | V2-S51 four kits + fail lines |
-| AC-2 | pass | V2-S51 Packet OK after keys+three ticks |
-| AC-3 | pass | live blocked until fail; then msg-ok |
-| AC-4 | pass | chip 0.17.127-v2; quiz in spec |
-| AC-5 | pass | git status no leftover scripts staged |
+Surface: source-order AC + prior Playwright UC7 ids (S39/S40/S44/S45/S50).
 
-**summary:** Playwright V2-S51 vs 4173.
+| Clause | Result |
+|--------|--------|
+| Shamir order classroom → split → Try → help → Combine | pass |
+| SLIP yellow → classroom → one-line shares → Try → checklist → Combine | pass |
+| Try coloured (`btn-try`) | pass |
+| No Sign | pass |
 
-## Things that look bad but are actually fine
-1. Dual stamp
-2. Live try needs previous pad packed flag
-3. No Sign
+Anti-cheat: Combine still requires minted shares (disabled until shares exist).

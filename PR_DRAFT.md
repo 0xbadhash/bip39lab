@@ -1,39 +1,40 @@
-# PR Draft: v0.16.78 V2 UC18 heir object drill
+# PR Draft: v0.16.81 V2 UC7 Try-first layout
 
-**Spec:** `.agents/specs/2026-08-28-v2-uc18-heir-drill.md`
-**Plan:** `.agents/specs/2026-08-28-v2-uc18-heir-drill-plan.md`
+**Spec:** `.agents/specs/2026-08-29-v2-uc7-layout.md`
+**Plan:** `.agents/specs/2026-08-29-v2-uc7-layout-plan.md`
 
 ## What Problem This Solves
 
-UC18 was a two-pad lecture with a checkbox. Heirs fail on missing objects, not slogans.
+Combine sat beside Try so the shortcut looked like the drill. Classroom was buried. SLIP share boxes were tall. Checklist was far from Try.
 
 ## Why This Change Was Made
 
-Operator: AI slop, too simple, useless, poor English. Redo as a drill.
+Operator: classroom blue first; Try then description; Combine right-aligned under help; SLIP yellow then blue; one-line shares; Try a different colour; checklist under Try description.
+
+This ship also absorbs untagged local 0.16.79/80 (UC34, UC32 XOR, BIP-85 mint, UC27 UTXO, compare.md honesty, UC9 leak drill, e2e S57/S58, WIF regex).
 
 ## User Impact
 
-Chip **v0.17.127-v2**. Product **0.16.78**. Four fail kits, map packet, fail-then-open-alive. No Sign. Not a will.
+Chip **v0.17.131-v2**. Product **0.16.81**. Try is amber. Combine is secondary, right-aligned. No Sign. Classic `/` unchanged except cache-bust.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 | V2-S51 `test_ac_1_four_kits` |
-| AC-2 | V2-S51 `test_ac_2_packet_map` |
-| AC-3 | V2-S51 `test_ac_3_open_alive` |
-| AC-4 | quiz `test_ac_4_quiz_chip` |
-| AC-5 | leftover `test_ac_5_no_leftover_scripts` |
+| AC-1 | `test_ac_1_shamir_order_and_try_colour` |
+| AC-2 | `test_ac_2_slip_order_checklist` |
+| AC-3 | `test_ac_3_css_and_one_line_shares` |
+| AC-4 | `test_ac_4_no_sign` |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `python3 -m pytest tests/test_ac_v2_uc18_heir_drill.py -q`
+- green_cmd: `python3 -m pytest tests/test_ac_v2_uc7_layout.py -q`
 
 ## Threat notes
 
-- secrets: practice only; `mem.inh` is not the mnemonic
-- xss: pack table via textContent
+- secrets: practice shares only; no mnemonic persist
+- xss: static teach HTML
 - csrf: n/a
 
 ## Evidence pack
@@ -41,17 +42,17 @@ Chip **v0.17.127-v2**. Product **0.16.78**. Four fail kits, map packet, fail-the
 | Item | Result |
 |------|--------|
 | hard_gates | CODE_REVIEW, BEHAVIOR_REPORT, spec |
-| smoke | Playwright V2-S51 |
-| pytest | `tests/test_ac_v2_uc18_heir_drill.py` |
+| smoke | pytest AC + product_smoke unit |
+| pytest | `tests/test_ac_v2_uc7_layout.py` |
 | validate | compliance_engine |
 
 ## Things that look bad but are actually fine
 
-1. Dual stamp 0.16.78 vs 0.17.127-v2
+1. Dual stamp 0.16.81 vs 0.17.131-v2
 2. leftover scripts uncommitted
 3. v2-app.js already huge
-4. No Sign
-5. UC21/24/25 still lecture-thin (out of scope)
+4. Combine after help, Try result below Combine (Try still the coloured primary)
+5. Origin lacked tags for 0.16.79/80 — this tag is 0.16.81
 
 ## Cross-review
 

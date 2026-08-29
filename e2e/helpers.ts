@@ -1,4 +1,9 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { expect, type Page } from "@playwright/test";
+
+/** Product tag from VERSION (Lab chrome). Dual-stamp V2 chip is web/v2/VERSION. */
+export const SITE_TAG = "v" + readFileSync(join(__dirname, "..", "VERSION"), "utf8").trim();
 
 /** Public BIP-39 test vector — never a funded wallet. */
 export const ABANDON =
@@ -51,7 +56,9 @@ export async function pasteMnemonic(page: Page, text: string) {
 
 /** Mainnet goldens (abandon). Lab default network is Testnet. */
 export async function selectLabMainnet(page: Page) {
-  await page.locator("#deriveNetwork").selectOption("main");
+  const sel = page.locator("#deriveNetwork");
+  await page.locator("#card-addresses").scrollIntoViewIfNeeded().catch(() => {});
+  await sel.selectOption("main", { force: true });
   await page.waitForTimeout(400);
 }
 

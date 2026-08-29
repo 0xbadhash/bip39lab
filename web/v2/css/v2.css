@@ -28,6 +28,37 @@
   border-color: var(--ok);
   background: rgba(34, 160, 107, 0.12);
 }
+button.btn.btn-try {
+  background: var(--warn);
+  color: #1a1400;
+  border: 0;
+  font-weight: 700;
+  margin: 0.35rem 0 0.15rem;
+}
+button.btn.btn-try:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+button.btn.btn-try:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.v2-combine-right {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.15rem 0 0.85rem;
+}
+.v2-share-line,
+textarea.v2-share-line {
+  min-height: 2.05rem;
+  height: 2.05rem;
+  max-height: 2.2rem;
+  resize: none;
+  white-space: nowrap;
+  overflow-x: auto;
+  line-height: 1.35;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
 .v2-s39-check li.is-off { color: var(--muted); }
 .v2-s39-pp {
   display: grid;

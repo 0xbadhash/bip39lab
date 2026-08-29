@@ -1,12 +1,11 @@
-# Behavior contract — 0.16.78 UC18 heir drill
+# Behavior contract — 0.16.81 UC7 layout
 
-- **Target:** `/v2/?uc=18`
+- **Target:** `/v2/?uc=7`
 
 ## User tasks
 
-1. Tap four failing heir kits; Next stays off until all four.
-2. Build a map packet (shape + desc/where/date; refuse seed/pp/chat).
-3. Fail a heir try, then sit-with-them only if packet OK.
+1. Shamir: see blue classroom, then threshold + Split, then paste, amber Try, help, Combine on the right.
+2. SLIP: Make practice, yellow lab, blue classroom, one-line shares, amber Try, checklist under help, Combine on the right.
 
 ## Must not
-- Sign / fund / will / legal counsel
+- Sign / fund / Suite clone / mix UC6

@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import {
   ABANDON,
   GOLDEN,
+  SITE_TAG,
   expectNavCount,
   labCspOffline,
   pasteMnemonic,
@@ -37,10 +38,10 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#chipAirgap")).toBeVisible();
     await expect(page.locator("#btnTheme")).toBeVisible();
     const chip = page.locator("[data-site-version]").first();
-    await expect(chip).toContainText(/^v0\.16\.35$/);
+    await expect(chip).toHaveText(SITE_TAG);
     const htmlChip = await page.locator(".site-version-chip").first().innerHTML();
-    expect(htmlChip).toContain("v0.16.35");
-    await expect(page.locator("#status")).toContainText(/v0\.16\.35/);
+    expect(htmlChip).toContain(SITE_TAG);
+    await expect(page.locator("#status")).toContainText(SITE_TAG);
     await expect(page.locator("#status")).not.toContainText(/0\.11\.0-scure|scure/i);
     await expect(page.locator("#labSafetyBanner")).toContainText(/Crypto stays in this tab/i);
     await expect(page.locator("#labSafetyBanner")).not.toContainText(/nothing is written to disk/i);
