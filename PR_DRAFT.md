@@ -29,7 +29,7 @@ Chip **v0.17.131-v2**. Product **0.16.81**. Try is amber. Combine is secondary, 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `python3 -m pytest tests/test_ac_v2_uc7_layout.py -q`
+- green_cmd: `PATH=.venv/bin python3 -m pytest tests/test_ac_v2_uc7_layout.py -q`
 
 ## Threat notes
 
