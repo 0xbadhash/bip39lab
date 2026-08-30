@@ -1,38 +1,40 @@
-# PR Draft: v0.16.82 UC1 classroom, UC7 Try honesty, UC16 length
+# PR Draft: v0.16.83 UC25 BIP-352 silent payments
 
-**Spec:** `.agents/specs/2026-08-29-v2-uc1-uc7-classroom.md`
-**Plan:** `.agents/specs/2026-08-29-v2-uc1-uc7-classroom-plan.md`
+**Spec:** `.agents/specs/2026-08-30-v2-uc25-bip352.md`
+**Plan:** `.agents/specs/2026-08-30-v2-uc25-bip352-plan.md`
 
 ## What Problem This Solves
 
-UC1 copy was unreadable; paste of 12 dictionary words looked like a lab bug. UC7 Try died on one odd-hex line; SLIP printout was locked. UC16 generate had no 12–24 select.
+UC25 was a calendar of two checkboxes. Silent payments (BIP-352) were missing as a track.
 
 ## Why This Change Was Made
 
-Operator: 11-year-old language; merge blues; no stray (i) line-breaks; Shamir any-M with a bad extra; SLIP pad editable but one-row shares; UC16 length before generate.
+Operator: replace UC25 with BIP-352 and test it. Full ship FSM.
 
 ## User Impact
 
-Chip **v0.17.132-v2**. Product **0.16.82**. Checksum still fail-closed. No Sign.
+Chip **v0.17.133-v2**. Product **0.16.83**. Reuse fail, two classroom sends differ, BIP-84 import refused. Not a live scanner. No Sign.
+
+Also in this tag: UC19 compare/wait/dust; UC15 passphrase left of Layer table; UC5 change descriptors for 44/49/86.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 | `test_ac_1_uc1_one_bip39_box_and_entropy` |
-| AC-2 | `test_ac_2_paste_checksum_copy` |
-| AC-3 | `test_ac_3_shamir_skips_bad_lines` |
-| AC-4 | `test_ac_4_uc16_and_xor` |
+| AC-1 | `test_uc25_is_bip352_not_calendar` |
+| AC-2 | Playwright S58 two sends differ |
+| AC-3 | S58 import refuse + scan ok |
+| AC-4 | S58 + UC16/UC18 still exist |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `.venv/bin/python3 -m pytest tests/test_ac_v2_uc1_uc7_classroom.py tests/test_ac_v2_uc7_layout.py tests/test_ac_v2_uc16_wordcount.py -q`
+- green_cmd: `.venv/bin/python3 -m pytest tests/test_ac_v2_uc25_bip352.py -q`
 
 ## Threat notes
 
-- secrets: practice only; invalid paste does not load a card
-- xss: static teach HTML + inlineI titles escaped via attrEsc
+- secrets: classroom `lab-sp1q` not a fundable silent address
+- xss: static teach HTML
 - csrf: n/a
 
 ## Evidence pack
@@ -40,17 +42,17 @@ Chip **v0.17.132-v2**. Product **0.16.82**. Checksum still fail-closed. No Sign.
 | Item | Result |
 |------|--------|
 | hard_gates | CODE_REVIEW, BEHAVIOR_REPORT, spec |
-| smoke | pytest AC |
-| pytest | three AC modules |
+| smoke | pytest AC + Playwright S58 |
+| pytest | `tests/test_ac_v2_uc25_bip352.py` |
 | validate | compliance_engine via venv |
 
 ## Things that look bad but are actually fine
 
-1. Dual stamp 0.16.82 vs 0.17.132-v2
+1. Dual stamp 0.16.83 vs 0.17.133-v2
 2. leftover scripts uncommitted
-3. Full Lab Playwright 232 still walls at 780s
-4. Random 12 English words fail checksum on purpose
-5. SLIP share boxes one row with sideways scroll
+3. SHA-256 classroom mixer is not live ECDH — labeled
+4. Full 232 Playwright wall
+5. Yearly drills remain UC16/UC18, not UC25
 
 ## Cross-review
 

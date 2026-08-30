@@ -1,12 +1,12 @@
-# Behavior contract — 0.16.82
+# Behavior contract — 0.16.83 UC25
 
-- **Target:** `/v2/?uc=1`, `/v2/?uc=7`, `/v2/?uc=16`
+- **Target:** `/v2/?uc=25`
 
 ## User tasks
 
-1. UC1: one classroom box (card vs mailbox) + entropy meter explained; paste of 12 random dictionary words fails with checksum copy; golden abandon…about fills the card.
-2. UC7 Shamir: paste two good shares plus one odd-hex line still matches.
-3. UC16: 12–24 before generate; restore cell count matches.
+1. Send twice to the same practice receive → fail (same script).
+2. Two classroom silent sends → different outputs.
+3. Import as BIP-84 refused; scan key is the looker.
 
 ## Must not
-- Sign / fund / accept invalid checksum / 24-word XOR
+- Sign / scan chain / live ECDH / fund lab-sp1q / delete UC16/18

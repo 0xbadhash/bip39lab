@@ -3,19 +3,19 @@
 base: origin/master
 
 ## Security Guru
-None. Invalid mnemonic still refused. No Sign. CSP unchanged.
+None. Classroom code is not a real silent-payment address. No Sign. No chain scan.
 
 ## Maintainability Expert
-None in-scope. Obsolete scan (touched): `v2Uc1Teach` removed (one box). Share-line CSS live. Whole-repo cruft → `/sweep` later.
+None in-scope. Obsolete: `data-cal` / Annual rehearsal removed. `v2SpReuse` / `v2SpSend` live.
 
 ### Obsolete / cleanup (scoped)
-- Tier A: 0 (`v2Uc1Teach` gone; ids `v2Bip39What` / `v2EntropyWhat` live)
+- Tier A: 0
 
 ## Domain Specialist
-None. Checksum fail-closed is correct. Shamir any-M-subset is the 2-of-3 job.
+None. Reuse vs silent job is correct. Honest about not running ECDH.
 
 ## Blocker count
 0
 
 ## Follow-ups
-Kid-voice on other UCs. Full 232 e2e.
+UC28 CoinJoin still slop.

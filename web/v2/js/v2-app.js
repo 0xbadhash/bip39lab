@@ -459,13 +459,13 @@
     { id: 16, level: "Starter", title: "Prove the backup works", job: "Hide the card. Type from paper. Same receive address.", done: "Same receive address from typed words. No photo. Practice phrase only." },
     { id: 17, level: "Beginner", title: "Choose setup by amount", job: "Match daily, mid, and large to different objects.", done: "Daily on a hot spend. Mid on hardware. Large as 2-of-3. Not all on an exchange." },
     { id: 18, level: "Intermediate", title: "If I cannot speak", job: "Watch an heir fail on missing objects while you can still fix it.", done: "You saw chat, a missing extra secret, and one-of-three keys fail. The packet holds a map, not the live seed. Not a will." },
-    { id: 19, level: "Beginner", title: "See a first receive", job: "Show a practice receive, then a second watch view.", done: "Same address on two views. Unknown is not zero. Never fund this practice phrase." },
+    { id: 19, level: "Beginner", title: "See a first receive", job: "Compare the full address. Wait. Leave surprise dust alone.", done: "You caught a lookalike address, waited for a confirmation, and left bait dust unspent. Never fund this practice phrase." },
     { id: 20, level: "Beginner", title: "Metal backup", job: "Paper burns. Pick a metal that survives fire and flood — and know which metals fail.", done: "You can name a safe metal, reject aluminium, accept 4-letter stamps, and still refuse any photo of the plate." },
     { id: 21, level: "Intermediate", title: "Collaborative custody", job: "You hold two keys. A partner holds one.", done: "You can say who can freeze, who can steal, and how that differs from friends 2-of-3." },
     { id: 22, level: "Beginner", title: "Hardware ceremony", job: "Check the device before a seed is born. Do not type words into the laptop.", done: "Seed stays on the device. A USB cable is not an air-gap." },
     { id: 23, level: "Intermediate", title: "Air-gap signing loop", job: "Build online, sign offline, send from hot.", done: "Four steps in order. This tab never signs." },
     { id: 24, level: "Intermediate", title: "Geographic keys", job: "Home, elsewhere, a person — not two keys in one building.", done: "Three keys not clustered in one building." },
-    { id: 25, level: "Beginner", title: "Annual rehearsal", job: "Put restore and inheritance drills on a calendar.", done: "Prove-the-backup and open-while-alive are scheduled this year." },
+    { id: 25, level: "Advanced", title: "Silent payments (BIP-352)", job: "Reuse is a camera. A silent code makes a new on-chain mailbox each send.", done: "You saw reuse link payments, two classroom silent sends differ, and a silent code is not a BIP-84 receive." },
     { id: 26, level: "Advanced", title: "Own node", job: "A public explorer is someone else’s view, not your node.", done: "This tab does not run a node. Lookups stay opt-in Network." },
     { id: 27, level: "Advanced", title: "UTXO / coin control", job: "Spend one practice coin. Change returns to a different folder.", done: "You saw a spend consume one piece and return change to a different folder. The words stayed the same." },
     { id: 28, level: "Advanced", title: "CoinJoin / privacy", job: "Mixing is optional. It does not replace backup.", done: "You know mixing is extra privacy, not a custody substitute." },
@@ -481,10 +481,10 @@
   var PATHS = [
     { id: "start", title: "Start here", blurb: "1 Make words · 2 The card is the backup · 3 Prove it works.", ids: [1, 2, 16] },
     { id: "keys", title: "Keys and backup", blurb: "1 Add a hidden 25th word · 2 Weak dice still make words · 3 Pad then a 25th word.", ids: [3, 14, 15, 20, 22] },
-    { id: "watch", title: "Addresses and watch", blurb: "1 Folders · 2 Watch only · 3 Viewing-key privacy · 4 First receive.", ids: [4, 5, 9, 19] },
+    { id: "watch", title: "Addresses and watch", blurb: "1 Folders · 2 Watch only · 3 Viewing-key privacy · 4 First receive · 5 Silent payments.", ids: [4, 5, 9, 19, 25] },
     { id: "custody", title: "Who holds the keys", blurb: "1 They hold · 2 Hot vs hardware · 3 Hot vs cold · 4 How much.", ids: [11, 12, 13, 17] },
     { id: "shared", title: "Shared and air-gap", blurb: "1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap.", ids: [6, 7, 8, 10, 21, 23] },
-    { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys · 3 Yearly drill.", ids: [18, 24, 25] },
+    { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys.", ids: [18, 24] },
     { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] },
     { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Electrum words.", ids: [32, 33, 34, 35] }
   ];
@@ -509,13 +509,13 @@
     16: { is: "Hide the card. Type from paper. Same receive address.", isnt: "Do not photograph the card. Do not use a funded phrase." },
     17: { is: "Match how much to which object.", isnt: "Do not put daily, mid, and large all on an exchange." },
     18: { is: "Rehearse the objects an heir needs. Fail in front of you.", isnt: "Do not put a seed in chat. This is not a will or legal counsel." },
-    19: { is: "A practice receive, then a second watch view.", isnt: "Do not fund this practice phrase on mainnet." },
+    19: { is: "Compare the full receive string. Wait for a confirm. Leave surprise dust alone.", isnt: "Do not fund this practice phrase. Do not spend bait dust. Live lookup is Network." },
     20: { is: "Practice choosing a fire- and flood-resistant object for a funded seed.", isnt: "A shop, a product review site, or permission to photograph any plate." },
     21: { is: "You hold two keys. A partner or service holds one.", isnt: "Not the same threat model as three friends DIY." },
     22: { is: "Check firmware before a seed is born. A seed that lived on a laptop stays a hot wallet.", isnt: "Do not import a laptop phrase into hardware and call it cold." },
     23: { is: "Build online, sign offline, broadcast from hot.", isnt: "This tab never signs." },
     24: { is: "Home, elsewhere, a person — three sites.", isnt: "Do not put two keys in one building." },
-    25: { is: "Schedule restore and inheritance drills this year.", isnt: "A document you never run is a hope." },
+    25: { is: "A silent payment code makes a new on-chain output each send. Reuse of one bc1q is a camera.", isnt: "Not a BIP-84 receive string. This tab does not scan the chain or run live ECDH." },
     26: { is: "A public explorer is someone else’s view.", isnt: "This tab does not run your node." },
     27: { is: "Spend one practice coin. Change returns to the change folder. Words stay put.", isnt: "Do not treat the total as one coin. This tab does not broadcast." },
     28: { is: "Inputs spent together can look like one owner.", isnt: "Mixing does not replace backup. No mixer brand here." },
@@ -879,13 +879,13 @@
       16: ["Hide the card", "Type from paper", "Quiz", "Finish"],
       17: ["How much", "Place amounts", "Quiz", "Finish"],
       18: ["Heirs fail on objects", "Build the packet", "Open while alive", "Quiz", "Finish"],
-      19: ["Receive address", "Watch + credit", "Quiz", "Finish"],
+      19: ["Compare the string", "Wait for a confirm", "Refuse dust", "Quiz", "Finish"],
       20: ["Paper fails", "Metals compared", "4 letters are enough", "Solid plate rules", "Quiz", "Finish"],
       21: ["You hold two", "Name freeze vs steal", "Quiz", "Finish"],
       22: ["Check firmware", "Laptop seed stays hot", "Quiz", "Finish"],
       23: ["Four steps", "Tap the loop", "Quiz", "Finish"],
       24: ["Three sites", "Place three keys", "Quiz", "Finish"],
-      25: ["Plans go stale", "Schedule drills", "Quiz", "Finish"],
+      25: ["Reuse is a camera", "Two silent sends", "Not a BIP-84 receive", "Quiz", "Finish"],
       26: ["Not your node", "Opt-in lookup", "Quiz", "Finish"],
       27: ["Coins are pieces", "Two practice coins", "Spend one, change returns", "Quiz", "Finish"],
       28: ["Common input", "Mixing is not custody", "Quiz", "Finish"],
@@ -926,7 +926,7 @@
       22: ["Firmware", "Notes-file vault", "New seed on device"],
       23: ["Build PSBT", "Offline sign", "Broadcast elsewhere"],
       24: ["Home", "Elsewhere", "Not one building"],
-      25: ["Calendar", "UC16 restore", "UC18 open-alive"],
+      25: ["Same bc1q twice", "New mailbox each send", "Scan key ≠ BIP-84"],
       26: ["No node in this tab", "Unknown is not zero", "Network dock"],
       27: ["Coins are pieces", "Select one coin", "Change folder"],
       28: ["Heuristics", "Optional mix", "Still need keys"],
@@ -1232,10 +1232,11 @@
       ]
     },
     19: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 1) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc1-atom-phrase-ne-address.svg", "A receive address you can show", "<strong>Plan · Test address</strong><br/>QR and text of a practice tb1 address."),
-        atom(2, 1, "assets/uc5-atom-viewing-key.svg", "Watch-only second view", "<strong>Practice · Same address twice</strong><br/>Simulated 0.000184 tBTC. Unknown is not zero."),
-        atom(3, 2, "assets/uc10-atom-unknown-not-zero.svg", "Never fund practice mainnet", "<strong>Review · Practice only</strong><br/>Real lookup is the Network room after opt-in. This tab stays offline.")
+        atom(1, 0, "assets/uc1-atom-phrase-ne-address.svg", "Read the whole address before they send", "<strong>Plan · Compare</strong><br/>First and last letters can match a fake. Read the middle. Same screen as the wallet."),
+        atom(2, 1, "assets/uc10-atom-unknown-not-zero.svg", "Seen is not yours yet", "<strong>Practice · Wait</strong><br/>0 confirmations = announced. ~1 confirmation ≈ 10 minutes in class. Do not spend it yet."),
+        atom(3, 2, "assets/uc9-atom-cannot-spend.svg", "Surprise dust is bait", "<strong>Review · Leave dust</strong><br/>A tiny amount you did not ask for. Do not mix it with savings. Practice only. Live lookup is Network.")
       ]
     },
     20: {
@@ -1275,10 +1276,11 @@
       ]
     },
     25: {
+      forStep: function (s) { if (s <= 0) return 1; if (s <= 1) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc2-atom-card-object.svg", "Plans go stale", "<strong>Plan · Calendar</strong><br/>A restore you never run is a hope."),
-        atom(2, 1, "assets/uc2-atom-hand-not-photo.svg", "Schedule UC16", "<strong>Practice · Restore drill</strong><br/>Pick a month. Hide the screen. Type from paper."),
-        atom(3, 2, "assets/uc6-atom-mofn.svg", "Schedule UC18 open-while-alive", "<strong>Review · Inheritance dry-run</strong><br/>Heirs should fail in front of you, not after.")
+        atom(1, 0, "assets/uc9-atom-leaks-history.svg", "The same receive twice is a camera", "<strong>Plan · Reuse</strong><br/>Give the same bc1q twice and outsiders can link the two payments."),
+        atom(2, 1, "assets/uc1-atom-one-to-many.svg", "A silent code cooks a new mailbox", "<strong>Practice · BIP-352</strong><br/>Same code, two sends, two different on-chain outputs. Classroom mixer — not a live scanner."),
+        atom(3, 2, "assets/uc5-atom-never-words.svg", "Not a BIP-84 receive string", "<strong>Review · Scan ≠ import</strong><br/>Do not paste a silent code into an old wallet as zpub/receive. Scan looks; spend spends.")
       ]
     },
     26: {
@@ -1603,9 +1605,10 @@
         { q: "Is this track a will?", opts: [qOk("No. It rehearses objects. It is not legal counsel.", "Correct. A court does not follow these screens."), qBad("Yes. Screenshot these pads for probate.", "Wrong.")] }
       ],
       19: [
-        { q: "Should you send real bitcoin to this practice address?", opts: [qOk("Never. This phrase is for teaching only.", "Correct."), qBad("Yes, a small amount is fine to test.", "Wrong. Do not fund a practice phrase.")] },
-        { q: "The simulated 0.000184 coins on this tab mean:", opts: [qOk("A teaching credit. A failed real lookup should say unknown, not zero.", "Correct. This tab is offline."), qBad("Proof those coins exist on the real bitcoin network.", "Wrong. This tab does not look up the chain unless you opt in on Network.")] },
-        { q: "What is the second view of the same receive address?", opts: [qOk("A watch-only list that sees the address, not the secret words.", "Correct."), qBad("Paste the recovery words into a phone app.", "Wrong. That makes a hot wallet, not a second view.")] }
+        { q: "Someone will send you bitcoin. What do you check first?", opts: [qOk("The whole address on the wallet screen — not just the first and last letters.", "Correct. A fake can copy the ends and change the middle."), qBad("The QR on a website is enough if the first six letters match.", "Wrong. That is how lookalike addresses trick people.")] },
+        { q: "A payment shows 0 confirmations. What is true?", opts: [qOk("It was announced. It is not safely yours yet. Wait about one block (~10 minutes in class) for a first receive.", "Correct."), qBad("Spend it now. Zero confirmations means it landed.", "Wrong. 0-conf can still vanish.")] },
+        { q: "A tiny amount appears that you did not ask for. What do you do?", opts: [qOk("Leave it. Do not mix it with coins you care about. It can be bait (dust).", "Correct."), qBad("Sweep it into your savings so the address is tidy.", "Wrong. Spending dust can link your coins and is a classic scam.")] },
+        { q: "Should you send real bitcoin to this practice address?", opts: [qOk("Never. This phrase is for class only.", "Correct."), qBad("Yes, a little, to see if receive works.", "Wrong. Do not fund a practice phrase.")] }
       ],
       20: [
         { q: "For a funded seed, which backup survives fire and flood better?", opts: [qOk("A metal plate, not paper.", "Correct. Paper burns and rots."), qBad("A screenshot of the steel plate in the cloud.", "Wrong. A photo of steel is still a leak.")] },
@@ -1633,9 +1636,10 @@
         { q: "What counts as a third place for a key?", opts: [qOk("Another person or institution — not the same building.", "Correct."), qBad("The garage of the same house.", "Wrong. That is still one building.")] }
       ],
       25: [
-        { q: "A backup plan you never practise becomes:", opts: [qOk("Stale. Schedule a restore drill and an open-while-alive rehearsal.", "Correct."), qBad("Fine. Write it once and never run it.", "Wrong. Hope is not a rehearsal.")] },
-        { q: "Should heirs first try the backup after you cannot help?", opts: [qOk("No. Practise opening it while you are alive.", "Correct."), qBad("Yes. That is when it matters.", "Wrong. Then you cannot debug it.")] },
-        { q: "Is a screenshot a yearly restore?", opts: [qOk("No. Restore from paper or metal, not a photo.", "Correct."), qBad("Yes. A screenshot is a yearly backup.", "Wrong.")] }
+        { q: "You give the same bc1q to two people. What can an outsider see?", opts: [qOk("The two payments can look like the same mailbox. Reuse is a camera.", "Correct."), qBad("Nothing. Bitcoin addresses are always private.", "Wrong. Reused addresses link history.")] },
+        { q: "What does a BIP-352 silent payment code do?", opts: [qOk("Each sender creates a new on-chain output. You published one code, not one reused script.", "Correct. This lab shows the job; it does not scan the chain."), qBad("It is another name for a BIP-84 zpub.", "Wrong. A zpub is a viewing key for a gap of addresses. Silent payments hide the link.")] },
+        { q: "Should you paste a silent payment code into an old wallet as a receive address?", opts: [qOk("No. Old wallets will not scan for BIP-352 outputs. You can lose the coins.", "Correct."), qBad("Yes. If it looks like an address, any wallet will find it.", "Wrong.")] },
+        { q: "Does this tab run a live silent-payment scanner?", opts: [qOk("No. Classroom only. No Sign. No chain scan.", "Correct."), qBad("Yes. It watches mempool.space for silent payments.", "Wrong.")] }
       ],
       26: [
         { q: "Does this tracks tab run your own bitcoin node?", opts: [qOk("No. This tab stays offline. It does not run a node.", "Correct."), qBad("Yes. A full node runs inside this browser.", "Wrong.")] },
@@ -1696,6 +1700,8 @@
   async function ucJob(id, step) {
     if (id === 20) return uc20(step);
     if (id === 18) return uc18(step);
+    if (id === 19) return uc19(step);
+    if (id === 25) return uc25(step);
     if (id === 27) return uc27(step);
     if (id === 30) return uc30(step);
     if (id === 32) return uc32(step);
@@ -1704,12 +1710,10 @@
     if (step === 3) return finishHtml(id);
     if (id === 16) return uc16(step);
     if (id === 17) return uc17(step);
-    if (id === 19) return uc19(step);
     if (id === 21) return uc21(step);
     if (id === 22) return uc22(step);
     if (id === 23) return uc23(step);
     if (id === 24) return uc24(step);
-    if (id === 25) return uc25(step);
     if (id === 26) return uc26(step);
     if (id === 28) return uc28(step);
     if (id === 29) return uc29(step);
@@ -1969,40 +1973,133 @@
     return finishHtml(18);
   }
 
+  function recvAddrNow() {
+    if (mem.lastRows && mem.lastRows[0]) return String(mem.lastRows[0].bip84_p2wpkh || "");
+    return "";
+  }
+
+  function lookalikeAddr(addr) {
+    addr = String(addr || "");
+    if (addr.length < 22) return "tb1q" + "acdefghjklmnpqrstuvwxyz23456789".slice(0, 20) + (addr.slice(-6) || "xyzabc");
+    var head = addr.slice(0, 10);
+    var tail = addr.slice(-8);
+    var mid = addr.slice(10, -8).split("");
+    if (mid.length < 4) return head + "xyz0" + tail;
+    var i = 1;
+    var j = mid.length - 2;
+    var t = mid[i];
+    mid[i] = mid[j];
+    mid[j] = t;
+    if (mid.join("") === addr.slice(10, -8)) mid[0] = mid[0] === "a" ? "b" : "a";
+    return head + mid.join("") + tail;
+  }
+
   async function uc19(step) {
+    if (step === 3) return quizBank(jobQuizzes(19));
+    if (step >= 4) return finishHtml(19);
     if (step === 0) {
       if (mem.mnemonic && !mem.lastRows) await deriveNow();
+      var addr0 = recvAddrNow();
+      var fake = addr0 ? lookalikeAddr(addr0) : "";
+      if (mem.recvScamLeft == null) mem.recvScamLeft = Math.random() < 0.5;
+      var leftOk = !mem.recvScamLeft;
+      function pickBtn(ok, text) {
+        return (
+          '<button type="button" class="v2-recv-pick' +
+          (mem.recvPickOk && ok ? " is-on" : "") +
+          '" data-recv-pick="' +
+          (ok ? "ok" : "scam") +
+          '"><code>' +
+          (text || "—") +
+          "</code></button>"
+        );
+      }
       return pad(
-        "<h2>Practice receive address (test)</h2>" +
-        doDont("Show a tb1 practice address and QR.", "Do not fund a practice mainnet phrase from this tab.") +
+        "<h2>Compare the whole address before they send</h2>" +
+        doDont(
+          "Read the full string on the wallet screen. First and last letters can match a fake.",
+          "Do not fund this practice phrase. Do not trust a QR that only matches the ends."
+        ) +
         teachBox(
           "Classroom — first receive",
-          "<em>What it is:</em> a practice tb1 (or bc1 on main toggle).<br/><em>Why:</em> seeing an address is not funding it.<br/><em>When / where:</em> this tab only. Never fund this practice phrase.<br/><em>How:</em> the address and QR below are lab objects.",
+          "Before anyone sends, you and they must have the <strong>same full address</strong>. Scammers copy the start and end and change the middle. Carry: the string you compared, the amount you asked, which wallet screen you will check. This tab is class only — never send real coins here.",
           "v2Uc19Teach"
         ) +
-        "<h3>Receive (lab result)</h3>" +
-        '<button type="button" class="btn" id="v2Generate">Show receive address</button>' +
+        '<button type="button" class="btn" id="v2Generate">Show practice receive</button>' +
         netSelectHtml() +
         '<div id="v2AddrWrap">' + (mem.lastRows ? addrHtml() : "") + "</div>" +
-        pauseBtn("Next: watch-only second view", !(mem.lastRows && mem.lastRows.length))
+        (addr0
+          ? "<h3>Which string matches the wallet screen?</h3>" +
+            '<div class="v2-recv-picks" id="v2RecvPicks">' +
+            (leftOk ? pickBtn(true, addr0) + pickBtn(false, fake) : pickBtn(false, fake) + pickBtn(true, addr0)) +
+            "</div>"
+          : '<p class="control-help">Show a practice receive first.</p>') +
+        '<p id="v2RecvCmpOut" class="control-help">' +
+        (mem.recvPickOk
+          ? "Match. You read the middle, not only the ends."
+          : "Tap the full string that matches. One of these is a lookalike.") +
+        "</p>" +
+        pauseBtn("Next: how long to wait", !mem.recvPickOk)
       );
     }
-    var addr = "";
-    if (mem.lastRows && mem.lastRows[0]) addr = mem.lastRows[0].bip84_p2wpkh || "";
+    if (step === 1) {
+      var a1 = recvAddrNow();
+      return pad(
+        "<h2>Seen is not yours yet</h2>" +
+        doDont(
+          "For a first receive, wait until a confirmation (~10 minutes in class). Then the amount you asked can show.",
+          "Do not spend 0-confirmation coins from someone new. Do not fund this practice phrase."
+        ) +
+        teachBox(
+          "Classroom — how long to wait",
+          "0 confirmations means the network <em>heard</em> the payment. It can still vanish. About <strong>one confirmation ≈ 10 minutes</strong> in this class (real blocks vary). Bigger amounts: wait more. Carry the amount you asked. Live lookup is Network, not this tab.",
+          "v2Uc19WaitTeach"
+        ) +
+        '<p class="control-help">Watch list (same string): <code id="v2WatchSame">' +
+        (a1 || "go back and compare first") +
+        "</code></p>" +
+        '<p id="v2SimBal" class="control-help">' +
+        (mem.recvWait1
+          ? "After ~1 confirmation: simulated 0.000184 tBTC you asked for (teaching only)."
+          : "Balance: unknown (not 0). This tab did not look up the chain.") +
+        "</p>" +
+        '<div class="v2-recv-wait" id="v2RecvWait">' +
+        '<button type="button" class="btn secondary" data-recv-wait="0">I spend at 0 confirmations</button>' +
+        '<button type="button" class="btn" data-recv-wait="1">I wait ~1 confirmation (~10 min)</button>' +
+        "</div>" +
+        '<p id="v2RecvWaitOut" class="control-help">' +
+        (mem.recvWait1
+          ? "Good. Seen is not yours yet. You waited."
+          : "Pick how you treat a first receive.") +
+        "</p>" +
+        pauseBtn("Next: surprise dust", !mem.recvWait1)
+      );
+    }
     return pad(
-      "<h2>Watch-only second view + simulated credit</h2>" +
-      doDont("Same address on a watch list. Simulate 0.000184 tBTC if you stay offline.", "Do not fund the practice mainnet phrase. Real lookup = Network dock.") +
-      teachBox(
-        "Classroom — two views",
-        "<em>What it is:</em> the same receive string on a watch list.<br/><em>Why:</em> unknown is not zero until you opt in to Network.<br/><em>How:</em> the watch line and simulated balance below are lab objects. Real lookup stays on Network.",
-        "v2Uc19WatchTeach"
+      "<h2>Surprise dust is bait</h2>" +
+      doDont(
+        "Leave an amount you did not ask for. Do not mix it with coins you care about.",
+        "Do not sweep dust into savings. Do not fund this practice phrase."
       ) +
-      "<h3>Watch list (lab result)</h3>" +
-      '<p id="v2WatchSame">Watch-only list: <code>' + (addr || "generate first") + "</code></p>" +
-      '<p id="v2SimBal" class="control-help">Balance: unknown (not 0)</p>' +
-      '<button type="button" class="btn" id="v2SimRecv">Simulate a test credit</button>' +
+      teachBox(
+        "Classroom — dust",
+        "Dust is a tiny leftover. Scammers sometimes send it so you later spend it together with real coins — that can link your activity. If you did not ask for it, leave it. This inbox is fake. Live lookup stays on Network.",
+        "v2Uc19DustTeach"
+      ) +
+      '<table class="v2-ent-stack" id="v2RecvInbox">' +
+      "<tr><th>What arrived</th><th>You asked?</th></tr>" +
+      "<tr><td>0.000184 tBTC</td><td>Yes — the test amount</td></tr>" +
+      "<tr><td>546 sats</td><td>No — surprise dust</td></tr>" +
+      "</table>" +
+      '<div class="v2-recv-wait">' +
+      '<button type="button" class="btn" data-recv-dust="leave">Leave the dust</button>' +
+      '<button type="button" class="btn secondary" data-recv-dust="mix">Sweep dust into savings</button>' +
+      "</div>" +
+      '<p id="v2RecvDustOut" class="control-help">' +
+      (mem.recvDustOk ? "Good. Bait stays untouched." : "What do you do with the 546 sats?") +
+      "</p>" +
       '<a class="btn secondary" href="../network.html" data-v2-dock="19">Open Network (opt-in test lookup)</a>' +
-      pauseBtn("Two views, no mainnet fund", !mem.simRecv)
+      pauseBtn("I compared, waited, left dust", !mem.recvDustOk)
     );
   }
 
@@ -2301,20 +2398,135 @@
     );
   }
 
-  function uc25(step) {
+  function spMem() {
+    if (!mem.sp) mem.sp = { reuse: false, sends: [], importFail: false, keyPick: "" };
+    return mem.sp;
+  }
+
+  function spCodeNow() {
+    var w = String(mem.mnemonic || "practice-silent").trim().split(/\s+/).filter(Boolean).slice(0, 4).join("-");
+    if (!w) w = "practice-silent";
+    return "lab-sp1q:" + w + ":not-a-real-BIP-352-address";
+  }
+
+  async function spClassroomOut(i) {
+    var raw = spCodeNow() + "|send|" + i;
+    var hex = "";
+    try {
+      if (globalThis.crypto && crypto.subtle) {
+        var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+        hex = Array.from(new Uint8Array(buf))
+          .map(function (b) {
+            return b.toString(16).padStart(2, "0");
+          })
+          .join("");
+      }
+    } catch (e) {
+      hex = "";
+    }
+    if (!hex) hex = "lab" + String(raw.length) + "x" + i;
+    return "tb1p-lab-" + hex.slice(0, 20);
+  }
+
+  async function uc25(step) {
+    if (step === 3) return quizBank(jobQuizzes(25));
+    if (step >= 4) return finishHtml(25);
+    var sp = spMem();
     if (step === 0) {
+      await ensurePhrase();
+      var reuseAddr = recvAddrNow() || "tb1q-lab-reuse-example";
       return pad(
-        "<h2>Plans go stale</h2>" +
-        doDont("Put restore and inheritance dry-run on a calendar.", "A document you never run is a hope.") +
-        pauseBtn("Next: schedule the two drills", false)
+        "<h2>Reuse is a camera</h2>" +
+        doDont(
+          "If two people pay the same on-chain address, outsiders can link those payments.",
+          "Do not treat a reused bc1q as private. Do not fund this practice phrase."
+        ) +
+        teachBox(
+          "Classroom — BIP-352 silent payments",
+          "A normal receive string is one mailbox on the chain. Give it twice and both coins sit on the same script — a camera on your history. " +
+            inlineI(
+              "BIP-352",
+              "Silent payments. You publish one code. Each sender builds a new on-chain output. You scan with a scan key and spend with a spend key. This tab shows the job. It does not scan the chain or run live ECDH."
+            ) +
+            " is the rulebook for a code that makes a <em>new</em> mailbox each send. Official grown-up page: " +
+            '<a href="https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki" target="_blank" rel="noopener noreferrer" id="v2Bip352Spec">BIP-352</a>. This tab does not scan the chain.',
+          "v2Uc25Teach"
+        ) +
+        '<p class="control-help">Practice receive (same string twice = reuse):</p>' +
+        '<code class="v2-preview-big" id="v2SpReuseAddr">' +
+        reuseAddr +
+        "</code>" +
+        '<button type="button" class="btn" id="v2SpReuse" data-sp="reuse">Send twice to this same address</button>' +
+        '<pre class="out" id="v2SpReuseOut">' +
+        (sp.reuse
+          ? "Both payments used the same script. An outsider can link them. Next: a silent code."
+          : "Tap send twice. Watch the same mailbox used again.") +
+        "</pre>" +
+        pauseBtn("Next: two silent sends", !sp.reuse)
+      );
+    }
+    if (step === 1) {
+      var code = spCodeNow();
+      var lines = (sp.sends || [])
+        .map(function (s, i) {
+          return "Send " + (i + 1) + ": " + s;
+        })
+        .join("\n");
+      var differ = sp.sends.length >= 2 && sp.sends[0] !== sp.sends[1];
+      return pad(
+        "<h2>Same code, new mailbox each send</h2>" +
+        doDont(
+          "Publish one silent-payment code. Each send should land on a different on-chain output.",
+          "Do not paste this classroom code into a wallet. It is not a real BIP-352 address."
+        ) +
+        teachBox(
+          "Classroom — two sends",
+          "Real BIP-352 uses ECDH with the sender’s coins so only you can find the output. This pad uses a classroom hash so you can see the job: same code, different outputs. Not a live scanner. Not Sign.",
+          "v2Uc25SendTeach"
+        ) +
+        '<p class="control-help">Classroom silent code (not fundable):</p>' +
+        '<code class="v2-preview-big" id="v2SpCode">' +
+        code +
+        "</code>" +
+        '<button type="button" class="btn" id="v2SpSend" data-sp="send">Classroom send to this code</button>' +
+        '<pre class="out" id="v2SpSendOut">' +
+        (lines || "No classroom sends yet.") +
+        "</pre>" +
+        '<p id="v2SpSendMsg" class="control-help">' +
+        (differ ? "The two outputs differ. Reuse did not happen." : "Send twice. The two lines must not match.") +
+        "</p>" +
+        pauseBtn("Next: not a BIP-84 receive", !differ)
       );
     }
     return pad(
-      "<h2>Schedule drills</h2>" +
-      '<label class="check"><input type="checkbox" data-cal="16"/> Prove the backup this year</label>' +
-      '<label class="check"><input type="checkbox" data-cal="18"/> Open while alive this year</label>' +
-      '<div id="v2CalOut"></div>' +
-      pauseBtn("I scheduled both drills", true)
+      "<h2>Not a BIP-84 receive · scan vs spend</h2>" +
+      doDont(
+        "Keep the silent code in a wallet that knows BIP-352. Scan looks. Spend spends.",
+        "Do not import this code as a zpub or a normal receive string in an old wallet."
+      ) +
+      teachBox(
+        "Classroom — two keys",
+        "Silent payments use a scan key (look for outputs) and a spend key (move coins). A BIP-84 zpub is a different job: it lists a gap of addresses and is a camera if leaked (UC5 / UC9). This tab does not scan.",
+        "v2Uc25KeyTeach"
+      ) +
+      '<button type="button" class="btn secondary" data-sp-import="1">Import silent code as BIP-84 receive</button>' +
+      '<p id="v2SpImportOut" class="' +
+      (sp.importFail ? "msg-bad" : "control-help") +
+      '">' +
+      (sp.importFail
+        ? "Refused. An old wallet will not find BIP-352 outputs. Coins can look lost."
+        : "Try the import. It must fail.") +
+      "</p>" +
+      '<p class="control-help">Which object looks for silent payments?</p>' +
+      '<div class="v2-recv-wait">' +
+      '<button type="button" class="btn secondary" data-sp-key="xpub">The BIP-84 zpub from UC5</button>' +
+      '<button type="button" class="btn" data-sp-key="scan">The silent-payment scan key</button>' +
+      '<button type="button" class="btn secondary" data-sp-key="seed">Paste the twelve words into an explorer</button>' +
+      "</div>" +
+      '<p id="v2SpKeyOut" class="control-help">' +
+      (sp.keyPick === "scan" ? "Scan looks. Spend spends. Words never go to an explorer." : "Pick the object that looks.") +
+      "</p>" +
+      pauseBtn("Scan looks, spend spends", !(sp.importFail && sp.keyPick === "scan"))
     );
   }
 
@@ -5423,18 +5635,25 @@
           "Same recovery words + a different passphrase = a different wallet. The Lab estimate uses character mix and length (capped, teaching-only). PBKDF2 always outputs 512 bits — that is not “your passphrase has 512 bits of entropy.”"
         ) +
         entHeroHtml() +
-        entStackHtml() +
+        '<div class="v2-uc15-split" id="v2Uc15Split">' +
+        '<div class="v2-uc15-pp">' +
+        '<div class="v2-pp-head">' +
+        '<span class="v2-pp-chars" id="v2EntPpCount">' +
+        (mem.entPp ? mem.entPp.length : 0) +
+        " / 128</span>" +
+        "</div>" +
         ppKeyHeroHtml(
           '<label class="field" for="v2EntPp"><span class="label-row">Practice passphrase (up to 128 characters)</span>' +
           '<textarea id="v2EntPp" rows="3" maxlength="128" autocomplete="off" spellcheck="false" placeholder="try 1 character, then a longer phrase (64+ is fine)">' +
           attrEsc(mem.entPp) +
           "</textarea></label>" +
-          '<p class="control-help" id="v2EntPpHint">Try a single letter (weak), then several mixed characters (fair / stronger). Length can go past 64.</p>' +
-          '<p class="control-help" id="v2EntPpCount">' +
-          (mem.entPp ? mem.entPp.length : 0) +
-          " / 128</p>",
+          '<p class="control-help" id="v2EntPpHint">Try a single letter (weak), then several mixed characters (fair / stronger). Length can go past 64.</p>',
           "v2PpKeyUc15"
         ) +
+        "</div>" +
+        '<div class="v2-uc15-stack">' +
+        entStackHtml() +
+        "</div></div>" +
         pauseBtn("I saw length change the extra secret", !(mem.entPp && mem.entPp.length))
       );
     }
@@ -6205,12 +6424,22 @@
         mem.restoreOk = false;
         mem.restoreHidden = false;
       }
+      if (current.id === 19) {
+        mem.recvPickOk = false;
+        mem.recvWait1 = false;
+        mem.recvDustOk = false;
+        mem.recvScamLeft = Math.random() < 0.5;
+      }
       if (current.id === 16 || current.id === 19) {
         await deriveNow();
         if (mem.lastRows && mem.lastRows[0]) {
           mem.restoreAddr = mem.lastRows[0].bip84_p2wpkh || "";
         }
         if (aw && current.id === 19) aw.classList.remove("v2-hidden");
+      }
+      if (current.id === 19) {
+        renderTrack();
+        return;
       }
       if (pause) pause.disabled = false;
     });
@@ -8142,14 +8371,57 @@
     if ($("v2InhTryNopass")) $("v2InhTryNopass").addEventListener("click", function () { inhTry("nopass"); });
     if ($("v2InhTryOne")) $("v2InhTryOne").addEventListener("click", function () { inhTry("one"); });
     if ($("v2InhTryLive")) $("v2InhTryLive").addEventListener("click", function () { inhTry("live"); });
-    if ($("v2SimRecv")) {
-      $("v2SimRecv").addEventListener("click", function () {
-        mem.simRecv = true;
-        var b = $("v2SimBal");
-        if (b) b.textContent = "Simulated credit: 0.000184 tBTC (teaching only; this tab did not talk to a network).";
-        if (pause) pause.disabled = false;
+    document.querySelectorAll("[data-recv-pick]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var ok = btn.getAttribute("data-recv-pick") === "ok";
+        mem.recvPickOk = ok;
+        var o = $("v2RecvCmpOut");
+        if (o) {
+          o.className = ok ? "msg-ok" : "msg-bad";
+          o.textContent = ok
+            ? "Match. You read the middle, not only the ends."
+            : "Fail. That string copies the ends and changes the middle. Do not tell them to send here.";
+        }
+        document.querySelectorAll("[data-recv-pick]").forEach(function (b) {
+          b.classList.toggle("is-on", b === btn && ok);
+        });
+        if (pause) pause.disabled = !ok;
       });
-    }
+    });
+    document.querySelectorAll("[data-recv-wait]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var one = btn.getAttribute("data-recv-wait") === "1";
+        mem.recvWait1 = one;
+        var o = $("v2RecvWaitOut");
+        var bal = $("v2SimBal");
+        if (o) {
+          o.className = one ? "msg-ok" : "msg-bad";
+          o.textContent = one
+            ? "Good. Seen is not yours yet. You waited."
+            : "Fail. 0 confirmations can still vanish. Do not spend a first receive yet.";
+        }
+        if (bal) {
+          bal.textContent = one
+            ? "After ~1 confirmation: simulated 0.000184 tBTC you asked for (teaching only)."
+            : "Balance: unknown (not 0). This tab did not look up the chain.";
+        }
+        if (pause) pause.disabled = !one;
+      });
+    });
+    document.querySelectorAll("[data-recv-dust]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var leave = btn.getAttribute("data-recv-dust") === "leave";
+        mem.recvDustOk = leave;
+        var o = $("v2RecvDustOut");
+        if (o) {
+          o.className = leave ? "msg-ok" : "msg-bad";
+          o.textContent = leave
+            ? "Good. Bait stays untouched."
+            : "Fail. Sweeping dust can link your coins. Leave it.";
+        }
+        if (pause) pause.disabled = !leave;
+      });
+    });
     document.querySelectorAll("[data-metal]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var k = btn.getAttribute("data-metal");
@@ -8645,14 +8917,54 @@
         if (pause) pause.disabled = !ok;
       });
     });
-    document.querySelectorAll("[data-cal]").forEach(function (box) {
-      box.addEventListener("change", function () {
-        var a = document.querySelector('[data-cal="16"]');
-        var b = document.querySelector('[data-cal="18"]');
-        var ok = a && a.checked && b && b.checked;
-        var o = $("v2CalOut");
-        if (o) o.textContent = ok ? "Both drills scheduled." : "Tick UC16 and UC18.";
-        if (pause) pause.disabled = !ok;
+    if ($("v2SpReuse")) {
+      $("v2SpReuse").addEventListener("click", function () {
+        spMem().reuse = true;
+        var o = $("v2SpReuseOut");
+        if (o) {
+          paintTone(o, "bad");
+          o.textContent =
+            "Both payments used the same script. An outsider can link them. Next: a silent code.";
+        }
+        if (pause) pause.disabled = false;
+      });
+    }
+    if ($("v2SpSend")) {
+      $("v2SpSend").addEventListener("click", async function () {
+        var sp = spMem();
+        var out = await spClassroomOut(sp.sends.length + 1);
+        sp.sends.push(out);
+        renderTrack();
+      });
+    }
+    document.querySelectorAll("[data-sp-import]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        spMem().importFail = true;
+        var o = $("v2SpImportOut");
+        if (o) {
+          o.className = "msg-bad";
+          o.textContent = "Refused. An old wallet will not find BIP-352 outputs. Coins can look lost.";
+        }
+        var sp = spMem();
+        if (pause) pause.disabled = !(sp.importFail && sp.keyPick === "scan");
+      });
+    });
+    document.querySelectorAll("[data-sp-key]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-sp-key") || "";
+        var sp = spMem();
+        sp.keyPick = k;
+        var o = $("v2SpKeyOut");
+        var ok = k === "scan";
+        if (o) {
+          o.className = ok ? "msg-ok" : "msg-bad";
+          o.textContent = ok
+            ? "Scan looks. Spend spends. Words never go to an explorer."
+            : k === "seed"
+              ? "Fail. Never paste the twelve words into an explorer."
+              : "Fail. A BIP-84 zpub lists a gap of addresses. It does not scan silent payments.";
+        }
+        if (pause) pause.disabled = !(sp.importFail && ok);
       });
     });
     wireCopyQr(document);

@@ -7778,19 +7778,37 @@ zoo`.split("\n");
           descriptor: `tr(${key}/0/*)`,
           note: "Key-path Taproot receive (wallet support varies)."
         });
+        out.push({
+          purpose: 86,
+          label: "BIP86 Taproot change",
+          descriptor: `tr(${key}/1/*)`,
+          note: "Change chain for the same Taproot account."
+        });
       } else if (k.purpose === 49) {
         out.push({
           purpose: 49,
           label: "BIP49 nested receive",
           descriptor: `sh(wpkh(${key}/0/*))`,
-          note: "Nested segwit P2SH-P2WPKH."
+          note: "Nested segwit P2SH-P2WPKH receive."
+        });
+        out.push({
+          purpose: 49,
+          label: "BIP49 nested change",
+          descriptor: `sh(wpkh(${key}/1/*))`,
+          note: "Change chain for the same nested-segwit account."
         });
       } else if (k.purpose === 44) {
         out.push({
           purpose: 44,
           label: "BIP44 legacy receive",
           descriptor: `pkh(${key}/0/*)`,
-          note: "Legacy P2PKH."
+          note: "Legacy P2PKH receive."
+        });
+        out.push({
+          purpose: 44,
+          label: "BIP44 legacy change",
+          descriptor: `pkh(${key}/1/*)`,
+          note: "Change chain for the same legacy account."
         });
       }
     }

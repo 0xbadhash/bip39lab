@@ -1,26 +1,25 @@
 # CODE-REVIEW
 
-command: `/code_review` 0.16.82 UC1/UC7/UC16
+command: `/code_review` 0.16.83 UC25 BIP-352
 base: origin/master
-secrets: pending scan on commit range
+secrets: scan on commit range
 
 ## Findings accepted
 None.
 
 ## Findings rejected
-- **v2-app.js size.** Pre-existing. Copy stays in `uc1`/`uc7`.
-- **Accept invalid checksum.** Would break BIP-39. Rejected.
+- **Implement live BIP-352 ECDH.** Out of scope; labeled classroom mixer. Stop-and-escalate if product wants a scanner.
 
 ## P0 count
 0
 
 ## Follow-ups
-Full classic e2e 232 wall. UC19 P3 skip. Kid-voice on remaining UCs.
+UC28 still slogan-thin. Kid-voice on remaining UCs.
 
 ## Smoke
-pytest AC modules. Prior Playwright S1, S17, S27, S40, S44, S45, S50 this session.
+pytest AC; Playwright S58 this session.
 
 ## Things that look bad but are actually fine
 1. Dual stamp
 2. leftover scripts uncommitted
-3. Combine writes SLIP result to TryOut so printout stays
+3. `lab-sp1q` prefix so nobody funds it

@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.132-v2)", () => {
+test.describe("V2 use-case tracks (0.17.133-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -674,18 +674,31 @@ test.describe("V2 use-case tracks (0.17.132-v2)", () => {
   });
 
   // AC-4: first receive sim tBTC
-  test("V2-S19 UC19 first receive: simulated tBTC, never fund mainnet", async ({ page }) => {
+  test("V2-S19 UC19 first receive: compare, wait, refuse dust, never fund", async ({ page }) => {
     await enterV2(page, "/v2/?uc=19");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2AddrWrap .addr-text").first()).toBeVisible();
+    await expect(page.locator("[data-recv-pick]")).toHaveCount(2);
+    await page.locator('[data-recv-pick="scam"]').click();
+    await expect(page.locator("#v2RecvCmpOut")).toHaveClass(/msg-bad/);
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    await page.locator('[data-recv-pick="ok"]').click();
+    await expect(page.locator("#v2RecvCmpOut")).toHaveClass(/msg-ok/);
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2WatchSame")).toBeVisible();
-    await page.locator("#v2SimRecv").click();
+    await page.locator('[data-recv-wait="0"]').click();
+    await expect(page.locator("#v2RecvWaitOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-recv-wait="1"]').click();
     await expect(page.locator("#v2SimBal")).toContainText(/0\.000184/);
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-recv-dust="mix"]').click();
+    await expect(page.locator("#v2RecvDustOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-recv-dust="leave"]').click();
+    await expect(page.locator("#v2RecvDustOut")).toHaveClass(/msg-ok/);
     await expect(page.locator("#trackBody")).toContainText(/Do not fund/i);
-    await expect(page.locator("#trackBody")).toContainText(/mainnet/i);
     await expect(page.locator("[data-v2-dock]")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
   // AC-5: air-gap loop never signs
@@ -918,17 +931,23 @@ test.describe("V2 use-case tracks (0.17.132-v2)", () => {
     await expect(page.locator("#v2WoList [data-copy]")).toHaveCount(1, { timeout: 8000 });
     await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^xpub/);
     await expect(page.locator("#v2DescOut")).toContainText(/tr\(/);
+    await expect(page.locator("#v2DescOut")).toContainText(/BIP86 Taproot receive/);
+    await expect(page.locator("#v2DescOut")).toContainText(/BIP86 Taproot change/);
+    await expect(page.locator("#v2DescOut")).toContainText(/\/1\/\*/);
     await expect(page.locator("#v2DescOut")).not.toContainText(/wpkh/);
     await page.locator('#v2WoType [data-wo-type="84"]').click();
     await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^zpub/);
     await expect(page.locator("#v2DescOut")).toContainText(/wpkh/);
+    await expect(page.locator("#v2DescOut")).toContainText(/BIP84 change/);
     await expect(page.locator("#v2DescOut")).not.toContainText(/tr\(/);
     await page.locator('#v2WoType [data-wo-type="49"]').click();
     await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^ypub/);
     await expect(page.locator("#v2DescOut")).toContainText(/sh\(wpkh/);
+    await expect(page.locator("#v2DescOut")).toContainText(/BIP49 nested change/);
     await page.locator('#v2WoType [data-wo-type="44"]').click();
     await expect(page.locator("#v2WoList .v2-copy-val")).toContainText(/^xpub/);
     await expect(page.locator("#v2DescOut")).toContainText(/pkh\(/);
+    await expect(page.locator("#v2DescOut")).toContainText(/BIP44 legacy change/);
     await expect(page.locator("#v2WoList [data-qr]")).toHaveCount(1);
     await expect(page.locator("#v2DescLine")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
@@ -1575,7 +1594,7 @@ test.describe("V2 use-case tracks (0.17.132-v2)", () => {
     }
   });
 
-  test("V2-S58 leftover UCs 21 24 25 26 28 29 31 unique controls", async ({ page }) => {
+  test("V2-S58 leftover UCs 21 24 26 28 29 31 + UC25 BIP-352 drill", async ({ page }) => {
     await enterV2(page, "/v2/?uc=21");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
@@ -1595,9 +1614,29 @@ test.describe("V2 use-case tracks (0.17.132-v2)", () => {
 
     await enterV2(page, "/v2/?uc=25");
     await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Uc25Teach")).toContainText(/BIP-352/i);
+    await page.locator("#v2SpReuse").click();
+    await expect(page.locator("#v2SpReuseOut")).toContainText(/same script|link/i);
     await page.locator("#v2Pause").click();
-    await page.locator('[data-cal="16"]').check();
-    await page.locator('[data-cal="18"]').check();
+    await expect(page.locator("#v2SpCode")).toContainText(/lab-sp1q/i);
+    await page.locator("#v2SpSend").click();
+    await page.locator("#v2SpSend").click();
+    await expect(page.locator("#v2SpSendOut")).toContainText(/Send 1:/);
+    await expect(page.locator("#v2SpSendOut")).toContainText(/Send 2:/);
+    const sendDump = await page.locator("#v2SpSendOut").innerText();
+    const s1 = (sendDump.match(/Send 1:\s*(\S+)/) || [])[1];
+    const s2 = (sendDump.match(/Send 2:\s*(\S+)/) || [])[1];
+    expect(s1).toBeTruthy();
+    expect(s2).toBeTruthy();
+    expect(s1).not.toEqual(s2);
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-sp-import]').click();
+    await expect(page.locator("#v2SpImportOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-sp-key="xpub"]').click();
+    await expect(page.locator("#v2SpKeyOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-sp-key="scan"]').click();
+    await expect(page.locator("#v2SpKeyOut")).toHaveClass(/msg-ok/);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
 
     await enterV2(page, "/v2/?uc=26");
     await page.locator("#btnGateStart").click();

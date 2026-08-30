@@ -936,6 +936,83 @@ td .v2-pp-est {
 @media (max-width: 720px) {
   .v2-cmp-split { grid-template-columns: 1fr; }
 }
+.v2-recv-picks {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.45rem 0;
+}
+.v2-recv-pick {
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+  cursor: pointer;
+}
+.v2-recv-pick code {
+  display: block;
+  word-break: break-all;
+  font-size: 0.78rem;
+}
+.v2-recv-pick.is-on {
+  border-color: var(--ok);
+  background: rgba(34, 160, 107, 0.12);
+}
+.v2-recv-wait {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.45rem 0;
+}
+.v2-uc15-split {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1fr) minmax(16rem, 1.05fr);
+  gap: 0.75rem 1.1rem;
+  align-items: start;
+  margin: 0.45rem 0 0.7rem;
+}
+.v2-uc15-stack .v2-ent-stack {
+  margin-top: 0;
+  width: 100%;
+}
+.v2-pp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.7rem;
+  margin: 0 0 0.35rem;
+}
+.v2-pp-head .v2-pp-chars {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.v2-pp-head .v2-pp-chars::after {
+  content: none;
+}
+.v2-pp-head > strong {
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--text);
+}
+.v2-uc15-pp {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.35rem 0.75rem;
+  align-items: start;
+}
+.v2-uc15-pp .v2-pp-head {
+  grid-column: 1;
+  margin: 0.15rem 0 0;
+}
+.v2-uc15-pp .v2-pp-hero {
+  grid-column: 2;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .v2-uc15-split {
+    grid-template-columns: 1fr;
+  }
+}
 .v2-pp-hero {
   display: flex;
   flex-wrap: wrap;
