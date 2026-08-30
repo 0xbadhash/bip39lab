@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "shipped",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-08-30-v2-uc25-bip352.md",
-  "task": "0.16.83 UC25 BIP-352",
+  "task": "init after v0.16.83",
   "waiver": null
 }
