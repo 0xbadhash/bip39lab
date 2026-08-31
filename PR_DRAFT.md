@@ -1,28 +1,27 @@
-# PR Draft: v0.16.84 UC1 Option 1 + card object pad
+# PR Draft: v0.16.85 UC1 paste verdicts, address pad, quiz×3
 
-**Spec:** `.agents/specs/2026-08-31-v2-uc1-card-object.md`
-**Plan:** `.agents/specs/2026-08-31-v2-uc1-card-object-plan.md`
+**Spec:** `.agents/specs/2026-08-31-v2-uc1-paste-quiz.md`
+**Plan:** `.agents/specs/2026-08-31-v2-uc1-paste-quiz-plan.md`
 
 ## What Problem This Solves
 
-UC1 pad 0 taught BIP-39, entropy, generate, and paste at once. Pad 1 repeated the entropy stack and talked about receive addresses before any address existed.
+Checksum-fail paste blocked practice. Show receive addresses repeated the entropy stack. Quiz was a single item.
 
 ## Why This Change Was Made
 
-Operator: Option 1 one-column generate path, then pad 1 Option A (look at the numbered card). Full ship FSM.
+Operator: practice pasted words with honest verdicts; drop lock/meter on the address pad; expand UC1 quiz to three. Full ship FSM.
 
 ## User Impact
 
-Chip **v0.17.134-v2**. Product **0.16.84**. Pad 0: generate → card → lock+blue+orange entropy of *that* list → paste. Pad 1: classroom + `N words · B bits` chip, no lock/meter, checkbox “numbered cells.” Also in this tag: UC21 you-hold-2 collab, UC28 UTXO combine/obfuscation, UC29 two-vault PIN/wipe (uncommitted vs 0.16.83).
+Chip **v0.17.135-v2**. Product **0.16.85**. Paste: not at all / words OK checksum not / all fine. Checksum-fail fills the card, not addresses. Quiz: fund, numbered card, checksum.
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 pad 1 classroom | `test_ac_uc1_step1_card_object_not_entropy_stack` |
-| AC-2 no entropy stack on pad 1 | same + Playwright V2-S1 |
-| AC-3 photo don’t + checkbox | same |
-| Pad 0 generate/paste | V2-S1, V2-S9, V2-S27 |
+| AC-1 paste verdicts | `test_ac_2_paste_checksum_copy` + Playwright V2-S27 |
+| AC-2 no entropy on step 2 | `test_ac_uc1_step2_no_lock_or_entropy_meter` |
+| AC-3 three quiz items | Playwright V2-S12 `.v2-quiz-q` count 3 |
 
 ## Red-proof
 
@@ -31,7 +30,7 @@ Chip **v0.17.134-v2**. Product **0.16.84**. Pad 0: generate → card → lock+bl
 
 ## Threat notes
 
-- secrets: practice mnemonics only; paste still checksum-gates
+- secrets: practice lists only; checksum-fail cannot derive
 - xss: static teach HTML
 - csrf: n/a
 
@@ -40,17 +39,17 @@ Chip **v0.17.134-v2**. Product **0.16.84**. Pad 0: generate → card → lock+bl
 | Item | Result |
 |------|--------|
 | hard_gates | CODE_REVIEW, BEHAVIOR_REPORT, spec |
-| smoke | pytest AC + Playwright V2-S1 |
-| pytest | `tests/test_ac_v2_uc1_card_object.py` |
+| smoke | pytest AC + Playwright V2-S12 V2-S27 |
+| pytest | card_object + classroom |
 | validate | compliance_engine via venv |
 
 ## Things that look bad but are actually fine
 
-1. Dual stamp 0.16.84 vs 0.17.134-v2
-2. leftover `scripts/*.py` uncommitted
-3. Pad 2 still has entropyHtml(false) lock+meter — address pad, not the look-at-card pad
-4. Full classic Playwright 232 still not this ship’s gate
-5. UC21/28/29 ride along; not Option C hide/uncover
+1. Dual stamp 0.16.85 vs 0.17.135-v2
+2. leftover scripts uncommitted if present
+3. Some random 12 dictionary words (e.g. arrow hour this…) can still checksum-pass
+4. Classic 232 Playwright not this ship’s green_cmd
+5. `wordlist.js` extra fetch on `/v2/`
 
 ## Cross-review
 

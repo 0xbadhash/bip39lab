@@ -1,16 +1,16 @@
 # CROSS-REVIEW
 
 **Marker:** CROSS-REVIEW
-command: `/cross_review` 0.16.84
+command: `/cross_review` 0.16.85
 base: origin/master
 
 ## Personas
-- Learner: pad 1 is look-at-grid, not another entropy lecture.
-- Operator: Option A shipped; B still available.
-- Safety: photograph/screenshot in Do not; no Sign.
+- Learner: paste drill with three honest answers; quiz covers the track.
+- Operator: address pad no longer repeats entropy.
+- Safety: checksum-fail cannot show receive addresses.
 
 ## Obsolete
-Pad 1 `entropyHtml(false)` removed. Address copy stays pad 2.
+Hard-block paste on checksum-fail.
 
 ## P0
 0

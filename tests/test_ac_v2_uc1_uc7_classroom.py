@@ -28,7 +28,9 @@ def test_ac_1_uc1_one_bip39_box_and_entropy() -> None:
 
 
 def test_ac_2_paste_checksum_copy() -> None:
-    assert "failed the BIP-39 check" in APP
+    assert "Yes — those words are in the dictionary" in APP
+    assert "Yes — all fine" in APP
+    assert "Not at all" in APP
     assert "Need 12, 15, 18, 21, or 24 words" in APP
 
 

@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 175 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.84 · Contract: 2 · Last aligned: 2026-08-31 · Scenarios: S0–S183 · Playwright S-ids: 175`
+`Product: 0.16.85 · Contract: 2 · Last aligned: 2026-08-31 · Scenarios: S0–S183 · Playwright S-ids: 175`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -1033,7 +1033,7 @@ V2-S8 UC2 paper backup card, (i), Clear secrets, print sheet: PASS|FAIL —
 V2-S9 UC1 compact 24-word three lines, entropy, three addresses per row: PASS|FAIL —
 V2-S10 UC4 index increment + back to 0: PASS|FAIL —
 V2-S11 UC6 three cosigner zpubs + rail back: PASS|FAIL —
-V2-S12 quiz why + concept back-nav: PASS|FAIL —
+V2-S12 quiz three items; wrong answer explains why + concept back-nav: PASS|FAIL —
 V2-S13 UC3–UC13 concept atoms mount: PASS|FAIL —
 V2-S14 UC11–UC13 they/you, lock timer, hot-wallet drain, sort: PASS|FAIL —
 V2-S15 UC14 few d6 TOO LOW; 12–24 mint; roll until enough: PASS|FAIL —
@@ -1041,6 +1041,7 @@ V2-S16 UC15 pad plus passphrase stack: PASS|FAIL —
 V2-S17 UC16 restore drill hide card type words same address: PASS|FAIL —
 V2-S18 UC17 amount tiers coffee not 2-of-3: PASS|FAIL —
 V2-S19 UC19 first receive simulated tBTC never fund mainnet: PASS|FAIL —
+V2-S27 UC1 paste: not at all / checksum fail loads card / all fine: PASS|FAIL —
 V2-S20 UC23 air-gap loop order tab never signs: PASS|FAIL —
 V2-S37 UC8 sample inspect no txid no fetch; CSP connect-src self not mempool.space: PASS|FAIL —
 V2-S38 UC8 leak-ack fetches same-origin /api/mempool/tx; Network lookup stays: PASS|FAIL —

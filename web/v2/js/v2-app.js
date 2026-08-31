@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var STORE = "bip39lab.v2";
-  var mem = { mnemonic: "", lastRows: null, cardAck: false, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 86, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "", slip39TriedOne: false, slip39TriedTwo: false, slip39PpDone: false };
+  var mem = { mnemonic: "", lastRows: null, cardAck: false, bip39Ok: true, wordCount: 12, cosigners: null, maxStep: 0, network: "test", addrType: "bip84", pathPurpose: 84, woPurpose: 86, woPack: null, entEvents: [], entMnemonic: "", entWordCount: 12, entPp: "", slip39TriedOne: false, slip39TriedTwo: false, slip39PpDone: false };
   var D6_BITS = 2.58;
   var ENT_PAD_MAX = 200;
   var lastEntDelta = 0;
@@ -1462,6 +1462,19 @@
     );
   }
 
+  function unknownBip39Words(words) {
+    var list = window.BIP39_ENGLISH;
+    if (!list || !list.length) return [];
+    if (!mem._en) {
+      mem._en = Object.create(null);
+      var i;
+      for (i = 0; i < list.length; i++) mem._en[list[i]] = 1;
+    }
+    return words.filter(function (w) {
+      return !mem._en[String(w).toLowerCase()];
+    });
+  }
+
   function entropyPhraseBits() {
     var n = 12;
     if (mem.mnemonic) {
@@ -1473,6 +1486,13 @@
 
   function entropyChipHtml() {
     var x = entropyPhraseBits();
+    if (mem.bip39Ok === false) {
+      return (
+        '<p class="control-help v2-uc1-chip" id="v2EntChip">' +
+        x.n +
+        " words · checksum fail (not BIP-39 entropy)</p>"
+      );
+    }
     return (
       '<p class="control-help v2-uc1-chip" id="v2EntChip">' +
       x.n +
@@ -1484,6 +1504,18 @@
 
   function entropyBarHtml() {
     var x = entropyPhraseBits();
+    if (mem.bip39Ok === false) {
+      return (
+        '<p class="v2-entropy" id="v2Entropy">' +
+        "<strong>Entropy</strong> not BIP-39" +
+        "<span> · those " +
+        x.n +
+        " words are in the dictionary. The checksum (last word) does not match, so this is not " +
+        x.bits +
+        " bits of valid BIP-39 entropy. Practice the card. Generate if you want a real check.</span>" +
+        "</p>"
+      );
+    }
     return (
       '<p class="v2-entropy" id="v2Entropy">' +
       "<strong>Entropy</strong> " +
@@ -1563,6 +1595,7 @@
     n = n || mem.wordCount || 12;
     if (!mem.mnemonic && window.BIP39Lab) {
       mem.mnemonic = await BIP39Lab.generateMnemonic(n);
+      mem.bip39Ok = true;
     }
     return mem.mnemonic;
   }
@@ -3484,7 +3517,7 @@
         '<div class="row" style="margin-top:0.45rem">' +
         '<button type="button" class="btn secondary" id="v2PasteApply">Use pasted practice words</button>' +
         "</div>" +
-        '<p id="v2PasteMsg" class="control-help">Paste a real BIP-39 practice list (the last bits are a check). Random English words usually fail. Do not paste a funded backup.</p>' +
+        '<p id="v2PasteMsg" class="control-help">Paste 12–24 words to practice. The button will say: not at all, words OK but checksum/entropy not, or all fine. Do not paste a funded backup.</p>' +
         '<div id="v2AddrWrap" class="v2-hidden"></div>' +
         pauseBtn("I have the numbered card", !mem.mnemonic)
       );
@@ -3532,7 +3565,6 @@
           "The numbered card is the secret locker combo. The receive string (tb1… on test, bc1… on real bitcoin) is only a mailbox. Click Show receive addresses to see mailboxes. Do not send real money to them.",
           "v2DeriveHelp"
         ) +
-        entropyHtml(false) +
         pipeHtml(true, derived, derived) +
         '<div id="v2Card">' +
         wordGridHtml(mem.mnemonic) +
@@ -3581,26 +3613,32 @@
       );
     }
     if (step === 4) {
-      return quiz(
-        "If you send coins to an address from this Lab phrase, what is true?",
-        [
-          {
-            k: "bad",
-            t: "The lab will refund me.",
-            why: "Wrong. This tab never holds your coins and has no refund desk. A practice address that receives real bitcoin is at risk."
-          },
-          {
-            k: "ok",
-            t: "Those coins are at risk. This is not a wallet you should fund.",
-            okwhy: "Correct. Practice phrases and addresses are not a funded wallet."
-          },
-          {
-            k: "bad",
-            t: "The address is the same as the recovery words.",
-            why: "Wrong. The receive string (tb1q / bc1q) is not the numbered word list. Same seed, different objects."
-          }
-        ]
-      );
+      return quizBank([
+        {
+          q: "If you send coins to an address from this Lab phrase, what is true?",
+          opts: [
+            qBad("The lab will refund me.", "Wrong. This tab never holds your coins and has no refund desk. A practice address that receives real bitcoin is at risk."),
+            qOk("Those coins are at risk. This is not a wallet you should fund.", "Correct. Practice phrases and addresses are not a funded wallet."),
+            qBad("The address is the same as the recovery words.", "Wrong. The receive string (tb1q / bc1q) is not the numbered word list. Same seed, different objects.")
+          ]
+        },
+        {
+          q: "What is the secret backup on this track?",
+          opts: [
+            qOk("The numbered word card.", "Correct. The card is the locker combo. The mailbox is not."),
+            qBad("The receive address (tb1… / bc1…).", "Wrong. You may show a mailbox. Never treat it as the backup."),
+            qBad("The entropy lock picture.", "Wrong. The picture is a meter, not the secret.")
+          ]
+        },
+        {
+          q: "Twelve dictionary words whose checksum does not match — what is true?",
+          opts: [
+            qOk("They can sit on the practice card, but they are not valid BIP-39 entropy.", "Correct. Words in the list are not enough. The last-word check must match."),
+            qBad("Any 12 English words are a wallet.", "Wrong. BIP-39 needs the checksum packed into the last word."),
+            qBad("This tab will rewrite the last word so the list becomes funded-safe.", "Wrong. There is no fix desk. Generate a real practice list if you need a valid check.")
+          ]
+        }
+      ]);
     }
     return finishHtml(1);
   }
@@ -5467,7 +5505,7 @@
   }
 
   function lockHtml(kind) {
-    var ratio = kind === "os" ? (mem.mnemonic ? 1 : null) : entLockRatio();
+    var ratio = kind === "os" ? (mem.mnemonic ? (mem.bip39Ok === false ? 0 : 1) : null) : entLockRatio();
     var id = kind === "os" ? "v2OsLock" : "v2EntLock";
     var filt = lockFilter(ratio);
     return (
@@ -5491,7 +5529,7 @@
   function applyLockTint() {
     document.querySelectorAll(".v2-lock").forEach(function (el) {
       var kind = el.getAttribute("data-lock");
-      var ratio = kind === "os" ? (mem.mnemonic ? 1 : null) : entLockRatio();
+      var ratio = kind === "os" ? (mem.mnemonic ? (mem.bip39Ok === false ? 0 : 1) : null) : entLockRatio();
       el.className = "v2-lock " + lockToneClass(ratio);
       var img = el.querySelector("img");
       if (img) img.style.filter = lockFilter(ratio);
@@ -6296,6 +6334,15 @@
 
   async function deriveNow() {
     if (!mem.mnemonic || !window.BIP39Lab) return;
+    if (mem.bip39Ok === false) {
+      var wrapBad = $("v2AddrWrap");
+      if (wrapBad) {
+        wrapBad.innerHTML =
+          '<p class="msg-bad">Checksum failed. These words are for looking at the card only. Generate a valid list to show receive addresses.</p>';
+        wrapBad.classList.remove("v2-hidden");
+      }
+      return;
+    }
     var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", {
       network: currentNet(),
       count: 5,
@@ -6898,6 +6945,7 @@
       var n = parseInt(($("v2WordCount") && $("v2WordCount").value) || String(mem.wordCount || 12), 10);
       mem.wordCount = n;
       mem.mnemonic = await BIP39Lab.generateMnemonic(n);
+      mem.bip39Ok = true;
       mem.lastRows = null;
       mem.cardAck = false;
       var cardEl = $("v2Card");
@@ -6956,33 +7004,62 @@
         var words = raw ? raw.split(" ") : [];
         var n = words.length;
         var okLen = n === 12 || n === 15 || n === 18 || n === 21 || n === 24;
+        var unknown = unknownBip39Words(words);
         var valid = false;
-        if (okLen && window.BIP39Lab && BIP39Lab.validateMnemonic) {
+        if (okLen && !unknown.length && window.BIP39Lab && BIP39Lab.validateMnemonic) {
           valid = !!(await BIP39Lab.validateMnemonic(raw));
         }
-        if (!valid) {
+        function loadCard(bip39Ok) {
+          mem.mnemonic = raw;
+          mem.wordCount = n;
+          mem.bip39Ok = bip39Ok;
+          mem.lastRows = null;
+          mem.cardAck = false;
+          var cardEl = $("v2Card");
+          if (cardEl) cardEl.innerHTML = wordGridHtml(mem.mnemonic);
+          if (typeof replaceOsEntropy === "function") replaceOsEntropy();
+          if (pause) pause.disabled = false;
+        }
+        if (!okLen) {
           if (msg) {
             msg.className = "msg-bad";
-            msg.textContent = !okLen
-              ? "Need 12, 15, 18, 21, or 24 words. You pasted " + n + ". Generate practice words, or paste a real BIP-39 list. Do not paste a funded backup."
-              : "Those " +
-                n +
-                " words look English, but they failed the BIP-39 check. A real backup has a tiny extra check (a checksum) so a typo gets caught. Random dictionary words usually fail that check. Generate practice words here. Do not paste a funded backup.";
+            msg.textContent =
+              "Not at all. Need 12, 15, 18, 21, or 24 words. You pasted " +
+              n +
+              ". Generate, or paste a BIP-39 list. Do not paste a funded backup.";
           }
           return;
         }
-        mem.mnemonic = raw;
-        mem.wordCount = n;
-        mem.lastRows = null;
-        mem.cardAck = false;
-        var cardEl = $("v2Card");
-        if (cardEl) cardEl.innerHTML = wordGridHtml(mem.mnemonic);
-        if (typeof replaceOsEntropy === "function") replaceOsEntropy();
-        if (msg) {
-          msg.className = "control-help";
-          msg.textContent = "Pasted practice words loaded. Do not import a funded phrase.";
+        if (unknown.length) {
+          if (msg) {
+            msg.className = "msg-bad";
+            msg.textContent =
+              "Not at all. Not BIP-39 English: " +
+              unknown.slice(0, 8).join(", ") +
+              (unknown.length > 8 ? "…" : "") +
+              ".";
+          }
+          return;
         }
-        if (pause) pause.disabled = false;
+        if (!valid) {
+          loadCard(false);
+          if (msg) {
+            msg.className = "msg-warn";
+            msg.textContent =
+              "Yes — those words are in the dictionary. The checksum is not, so entropy is not valid BIP-39. The card is for practice. Generate if you want a real check. Do not paste a funded backup.";
+          }
+          return;
+        }
+        loadCard(true);
+        if (msg) {
+          msg.className = "msg-ok";
+          msg.textContent =
+            "Yes — all fine. Valid BIP-39 checksum. This " +
+            n +
+            "-word list is " +
+            (ENT_BITS[n] || 128) +
+            " bits of entropy. Practice only. Do not paste a funded backup.";
+        }
       });
     }
     var typeRoot = $("v2AddrType");
@@ -7394,6 +7471,7 @@
       var n = parseInt(($("v2WordCount") && $("v2WordCount").value) || String(mem.wordCount || 12), 10);
       mem.wordCount = n;
       mem.mnemonic = await BIP39Lab.generateMnemonic(n);
+      mem.bip39Ok = true;
       mem.lastRows = null;
       mem.cardAck = false;
       $("v2Card").innerHTML = wordGridHtml(mem.mnemonic);

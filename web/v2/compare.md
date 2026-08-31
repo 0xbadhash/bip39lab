@@ -3,8 +3,8 @@
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
 - **As of:** 2026-08-31
-- **v1:** `/` · product stamp `v0.16.84`
-- **v2:** `/v2/` · chip `v0.17.134-v2` · `/v2/VERSION` `0.17.134-v2`
+- **v1:** `/` · product stamp `v0.16.85`
+- **v2:** `/v2/` · chip `v0.17.135-v2` · `/v2/VERSION` `0.17.135-v2`
 
 Live compare.md lags until deploy. This repo file is source of truth.
 

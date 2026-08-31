@@ -1,8 +1,10 @@
 # BEHAVIOR-CONTRACT
 
 **Marker:** BEHAVIOR-CONTRACT
-**Spec:** `.agents/specs/2026-08-31-v2-uc1-card-object.md`
+**Spec:** `.agents/specs/2026-08-31-v2-uc1-paste-quiz.md`
 
-1. After generate, Pause lands on numbered-card pad with `#v2CardWhat`.
-2. That pad has `#v2EntChip` and no `#v2OsEnt`.
-3. Ack checkbox required before receive-address pad.
+1. Paste short junk → Not at all; card empty.
+2. Paste 12 dictionary words, bad checksum → card fills; meter not BIP-39.
+3. Paste abandon…about → all fine; 128 bits.
+4. Quiz pad has three `.v2-quiz-q`.
+5. Receive-address pad has no `#v2OsEnt`.

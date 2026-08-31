@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.134-v2)", () => {
+test.describe("V2 use-case tracks (0.17.135-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -407,6 +407,7 @@ test.describe("V2 use-case tracks (0.17.134-v2)", () => {
     await page.locator("#v2Derive").click();
     await page.locator("#v2Pause").click();
     await page.locator("#v2Pause").click();
+    await expect(page.locator(".v2-quiz-q")).toHaveCount(3);
     await page.locator('[data-quiz="bad"]').first().click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-bad/);
     await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
@@ -834,17 +835,21 @@ test.describe("V2 use-case tracks (0.17.134-v2)", () => {
     await page.locator("#btnGateStart").click();
     await page.locator("#v2PasteMn").fill("not a phrase");
     await page.locator("#v2PasteApply").click();
+    await expect(page.locator("#v2PasteMsg")).toContainText(/Not at all/i);
     await expect(page.locator("#v2PasteMsg")).toContainText(/Need 12, 15, 18, 21, or 24/i);
     await page.locator("#v2PasteMn").fill(
       "idea glance debate faculty win kingdom super next dish rhythm prosper umbrella"
     );
     await page.locator("#v2PasteApply").click();
-    await expect(page.locator("#v2PasteMsg")).toContainText(/checksum/i);
-    await expect(page.locator("#v2Card .ww").first()).toHaveText("—");
+    await expect(page.locator("#v2PasteMsg")).toContainText(/those words are in the dictionary/i);
+    await expect(page.locator("#v2PasteMsg")).toContainText(/checksum is not/i);
+    await expect(page.locator("#v2Card .ww").first()).toHaveText("idea");
+    await expect(page.locator("#v2Entropy")).toContainText(/not BIP-39/i);
     await page.locator("#v2PasteMn").fill(
       "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
     );
     await page.locator("#v2PasteApply").click();
+    await expect(page.locator("#v2PasteMsg")).toContainText(/all fine/i);
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     await expect(page.locator("#v2Card .ww").first()).not.toHaveText("—");
     await expect(page.locator("#v2Entropy")).toContainText(/128 bits/);

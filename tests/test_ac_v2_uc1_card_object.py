@@ -17,3 +17,12 @@ def test_ac_uc1_step1_card_object_not_entropy_stack() -> None:
     assert "Do not photograph" in step1
     assert "checksum" in step1
     assert "Next: show receive addresses" in step1
+
+
+def test_ac_uc1_step2_no_lock_or_entropy_meter() -> None:
+    i = APP.find("async function uc1(step)")
+    chunk = APP[i : APP.find("async function uc2(step)")]
+    step2 = chunk[chunk.find("if (step === 2)") : chunk.find("if (step === 3)")]
+    assert "entropyHtml" not in step2
+    assert "v2Derive" in step2
+    assert "v2DeriveHelp" in step2

@@ -2080,6 +2080,14 @@ ol.word-grid.v2-stamp-plate {
   border-radius: var(--radius-sm);
   margin: 0.5rem 0;
 }
+.msg-warn {
+  background: var(--warn-soft);
+  border: 1px solid var(--warn);
+  color: var(--text);
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  margin: 0.5rem 0;
+}
 pre.out.msg-ok {
   background: rgba(34, 160, 107, 0.18);
   border-color: var(--ok);

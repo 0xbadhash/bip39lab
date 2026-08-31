@@ -1,6 +1,6 @@
 # CODE-REVIEW
 
-command: `/code_review` 0.16.84 UC1 Option A card pad
+command: `/code_review` 0.16.85 UC1 paste + quiz
 base: origin/master
 secrets: scan on commit range
 
@@ -10,19 +10,17 @@ secrets: scan on commit range
 None.
 
 ## Findings rejected
-- **Type-back restore on pad 1.** Out of scope (UC16). Option A look-only.
-- **Delete pad 1.** Operator chose A not B.
+- **Rewrite last word to force checksum.** Out of scope; no fix desk.
 
 ## P0 count
 0
 
 ## Follow-ups
-Pad 2 still stacks entropyHtml(false). Option 2 split if pad 0 still feels busy.
+Pad 3 (try length) still uses entropyHtml(false).
 
 ## Smoke
-pytest card_object + classroom; Playwright V2-S1 this session.
+pytest card_object + classroom; Playwright V2-S12 V2-S27.
 
 ## Things that look bad but are actually fine
 1. Dual stamp
-2. leftover scripts uncommitted
-3. Chip not lock — intentional
+2. Valid-looking 12-word dumps can still pass checksum
