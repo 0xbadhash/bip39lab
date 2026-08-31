@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "init",
+  "phase": "shipped",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-08-31-v2-uc1-card-object.md",
+  "spec_id": ".agents/specs/2026-08-31-v2-uc1-paste-quiz.md",
   "task": "init after v0.16.83",
   "waiver": null
 }
