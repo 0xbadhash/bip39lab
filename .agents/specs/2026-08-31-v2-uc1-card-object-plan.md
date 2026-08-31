@@ -13,7 +13,6 @@ Pad 0 already makes the list (Option 1). Pad 1 must not repeat the entropy lock 
 
 ## Implementation sequence
 
-1. Replace step-1 entropy stack with classroom + chip + same card.
-2. Do not: photograph/screenshot; mailbox next.
-3. Keep ack gating pad 2.
-4. Dual stamp 0.16.84 / 0.17.134-v2 on ship.
+1. Replace step-1 entropy stack with classroom + chip + same card; Do not photograph; ack gates pad 2.
+2. Playwright V2-S1 + pytest AC.
+3. Dual stamp 0.16.84 / 0.17.134-v2.
