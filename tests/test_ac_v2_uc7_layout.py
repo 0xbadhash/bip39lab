@@ -8,8 +8,15 @@ APP = (ROOT / "web/v2/js/v2-app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "web/v2/css/v2.css").read_text(encoding="utf-8")
 
 
+def _uc7() -> str:
+    i = APP.find("async function uc7")
+    j = APP.find("async function uc8")
+    assert i >= 0 and j > i
+    return APP[i:j]
+
+
 def _idx(s: str, needle: str) -> int:
-    i = APP.find(needle)
+    i = s.find(needle)
     assert i >= 0, needle
     return i
 
@@ -25,7 +32,8 @@ def test_ac_1_shamir_order_and_try_colour() -> None:
         "v2ShCombine",
         "v2ShTryHelp",
     ]
-    pos = [_idx(APP, x) for x in ids]
+    chunk = _uc7()
+    pos = [_idx(chunk, x) for x in ids]
     assert pos == sorted(pos)
     assert 'class="btn btn-try" id="v2ShTry"' in APP
     assert "Paste any M of the printed shares here" in APP
@@ -42,7 +50,8 @@ def test_ac_2_slip_order_checklist() -> None:
         "v2S39TryHelp",
         "v2S39Check",
     ]
-    pos = [_idx(APP, x) for x in ids]
+    chunk = _uc7()
+    pos = [_idx(chunk, x) for x in ids]
     assert pos == sorted(pos)
     assert "Play in order: mint 3 lists" in APP
     assert "Try 1 list — must fail" in APP
