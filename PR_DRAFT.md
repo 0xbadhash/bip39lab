@@ -1,39 +1,37 @@
-# PR Draft: v0.16.83 UC25 BIP-352 silent payments
+# PR Draft: v0.16.84 UC1 Option 1 + card object pad
 
-**Spec:** `.agents/specs/2026-08-30-v2-uc25-bip352.md`
-**Plan:** `.agents/specs/2026-08-30-v2-uc25-bip352-plan.md`
+**Spec:** `.agents/specs/2026-08-31-v2-uc1-card-object.md`
+**Plan:** `.agents/specs/2026-08-31-v2-uc1-card-object-plan.md`
 
 ## What Problem This Solves
 
-UC25 was a calendar of two checkboxes. Silent payments (BIP-352) were missing as a track.
+UC1 pad 0 taught BIP-39, entropy, generate, and paste at once. Pad 1 repeated the entropy stack and talked about receive addresses before any address existed.
 
 ## Why This Change Was Made
 
-Operator: replace UC25 with BIP-352 and test it. Full ship FSM.
+Operator: Option 1 one-column generate path, then pad 1 Option A (look at the numbered card). Full ship FSM.
 
 ## User Impact
 
-Chip **v0.17.133-v2**. Product **0.16.83**. Reuse fail, two classroom sends differ, BIP-84 import refused. Not a live scanner. No Sign.
-
-Also in this tag: UC19 compare/wait/dust; UC15 passphrase left of Layer table; UC5 change descriptors for 44/49/86.
+Chip **v0.17.134-v2**. Product **0.16.84**. Pad 0: generate → card → lock+blue+orange entropy of *that* list → paste. Pad 1: classroom + `N words · B bits` chip, no lock/meter, checkbox “numbered cells.” Also in this tag: UC21 you-hold-2 collab, UC28 UTXO combine/obfuscation, UC29 two-vault PIN/wipe (uncommitted vs 0.16.83).
 
 ## Traceability
 
 | AC | Test |
 |----|------|
-| AC-1 | `test_uc25_is_bip352_not_calendar` |
-| AC-2 | Playwright S58 two sends differ |
-| AC-3 | S58 import refuse + scan ok |
-| AC-4 | S58 + UC16/UC18 still exist |
+| AC-1 pad 1 classroom | `test_ac_uc1_step1_card_object_not_entropy_stack` |
+| AC-2 no entropy stack on pad 1 | same + Playwright V2-S1 |
+| AC-3 photo don’t + checkbox | same |
+| Pad 0 generate/paste | V2-S1, V2-S9, V2-S27 |
 
 ## Red-proof
 
 - red_cmd: `false`
-- green_cmd: `.venv/bin/python3 -m pytest tests/test_ac_v2_uc25_bip352.py -q`
+- green_cmd: `.venv/bin/python3 -m pytest tests/test_ac_v2_uc1_card_object.py tests/test_ac_v2_uc1_uc7_classroom.py -q`
 
 ## Threat notes
 
-- secrets: classroom `lab-sp1q` not a fundable silent address
+- secrets: practice mnemonics only; paste still checksum-gates
 - xss: static teach HTML
 - csrf: n/a
 
@@ -42,17 +40,17 @@ Also in this tag: UC19 compare/wait/dust; UC15 passphrase left of Layer table; U
 | Item | Result |
 |------|--------|
 | hard_gates | CODE_REVIEW, BEHAVIOR_REPORT, spec |
-| smoke | pytest AC + Playwright S58 |
-| pytest | `tests/test_ac_v2_uc25_bip352.py` |
+| smoke | pytest AC + Playwright V2-S1 |
+| pytest | `tests/test_ac_v2_uc1_card_object.py` |
 | validate | compliance_engine via venv |
 
 ## Things that look bad but are actually fine
 
-1. Dual stamp 0.16.83 vs 0.17.133-v2
-2. leftover scripts uncommitted
-3. SHA-256 classroom mixer is not live ECDH — labeled
-4. Full 232 Playwright wall
-5. Yearly drills remain UC16/UC18, not UC25
+1. Dual stamp 0.16.84 vs 0.17.134-v2
+2. leftover `scripts/*.py` uncommitted
+3. Pad 2 still has entropyHtml(false) lock+meter — address pad, not the look-at-card pad
+4. Full classic Playwright 232 still not this ship’s gate
+5. UC21/28/29 ride along; not Option C hide/uncover
 
 ## Cross-review
 

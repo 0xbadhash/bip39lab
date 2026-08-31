@@ -2,9 +2,9 @@
 
 - **Deeplink:** https://bip39.catalyxt.xyz/v2/compare.md
 - **Local / repo:** `/v2/compare.md` · `web/v2/compare.md`
-- **As of:** 2026-08-29
-- **v1:** `/` · product stamp `v0.16.81`
-- **v2:** `/v2/` · chip `v0.17.133-v2` · `/v2/VERSION` `0.17.133-v2`
+- **As of:** 2026-08-31
+- **v1:** `/` · product stamp `v0.16.84`
+- **v2:** `/v2/` · chip `v0.17.134-v2` · `/v2/VERSION` `0.17.134-v2`
 
 Live compare.md lags until deploy. This repo file is source of truth.
 
@@ -26,7 +26,10 @@ Omitted on purpose (ports, not unique): UC1 generate, UC2 paper stamp, UC4 path 
 | **UC7 Try** | **Any M-subset** of pasted hex shares. One poisoned extra line does not cancel two good ones. `/shamir.html` interpolates **every** pasted line. In-track: phrase → hex → practice SLIP-39 2-of-3 (fail 1 / match 2) → extra-secret pad. Rooms stay SoT for Suite / long hex lab. |
 | **UC8 named txs** | Genesis, first transfer, Pizza, OP_RETURN note, Inscription 0, Runestone + classroom snap. Lab `#cardPsbt` is synthetic PSBT samples only. No Sign on either face. |
 | **UC9** | Leak drill **after** UC5 export: forum / support / “cannot steal so public” fail; one invoice vs five future receives; spend with viewing key fails. Lab export does not run that fail set. |
-| **UC11–13, 16–17, 20–24, 28–29** | Custody drills Lab never had as cards (they-hold, hot/hardware/cold, prove-from-paper, amount, metal, collab freeze vs steal, unbox, air-gap loop, geo, CoinJoin-not-backup, decoy extra secret). Glossary on `/` does not run them. |
+| **UC11–13, 16–17, 20, 22–24** | Custody drills Lab never had as cards (they-hold, hot/hardware/cold, prove-from-paper, amount, metal, unbox, air-gap loop, geo). Glossary on `/` does not run them. |
+| **UC28** | UTXO leftover pieces; combining two inputs → one-owner guess; equal-output joint spend obfuscates (not invisible). No mixer brand. Not a backup. Lab has no CoinJoin pad. |
+| **UC21** | 2-of-3 you-hold-2: company co-signs, cannot steal, cannot freeze a spend if you still have both keys; can refuse recovery help. Not Shamir. Not UC11 login. |
+| **UC29** | Same words, empty vs extra “open”: two real test addresses, both practice-funded. Ledger two-PIN / Coldcard wipe vs chain. Not safety advice. Lab `#cardCmpPp` does not do PIN/wipe. |
 | **UC25** | BIP-352 silent payments classroom: reuse is a camera; two sends differ; silent code is not a BIP-84 receive. Not a live scanner. Lab has no silent-payments card. |
 | **UC18** | Heir object drill: four fail kits, map-only packet, fail then open-while-alive. Not a will. No Lab inheritance card. |
 | **UC19** | Simulated 0.000184 tBTC + second watch view. Never funds practice mainnet. Not Network live lookup. |

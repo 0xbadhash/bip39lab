@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.133-v2)", () => {
+test.describe("V2 use-case tracks (0.17.134-v2)", () => {
   // AC-4 picker 35; classic Generate; chip 0.17.90-v2
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -52,10 +52,10 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
     await expect(page.locator("#v2Bip39What")).toContainText(/numbered list of English words/i);
     await expect(page.locator("#v2Bip39What")).toContainText(/mailbox is not the backup/i);
     await expect(page.locator("#v2Bip39What").locator(".help-tip-btn")).toHaveCount(2);
-    await expect(page.locator("#v2EntropyWhat")).toBeVisible();
-    await expect(page.locator("#v2EntropyWhat")).toContainText(/coin-flips/i);
-    await expect(page.locator("#v2EntropyWhat")).toContainText(/128/i);
-    await expect(page.locator("#v2EntropyWhat").locator(".help-tip-btn").first()).toBeVisible();
+    await expect(page.locator("#v2MnemonicLine")).toContainText(/English words only/i);
+    await expect(page.locator("#v2MnemonicLine")).toBeVisible();
+    await expect(page.locator("#v2EntropyWhat")).toHaveCount(0);
+    await expect(page.locator("#v2Entropy")).toHaveCount(0);
     await expect(page.locator("#v2Bip39Spec")).toHaveAttribute(
       "href",
       "https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki"
@@ -64,16 +64,22 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
     await expect(page.locator("#v2PasteApply")).toBeVisible();
     await expect(page.locator(".v2-donot .do")).toBeVisible();
     await expect(page.locator(".v2-donot .dont")).toContainText(/Do not import/i);
-    await expect(page.locator("#v2OsLock")).toBeVisible();
-    await expect(page.locator("#v2OsLock")).toHaveClass(/idle/);
     await page.locator("#v2Generate").click();
-    await expect(page.locator("#v2OsLock")).toHaveClass(/ok/);
-    await expect(page.locator("#v2OsLock")).toContainText(/Stronger seed/i);
     await expect(page.locator("#v2Card .ww").first()).not.toHaveText("—");
+    await expect(page.locator("#v2Entropy")).toBeVisible();
+    await expect(page.locator("#v2EntropyWhat")).toBeVisible();
+    await expect(page.locator("#v2EntropyWhat")).toContainText(/Entropy 128 bits/i);
+    await expect(page.locator("#v2Entropy")).toContainText(/128 bits/);
+    await expect(page.locator("#v2Entropy")).toContainText(/12-word/);
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     await expect(page.locator("#v2AddrWrap")).toBeHidden();
     await expect(page.locator("#v2Card")).toContainText(/practice backup/i);
     await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2CardWhat")).toBeVisible();
+    await expect(page.locator("#v2CardWhat")).toContainText(/Each cell is a number/i);
+    await expect(page.locator("#v2EntChip")).toContainText(/12 words · 128 bits/);
+    await expect(page.locator("#v2OsEnt")).toHaveCount(0);
+    await expect(page.locator("#v2EntropyWhat")).toHaveCount(0);
     await page.locator("#v2CardAck").check();
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2Derive")).toBeEnabled();
@@ -183,13 +189,12 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     await enterV2(page, "/v2/?uc=1");
     await page.locator("#btnGateStart").click();
-    await expect(page.locator("#v2Entropy")).toContainText(/128 bits/);
-    await expect(page.locator("#v2Entropy")).toContainText(/12-word English list/);
+    await expect(page.locator("#v2WordCount")).toHaveValue("12");
     await page.locator("#v2WordCount").selectOption("24");
     await page.locator("#v2Generate").click();
-    await expect(page.locator("#v2Entropy")).toContainText(/256 bits/);
-    await expect(page.locator("#v2Entropy")).toContainText(/24-word English list/);
     await expect(page.locator("#v2WordGrid .ww")).toHaveCount(24);
+    await expect(page.locator("#v2Entropy")).toContainText(/256 bits/);
+    await expect(page.locator("#v2Entropy")).toContainText(/24-word/);
     const cols = await page.locator("#v2WordGrid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
     expect(cols).toBe(8);
     const y0 = await page.locator("#v2WordGrid li").nth(0).evaluate((el) => el.getBoundingClientRect().y);
@@ -426,7 +431,7 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
       if (uc === 8) {
         await page.locator("#v2Pause").click();
         await page.locator("#v2Psbt").click();
-        await expect(page.locator("#v2PsbtTeach")).toContainText(/What it is/i);
+        await expect(page.locator("#v2PsbtTeach")).toContainText(/unfinished bitcoin send/i);
         await expect(page.locator("#v2PsbtOut")).toContainText(/status ok|does not sign/i);
         await expect(page.locator("#v2PsbtOut")).not.toContainText("{");
         await expect(page.locator("#v2PsbtStory")).toBeVisible();
@@ -842,6 +847,7 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
     await page.locator("#v2PasteApply").click();
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     await expect(page.locator("#v2Card .ww").first()).not.toHaveText("—");
+    await expect(page.locator("#v2Entropy")).toContainText(/128 bits/);
     await expect(page.locator("#v2Pause")).toBeEnabled();
   });
 
@@ -1597,10 +1603,20 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
   test("V2-S58 leftover UCs 21 24 26 28 29 31 + UC25 BIP-352 drill", async ({ page }) => {
     await enterV2(page, "/v2/?uc=21");
     await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Uc21Teach")).toContainText(/one key/i);
+    await page.locator('[data-co-pol="they1"]').click();
+    await expect(page.locator("#v2CoPolOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-co-pol="you2"]').click();
+    await expect(page.locator("#v2CoPolOut")).toHaveClass(/msg-ok/);
     await page.locator("#v2Pause").click();
-    await page.locator('[data-collab="freeze"]').click();
-    await expect(page.locator("#v2CollabOut")).not.toHaveText("");
-    await page.locator('[data-collab="steal"]').click();
+    await page.locator('[data-co-q="steal"][data-co-a="yes"]').click();
+    await expect(page.locator("#v2CoThreatOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-co-q="steal"][data-co-a="no"]').click();
+    await page.locator('[data-co-q="freeze"][data-co-a="yes"]').click();
+    await expect(page.locator("#v2CoThreatOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-co-q="freeze"][data-co-a="no"]').click();
+    await page.locator('[data-co-q="help"][data-co-a="yes"]').click();
+    await expect(page.locator("#v2CoThreatOut")).toHaveClass(/msg-ok/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
 
     await enterV2(page, "/v2/?uc=24");
@@ -1646,14 +1662,43 @@ test.describe("V2 use-case tracks (0.17.133-v2)", () => {
 
     await enterV2(page, "/v2/?uc=28");
     await page.locator("#btnGateStart").click();
-    await expect(page.locator("#trackBody h2")).toContainText(/heuristic/i);
+    await expect(page.locator("#v2Uc28Teach")).toContainText(/UTXO/i);
+    await page.locator('[data-cj-piece="cafe"]').click();
+    await page.locator('[data-cj-piece="salary"]').click();
     await page.locator("#v2Pause").click();
-    await expect(page.locator("#trackBody")).toContainText(/Mixing is not custody/i);
+    await page.locator('[data-cj-spend="one"]').click();
+    await expect(page.locator("#v2CjTxMsg")).toHaveClass(/msg-bad/);
+    await page.locator('[data-cj-spend="both"]').click();
+    await expect(page.locator("#v2CjTx")).toContainText(/one owner/i);
+    await page.locator('[data-cj-spend="one"]').click();
+    await expect(page.locator("#v2CjTx")).toContainText(/unspent/i);
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-cj-join="hide"]').click();
+    await expect(page.locator("#v2CjJoin")).toHaveClass(/msg-bad/);
+    await page.locator('[data-cj-join="join"]').click();
+    await expect(page.locator("#v2CjJoin")).toContainText(/Guess 1 of 5/i);
+    await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
 
     await enterV2(page, "/v2/?uc=29");
     await page.locator("#btnGateStart").click();
+    await expect(page.locator("#v2Uc29Teach")).toContainText(/extra secret/i);
+    const emptyA = (await page.locator("#v2DrEmpty").innerText()).trim();
+    const extraA = (await page.locator("#v2DrExtra").innerText()).trim();
+    expect(emptyA.startsWith("tb1")).toBeTruthy();
+    expect(extraA.startsWith("tb1")).toBeTruthy();
+    expect(emptyA).not.toEqual(extraA);
+    await page.locator("#v2DrFund").click();
+    await expect(page.locator("#v2DrBalEmpty")).toContainText(/0\.01/);
+    await expect(page.locator("#v2DrBalExtra")).toContainText(/0\.50/);
     await page.locator("#v2Pause").click();
-    await expect(page.locator("#v2Uc29Teach")).toContainText(/second/i);
+    await page.locator('[data-dr-pin="wipe-kill"]').click();
+    await expect(page.locator("#v2DrPinOut")).toHaveClass(/msg-bad/);
+    await page.locator('[data-dr-pin="ledger"]').click();
+    await page.locator('[data-dr-pin="wipe-ok"]').click();
+    await expect(page.locator("#v2DrPinOut")).toHaveClass(/msg-ok/);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2DrWipe").click();
+    await expect(page.locator("#v2DrWipeOut")).toContainText(/chain/i);
 
     await enterV2(page, "/v2/?uc=31");
     await page.locator("#btnGateStart").click();

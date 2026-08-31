@@ -45,7 +45,7 @@ scenarios: S0–S183 · Playwright 175 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.83 · Contract: 2 · Last aligned: 2026-08-30 · Scenarios: S0–S183 · Playwright S-ids: 175`
+`Product: 0.16.84 · Contract: 2 · Last aligned: 2026-08-31 · Scenarios: S0–S183 · Playwright S-ids: 175`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -1023,7 +1023,7 @@ Cross-product story (secrets offline / addresses online / shares≠keys / Shamir
 
 ### V2 tracks (`/v2/`)
 V2-S0 picker Start here (3) then All paths (31); classic `/` still Lab: PASS|FAIL —
-V2-S1 UC1 generate words before addresses; Validate gated: PASS|FAIL —
+V2-S1 UC1 generate words, then numbered-card object pad (no entropy stack), then addresses; Validate gated: PASS|FAIL —
 V2-S2 quiz colors + force exit: PASS|FAIL —
 V2-S3 deep link `?uc=3`: PASS|FAIL —
 V2-S4 word counts 12–24, Clear secrets in topbar, Test/Mainnet derive, regenerate length: PASS|FAIL —

@@ -12,6 +12,17 @@ def test_ac_1_uc1_one_bip39_box_and_entropy() -> None:
     assert "v2Bip39What" in chunk
     assert "v2Uc1Teach" not in chunk
     assert "v2Bip39Spec" in chunk
+    assert "v2-uc1-mint-left" in chunk
+    step0 = chunk[: chunk.find("if (step === 1)")]
+    assert "v2-uc1-align" not in step0
+    assert "v2-uc1-mint-right" not in step0
+    assert "v2EntropyClass" in APP
+    assert "uc1EntropyAfterHtml" in step0
+    assert "v2Uc1After" in APP
+    assert "Entropy</strong> " in APP
+    assert step0.find("v2Bip39What") < step0.find("mnemonicHelpHtml")
+    assert step0.find('id="v2Generate"') < step0.find('id="v2Card"')
+    assert step0.find('id="v2Card"') < step0.find("v2PasteMn")
     assert "v2EntropyWhat" in APP
     assert "bip-0039.mediawiki" in chunk
 

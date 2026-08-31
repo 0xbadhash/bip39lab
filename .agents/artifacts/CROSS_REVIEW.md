@@ -1,21 +1,16 @@
 # CROSS-REVIEW
 
+**Marker:** CROSS-REVIEW
+command: `/cross_review` 0.16.84
 base: origin/master
 
-## Security Guru
-None. Classroom code is not a real silent-payment address. No Sign. No chain scan.
+## Personas
+- Learner: pad 1 is look-at-grid, not another entropy lecture.
+- Operator: Option A shipped; B still available.
+- Safety: photograph/screenshot in Do not; no Sign.
 
-## Maintainability Expert
-None in-scope. Obsolete: `data-cal` / Annual rehearsal removed. `v2SpReuse` / `v2SpSend` live.
+## Obsolete
+Pad 1 `entropyHtml(false)` removed. Address copy stays pad 2.
 
-### Obsolete / cleanup (scoped)
-- Tier A: 0
-
-## Domain Specialist
-None. Reuse vs silent job is correct. Honest about not running ECDH.
-
-## Blocker count
+## P0
 0
-
-## Follow-ups
-UC28 CoinJoin still slop.
