@@ -37,7 +37,7 @@ Omitted on purpose (ports, not unique): UC1 generate, UC2 paper stamp, UC4 path 
 | **UC30** | **Real** BIP-85 child #0 (`m/83696968'/39'/0'/12'/0'`, HMAC `"bip-entropy-from-k"`). Lab `#cardBip85` is still an **idea / hash demo**, not full crypto. Parent still required. No application/index matrix on either face. |
 | **UC32** | Live 12-word SeedXOR. Hide one part fails. Combine restores the same words. No Lab SeedXOR card. Not seedxor.com. |
 | **UC33** | Classroom dead-man timer. No Sign. Not legal counsel. No Lab CSV card. |
-| **UC35** | English words can still be Electrum. BIP-39 restore is the wrong vault. This tab does not run Electrum. |
+| **UC35** | Same 12 English words can be Electrum, not BIP-39. BIP-39 restore is the wrong vault. This tab does not run Electrum. |
 
 CSP: `/v2/` may talk to `https://mempool.space` after leak-ack (UC8 / UC10). Classic Lab `/` stays `connect-src 'none'`. Intentional, not a V2 gap.
 

@@ -475,7 +475,7 @@
     { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Split this 12-word card. Every part is required.", done: "You split the live 12-word card, saw combine fail without every part, and restored the same words." },
     { id: 33, level: "Advanced", title: "Timelock dead-man (practice)", job: "Heir cannot spend until a timer expires. Owner refresh resets it.", done: "Educational timer only. This tab never signs. Not legal counsel." },
     { id: 34, level: "Advanced", title: "Descriptor / policy backup", job: "Refresh a public descriptor from this phrase and explain one line.", done: "You refreshed a public descriptor from the practice phrase and explained one line. You did not paste a private key." },
-    { id: 35, level: "Advanced", title: "Electrum-looking words", job: "English words can still be Electrum, not BIP-39.", done: "BIP-39 restore is the wrong vault. This tab does not run Electrum." }
+    { id: 35, level: "Advanced", title: "Same words, wrong app", job: "Twelve English words are not always a BIP-39 backup. Electrum uses the same kind of words with a different recipe. Restore in the wrong app and you open a different wallet.", done: "You saw a BIP-39 restore of these words, then marked them as Electrum: that restore is the wrong vault. This tab does not run Electrum." }
   ];
 
   var PATHS = [
@@ -486,7 +486,7 @@
     { id: "shared", title: "Shared and air-gap", blurb: "1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap.", ids: [6, 7, 8, 10, 21, 23] },
     { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys.", ids: [18, 24] },
     { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] },
-    { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Electrum words.", ids: [32, 33, 34, 35] }
+    { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Same words, wrong app.", ids: [32, 33, 34, 35] }
   ];
   var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
   var pickerFilter = "start";
@@ -525,7 +525,7 @@
     32: { is: "Split this 12-word card into full-looking parts. Recover needs every part.", isnt: "This is not Shamir 2-of-3. This is not SLIP-39. This is not the SeedXOR.com calculator." },
     33: { is: "A practice timer. Heir spend stays locked until it expires. Refresh resets.", isnt: "This tab never signs or broadcasts. Not a live CSV wallet. Not legal counsel." },
     34: { is: "Refresh a public descriptor from the practice phrase and explain one line.", isnt: "Do not paste a private key, seed, or WIF. Words alone can fail for scripted vaults." },
-    35: { is: "English words can still be Electrum’s stretch, not BIP-39.", isnt: "BIP-39 restore is the wrong vault. This tab does not compute Electrum addresses." }
+    35: { is: "These twelve English words look like a normal seed. Electrum can use the same word list with a different recipe, so the same words open a different wallet.", isnt: "Do not assume a BIP-39 restore is always right because the words are English. This tab does not run Electrum." }
   };
 
   function $(id) { return document.getElementById(id); }
@@ -611,7 +611,8 @@
   var CARD_ATOM = {
     1: "assets/uc1-atom-entropy-words.svg",
     2: "assets/uc2-atom-card-object.svg",
-    16: "assets/uc1-atom-phrase-ne-address.svg"
+    16: "assets/uc1-atom-phrase-ne-address.svg",
+    35: "assets/uc35-atom-same-words-two-apps.svg"
   };
 
   function startDotClass(id, done, currentId) {
@@ -867,7 +868,7 @@
       4: ["Folders", "Toggle path", "Quiz", "Finish"],
       5: ["Public only", "Export", "Quiz", "Finish"],
       6: ["Show 2-of-3", "Three full seeds", "Quiz", "Finish"],
-      7: ["Phrase + hex", "SLIP-39 2-of-3", "Extra secret", "Quiz", "Finish"],
+      7: ["Make the phrase", "Split into hex", "Try M shares", "SLIP-39 2-of-3", "Extra secret", "Quiz", "Finish"],
       8: ["Air-gap model", "Inspect sample", "Quiz", "Finish"],
       9: ["What the leak is", "Fail kits", "Five future addresses", "Quiz", "Finish"],
       10: ["Stay offline", "Opt-in Network", "Quiz", "Finish"],
@@ -1355,9 +1356,9 @@
     },
     35: {
       atoms: [
-        atom(1, 0, "assets/uc1-atom-entropy-words.svg", "Twelve English words", "<strong>Plan · Looks like BIP-39</strong><br/>Electrum can use the same dictionary with a different stretch."),
-        atom(2, 1, "assets/uc1-atom-phrase-ne-address.svg", "BIP-39 restore is the wrong vault", "<strong>Practice · Wrong tool</strong><br/>Checksum-looking words can still not be BIP-39."),
-        atom(3, 2, "assets/uc2-atom-card-object.svg", "This tab does not run Electrum", "<strong>Review · No fake address</strong><br/>We do not invent an Electrum receive string.")
+        atom(1, 0, "assets/uc35-atom-same-words-two-apps.svg", "Same 12 words", "<strong>Plan · Two apps</strong><br/>BIP-39 and Electrum can show the same English words. Different recipe. Different wallet."),
+        atom(2, 1, "assets/uc35-atom-same-words-two-apps.svg", "Wrong restore", "<strong>Practice · BIP-39 first</strong><br/>Open these words as BIP-39. Then say they were Electrum: that mailbox is the wrong vault."),
+        atom(3, 2, "assets/uc2-atom-card-object.svg", "This tab does not run Electrum", "<strong>Review · No fake address</strong><br/>We will not invent an Electrum address. The lesson is the trap.")
       ]
     }
   };
@@ -1475,10 +1476,11 @@
     });
   }
 
-  function entropyPhraseBits() {
+  function entropyPhraseBits(phrase) {
+    var m = phrase != null ? phrase : mem.mnemonic;
     var n = 12;
-    if (mem.mnemonic) {
-      var wn = mem.mnemonic.trim().split(/\s+/).filter(Boolean).length;
+    if (m) {
+      var wn = String(m).trim().split(/\s+/).filter(Boolean).length;
       if (wn) n = wn;
     }
     return { n: n, bits: ENT_BITS[n] || 128 };
@@ -1502,9 +1504,10 @@
     );
   }
 
-  function entropyBarHtml() {
-    var x = entropyPhraseBits();
-    if (mem.bip39Ok === false) {
+  function entropyBarHtml(phrase) {
+    var x = entropyPhraseBits(phrase);
+    var checksumFail = phrase == null && mem.bip39Ok === false;
+    if (checksumFail) {
       return (
         '<p class="v2-entropy" id="v2Entropy">' +
         "<strong>Entropy</strong> not BIP-39" +
@@ -1538,18 +1541,40 @@
     return '<div class="v2-os-ent" id="v2OsEnt">' + lockHtml("os") + entropyBarHtml() + "</div>";
   }
 
-  function uc1EntropyAfterHtml() {
-    if (!mem.mnemonic) {
+  function uc1EntropyAfterHtml(phrase) {
+    var p = arguments.length ? phrase : mem.mnemonic;
+    if (!p) {
       return '<div class="v2-uc1-after" id="v2Uc1After" hidden></div>';
     }
     return (
       '<div class="v2-uc1-after" id="v2Uc1After">' +
-      lockHtml("os") +
+      lockHtml("os", p) +
       '<div id="v2EntropyClass">' +
       entropyTeachHtml() +
       "</div>" +
-      entropyBarHtml() +
+      entropyBarHtml(p) +
       "</div>"
+    );
+  }
+
+  function faceClusterHtml(src, cap, teachTitle, teachLines, figId, teachId) {
+    return (
+      '<div class="v2-uc1-after v2-face-after" id="' +
+      (figId || "v2FaceAfter") +
+      '">' +
+      '<figure class="v2-lock idle">' +
+      '<img class="v2-lock-img" src="' +
+      src +
+      '" width="640" height="640" alt="' +
+      cap +
+      '" />' +
+      "<figcaption>" +
+      cap +
+      "</figcaption>" +
+      "</figure>" +
+      '<div class="v2-face-class">' +
+      teachBox(teachTitle, classLines(teachLines[0], teachLines[1], teachLines[2]), teachId || (figId ? figId + "Teach" : "v2FaceTeach")) +
+      "</div></div>"
     );
   }
 
@@ -1557,10 +1582,10 @@
     return (withTeach === false ? "" : entropyTeachHtml()) + entropyMeterHtml();
   }
 
-  function replaceOsEntropy() {
+  function replaceOsEntropy(phrase) {
     var after = $("v2Uc1After");
     if (after) {
-      after.outerHTML = uc1EntropyAfterHtml();
+      after.outerHTML = arguments.length ? uc1EntropyAfterHtml(phrase) : uc1EntropyAfterHtml();
       return;
     }
     var wrap = $("v2OsEnt");
@@ -1768,9 +1793,9 @@
         { q: "What happens if you paste an xprv or a seed into Explain?", opts: [qOk("The lab refuses it in red. Public descriptors only.", "Correct."), qBad("It still explains the spend policy.", "Wrong. Private material is refused.")] }
       ],
       35: [
-        { q: "Twelve English words always mean BIP-39?", opts: [qOk("No. Electrum can use the same dictionary with a different stretch.", "Correct."), qBad("Yes. If they look English, BIP-39 restore is always right.", "Wrong.")] },
-        { q: "If you restore Electrum words with BIP-39 rules, what happens?", opts: [qOk("You open the wrong vault, or empty. Not the Electrum wallet.", "Correct."), qBad("You get the same coins. Dictionaries match so the wallets match.", "Wrong.")] },
-        { q: "Does this tab compute an Electrum address?", opts: [qOk("No. It refuses to invent Electrum’s stretch.", "Correct."), qBad("Yes. It prints a real Electrum tb1.", "Wrong.")] }
+        { q: "You see twelve English words. Are they always a BIP-39 seed?", opts: [qOk("No. Electrum can use the same word list with a different recipe.", "Correct."), qBad("Yes. If they look English, any BIP-39 wallet will open the right coins.", "Wrong.")] },
+        { q: "You type Electrum words into a BIP-39 wallet. What happens?", opts: [qOk("You open a different wallet — often empty. Not the Electrum coins.", "Correct."), qBad("You get the same coins, because the words match.", "Wrong.")] },
+        { q: "Does this practice tab compute a real Electrum address?", opts: [qOk("No. It will not run Electrum. It only shows the trap.", "Correct."), qBad("Yes. It prints a real Electrum tb1.", "Wrong.")] }
       ]
     };
     return m[id] || [];
@@ -1818,22 +1843,19 @@
         teachBox(
           "Classroom — prove the backup",
           classLines(
-            "The numbered card is paper. The address is not the backup.",
-            "The same receive address after typing from paper means the copy works.",
-            "Practice phrase only. No photo. No funded words. Pick 12–24, generate, then type that same card back."
+            "The numbered card is paper. The receive address is not the backup.",
+            "If you type the paper copy and get the same address, the copy works.",
+            "Practice only. No photo. Do not use a funded phrase. Pick 12–24 words, then type them back."
           ),
           "v2Uc16Teach"
         ) +
+        mnemonicHelpHtml(true) +
+        '<div class="v2-uc1-mint-left" id="v2GenRow">' +
         wordCountSelectHtml() +
-        '<div class="row v2-gen-bar" id="v2GenRow">' +
-        '<div class="v2-gen-left">' +
         '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
-        inlineI(
-          "Generate to fill this backup",
-          "Word count sits above this button. Click Make practice words to fill the numbered card. Throwaway. Do not fund it."
-        ) +
-        "</div></div>" +
+        "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
+        uc1EntropyAfterHtml() +
         pauseBtn("Next: hide the card", !mem.mnemonic)
       );
     }
@@ -1853,9 +1875,9 @@
       teachBox(
         "Classroom — same address",
         classLines(
-          "Checksum plus receive address come from the words you type.",
-          "The same address as the card means the paper copy works.",
-          "The message below is the lab result. Do not peek."
+          "The words you type rebuild a checksum and a receive address.",
+          "If that address matches the card, the paper copy is good.",
+          "Hide the on-screen card. Do not peek."
         ),
         "v2Uc16ChkTeach"
       ) +
@@ -1873,34 +1895,82 @@
   }
 
   function uc17(step) {
-    function row(amt, label, btc) {
+    var picked = mem.tier || {};
+    var placed =
+      picked.coffee === "phone" && picked.mid === "hww" && picked.large === "mofn";
+    function binBtn(amt, id, label) {
+      var on = picked[amt] === id;
       return (
-        '<div class="v2-tier-row" data-amt="' + amt + '"><strong>' + label + " · " + btc + ' BTC</strong>' +
-        '<button type="button" class="btn secondary btn-sm" data-bin="exchange">Exchange</button>' +
-        '<button type="button" class="btn secondary btn-sm" data-bin="phone">Phone</button>' +
-        '<button type="button" class="btn secondary btn-sm" data-bin="hww">One HWW</button>' +
-        '<button type="button" class="btn secondary btn-sm" data-bin="mofn">2-of-3</button></div>'
+        '<button type="button" class="btn btn-sm' +
+        (on ? "" : " secondary") +
+        '" data-bin="' +
+        id +
+        '">' +
+        label +
+        "</button>"
       );
     }
+    function row(amt, label, btc) {
+      return (
+        '<div class="v2-tier-row" data-amt="' +
+        amt +
+        '" data-btc="' +
+        btc +
+        '"><strong class="v2-tier-label">' +
+        label +
+        ' · <span class="v2-tier-btc" id="v2TierBtc-' +
+        amt +
+        '">' +
+        btc +
+        " BTC</span></strong>" +
+        '<div class="v2-tier-bins">' +
+        binBtn(amt, "exchange", "Exchange") +
+        binBtn(amt, "phone", "Phone") +
+        binBtn(amt, "hww", "One HWW") +
+        binBtn(amt, "mofn", "2-of-3") +
+        "</div>" +
+        '<div class="v2-drain v2-hidden" id="v2TierDrainWrap-' +
+        amt +
+        '"><span class="v2-drain-bar" id="v2TierDrain-' +
+        amt +
+        '" style="width:100%"></span></div></div>'
+      );
+    }
+    var teach = teachBox(
+      "Classroom — what to tap",
+      classLines(
+        "Daily 0.001 → Phone. Mid 0.184 → One HWW. Large 2.0 → 2-of-3. Continue unlocks when all three rows match that.",
+        "Exchange is they-hold. Wrong for every row. The number stays — they still have it.",
+        "Phone for mid or large can be stolen (the stack drains). 2-of-3 for daily coffee is too much ceremony."
+      ),
+      "v2TierTeach"
+    );
     var rows =
       row("coffee", "Daily", "0.001") +
       row("mid", "Mid", "0.184") +
       row("large", "Large", "2.0") +
-      '<div id="v2TierOut"></div>';
+      '<p class="control-help' +
+      (placed ? " msg-ok" : "") +
+      '" id="v2TierOut">' +
+      (placed
+        ? "Placed: 0.001 phone · 0.184 hardware · 2.0 2-of-3."
+        : "Tap one object per row. Need Daily → Phone, Mid → One HWW, Large → 2-of-3.") +
+      "</p>";
     if (step === 0) {
       return pad(
         "<h2>How much lives where</h2>" +
         doDont("Put daily / mid / large on different objects.", "Do not put all three on an exchange or all on a phone.") +
-        "<p class=\"control-help\">Teaching amounts: <strong>0.001</strong> coffee · <strong>0.184</strong> mid · <strong>2.0</strong> large. Not real balances.</p>" +
+        teach +
         rows +
-        pauseBtn("I placed daily, mid, and large", true)
+        pauseBtn("I placed daily, mid, and large", !placed)
       );
     }
     return pad(
       "<h2>Place amounts</h2>" +
       doDont("Coffee → phone. Mid → hardware. Large → 2-of-3.", "2-of-3 for coffee money. All on exchange.") +
+      teach +
       rows +
-      pauseBtn("I placed daily, mid, and large", true)
+      pauseBtn("I placed daily, mid, and large", !placed)
     );
   }
 
@@ -1982,9 +2052,9 @@
         teachBox(
           "Classroom — if I cannot speak",
           classLines(
-            "This is a dry-run of objects, not probate.",
-            "People fail because a piece is missing and nobody is there to name it — not because they did not care.",
-            "Run this while you can still talk. The buttons below are lab kits. The red/green line is the result."
+            "This is a practice run of the objects you leave behind — not a will, not a court.",
+            "Heirs fail because a piece is missing and nobody is there to name it.",
+            "Do this while you can still talk. Tap each broken kit. The line below says what was missing."
           ),
           "v2InhTeach"
         ) +
@@ -2011,9 +2081,9 @@
         teachBox(
           "Classroom — packet vs seed",
           classLines(
-            "The packet is sealed instructions that travel with the keys — not a second copy of the vault.",
-            "One envelope that holds words plus the extra secret is the whole wallet in one fire or one leak.",
-            "Shape and ticks below are lab objects. The table is the result."
+            "The packet is a map: how to find the keys. It is not a second copy of the words.",
+            "If one envelope holds the words and the extra secret, one fire or one leak takes the whole vault.",
+            "Pick a shape, tick what belongs in the envelope, then build the practice packet."
           ),
           "v2InhPackTeach"
         ) +
@@ -2049,9 +2119,9 @@
         teachBox(
           "Classroom — watch them fail",
           classLines(
-            "The heir tries incomplete kits while you can still name the missing piece.",
-            "UC16 proves you can restore. This pad proves someone else can, with the objects you actually left.",
-            "Red/green lines are lab results. UC33 is a timer. This is people."
+            "Let them try the incomplete kits while you can still name the missing piece.",
+            "You already proved you can restore. Now prove someone else can, with what you actually left.",
+            "A timer on another track is not the same as a person in the room."
           ),
           "v2InhLiveTeach"
         ) +
@@ -2158,7 +2228,7 @@
           classLines(
             "0 confirmations means the network <em>heard</em> the payment. It can still vanish.",
             "About <strong>one confirmation ≈ 10 minutes</strong> here (real blocks vary). Bigger amounts: wait more.",
-            "Carry the amount you asked. Live lookup is Network, not this tab."
+            "Keep the amount you asked. To look it up live, use the Network room — not this tab."
           ),
           "v2Uc19WaitTeach"
         ) +
@@ -2407,7 +2477,7 @@
                 "A signature is “I agree to this payment.” It is not taking the coins. 2-of-3 needs any two signatures."
               ),
             "You already have two, so you can spend without them. They cannot spend with one key.",
-            "That is the product. Not a login (UC11). Not three friends (trust people vs a company ToS)."
+            "That is the product. It is not a company login. It is not three friends each holding a phrase."
           ),
           "v2Uc21Teach"
         ) +
@@ -2470,9 +2540,9 @@
       teachBox(
         "Classroom — three different jobs",
         classLines(
-          "UC6 = three people, three phrases. UC7 = pieces of one secret. UC11 = a company holds the coins and you have a login.",
-          "This pad = you hold two keys; they hold one key to co-sign.",
-          "Brands change menus. The math does not."
+          "Three friends each with a full phrase is one job. Pieces of one secret is another. A company login (they hold the coins) is a third.",
+          "Here you hold two whole keys. The company holds one key only to co-sign.",
+          "Brand names change. The two-of-three math does not."
         ),
         "v2Uc21JobTeach"
       ) +
@@ -2500,10 +2570,17 @@
         desc(
           "A hardware signer is only as honest as the chip and the software on it. A swapped device or a fake update can steal the first seed you type. The job is always the same: buy from the maker or a reseller you can name, inspect the bag and seals, power on with no seed yet, then match what the device shows to what the maker published — not to a random USB stick or a chat link."
         ) +
-        callout(
-          "is",
-          "What “firmware hash checked” means",
-          "The device screen (or the official app talking to that screen) shows a version and a fingerprint. You compare that fingerprint to the one on the maker’s own website. If they do not match, stop. Do not create a seed. Do not fund it."
+        faceClusterHtml(
+          "assets/uc22-face-firmware-hash.svg",
+          "Device vs maker site",
+          "Classroom — what “firmware hash checked” means",
+          [
+            "The device screen (or the official app talking to that screen) shows a version and a fingerprint.",
+            "Compare that fingerprint to the one on the maker’s own website. Not a chat link, not a random USB.",
+            "If they do not match, stop. Do not create a seed. Do not fund it."
+          ],
+          "v2FwFace",
+          "v2FwTeach"
         ) +
         '<p class="control-help">Same job, four common objects. Menus change; the job does not. This lab does not run their software.</p>' +
         '<div class="v2-auth-grid">' +
@@ -2536,7 +2613,9 @@
       ) +
       '<p class="v2-scene">You have twelve words in a notes file on this computer. You also bought a hardware signer. Two objects. One question: what happens to the notes-file vault?</p>' +
       '<div class="v2-vault-pair">' +
-      '<div class="v2-vault-col" id="v2VaultLaptop"><h3>Notes on the laptop</h3><p class="v2-btc-num">0.184 BTC</p><p>Those words already lived here. This is a hot wallet, even if you later type the same words into a device.</p></div>' +
+      '<div class="v2-vault-col" id="v2VaultLaptop"><h3>Notes on the laptop</h3><p class="v2-btc-num" id="v2VaultLaptopAmt">0.184 BTC</p>' +
+      '<div class="v2-drain" id="v2VaultLaptopDrainWrap" hidden><span class="v2-drain-bar" id="v2VaultLaptopDrain" style="width:100%"></span></div>' +
+      "<p>Those words already lived here. This is a hot wallet, even if you later type the same words into a device.</p></div>" +
       '<div class="v2-vault-col" id="v2VaultHw"><h3>Hardware signer</h3><p class="v2-btc-num" id="v2VaultHwAmt">no seed yet</p><p id="v2VaultHwNote">Empty until a seed is born on the chip. Importing the laptop words would put the <em>same</em> vault on the device — still hot.</p></div>' +
       "</div>" +
       '<p class="control-help">What do you do with the notes-file words?</p>' +
@@ -2637,11 +2716,11 @@
           "Classroom — BIP-352 silent payments",
           classLines(
             "A normal receive string is one mailbox on the chain. Give it twice and both coins sit on the same script — a camera on your history.",
+            "BIP-352 is the rulebook for a code that makes a <em>new</em> mailbox each send. " +
             inlineI(
               "BIP-352",
               "Silent payments. You publish one code. Each sender builds a new on-chain output. You scan with a scan key and spend with a spend key. This tab shows the job. It does not scan the chain or run live ECDH."
-            ) +
-            " is the rulebook for a code that makes a <em>new</em> mailbox each send.",
+            ),
             '<a href="https://github.com/bitcoin/bips/blob/master/bip-0352.mediawiki" target="_blank" rel="noopener noreferrer" id="v2Bip352Spec">BIP-352 spec</a>. This tab does not scan the chain.'
           ),
           "v2Uc25Teach"
@@ -2676,9 +2755,9 @@
         teachBox(
           "Classroom — two sends",
           classLines(
-            "Real BIP-352 uses ECDH with the sender’s coins so only you can find the output.",
-            "This pad uses a classroom hash so you can see the job: same code, different outputs.",
-            "Not a live scanner. Not Sign."
+            "On a real silent payment, only you can find the output (the sender’s coins help cook a one-time mailbox).",
+            "Here we use a practice mix so you can see the idea: same code, two different outputs.",
+            "This is not a live scanner. This tab never signs."
           ),
           "v2Uc25SendTeach"
         ) +
@@ -2705,9 +2784,9 @@
       teachBox(
         "Classroom — two keys",
         classLines(
-          "Silent payments use a scan key (look for outputs) and a spend key (move coins).",
-          "A BIP-84 zpub is a different job: it lists a gap of addresses and is a camera if leaked (UC5 / UC9).",
-          "This tab does not scan."
+          "Silent payments use two jobs: a scan key (find the payments) and a spend key (move the coins).",
+          "A normal viewing key (zpub) is different: it lists a row of receive addresses. If leaked, that list is a camera.",
+          "This tab does not scan the live chain."
         ),
         "v2Uc25KeyTeach"
       ) +
@@ -2745,9 +2824,9 @@
       teachBox(
         "Classroom — not your node",
         classLines(
-          "A public explorer is someone else’s view. This tab does not run a Bitcoin node.",
-          "After leak-ack, use Network. Failures stay unknown — never a silent zero.",
-          "The dock below is the object. No JSON dump on this pad."
+          "A public explorer is someone else’s computer looking at the chain. This tab does not run your own node.",
+          "If you opt in, use the Network room. If a lookup fails, show unknown — never a fake zero.",
+          "The button below opens that room. Nothing is looked up until you choose."
         ),
         "v2Uc26Teach"
       ) +
@@ -2769,9 +2848,9 @@
         teachBox(
           "Classroom — pieces, not a balance",
           classLines(
-            "Two classroom coins from the same words.",
-            "Spending two pieces together can look like one owner.",
-            "Next pads pick one coin. Teaching amounts only. Deep coin control stays on classic Lab."
+            "A wallet total is leftover coins from earlier payments, not one bank number.",
+            "If you spend two leftovers in one payment, outsiders often guess they have the same owner.",
+            "Next you pick one practice coin. Amounts here are teaching only."
           ),
           "v2Uc27Teach"
         ) +
@@ -2788,9 +2867,9 @@
         teachBox(
           "Classroom — pick one piece",
           classLines(
-            "Two practice leftovers on receive indexes 0 and 1.",
-            "A wallet total of 0.18 hides two coins.",
-            "The grid is the object. Next pad shows change."
+            "Two leftovers: 0.05 and 0.13. Together a wallet may show 0.18.",
+            "That 0.18 is a sum of two pieces, not one coin.",
+            "Select the 0.05 piece. Leave the other unspent. Next you will see leftover value come back as change."
           ),
           "v2UtxoGridTeach"
         ) +
@@ -2818,9 +2897,9 @@
         teachBox(
           "Classroom — change folder",
           classLines(
-            "Pay 0.04 from the 0.05 piece. 0.01 returns on the change chain (path …/1/0).",
-            "Leftover value cannot stay on the spent piece.",
-            "The address below is the object. Words do not change."
+            "You pay 0.04 from the 0.05 piece. The leftover 0.01 cannot stay on the spent piece.",
+            "It comes back to a change address (another folder on the same words).",
+            "The recovery words do not change. The address below is that change mailbox."
           ),
           "v2UtxoChangeTeach"
         ) +
@@ -2902,7 +2981,7 @@
                 "common-input heuristic",
                 "A detective shortcut: pieces spent together in one payment often have one owner. It is a guess, not a proof. It is how reuse of history leaks."
               ),
-            "Spend only the 0.05 if you want the salary leftover to stay unlinkable to that merchant."
+            "Spend only the 0.05 if you do not want the salary leftover tied to that merchant."
           ),
           "v2Uc28CombTeach"
         ) +
@@ -2937,7 +3016,7 @@
         "Classroom — obfuscated, not invisible",
         classLines(
           "If five people each put in 0.05 and five 0.05 outputs come out, an outsider must guess which output is yours (1 of 5).",
-          "The chain still lists every line. The graph is muddy, not deleted.",
+          "The chain still lists every line. The picture is muddy, not deleted.",
           "Custody (words, keys, backup) still comes first."
         ),
         "v2Uc28JoinTeach"
@@ -2981,13 +3060,13 @@
         teachBox(
           "Classroom — extra secret is not a PIN on one wallet",
           classLines(
-            "The twelve words stay the same. No extra secret is one vault. Extra “open” (practice) is another.",
-            "UC3 already showed two addresses. This pad " +
+            "The twelve words stay the same. No extra secret is one vault. Extra “open” (practice) is another vault.",
+            "This pad " +
               inlineI(
                 "funds both",
-                "Teaching amounts only. 0.01 tBTC on the empty extra, 0.50 tBTC on extra “open”. Not real coins. Not a network lookup."
+                "Teaching amounts only. 0.01 tBTC on the empty extra, 0.50 tBTC on extra “open”. Not real coins. Not a lookup on the live chain."
               ) +
-              " so you see both are real mailboxes.",
+              " so you see both mailboxes can hold coins.",
             "Forget “open” and that vault is gone. There is no reset desk."
           ),
           "v2Uc29Teach"
@@ -3080,9 +3159,9 @@
         teachBox(
           "Classroom — parent still required",
           classLines(
-            "One master can mint child practice phrases (application 39, child number 0).",
-            "A child is not a backup of the parent.",
-            "This track mints one child. The full matrix lives on classic Lab #cardBip85. No Network."
+            "One master phrase can mint child practice phrases.",
+            "A child is not a backup of the parent. Lose the parent, lose the child.",
+            "This track mints one child. The full grid of children lives on classic Lab. This tab does not look up the chain."
           ),
           "v2Uc30Teach"
         ) +
@@ -3101,9 +3180,9 @@
         teachBox(
           "Classroom — child number 0",
           classLines(
-            "BIP-39 English, 12-word child, application 39, language 0, index 0.",
+            "This mint makes a 12-word English child (child number 0).",
             "One child is enough to see the job.",
-            "Parent is the live card if it is 12 or 24 English words. Otherwise this pad makes a throwaway parent and says so."
+            "If this card is already 12 or 24 English words, it is the parent. If not, this pad makes a throwaway parent and says so."
           ),
           "v2Bip85MintTeach"
         ) +
@@ -3163,11 +3242,11 @@
     return pad(
       "<h2>Open the product room</h2>" +
       teachBox(
-        "Classroom — Suite vs UC7 hex",
+        "Classroom — word shares vs hex pieces",
         classLines(
-          "People hold product word shares at a threshold.",
-          "UC7 hex is educational, not Trezor Suite.",
-          "The dock below is the object. Combine in the room is recovery, not a cosign."
+          "People write word shares. You need enough of them (a threshold) to rebuild the secret.",
+          "The hex pieces on the Shamir track are a classroom demo. They are not the word shares a Trezor uses.",
+          "Open the SLIP-39 room below to practice the word shares. Combining them recovers the secret. It is not a second signer."
         ),
         "v2Uc31Teach"
       ) +
@@ -3210,9 +3289,9 @@
         teachBox(
           "Classroom — N-of-N, not Shamir",
           classLines(
-            "XOR of entropy. Each part looks like a complete BIP-39 backup.",
-            "Lose one list and the original is gone. Not UC7 (any M of N hex), not UC31 (SLIP-39 people shares).",
-            "The next pads split this 12-word card. No Network and no QR of parts."
+            "Each part looks like a complete 12-word backup. You need every part to rebuild the original.",
+            "Lose one list and the original is gone. That is not “any 2 of 3.”",
+            "Next you split this 12-word card. Do not QR the parts. Do not fund them."
           ),
           "v2XorTeach"
         ) +
@@ -3231,9 +3310,9 @@
         teachBox(
           "Classroom — this card",
           classLines(
-            "The 12-word source for the XOR.",
-            "24-word entropy is a different length. This drill is 12 words only.",
-            "The button below splits entropy with the Lab bundle. Parts stay in this tab."
+            "This drill starts from a 12-word list.",
+            "A 24-word list is a different length, so this pad will not cut it.",
+            "The button below splits the list into two parts. The parts stay on this screen."
           ),
           "v2XorSplitTeach"
         ) +
@@ -3245,6 +3324,7 @@
             ? "Live card is " + nLive + " words. This drill needs 12. It will not cut the live card."
             : "No live card yet. Make a 12-word practice card for this drill.") +
         "</p>" +
+        uc1EntropyAfterHtml(xorCanSplit() ? xorSrcPhrase() : "") +
         (xorCanSplit()
           ? ""
           : '<button type="button" class="btn" id="v2XorMake12">Make a 12-word practice card for this drill</button>') +
@@ -3287,9 +3367,9 @@
         teachBox(
           "Classroom — why every part",
           classLines(
-            "Recover XORs every part back to the source entropy.",
-            "One missing list fails. That is not Shamir any-M-of-N.",
-            "Red and green lines below are lab results."
+            "Rebuild mixes every part back into the original words.",
+            "Hide one part: it must fail. You need every part — not “any two of three.”",
+            "The messages below tell you fail or match."
           ),
           "v2XorRecTeach"
         ) +
@@ -3367,9 +3447,9 @@
         teachBox(
           "Classroom — what a descriptor is",
           classLines(
-            "A descriptor is the policy string wallets import (script + keys).",
-            "Words alone can fail for scripted paths. Store this line with the keys.",
-            "The object below is a practice wpkh line. Next pad refreshes from this phrase."
+            "A descriptor is the recipe a wallet imports: which script, which keys.",
+            "The twelve words alone are not enough for some vaults. Keep this line with the keys.",
+            "The practice line below is an example. Next you refresh it from this phrase."
           ),
           "v2DescTeach"
         ) +
@@ -3390,9 +3470,9 @@
         teachBox(
           "Classroom — public only",
           classLines(
-            "Watch-only output descriptors from this phrase.",
-            "UC5 showed a viewing key. This pad is the importable policy line.",
-            "The rows below are lab objects. A throwaway phrase is labelled if no live card exists."
+            "These are public recipes (descriptors) from this practice phrase.",
+            "A viewing key lists addresses. This line is what a wallet imports as the spend recipe.",
+            "Copy the public lines. Never paste a private key here. If there is no live card, this pad makes a throwaway and says so."
           ),
           "v2DescRefreshTeach"
         ) +
@@ -3414,9 +3494,9 @@
         teachBox(
           "Classroom — explain vs object",
           classLines(
-            "A classroom parse of script kinds on a public line.",
-            "Private keys in this box are a leak.",
-            "The blue box stays teaching. The pre below is the result."
+            "Paste a public recipe. This pad names the script kinds it sees.",
+            "A private key, seed, or WIF in this box is a leak. Refuse it.",
+            "The explanation below is only what the parser read — not a spend."
           ),
           "v2DescExplainTeach"
         ) +
@@ -3436,11 +3516,24 @@
     if (step === 0) {
       await ensurePhrase();
       return pad(
-        "<h2>Looks like BIP-39</h2>" +
+        "<h2>Same words, two wallets</h2>" +
         doDont(
-          "Look at twelve English words. Electrum can use the same dictionary with a different stretch.",
-          "Do not assume BIP-39 restore is always right because the words look English."
+          "Look at these twelve English words. They look like a normal Bitcoin backup.",
+          "Do not assume any wallet that accepts English words will open the same coins."
         ) +
+        '<div class="v2-uc1-after v2-face-after" id="v2ElStory">' +
+        '<img class="v2-lock" src="assets/uc35-atom-same-words-two-apps.svg" width="136" height="54" alt="Same twelve words open wallet A in a BIP-39 app and wallet B in Electrum">' +
+        '<div class="v2-face-class">' +
+        teachBox(
+          "What this exercise is about",
+          classLines(
+            "Most hardware wallets use BIP-39: a standard that turns random bits into 12 or 24 dictionary words.",
+            "Electrum is a desktop wallet that can also show 12 English words — but it cooks those words with a different recipe.",
+            "Type Electrum words into a BIP-39 app (or the other way around) and you open a different wallet. Often empty. Your coins are not there."
+          ),
+          "v2ElTeach0"
+        ) +
+        "</div></div>" +
         '<div id="v2Card">' +
         wordGridHtml(mem.mnemonic) +
         "</div>" +
@@ -3449,32 +3542,36 @@
     }
     if (step === 1) {
       return pad(
-        "<h2>Wrong restore</h2>" +
+        "<h2>Try the wrong restore</h2>" +
         doDont(
-          "Restore these words as BIP-39 to see a practice tb1. Then mark them as Electrum-style: BIP-39 would be the wrong vault.",
-          "This tab does not run Electrum’s stretch and will not invent an Electrum address."
+          "First open these words as BIP-39. You will see a practice receive address (tb1…). Then say they were from Electrum.",
+          "This tab does not run Electrum. It will not invent an Electrum address."
         ) +
+        '<div class="v2-uc1-after v2-face-after" id="v2ElStory2">' +
+        '<img class="v2-lock" src="assets/uc35-atom-same-words-two-apps.svg" width="136" height="54" alt="Same twelve words, two apps, two wallets">' +
+        '<div class="v2-face-class">' +
         teachBox(
-          "Classroom — English is not enough",
+          "What you are doing",
           classLines(
-            "The same dictionary can still be Electrum’s stretch, not BIP-39.",
-            "Restoring as BIP-39 would be the wrong vault. This tab will not invent an Electrum address.",
-            "The tb1 below is a BIP-39 practice restore. The note is the lesson."
+            "Click Restore as BIP-39. That is what Trezor, Ledger, and most apps would open from these words.",
+            "Then click These words were from Electrum. If that were true, the tb1 above is the wrong vault — not your Electrum coins.",
+            "We stop there. We do not run Electrum’s recipe, so we do not show a fake Electrum address."
           ),
           "v2ElTeach"
         ) +
-        "<h3>BIP-39 restore (lab result)</h3>" +
+        "</div></div>" +
+        "<h3>Practice result</h3>" +
         '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
         '<button type="button" class="btn" id="v2ElBip39">Restore as BIP-39</button>' +
-        '<button type="button" class="btn secondary" id="v2ElElectrum">These words were Electrum-style</button>' +
+        '<button type="button" class="btn secondary" id="v2ElElectrum">These words were from Electrum</button>' +
         "</div>" +
         '<code class="v2-preview-big" id="v2ElAddr">' +
         (mem.elAddr || "BIP-39 restore shows a practice address here.") +
         "</code>" +
         '<div id="v2ElOut" class="control-help">' +
-        (mem.elNote || "Pick both buttons. Electrum does not get a fake address.") +
+        (mem.elNote || "Use both buttons. We will not invent an Electrum address.") +
         "</div>" +
-        pauseBtn("BIP-39 restore is the wrong vault", !(mem.elBip && mem.elNote))
+        pauseBtn("That BIP-39 restore is the wrong vault", !(mem.elBip && mem.elNote))
       );
     }
     return null;
@@ -3514,7 +3611,7 @@
         uc1EntropyAfterHtml() +
         '<label class="field mnemonic-raw" for="v2PasteMn"><span class="label-row">Paste practice words</span>' +
         '<textarea id="v2PasteMn" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
-        '<div class="row" style="margin-top:0.45rem">' +
+        '<div class="row">' +
         '<button type="button" class="btn secondary" id="v2PasteApply">Use pasted practice words</button>' +
         "</div>" +
         '<p id="v2PasteMsg" class="control-help">Paste 12–24 words to practice. The button will say: not at all, words OK but checksum/entropy not, or all fine. Do not paste a funded backup.</p>' +
@@ -3598,17 +3695,15 @@
         desc(
           "Try 12, 15, 18, 21, or 24 words. A longer list is like more secret coin-flips — harder to guess. Still practice. Do not send money to it."
         ) +
-        entropyHtml(false) +
+        mnemonicHelpHtml(true) +
+        '<div class="v2-uc1-mint-left" id="v2GenRow">' +
         wordCountSelectHtml() +
-        '<div class="row v2-gen-bar">' +
-        '<div class="v2-gen-left">' +
         '<button type="button" class="btn secondary" id="v2Regen">Generate ' +
         n +
         "-word phrase</button>" +
-        mnemonicHelpHtml(true) +
-        "</div>" +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
+        uc1EntropyAfterHtml() +
         pauseBtn("I tried another length", false)
       );
     }
@@ -3694,7 +3789,7 @@
         ) +
         '<p class="control-help" id="v2PrintHelp">Print from this lab is not an air-gap. Prefer a hand copy offline, and not to print, if the phrase is funded.</p>' +
         '<label class="check"><input type="checkbox" id="v2PrintAck"/> I am printing a practice sheet only. I will not photograph a funded phrase on a networked phone.</label>' +
-        '<div class="row" style="margin-top:0.65rem">' +
+        '<div class="row">' +
         '<button type="button" class="btn secondary" id="v2Print" disabled>Print practice sheet</button>' +
         "</div>" +
         pauseBtn("I treated print as optional", false)
@@ -3743,7 +3838,6 @@
 
   async function uc3(step) {
     if (step === 0) {
-      var n = mem.wordCount || 12;
       return pad(
         "<h2>Same words</h2>" +
         doDont(
@@ -3753,15 +3847,13 @@
         desc(
           "Both vaults start from this same numbered card. The extra secret comes on the next step."
         ) +
-        entropyHtml() +
-        wordCountSelectHtml() +
-        '<div class="row v2-gen-bar">' +
-        '<div class="v2-gen-left">' +
-        '<button type="button" class="btn" id="v2Generate">Generate ' + n + "-word phrase</button>" +
         mnemonicHelpHtml(true) +
-        "</div>" +
+        '<div class="v2-uc1-mint-left" id="v2GenRow">' +
+        wordCountSelectHtml() +
+        '<button type="button" class="btn" id="v2Generate">Make practice words</button>' +
         "</div>" +
         '<div id="v2Card">' + wordGridHtml(mem.mnemonic) + "</div>" +
+        uc1EntropyAfterHtml() +
         pauseBtn("Next: compare empty vs a test secret", !mem.mnemonic)
       );
     }
@@ -3804,21 +3896,30 @@
       );
     }
     if (step === 2) {
-      return quiz("If you forget the extra secret (passphrase) for a vault:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "The twelve words alone will not open that vault. Those coins are gone.",
-          okwhy: "Correct. Same words without that extra secret open a different vault."
+          q: "If you forget the extra secret (passphrase) for a vault, what is true?",
+          opts: [
+            qOk("The twelve words alone will not open that vault. Those coins are gone.", "Correct. Same words without that extra secret open a different vault."),
+            qBad("This website can reset the extra secret for you.", "Wrong. There is no reset desk. Forgotten extra secret means that vault is gone."),
+            qBad("The receive addresses stay the same even if the extra secret is wrong.", "Wrong. A different extra secret makes different addresses.")
+          ]
         },
         {
-          k: "bad",
-          t: "This website can reset the extra secret for you.",
-          why: "Wrong. There is no reset desk. Forgotten extra secret means that vault is gone."
+          q: "Same numbered card, empty extra vs a test extra — what did you see?",
+          opts: [
+            qOk("Two different receive addresses. That is two vaults, not a PIN on one wallet.", "Correct. The extra secret is not a PIN. It opens a different locker."),
+            qBad("The same address, because the twelve words did not change.", "Wrong. Same words + a different extra make a different address."),
+            qBad("A PIN that unlocks the same vault after three tries.", "Wrong. There is no retry desk. Forget the extra and that vault is gone.")
+          ]
         },
         {
-          k: "bad",
-          t: "The receive addresses stay the same even if the extra secret is wrong.",
-          why: "Wrong. A different extra secret makes different addresses."
+          q: "Where should you store the extra secret?",
+          opts: [
+            qOk("Apart from the paper card. Anyone with both has the vault.", "Correct. One envelope with words plus extra is the whole wallet in one leak."),
+            qBad("Written on the same paper as the twelve words.", "Wrong. Then one find is the whole vault."),
+            qBad("Only in this website, so you can reset it later.", "Wrong. This tab does not store your extra secret.")
+          ]
         }
       ]);
     }
@@ -3842,7 +3943,7 @@
           classLines(
             "A path is a folder inside the same backup.",
             "A new folder is a new address, not a new recovery phrase. The numbered card stays put.",
-            "The path line, table, and chip below are this folder’s objects — not a chain lookup."
+            "The path line and table below are this folder. This is not a live chain lookup."
           ),
           "v2PathTeach"
         ) +
@@ -3880,7 +3981,7 @@
           classLines(
             "Two folders on the same words.",
             "Leftover from a spend goes to change, not back to the receive address.",
-            "This pad only shows the two paths. Address and amount are lab objects, not a chain lookup."
+            "This screen only shows the two folders. Address and amount are examples, not a live chain lookup."
           ),
           "v2PathChTeach"
         ) +
@@ -3996,14 +4097,16 @@
         ) +
         '<p class="control-help">Jargon: xpub ' + termI("XPUB") + " · zpub " + termI("ZPUB") + " · ypub " + termI("YPUB") + " · descriptor " + termI("DESCRIPTOR") + " · watch-only " + termI("WATCHONLY") + "</p>" +
         woTypeTabsHtml() +
-        teachBox(
+        faceClusterHtml(
+          "assets/uc5-face-binoculars.svg",
+          "Look, cannot spend",
           "Classroom — what you export",
-          classLines(
-            "A public viewing key and its descriptor for one BIP folder.",
-            "A watch app can list addresses without the twelve words. Never paste the recovery phrase into that app.",
-            "Pick one BIP tab. The objects below are that folder only."
-          ),
-          "v2WoTeach"
+          [
+            "You export a public viewing key (and its recipe) for one folder — not the twelve words.",
+            "A watch-only app can list addresses and incoming payments. It cannot spend.",
+            "Never type the recovery words into that app. Pick one folder tab. What you see below is that folder only."
+          ],
+          "v2Wo"
         ) +
         '<p class="control-help" id="v2WoHelp">BIP86 xpub — Taproot account public key (watch-only where supported).</p>' +
         "<h3>Viewing key and descriptor (lab result)</h3>" +
@@ -4014,21 +4117,30 @@
       );
     }
     if (step === 2) {
-      return quiz("What should a watch-only wallet receive?", [
+      return quizBank([
         {
-          k: "ok",
-          t: "A public viewing key (the long xpub or zpub string) — never the twelve recovery words.",
-          okwhy: "Correct. That key can list addresses. It cannot spend."
+          q: "What should a watch-only wallet receive?",
+          opts: [
+            qOk("A public viewing key (the long xpub or zpub string) — never the twelve recovery words.", "Correct. That key can list addresses. It cannot spend."),
+            qBad("The recovery words, so the watch app can “just work”.", "Wrong. Pasting the words makes a hot wallet that can spend, not watch-only."),
+            qBad("Your extra secret in the same photo as the words.", "Wrong. The extra secret spends. Watch-only only gets a public key.")
+          ]
         },
         {
-          k: "bad",
-          t: "The recovery words, so the watch app can “just work”.",
-          why: "Wrong. Pasting the words makes a hot wallet that can spend, not watch-only."
+          q: "What can a viewing key do?",
+          opts: [
+            qOk("List receive addresses and incoming payments. It cannot move coins.", "Correct. Watch-only is a camera, not a spender."),
+            qBad("Sign payments, because it came from the same words.", "Wrong. Signing needs the secret. The viewing key is public."),
+            qBad("Reset a forgotten extra secret.", "Wrong. There is no reset desk.")
+          ]
         },
         {
-          k: "bad",
-          t: "Your extra secret in the same photo as the words.",
-          why: "Wrong. The extra secret spends. Watch-only only gets a public key."
+          q: "You need another folder (legacy vs native vs taproot). What do you export?",
+          opts: [
+            qOk("The viewing key (and recipe) for that folder only.", "Correct. One tab, one folder."),
+            qBad("The twelve words again, into the same app.", "Wrong. Words in a watch app make a hot wallet."),
+            qBad("Every folder’s private key.", "Wrong. Watch-only is public only.")
+          ]
         }
       ]);
     }
@@ -4084,7 +4196,7 @@
     }
     if (zs.length !== 3) {
       pol.innerHTML =
-        "<strong>Classroom — what 2-of-3 is</strong>Show all three viewing keys first. Then this blue box explains the spend rule; the line below is the recipe object.";
+        "<strong>Classroom — what 2-of-3 is</strong>Show all three viewing keys first. Then this box explains the spend rule. The line below is the recipe.";
       box.textContent = "The recipe line appears when all three viewing keys exist. This pad does not sign.";
       return;
     }
@@ -4191,7 +4303,7 @@
             "Each still keeps a full backup — not scraps of one phrase. The wallet also needs this recipe (how many must sign, and which three keys, in one agreed order).",
             "Save the recipe with the three viewing keys in A–Z order. You build and spend in a real wallet, not here. This pad does not sign."
           )
-          : "Show all three viewing keys first. Then this blue box explains the spend rule; the line below is the recipe object.") +
+          : "Show all three viewing keys first. Then this box explains the spend rule. The line below is the recipe.") +
         "</div>" +
         "<h3>Recipe line (lab result)</h3>" +
         '<pre class="out" id="v2MsDesc">' +
@@ -4268,42 +4380,72 @@
   }
 
   async function uc7(step) {
+    var has = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
+    var mn = mem.shamirMN || { m: 2, n: 3 };
+    var did = !!(mem.shamirDone);
+    var split = !!(mem.shamirShares && mem.shamirShares.length);
     if (step === 0) {
-      var has = !!(mem.shamirMnemonic && String(mem.shamirMnemonic).trim());
-      var mn = mem.shamirMN || { m: 2, n: 3 };
-      var did = !!(mem.shamirDone);
       return pad(
-        "<h2>One practice phrase → Shamir shares</h2>" +
+        "<h2>One practice phrase</h2>" +
         doDont(
-          "Generate the phrase on this pad. Split those same words into shares here. Watch the shares come from that grid.",
-          "Do not change screens to split. Do not fund it. This is not three cosigner keys (UC6)."
+          "Generate the phrase on this pad. Look at the numbered card and the entropy cluster.",
+          "Do not fund it. Do not split yet. This is not three cosigner keys (UC6)."
         ) +
         desc(
-          "Shamir starts from one secret. These twelve words are that secret. Split encodes those words as bytes and cuts them into N classroom hex shares. Any M rebuild the same words. A piece cannot sign."
+          "Shamir starts from one secret. These words are that secret. The next pad cuts them into classroom hex shares."
         ) +
-        callout(
-          "done",
-          "Same pad",
-          "Generate, then Split, without leaving this screen. The readout names the phrase the shares were built from. SLIP-39 (Trezor-shaped words) is the next pad — a different list."
+        faceClusterHtml(
+          "assets/uc7-face-one-secret.svg",
+          "One secret",
+          "Classroom — one secret",
+          [
+            "Make a practice BIP-39 list here. That list is the one secret.",
+            "The lock and the orange meter are this list — not a guess from the dropdown.",
+            "Next pad: cut the same words into hex pieces. A piece cannot sign."
+          ],
+          "v2ShMintFace",
+          "v2ShMintTeach"
         ) +
         wordCountSelectHtml("v2ShWc", mem.shamirWordCount || 12) +
         '<button type="button" class="btn" id="v2ShPhrase">Generate practice phrase</button>' +
         '<div id="v2ShCard">' +
         (has ? wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid") : wordGridHtml("", "v2ShWordGrid")) +
         "</div>" +
-        '<div class="v2-callout done" id="v2ShStory"><strong>Classroom — what this split is</strong>' +
-        (did
-          ? classLines(
-              "Those shares were built from the twelve words on this pad.",
-              "Hex pieces are the result.",
-              "Combine already matched."
-            )
-          : classLines(
-              "Generate, then Split.",
-              "This blue box stays the teaching story.",
-              "Share lines appear in the result box."
-            )) +
-        "</div>" +
+        uc1EntropyAfterHtml(has ? mem.shamirMnemonic : "") +
+        pauseBtn("Next: split these words", !has)
+      );
+    }
+    if (step === 1) {
+      return pad(
+        "<h2>Split into hex shares</h2>" +
+        doDont(
+          "Pick a threshold. Split the same words that are still on this pad.",
+          "Do not change the phrase on another screen. Do not fund it. This is not three cosigner keys."
+        ) +
+        (has
+          ? '<div id="v2ShCard">' +
+            wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid") +
+            "</div>" +
+            uc1EntropyAfterHtml(mem.shamirMnemonic)
+          : '<p class="msg-bad">Generate a practice phrase on the previous pad first.</p>') +
+        faceClusterHtml(
+          "assets/uc7-face-shards.svg",
+          "One secret, pieces",
+          "Classroom — what this split is",
+          split
+            ? [
+                "Those shares were built from the words on this pad.",
+                "Hex pieces are the result.",
+                "Next pad: paste M lines and try, or combine any M."
+              ]
+            : [
+                "The grid is still the secret.",
+                "This blue box stays the teaching story.",
+                "Share lines appear in the orange result box."
+              ],
+          "v2ShFace",
+          "v2ShStory"
+        ) +
         '<label class="field" for="v2ShMN">Threshold<select id="v2ShMN">' +
         '<option value="2/3"' +
         (mn.m === 2 && mn.n === 3 ? " selected" : "") +
@@ -4317,21 +4459,61 @@
         ">Split these words into shares</button>" +
         "<h3>Share lines (lab result)</h3>" +
         '<pre class="out" id="v2ShOut">' +
+        (split
+          ? (mem.shamirShares || []).map(function (s) {
+              return window.ShamirLab ? ShamirLab.encodeShare(s) : "";
+            }).join("\n")
+          : has
+            ? "The grid is the secret. Click Split these words into shares."
+            : "Generate a practice phrase first.") +
+        "</pre>" +
+        pauseBtn("Next: try M shares", !split)
+      );
+    }
+    if (step === 2) {
+      return pad(
+        "<h2>Try M shares</h2>" +
+        doDont(
+          "Paste any M of the printed shares. Try these M shares, or Combine any M.",
+          "Do not treat one hex line as a wallet. Do not fund it."
+        ) +
+        faceClusterHtml(
+          "assets/uc7-face-any-m.svg",
+          "Any M good pieces",
+          "Classroom — any M rebuild",
+          [
+            "N pieces exist. Any M of them rebuild the same words.",
+            "A wrong extra line does not cancel two good ones.",
+            "Combining is recovery. A share cannot sign a spend."
+          ],
+          "v2ShTryFace",
+          "v2ShTryTeach"
+        ) +
+        "<h3>Share lines (lab result)</h3>" +
+        '<pre class="out" id="v2ShOut">' +
         (did
           ? "Combine already matched. Share lines are in the paste box."
-          : has
-            ? "The grid is the secret. Click Split these words into shares — stay here."
-            : "Generate a practice phrase first. Split stays on this pad.") +
+          : split
+            ? (mem.shamirShares || []).map(function (s) {
+                return window.ShamirLab ? ShamirLab.encodeShare(s) : "";
+              }).join("\n")
+            : "Split on the previous pad first.") +
         "</pre>" +
         '<label class="field" for="v2ShRecombineIn">Paste M share lines (share:index:hex)' +
-        '<textarea id="v2ShRecombineIn" rows="4" spellcheck="false" autocomplete="off" placeholder="share:1:…\nshare:2:…"></textarea></label>' +
+        '<textarea id="v2ShRecombineIn" rows="4" spellcheck="false" autocomplete="off" placeholder="share:1:…\nshare:2:…">' +
+        (split && window.ShamirLab
+          ? (mem.shamirShares || []).map(function (s) {
+              return ShamirLab.encodeShare(s);
+            }).join("\n")
+          : "") +
+        "</textarea></label>" +
         '<div class="v2-try-row">' +
         '<button type="button" class="btn btn-try" id="v2ShTry"' +
-        (mem.shamirShares ? "" : " disabled") +
+        (split ? "" : " disabled") +
         ">Try these M shares</button>" +
         '<div class="v2-combine-right">' +
         '<button type="button" class="btn secondary" id="v2ShCombine"' +
-        (mem.shamirShares ? "" : " disabled") +
+        (split ? "" : " disabled") +
         ">Combine any M</button>" +
         "</div></div>" +
         '<p class="control-help" id="v2ShTryHelp">Paste any M of the printed shares here. Try these M shares checks whether some M of what you pasted rebuild the words on this pad — a wrong extra share does not cancel two good ones. Combine any M still does it for you.</p>' +
@@ -4342,7 +4524,7 @@
         pauseBtn("I split and combined these words", !did)
       );
     }
-    if (step === 1) {
+    if (step === 3) {
       var ready = !!(mem.slip39TriedOne && mem.slip39TriedTwo);
       return pad(
         "<h2>Practice SLIP-39 (Trezor-shaped words)</h2>" +
@@ -4358,17 +4540,19 @@
           "Lab practice",
           "These look like backup words. They are SLIP-39 shares, not a BIP-39 seed. Throwaway. Never type them into a funded Trezor."
         ) +
-        teachBox(
+        faceClusterHtml(
+          "assets/uc7-face-slip39-papers.svg",
+          "Three paper lists",
           "Classroom — what SLIP-39 is",
-          classLines(
-            "SLIP-39 is Trezor-shaped people-share lists (2-of-3), not BIP-39 seeds.",
-            "Hardware wallets do not import the classroom hex from the last pad. Lab only. Never fund. Not Suite.",
-            "Mint three lists, fail with 1, match with 2. Combine any 2 of 3 is the shortcut."
-          ),
+          [
+            "SLIP-39 is word shares people write on paper (here 2-of-3). It is not a BIP-39 seed.",
+            "A hardware wallet will not import the hex pieces from the last pad. Practice only. Never fund. This is not Trezor Suite.",
+            "Make three lists. One list must fail. Any two must match. Combine any 2 of 3 is the shortcut."
+          ],
+          "v2S39Face",
           "v2S39Story"
         ) +
         '<button type="button" class="btn" id="v2S39">Make practice SLIP-39 shares</button>' +
-        '<p class="control-help">Click Make practice SLIP-39 shares.</p>' +
         '<label class="field" for="v2S39s0">SLIP-39 share 1 — edit this pad (clear to try 1)<textarea id="v2S39s0" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
         '<label class="field" for="v2S39s1">SLIP-39 share 2<textarea id="v2S39s1" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
         '<label class="field" for="v2S39s2">SLIP-39 share 3<textarea id="v2S39s2" class="v2-share-line" rows="1" spellcheck="false" autocomplete="off"></textarea></label>' +
@@ -4397,7 +4581,7 @@
         pauseBtn("Next: extra secret on the same two shares", !ready)
       );
     }
-    if (step === 2) {
+    if (step === 4) {
       var ppDone = !!mem.slip39PpDone;
       var have = !!(mem.slip39Shares && mem.slip39Shares.length >= 2 && mem.slip39Hex);
       return pad(
@@ -4435,7 +4619,7 @@
         pauseBtn("Same papers, extra secret = another vault", !ppDone)
       );
     }
-    if (step === 3) {
+    if (step === 5) {
       return quizBank([
         {
           q: "What did you split in the classroom hex pad?",
@@ -4647,9 +4831,9 @@
         teachBox(
           "Classroom — camera, not a spender",
           classLines(
-            "The same public account key UC5 exported.",
-            "It cannot sign, so coins stay put. It can still list every receive that account will ever use.",
-            "Forums, support tickets, screenshots, “it is public because it cannot steal.” Next pads are fail kits and a gap list. No second export row."
+            "A viewing key is public. It cannot sign, so it cannot take coins.",
+            "It can still list every receive address that account will ever use — like a camera on the mailboxes.",
+            "Do not post it. “Cannot steal” is not the same as “safe to publish.”"
           ),
           "v2LeakTeach"
         ) +
@@ -4666,9 +4850,9 @@
         teachBox(
           "Classroom — four mistakes",
           classLines(
-            "Places people paste a zpub without thinking.",
-            "One receive string is a small leak. The account key is the whole future gap.",
-            "The red and amber lines are lab results. UC5 already refused pasting the twelve words into a watch app."
+            "People paste a long public viewing key (often called a zpub) into a forum, a help ticket, or a post that says “it cannot steal, so it is safe.”",
+            "One receive address is one mailbox. The viewing key can list every future mailbox that account will use.",
+            "It still cannot spend. Never paste the twelve recovery words into a watch-only app — that would be a full wallet."
           ),
           "v2LeakKitTeach"
         ) +
@@ -4706,11 +4890,11 @@
           "Do not export the account key again. UC5 already did that. Do not fund these addresses."
         ) +
         teachBox(
-          "Classroom — the gap list",
+          "Classroom — the next five addresses",
           classLines(
-            "Index 0 through 4 on the same account.",
-            "Anyone with the viewing key can build this list without the twelve words.",
-            "The table is the object. Spend still fails. No zpub copy row on this pad."
+            "These are the next five receive addresses on the same account (slots 0 to 4).",
+            "Anyone who has the viewing key can write this list. They do not need the twelve words.",
+            "They still cannot spend. Try the spend button to see it fail."
           ),
           "v2LeakGapTeach"
         ) +
@@ -4810,9 +4994,9 @@
         teachBox(
           "Classroom — fees vs UTXOs",
           classLines(
-            "Public fee bands and mempool traffic. Not your addresses.",
-            "Fees are paid from UTXOs you spend — not from a separate fee account. Higher sat/vB competes when the mempool is full.",
-            "The bands, 140 vB example, and traffic below are the objects (live or classroom snapshot)."
+            "These numbers are public fee rates and mempool traffic. They are not your addresses.",
+            "When you spend, the fee comes from the leftover coins you use — not from a separate “fee account.”",
+            "A higher sat-per-vbyte bid wins space when the mempool is busy. The snapshot below is public, or a practice copy if live lookup misses."
           ),
           "v2FeeTeach"
         ) +
@@ -4827,9 +5011,9 @@
         teachBox(
           "Classroom — unknown is not zero",
           classLines(
-            "An address-only lookup after leak-ack.",
-            "0 sats with status ok means empty (valid). Failures stay unknown — never a silent fake zero.",
-            "This table is the same job as Network. Never paste a seed. Status, sats, detail."
+            "After you opt in, this lookup uses an address only — never the recovery words.",
+            "0 sats with status ok means the address is empty. That is a real zero.",
+            "The table below shows status, sats, and detail. Never paste a seed. If the lookup fails, the cell says unknown — not a fake 0."
           ),
           "v2BalTeach"
         ) +
@@ -5251,6 +5435,17 @@
           "Put the practice phrase on the phone. Watch the balance appear. Then run malware.",
           "Do not keep a funded seed on a phone that goes online."
         ) +
+        faceClusterHtml(
+          "assets/uc12-face-phone-leak.svg",
+          "Phone is online",
+          "Classroom — hot on a phone",
+          [
+            "This pad puts the practice phrase on a phone that talks to the internet.",
+            "Seed, private key, and public key all sit on that same device.",
+            "Malware on the phone can copy the words. A hardware signer is the next pad."
+          ],
+          "v2Uc12"
+        ) +
         '<div id="v2PlaceCard">' +
         wordGridHtml(mem.mnemonic) +
         "</div>" +
@@ -5343,21 +5538,30 @@
       );
     }
     if (step === 2) {
-      return quiz("Same recovery words on a phone app versus a hardware signer:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "Same words, different home. A phone is hot. Hardware should keep the keys on the device.",
-          okwhy: "Correct. Where the keys live is the lesson. A USB cable is not an air-gap."
+          q: "Same recovery words on a phone app versus a hardware signer — what is true?",
+          opts: [
+            qOk("Same words, different home. A phone is hot. Hardware should keep the keys on the device.", "Correct. Where the keys live is the lesson. A USB cable is not an air-gap."),
+            qBad("Plugging USB into a laptop automatically makes an air-gap.", "Wrong. A cable to an online computer is not an air-gap."),
+            qBad("The safe setup is to type the recovery words into the computer.", "Wrong. Typing the words into a computer still kills the vault.")
+          ]
         },
         {
-          k: "bad",
-          t: "Plugging USB into a laptop automatically makes an air-gap.",
-          why: "Wrong. A cable to an online computer is not an air-gap."
+          q: "You already typed the words into a laptop. What is that vault?",
+          opts: [
+            qOk("Still a software vault. Putting the same words on hardware later does not un-steal them.", "Correct. A leaked software seed stays leaked."),
+            qBad("Cold, because you bought a hardware box afterward.", "Wrong. The laptop copy is still hot."),
+            qBad("Fine if you delete the app.", "Wrong. The computer already saw the words.")
+          ]
         },
         {
-          k: "bad",
-          t: "The safe setup is to type the recovery words into the computer.",
-          why: "Wrong. Typing the words into a computer still kills the vault."
+          q: "What is an air-gap here?",
+          opts: [
+            qOk("Keys that never sit on an online computer. A USB cable to a laptop is not that.", "Correct."),
+            qBad("Any device with the word hardware on the box.", "Wrong. Brand is not the split."),
+            qBad("This website after you click Clear secrets.", "Wrong. This tab is still a computer on a network.")
+          ]
         }
       ]);
     }
@@ -5372,6 +5576,17 @@
         doDont(
           "Sort each object. Brand is not a bin.",
           "Do not put a hardware app on a phone in Cold."
+        ) +
+        faceClusterHtml(
+          "assets/uc13-face-hot-cold.svg",
+          "Hot vs cold",
+          "Classroom — the split is the wire",
+          [
+            "Hot means the keys sit on a machine that talks to the internet.",
+            "Cold means they do not. Brand on the box is not the split.",
+            "Sort the four objects. A hardware app on a phone is still hot."
+          ],
+          "v2SortFace"
         ) +
         '<div class="v2-sort" id="v2Sort">' +
         sortSelect("exchange", "Exchange account") +
@@ -5413,21 +5628,30 @@
       );
     }
     if (step === 2) {
-      return quiz("Hot versus cold means:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "Whether your keys live on a machine that talks to the internet. The brand on the box is not the split.",
-          okwhy: "Correct. Daily spend can be hot. Savings stay cold or watch-only."
+          q: "Hot versus cold means:",
+          opts: [
+            qOk("Whether your keys live on a machine that talks to the internet. The brand on the box is not the split.", "Correct. Daily spend can be hot. Savings stay cold or watch-only."),
+            qBad("Whatever the box says “hardware”, even if you typed the words into a laptop.", "Wrong. Keys on an online machine are hot, whatever the box says."),
+            qBad("The same as a company holding the keys versus you holding them.", "Wrong. An exchange is them-holding. Hot versus cold is about whether your keys are online.")
+          ]
         },
         {
-          k: "bad",
-          t: "Whatever the box says “hardware”, even if you typed the words into a laptop.",
-          why: "Wrong. Keys on an online machine are hot, whatever the box says."
+          q: "Hardware-wallet software running on a phone is:",
+          opts: [
+            qOk("Hot. The keys sit on a phone that goes online.", "Correct. Brand on the store listing is not cold."),
+            qBad("Cold, because the listing said hardware.", "Wrong. Keys on a phone are hot."),
+            qBad("Watch-only, because it cannot spend.", "Wrong. If the seed is on the phone, it can spend.")
+          ]
         },
         {
-          k: "bad",
-          t: "The same as a company holding the keys versus you holding them.",
-          why: "Wrong. An exchange is them-holding. Hot versus cold is about whether your keys are online."
+          q: "Where should large savings live?",
+          opts: [
+            qOk("Cold keys or watch-only. Not the same phone as coffee money.", "Correct. Different amounts, different objects."),
+            qBad("All on one exchange account for simplicity.", "Wrong. Then the company holds the keys."),
+            qBad("All on the daily-spend phone so you never lose it.", "Wrong. One stolen phone takes daily and savings.")
+          ]
         }
       ]);
     }
@@ -5504,8 +5728,10 @@
     return "mid";
   }
 
-  function lockHtml(kind) {
-    var ratio = kind === "os" ? (mem.mnemonic ? (mem.bip39Ok === false ? 0 : 1) : null) : entLockRatio();
+  function lockHtml(kind, phrase) {
+    var m = phrase != null ? phrase : mem.mnemonic;
+    var checksumFail = phrase == null && mem.bip39Ok === false;
+    var ratio = kind === "os" ? (m ? (checksumFail ? 0 : 1) : null) : entLockRatio();
     var id = kind === "os" ? "v2OsLock" : "v2EntLock";
     var filt = lockFilter(ratio);
     return (
@@ -5515,7 +5741,9 @@
       id +
       '" data-lock="' +
       kind +
-      '">' +
+      '"' +
+      (phrase != null ? ' data-lock-fixed="1"' : "") +
+      ">" +
       '<img class="v2-lock-img" src="../assets/ds/faces/beginner-lock.png" width="640" height="640" alt="Seed strength" style="' +
       (filt ? "filter:" + filt : "") +
       '" />' +
@@ -5528,7 +5756,9 @@
 
   function applyLockTint() {
     document.querySelectorAll(".v2-lock").forEach(function (el) {
+      if (el.getAttribute("data-lock-fixed") === "1") return;
       var kind = el.getAttribute("data-lock");
+      if (!kind) return;
       var ratio = kind === "os" ? (mem.mnemonic ? (mem.bip39Ok === false ? 0 : 1) : null) : entLockRatio();
       el.className = "v2-lock " + lockToneClass(ratio);
       var img = el.querySelector("img");
@@ -6138,14 +6368,16 @@
         desc(
           "This track stacks three numbers: pad bits from dice or coin, BIP-39 ENT for the word count you pick, and a teaching estimate of the optional 25th word. They are not one magic total. The pad is the source."
         ) +
-        teachBox(
+        faceClusterHtml(
+          "assets/uc15-face-two-vaults.svg",
+          "Same words, extra door",
           "Classroom — pad first",
-          classLines(
-            "Dice/coin pad bits, then BIP-39 word count, then optional 25th word.",
-            "A longer extra secret does not fix a TOO LOW pad.",
-            "The lock, bits, and practice words below are lab objects."
-          ),
-          "v2Uc15Teach"
+          [
+            "First the dice or coin pad (how mixed the rolls are), then how many BIP-39 words, then an optional extra secret.",
+            "A long extra secret does not fix a pad that is TOO LOW.",
+            "Watch the lock and the bit count below. Those tell you if the pad is enough."
+          ],
+          "v2Uc15"
         ) +
         entButtonsHtml({ key: true, keyId: "v2PpKeyUc15Start" }) +
         entMintBarHtml() +
@@ -6186,21 +6418,30 @@
       );
     }
     if (step === 2) {
-      return quiz("A long extra secret on a TOO LOW dice pad means:", [
+      return quizBank([
         {
-          k: "ok",
-          t: "The dice pad is still too weak. The extra secret does not replace rolling more dice.",
-          okwhy: "Correct. Twelve words want about 128 bits of pad. Twenty-four want about 256. The extra secret is another vault secret, not extra dice."
+          q: "A long extra secret on a TOO LOW dice pad means:",
+          opts: [
+            qOk("The dice pad is still too weak. The extra secret does not replace rolling more dice.", "Correct. Twelve words want about 128 bits of pad. Twenty-four want about 256. The extra secret is another vault secret, not extra dice."),
+            qBad("Add the extra-secret estimate to the pad and you now have a 24-word wallet.", "Wrong. A short pad stays a short pad. You do not add the two estimates together."),
+            qBad("The computer always stretches the pad to 512 bits, so few rolls are fine.", "Wrong. That 512 number is the size of the output file, not how random your few rolls were.")
+          ]
         },
         {
-          k: "bad",
-          t: "Add the extra-secret estimate to the pad and you now have a 24-word wallet.",
-          why: "Wrong. A short pad stays a short pad. You do not add the two estimates together."
+          q: "Which number is the source of the words?",
+          opts: [
+            qOk("The dice or coin pad. Roll until it meets 12-word (~128) or 24-word (~256).", "Correct. The pad is first."),
+            qBad("The extra secret length. Longer extra means you can stop rolling.", "Wrong. Extra secret is another vault, not extra dice."),
+            qBad("The lock picture, even if the pad is still TOO LOW.", "Wrong. The lock follows the pad bits.")
+          ]
         },
         {
-          k: "bad",
-          t: "The computer always stretches the pad to 512 bits, so few rolls are fine.",
-          why: "Wrong. That 512 number is the size of the output file, not how random your few rolls were."
+          q: "Same words plus a different extra secret make:",
+          opts: [
+            qOk("A different vault. Forget the extra and that vault is gone.", "Correct. Same lesson as the hidden 25th word."),
+            qBad("The same vault with a PIN.", "Wrong. It is not a PIN on one wallet."),
+            qBad("A stronger pad so TOO LOW becomes OK.", "Wrong. Extra secret does not fix a short pad.")
+          ]
         }
       ]);
     }
@@ -6390,6 +6631,7 @@
     );
   }
 
+  /* UC design: web/v2/uc-design.md — 3-line classroom, . (i) after the term, entropy after a real list. */
   function classLines(a, b, c) {
     return [a, b, c].filter(function (s) { return !!s; }).join("<br>");
   }
@@ -7257,13 +7499,24 @@
         pauseOn(holdReady());
       });
     }
-    function drainToZero(bar, amt, labelZero, onDone) {
+    function drainToZero(bar, amt, labelZero, onDone, startAmt) {
+      if (typeof labelZero === "function") {
+        startAmt = onDone;
+        onDone = labelZero;
+        labelZero = true;
+      }
       if (mem.drainTimer) clearInterval(mem.drainTimer);
+      var start = startAmt != null && !isNaN(Number(startAmt)) ? Number(startAmt) : 0.184;
       var pct = 100;
-      var btc = 0.184;
+      var btc = start;
+      var stepBtc = start / 5;
+      if (bar) {
+        bar.classList.add("is-loss");
+        bar.style.width = "100%";
+      }
       mem.drainTimer = setInterval(function () {
         pct -= 20;
-        btc = Math.max(0, +(btc - 0.037).toFixed(3));
+        btc = Math.max(0, +(btc - stepBtc).toFixed(3));
         if (pct <= 0) {
           pct = 0;
           btc = 0;
@@ -7272,7 +7525,7 @@
           if (typeof onDone === "function") onDone();
         }
         if (bar) bar.style.width = pct + "%";
-        if (amt) amt.textContent = btc.toFixed(3) + (labelZero && btc === 0 ? " BTC" : " BTC");
+        if (amt) amt.textContent = btc.toFixed(3) + " BTC";
       }, 160);
     }
     if ($("v2PlacePhone")) {
@@ -7808,6 +8061,7 @@
         mem.shamirDone = false;
         var card = $("v2ShCard");
         if (card) card.innerHTML = wordGridHtml(mem.shamirMnemonic, "v2ShWordGrid");
+        replaceOsEntropy(mem.shamirMnemonic);
         var splitBtn = $("v2Sh");
         if (splitBtn) splitBtn.disabled = false;
         var comb0 = $("v2ShCombine");
@@ -7832,7 +8086,7 @@
           sout.textContent =
             "Not split yet. Click Split these words into shares — stay here.";
         }
-        if (pause) pause.disabled = true;
+        if (pause) pause.disabled = !mem.shamirMnemonic;
       });
     }
     var shmn = $("v2ShMN");
@@ -7874,7 +8128,7 @@
               " of those " +
               mn.n +
               " rebuild the same words. Lose too many pieces and the phrase is gone.",
-            "Recovery of one secret — not UC6 (three keys). A share cannot sign a spend. Not SLIP-39."
+            "This recovers one secret. These pieces are not three separate wallets. A share cannot sign a spend. These are not SLIP-39 word shares."
           );
       }
       if (out) {
@@ -7891,7 +8145,7 @@
       if (comb) comb.disabled = false;
       var tryb = $("v2ShTry");
       if (tryb) tryb.disabled = false;
-      if (pause) pause.disabled = true;
+      if (pause) pause.disabled = !mem.shamirShares;
     });
     var shc = $("v2ShCombine");
     if (shc) shc.addEventListener("click", function () {
@@ -8812,13 +9066,43 @@
         btn.className = "btn btn-sm";
         var want = { coffee: "phone", mid: "hww", large: "mofn" };
         var out = $("v2TierOut");
+        var btcEl = $("v2TierBtc-" + amt);
+        var drainWrap = $("v2TierDrainWrap-" + amt);
+        var drainBar = $("v2TierDrain-" + amt);
+        var startBtc = parseFloat(row.getAttribute("data-btc") || "0");
+        row.classList.remove("is-frozen");
+        if (drainWrap) drainWrap.classList.add("v2-hidden");
+        if (btcEl && !isNaN(startBtc)) btcEl.textContent = startBtc + " BTC";
+        if (out) out.className = "control-help";
         if (bin === "exchange") {
-          if (out) out.textContent = "Trap: savings on an exchange is they-hold, not amount-tiered self-custody.";
+          row.classList.add("is-frozen");
+          if (out) {
+            out.className = "control-help msg-bad";
+            out.textContent =
+              "Wrong. Exchange is they-hold. The number stays — they still have it. Pick Phone / One HWW / 2-of-3 on this row. Need Daily → Phone, Mid → One HWW, Large → 2-of-3.";
+          }
           if (pause) pause.disabled = true;
           return;
         }
+        if ((amt === "mid" || amt === "large") && bin === "phone") {
+          if (drainWrap) drainWrap.classList.remove("v2-hidden");
+          if (out) {
+            out.className = "control-help msg-bad";
+            out.textContent =
+              "Wrong. Phone is only for daily coffee. One stolen phone takes this stack. Mid → One HWW. Large → 2-of-3.";
+          }
+          if (pause) pause.disabled = true;
+          drainToZero(drainBar, btcEl, true, function () {
+            if (btcEl) btcEl.textContent = "0.000 BTC stolen";
+          }, startBtc);
+          return;
+        }
         if (amt === "coffee" && bin === "mofn") {
-          if (out) out.textContent = "Trap: 2-of-3 for coffee money. Put daily on a phone hot wallet.";
+          if (out) {
+            out.className = "control-help msg-bad";
+            out.textContent =
+              "Wrong. 2-of-3 is for the large stack, not coffee. Daily → Phone.";
+          }
           if (pause) pause.disabled = true;
           return;
         }
@@ -8827,9 +9111,10 @@
           mem.tier.mid === want.mid &&
           mem.tier.large === want.large;
         if (out) {
+          out.className = "control-help" + (ok ? " msg-ok" : "");
           out.textContent = ok
-            ? "Placed: 0.001 phone · 0.184 hardware · 2.0 2-of-3."
-            : "Keep placing. Coffee → phone. Mid → HWW. Large → 2-of-3.";
+            ? "Placed: 0.001 phone · 0.184 hardware · 2.0 2-of-3. Continue is unlocked."
+            : "Keep placing. Need Daily → Phone, Mid → One HWW, Large → 2-of-3.";
         }
         if (pause) pause.disabled = !ok;
       });
@@ -9379,7 +9664,7 @@
     if ($("v2ElElectrum")) {
       $("v2ElElectrum").addEventListener("click", function () {
         mem.elNote =
-          "If these words were Electrum-style, BIP-39 restore is the wrong vault. This tab does not run Electrum’s stretch and will not invent an Electrum address.";
+          "If these words were from Electrum, that BIP-39 restore is the wrong vault. This tab does not run Electrum and will not invent an Electrum address.";
         var o = $("v2ElOut");
         if (o) {
           o.className = "msg-ok";
@@ -9563,6 +9848,27 @@
           hwNote.textContent = stay
             ? "Savings can live here. The laptop phrase is a different wallet and stays hot."
             : "Same vault as the notes file. Putting it in a metal box did not make it cold.";
+        }
+        var lapAmt = $("v2VaultLaptopAmt");
+        var lapWrap = $("v2VaultLaptopDrainWrap");
+        var lapBar = $("v2VaultLaptopDrain");
+        if (stay) {
+          if (mem.drainTimer) {
+            clearInterval(mem.drainTimer);
+            mem.drainTimer = 0;
+          }
+          if (lapWrap) lapWrap.hidden = true;
+          if (lapBar) {
+            lapBar.classList.remove("is-loss");
+            lapBar.style.width = "100%";
+          }
+          if (lapAmt) lapAmt.textContent = "0.184 BTC";
+        } else {
+          if (lapWrap) lapWrap.hidden = false;
+          drainToZero(lapBar, lapAmt, true, function () {
+            if (lapAmt) lapAmt.textContent = "0.000 BTC stolen";
+            if (hwAmt) hwAmt.textContent = "0.000 BTC stolen";
+          });
         }
         if (pause) pause.disabled = !stay;
       });
