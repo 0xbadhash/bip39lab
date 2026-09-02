@@ -1,7 +1,8 @@
 # PR Draft — v0.16.86 UC35 plain English + illustration
 
 **Range:** `v0.16.85...HEAD`  
-**Spec:** `.agents/specs/2026-09-02-v2-uc35-plain-english.md`
+**Spec:** `.agents/specs/2026-09-02-v2-uc35-plain-english.md`  
+**Plan:** `.agents/specs/2026-09-02-v2-uc35-plain-english.md`
 
 ## What Problem This Solves
 

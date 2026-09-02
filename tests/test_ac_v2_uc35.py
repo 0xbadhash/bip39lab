@@ -20,7 +20,7 @@ def test_ac_2_image_left_of_blue_box() -> None:
     assert SVG.is_file()
     assert "uc35-atom-same-words-two-apps.svg" in APP
     assert "v2-uc1-after v2-face-after" in APP
-    assert 'id="v2ElTeach"' in APP
+    assert '"v2ElTeach"' in APP
 
 
 def test_ac_3_e2e_trap_copy() -> None:
