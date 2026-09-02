@@ -114,10 +114,23 @@ def collect_night(vault: Path | None, harness: Path) -> tuple[list[Item], list[I
     well: list[Item] = []
     att: list[Item] = []
     fail: list[Item] = []
-    # Prefer morning triage (includes recheck) over multi-product SUMMARY
+    # Live all-report wins when newer than MORNING_TRIAGE so 4am lock
+    # cannot paint last-night from a stale triage file (2026-08-20 hole).
     summary = (vault / "agent-tasks/night-shift/SUMMARY.md") if vault else None
     triage = harness / ".agents/artifacts/MORNING_TRIAGE.md"
-    text = _read(triage)
+    all_report = harness / ".agents/artifacts/NIGHT_SHIFT_ALL_REPORT.md"
+
+    def _mtime(p: Path) -> float:
+        try:
+            return p.stat().st_mtime
+        except OSError:
+            return 0.0
+
+    text = ""
+    if all_report.is_file() and _mtime(all_report) >= _mtime(triage):
+        text = _read(all_report)
+    if not text:
+        text = _read(triage)
     if not text and summary:
         text = _read(summary)
     if not text:
@@ -151,6 +164,9 @@ def collect_night(vault: Path | None, harness: Path) -> tuple[list[Item], list[I
             continue
         pid = _pid(line)
         if not pid:
+            continue
+        # 2026-08-28 CEO lock: BIP39 is not an Ops Dashboard item.
+        if pid.lower() in {"bip39", "bip39lab"}:
             continue
         # Morning triage recheck wins
         if "yes→ok" in line or "recheck green" in line.lower():
@@ -205,6 +221,83 @@ def collect_night(vault: Path | None, harness: Path) -> tuple[list[Item], list[I
     return well, att, fail
 
 
+
+INBOX_TICK_RE = re.compile(
+    r"^- \[(x|X| )\] \*\*([a-z0-9][a-z0-9-]*)\*\*",
+    re.MULTILINE,
+)
+NEWS_SITE = Path.home() / "catalyxt-website"
+
+
+def _news_live_json(day: str) -> Path:
+    return NEWS_SITE / "content" / "news" / f"{day}.json"
+
+
+def _is_pointer_inbox(md: str) -> bool:
+    head = md.strip().lower()
+    if "published. see" in head:
+        return True
+    if not INBOX_TICK_RE.search(md):
+        return True
+    return False
+
+
+def _count_inbox_ticks(md: str) -> int:
+    seen: set[str] = set()
+    n = 0
+    for m in INBOX_TICK_RE.finditer(md):
+        cid = m.group(2)
+        if cid in seen:
+            continue
+        seen.add(cid)
+        if m.group(1).lower() == "x":
+            n += 1
+    return n
+
+
+def scan_zero_tick_inbox_days(vault: Path) -> list[str]:
+    """Unpublished live inbox dates with 0 ticks.
+
+    news_day_status is today-only; leftover prior days used to drop off
+    after midnight so two quiet days could land with no FLAG. Scan every
+    live inbox date and leftover.json the publish timer writes.
+    """
+    days: list[str] = []
+    inbox = vault / "01-Projects" / "catalyxt" / "news-inbox"
+    if inbox.is_dir():
+        for path in sorted(inbox.glob("????-??-??.md")):
+            day = path.stem
+            try:
+                md = path.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            if _is_pointer_inbox(md):
+                continue
+            if _news_live_json(day).is_file():
+                continue
+            if _count_inbox_ticks(md) == 0:
+                days.append(day)
+    markers = [NEWS_SITE / "var" / "news-leftover.json"]
+    if inbox.is_dir():
+        markers.append(inbox / "leftover.json")
+    for marker in markers:
+        if not marker.is_file():
+            continue
+        try:
+            data = json.loads(marker.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for day in data.get("zero_tick_days") or []:
+            if not isinstance(day, str) or day in days:
+                continue
+            pth = inbox / f"{day}.md"
+            if not pth.is_file() or _news_live_json(day).is_file():
+                continue
+            days.append(day)
+    days.sort()
+    return days
+
+
 def collect_news(vault: Path | None) -> tuple[list[Item], list[Item], list[Item], list[Item]]:
     well: list[Item] = []
     att: list[Item] = []
@@ -240,6 +333,28 @@ def collect_news(vault: Path | None) -> tuple[list[Item], list[Item], list[Item]
         else:
             link = _wiki_link(vault, "01-Projects/catalyxt/TODO.md", "catalyxt TODO")
 
+    leftover_days: list[str] = scan_zero_tick_inbox_days(vault) if vault else []
+    if leftover_days:
+        listed = ", ".join(leftover_days)
+        fail.append(
+            Item(
+                "fail",
+                "news",
+                f"News **0-tick unpublished** on live inbox date(s): {listed}",
+                link=link,
+                action="Tick 3–5 boxes then publish_ready_news_inbox.py --deploy",
+            )
+        )
+        todos.append(
+            Item(
+                "fail",
+                "news",
+                f"Tick leftover news inbox: {listed}",
+                link=link,
+                action="Obsidian: 01-Projects/catalyxt/news-inbox/",
+            )
+        )
+
     if state == "published":
         well.append(Item("green", "news", f"Catalyxt news **published** for HKT {day}", link=link))
     elif state == "ready_to_publish":
@@ -262,24 +377,27 @@ def collect_news(vault: Path | None) -> tuple[list[Item], list[Item], list[Item]
             )
         )
     elif state == "ready_to_tick":
-        att.append(
-            Item(
-                "attention",
-                "news",
-                f"News candidates ready — **tick 3–5** in Obsidian (HKT {day})",
-                link=link,
-                action="Open news-inbox and tick 3–5 boxes",
+        if day in leftover_days:
+            pass  # already a FAIL row from leftover scan
+        else:
+            fail.append(
+                Item(
+                    "fail",
+                    "news",
+                    f"News **0-tick unpublished** — HKT {day}",
+                    link=link,
+                    action="Open news-inbox and tick 3–5 boxes",
+                )
             )
-        )
-        todos.append(
-            Item(
-                "attention",
-                "news",
-                f"Tick news inbox for {day}",
-                link=link,
-                action="Obsidian: 01-Projects/catalyxt/news-inbox/" + day,
+            todos.append(
+                Item(
+                    "fail",
+                    "news",
+                    f"Tick news inbox for {day}",
+                    link=link,
+                    action="Obsidian: 01-Projects/catalyxt/news-inbox/" + day,
+                )
             )
-        )
     elif state == "missing_candidates":
         fail.append(
             Item(
@@ -359,6 +477,9 @@ def collect_vault_health(vault: Path | None) -> tuple[list[Item], list[Item], li
 
 
 def collect_kanban(vault: Path | None) -> tuple[list[Item], list[Item]]:
+    # 2026-08-19 CEO lock: kanban/desk-board is a mirror, not a work queue.
+    # Do not scrape Blocked/Doing or T-* checkboxes into attention or to-dos.
+    return [], []
     att: list[Item] = []
     todos: list[Item] = []
     if not vault:
@@ -715,19 +836,33 @@ def build(vault: Path | None, quick: bool) -> Dashboard:
     d.went_well.extend(w)
     d.attention.extend(a)
 
-    # Night fail tickets as todos
+    # Night fail tickets as todos — only products that are live night FAIL.
+    # Stale [ ] rows (email-detach Aug-7 while product PASS) must not paint.
+    night_fail_pids: set[str] = set()
+    for it in d.failing:
+        if it.area != "night_shift":
+            continue
+        m = re.search(r"\*\*([a-zA-Z0-9_-]+)\*\*", it.summary)
+        if m:
+            night_fail_pids.add(m.group(1))
     tickets = HARNESS / ".agents/artifacts/NIGHT_FAIL_TICKETS.md"
     ttext = _read(tickets)
     for line in ttext.splitlines():
-        if line.strip().startswith("- [ ]"):
-            d.todos.append(
-                Item(
-                    "fail",
-                    "night_shift",
-                    line.strip()[6:][:120],
-                    action="See NIGHT_FAIL_TICKETS / product TODO",
-                )
+        if not line.strip().startswith("- [ ]"):
+            continue
+        body = line.strip()[6:][:120]
+        if not night_fail_pids or not any(pid in body for pid in night_fail_pids):
+            continue
+        if "bip39" in body.lower():
+            continue
+        d.todos.append(
+            Item(
+                "fail",
+                "night_shift",
+                body,
+                action="See NIGHT_FAIL_TICKETS / product TODO",
             )
+        )
 
     if d.failing:
         d.overall = "RED"
@@ -777,6 +912,12 @@ def render(d: Dashboard, vault: Path | None) -> str:
         "> - 🟢 **GREEN** → nothing required  ",
         "> - 🟡 **ATTENTION** / 🔴 **RED** → use **Link** column, then clear the source so next refresh goes green  ",
         "",
+        "## Desk board",
+        "![[agent-tasks/desk-board]]",
+        "",
+        "## Watchlist notes",
+        "![[agent-tasks/WATCHLIST-NOTES]]",
+        "",
         "## At a glance",
         "",
         "| | Count |",
@@ -814,7 +955,7 @@ def render(d: Dashboard, vault: Path | None) -> str:
         lines.append(
             "> **Act rule:** GitHub daytime red → fix on GitHub. "
             "Night FAIL on this dashboard → open product TODO / night-shift-log. "
-            "News/kanban → Attention links only."
+            "News 0-tick leftover → FAIL row here. Kanban is not a work queue."
         )
         lines.append("")
     except Exception:  # noqa: BLE001
@@ -844,7 +985,6 @@ def render(d: Dashboard, vault: Path | None) -> str:
                 f"| Vault health | {_wiki_link(vault, 'agent-tasks/health-status.md', 'health-status')} |",
                 f"| Hygiene | {_wiki_link(vault, 'agent-tasks/hygiene-status.md', 'hygiene-status')} |",
                 f"| Pipeline | {_wiki_link(vault, 'agent-tasks/pipeline-status.md', 'pipeline-status')} |",
-                f"| Kanban | {_wiki_link(vault, 'agent-tasks/kanban.md', 'kanban')} |",
                 f"| Security IoC (weekly deep) | {_wiki_link(vault, 'agent-tasks/security-ioc-status.md', 'security-ioc-status')} |",
                 "| Test schedule SoT | `agent-harness/scripts/test_trigger_schedule.py` + section above |",
                 "| Per-product night detail | `01-Projects/<id>/night-shift-log.md` (includes same schedule) |",
@@ -868,6 +1008,8 @@ def render(d: Dashboard, vault: Path | None) -> str:
         for ln in gh_md.splitlines():
             if ln.startswith("# "):
                 gh_body_lines.append("## " + ln[2:])
+            elif ln.lower().startswith("| bip39 |"):
+                continue
             else:
                 gh_body_lines.append(ln)
         lines.append("")
@@ -923,6 +1065,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--stdout", action="store_true")
     args = ap.parse_args(argv)
     vault = _vault_root(args.vault)
+    # Refresh MORNING_TRIAGE from live product NIGHT_SHIFT_REPORT files.
+    # Ignore FAIL rc. Never --recheck (product lane / mail).
+    if not args.no_write and not args.stdout:
+        triage_py = HARNESS / "scripts" / "night_shift_morning_triage.py"
+        if triage_py.is_file():
+            subprocess.run(
+                [sys.executable, str(triage_py)],
+                cwd=str(HARNESS),
+                check=False,
+            )
     d = build(vault, quick=args.quick)
     md = render(d, vault)
     if args.stdout or args.no_write:
