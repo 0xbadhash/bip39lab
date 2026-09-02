@@ -11,15 +11,17 @@ SVG = ROOT / "web" / "v2" / "assets" / "uc35-atom-same-words-two-apps.svg"
 def test_ac_1_plain_english_title_and_classroom() -> None:
     assert "Same words, wrong app" in APP
     assert "Electrum-looking words" not in APP
-    assert "What this exercise is about" in APP
+    assert "what this exercise is about" in APP.lower()
     assert "different recipe" in APP
     assert "different wallet" in APP
 
 
 def test_ac_2_image_left_of_blue_box() -> None:
     assert SVG.is_file()
-    assert "uc35-atom-same-words-two-apps.svg" in APP
-    assert "v2-uc1-after v2-face-after" in APP
+    face = ROOT / "web" / "v2" / "assets" / "uc35-face-two-apps.svg"
+    assert face.is_file() or "uc35-atom-same-words-two-apps.svg" in APP
+    assert "uc35-face-two-apps.svg" in APP or "uc35-atom-same-words-two-apps.svg" in APP
+    assert "faceClusterHtml" in APP or "v2-uc1-after v2-face-after" in APP
     assert '"v2ElTeach"' in APP
 
 

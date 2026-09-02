@@ -1,32 +1,45 @@
-# Release runbook — v0.16.85
+# Release runbook — v0.16.86 UC35 same words, wrong app
 
-Dual stamp: product **0.16.85** · V2 chip **v0.17.135-v2**
+## Scope
+
+V2 UC35: plain English (Electrum vs BIP-39 trap), illustration left of blue classroom. No Electrum KDF.
+
+**Range:** `v0.16.85...HEAD`  
+**Score:** 100
 
 ## Smoke
 
-| Step | Exit |
-|------|------|
-| pytest card_object + classroom | 0 |
-| Playwright V2-S12 V2-S27 | 0 this session |
-| compliance_engine | (pr_validator) |
-| pr_validator | pending |
+| Gate | Result |
+|------|--------|
+| pytest -q | 227 passed |
+| V2-S26 UC35 | PASS |
+| check_web_e2e | ok (175 S-ids) |
+| playwright full | 73 passed (18.4m) |
 
 ## Infra
 
-Static nginx lab. No VPS infra skill this ship.
+None. Static lab.
 
 ## Evidence pack
 
-hard_gates; secrets; BEHAVIOR S12/S27; spec 2026-08-31-v2-uc1-paste-quiz.
+- hard_gates 100  
+- unittest test_ac_v2_uc35  
+- Playwright V2-S26  
+
+## Version
+
+0.16.86
 
 ## Rollback
 
-1. `git checkout v0.16.84` and redeploy `web/`.
-2. Chip 0.17.134-v2 on that tag.
-3. Paste will again block checksum-fail without filling the card.
+`git checkout v0.16.85`
 
-## Things that look bad but are actually fine
+## §9
 
-1. Dual stamp
-2. leftover scripts if any still uncommitted
-3. Classic 232 Playwright not the green_cmd
+1. Does not run Electrum KDF.  
+2. Does not fund practice phrases.  
+3. Does not reopen catalyxt EmailJS.
+
+## Next
+
+`/sync_docs`

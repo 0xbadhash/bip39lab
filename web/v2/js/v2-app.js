@@ -486,7 +486,7 @@
     { id: "shared", title: "Shared and air-gap", blurb: "1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap.", ids: [6, 7, 8, 10, 21, 23] },
     { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys.", ids: [18, 24] },
     { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] },
-    { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Same words, wrong app.", ids: [32, 33, 34, 35] }
+    { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Same words, two apps.", ids: [32, 33, 34, 35] }
   ];
   var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
   var pickerFilter = "start";
@@ -611,8 +611,7 @@
   var CARD_ATOM = {
     1: "assets/uc1-atom-entropy-words.svg",
     2: "assets/uc2-atom-card-object.svg",
-    16: "assets/uc1-atom-phrase-ne-address.svg",
-    35: "assets/uc35-atom-same-words-two-apps.svg"
+    16: "assets/uc1-atom-phrase-ne-address.svg"
   };
 
   function startDotClass(id, done, currentId) {
@@ -3246,7 +3245,9 @@
         classLines(
           "People write word shares. You need enough of them (a threshold) to rebuild the secret.",
           "The hex pieces on the Shamir track are a classroom demo. They are not the word shares a Trezor uses.",
-          "Open the SLIP-39 room below to practice the word shares. Combining them recovers the secret. It is not a second signer."
+          "Open the SLIP-39 room below to practice the word shares. " +
+            iSlip39() +
+            " Combining them recovers the secret. It is not a second signer."
         ),
         "v2Uc31Teach"
       ) +
@@ -3518,22 +3519,22 @@
       return pad(
         "<h2>Same words, two wallets</h2>" +
         doDont(
-          "Look at these twelve English words. They look like a normal Bitcoin backup.",
-          "Do not assume any wallet that accepts English words will open the same coins."
+          "Look at this numbered card. On this pad it is a BIP-39 practice list.",
+          "Do not assume every app that accepts English words opens the same coins."
         ) +
-        '<div class="v2-uc1-after v2-face-after" id="v2ElStory">' +
-        '<img class="v2-lock" src="assets/uc35-atom-same-words-two-apps.svg" width="136" height="54" alt="Same twelve words open wallet A in a BIP-39 app and wallet B in Electrum">' +
-        '<div class="v2-face-class">' +
-        teachBox(
-          "What this exercise is about",
-          classLines(
-            "Most hardware wallets use BIP-39: a standard that turns random bits into 12 or 24 dictionary words.",
-            "Electrum is a desktop wallet that can also show 12 English words — but it cooks those words with a different recipe.",
-            "Type Electrum words into a BIP-39 app (or the other way around) and you open a different wallet. Often empty. Your coins are not there."
-          ),
+        faceClusterHtml(
+          "assets/uc35-face-two-apps.svg",
+          "Same words, two wallets",
+          "Classroom — what this exercise is about",
+          [
+            "On this pad the numbered card is a BIP-39 list. " + iBip39(),
+            "Electrum is another wallet. It can show the same kind of English words, but it cooks them with a different recipe. Same words, different coins.",
+            "Next you open this list as BIP-39 and see a mailbox (tb1…). Then you treat that mailbox as the wrong vault if the words had come from Electrum."
+          ],
+          "v2ElStory",
           "v2ElTeach0"
         ) +
-        "</div></div>" +
+        '<p class="control-help v2-uc1-chip">BIP-39 practice list · same English dictionary Electrum can use</p>' +
         '<div id="v2Card">' +
         wordGridHtml(mem.mnemonic) +
         "</div>" +
@@ -3541,40 +3542,60 @@
       );
     }
     if (step === 1) {
+      var bip = !!mem.elBip && !!mem.elAddr;
+      var el = !!mem.elNote;
       return pad(
-        "<h2>Try the wrong restore</h2>" +
+        "<h2>Two apps, two mailboxes</h2>" +
         doDont(
-          "First open these words as BIP-39. You will see a practice receive address (tb1…). Then say they were from Electrum.",
-          "This tab does not run Electrum. It will not invent an Electrum address."
+          "Restore as BIP-39 first. Read the tb1. Then say the words were from Electrum.",
+          "Do not expect a second invented Electrum address. Unknown is not a fake mailbox."
         ) +
-        '<div class="v2-uc1-after v2-face-after" id="v2ElStory2">' +
-        '<img class="v2-lock" src="assets/uc35-atom-same-words-two-apps.svg" width="136" height="54" alt="Same twelve words, two apps, two wallets">' +
-        '<div class="v2-face-class">' +
-        teachBox(
-          "What you are doing",
-          classLines(
-            "Click Restore as BIP-39. That is what Trezor, Ledger, and most apps would open from these words.",
-            "Then click These words were from Electrum. If that were true, the tb1 above is the wrong vault — not your Electrum coins.",
-            "We stop there. We do not run Electrum’s recipe, so we do not show a fake Electrum address."
-          ),
+        faceClusterHtml(
+          "assets/uc35-face-two-apps.svg",
+          "Same words, two wallets",
+          "Classroom — what you are doing",
+          [
+            "Left: this pad can make a BIP-39 receive string — a public mailbox starting with tb1…. " + iBip39(),
+            "Right: if those words had been Electrum’s backup, that same tb1 is the wrong vault. Electrum’s mailbox is a different string. The coins would not sit at the tb1 on the left.",
+            "This tab does not run Electrum, so it will not invent a second address. The right column copies the BIP-39 mailbox and strikes it through. Unknown is not a fake mailbox."
+          ],
+          "v2ElStory2",
           "v2ElTeach"
         ) +
-        "</div></div>" +
-        "<h3>Practice result</h3>" +
-        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
-        '<button type="button" class="btn" id="v2ElBip39">Restore as BIP-39</button>' +
-        '<button type="button" class="btn secondary" id="v2ElElectrum">These words were from Electrum</button>' +
-        "</div>" +
+        '<div class="v2-vault-pair" id="v2ElPair">' +
+        '<div class="v2-vault-col" id="v2ElColBip">' +
+        "<h3>BIP-39 app</h3>" +
+        '<button type="button" class="btn' +
+        (bip ? " secondary" : "") +
+        '" id="v2ElBip39">Restore as BIP-39</button>' +
         '<code class="v2-preview-big" id="v2ElAddr">' +
-        (mem.elAddr || "BIP-39 restore shows a practice address here.") +
+        (mem.elAddr || "Click Restore. A practice tb1 appears here.") +
         "</code>" +
-        '<div id="v2ElOut" class="control-help">' +
-        (mem.elNote || "Use both buttons. We will not invent an Electrum address.") +
+        '<p class="control-help">Wallet A · this pad computes it.</p>' +
         "</div>" +
-        pauseBtn("That BIP-39 restore is the wrong vault", !(mem.elBip && mem.elNote))
+        '<div class="v2-vault-col" id="v2ElColEl">' +
+        "<h3>Electrum app</h3>" +
+        '<button type="button" class="btn secondary" id="v2ElElectrum"' +
+        (bip ? "" : " disabled") +
+        ">These words were from Electrum</button>" +
+        '<code class="v2-preview-big' +
+        (el ? " is-wrong" : "") +
+        '" id="v2ElElAddr">' +
+        (el && mem.elAddr
+          ? mem.elAddr
+          : "Restore BIP-39 first. Then stamp that mailbox as wrong.") +
+        "</code>" +
+        '<p class="control-help" id="v2ElOut">' +
+        (el
+          ? mem.elNote
+          : "Electrum mailbox: unknown. Not a second tb1 invented here.") +
+        "</p>" +
+        "</div></div>" +
+        pauseBtn("That BIP-39 restore is the wrong vault", !(bip && el))
       );
     }
-    return null;
+    if (step === 2) return quizBank(jobQuizzes(35));
+    return finishHtml(35);
   }
 
   async function uc1(step) {
@@ -4399,7 +4420,7 @@
           "One secret",
           "Classroom — one secret",
           [
-            "Make a practice BIP-39 list here. That list is the one secret.",
+            "Make a practice BIP-39 list here. That list is the one secret. " + iBip39(),
             "The lock and the orange meter are this list — not a guess from the dropdown.",
             "Next pad: cut the same words into hex pieces. A piece cannot sign."
           ],
@@ -4545,7 +4566,10 @@
           "Three paper lists",
           "Classroom — what SLIP-39 is",
           [
-            "SLIP-39 is word shares people write on paper (here 2-of-3). It is not a BIP-39 seed.",
+            "SLIP-39 is word shares people write on paper (here 2-of-3). " +
+              iSlip39() +
+              " It is not a BIP-39 seed. " +
+              iBip39(),
             "A hardware wallet will not import the hex pieces from the last pad. Practice only. Never fund. This is not Trezor Suite.",
             "Make three lists. One list must fail. Any two must match. Combine any 2 of 3 is the shortcut."
           ],
@@ -4739,7 +4763,7 @@
         '<p class="control-help" id="v2PsbtStoryLine">Classroom packages have no on-chain id. This tab never signs.</p>' +
         '<div class="v2-callout done" id="v2PsbtTeach"><strong>Classroom — what a PSBT is</strong>' +
         classLines(
-          "A PSBT is an unfinished bitcoin send you can pass around without the seed.",
+          "A PSBT is an unfinished bitcoin send you can pass around without the seed. " + iPsbt(),
           "Inspect a sample. The result box below is only what the parser saw.",
           "This tab never signs."
         ) +
@@ -6489,6 +6513,27 @@
     );
   }
 
+  function iBip39() {
+    return inlineI(
+      "BIP-39",
+      "The usual Bitcoin backup recipe: random bits become 12 to 24 dictionary words. A last-word check catches typos. Trezor, Ledger, and most apps use this. English words alone are not enough — Electrum can use the same dictionary with a different recipe."
+    );
+  }
+
+  function iSlip39() {
+    return inlineI(
+      "SLIP-39",
+      "Backup as several lists of words on paper. You need enough lists (for example any 2 of 3) to rebuild one secret. A different word list than BIP-39. Not the hex pieces on the Shamir pad. This tab is practice, not Trezor Suite."
+    );
+  }
+
+  function iPsbt() {
+    return inlineI(
+      "PSBT",
+      "A half-built bitcoin payment you can pass around without the seed. Hot software can build it. A cold device signs later. This page only looks. It never signs and never broadcasts."
+    );
+  }
+
   function termI(id) {
     var t = window.Bip39Glossary && Bip39Glossary.byId && Bip39Glossary.byId[id];
     var title = (t && t.title) || id;
@@ -8120,7 +8165,9 @@
           classLines(
             "Built from the " +
               phrase.split(/\s+/).filter(Boolean).length +
-              " words still on this pad. One practice BIP-39 phrase cut into " +
+              " words still on this pad. One practice BIP-39 phrase " +
+              iBip39() +
+              " cut into " +
               mn.n +
               " classroom hex shares.",
             "Any " +
@@ -8128,7 +8175,8 @@
               " of those " +
               mn.n +
               " rebuild the same words. Lose too many pieces and the phrase is gone.",
-            "This recovers one secret. These pieces are not three separate wallets. A share cannot sign a spend. These are not SLIP-39 word shares."
+            "This recovers one secret. These pieces are not three separate wallets. A share cannot sign a spend. These are not SLIP-39 word shares. " +
+              iSlip39()
           );
       }
       if (out) {
@@ -9658,16 +9706,25 @@
         mem.elAddr = (r.rows[0] && r.rows[0].bip84_p2wpkh) || "";
         mem.elBip = true;
         if ($("v2ElAddr")) $("v2ElAddr").textContent = mem.elAddr;
+        var elBtn = $("v2ElElectrum");
+        if (elBtn) elBtn.disabled = false;
+        $("v2ElBip39").className = "btn secondary";
         if (pause && mem.elBip && mem.elNote) pause.disabled = false;
       });
     }
     if ($("v2ElElectrum")) {
       $("v2ElElectrum").addEventListener("click", function () {
+        if (!mem.elAddr) return;
         mem.elNote =
-          "If these words were from Electrum, that BIP-39 restore is the wrong vault. This tab does not run Electrum and will not invent an Electrum address.";
+          "Wrong vault. That struck-through tb1 is still the BIP-39 mailbox. Electrum’s mailbox is a different string — unknown here. This tab does not run Electrum and will not invent one.";
+        var fake = $("v2ElElAddr");
+        if (fake) {
+          fake.textContent = mem.elAddr;
+          fake.classList.add("is-wrong");
+        }
         var o = $("v2ElOut");
         if (o) {
-          o.className = "msg-ok";
+          o.className = "control-help msg-ok";
           o.textContent = mem.elNote;
         }
         if (pause && mem.elBip && mem.elNote) pause.disabled = false;
