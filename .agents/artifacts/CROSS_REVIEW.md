@@ -1,16 +1,8 @@
-# CROSS-REVIEW
+# CROSS-REVIEW — UC35
 
-**Marker:** CROSS-REVIEW
-command: `/cross_review` 0.16.85
-base: origin/master
+**Marker:** CROSS-REVIEW  
+**Verdict:** PASS
 
-## Personas
-- Learner: paste drill with three honest answers; quiz covers the track.
-- Operator: address pad no longer repeats entropy.
-- Safety: checksum-fail cannot show receive addresses.
+Plain English trap lesson. No Electrum KDF. Image is code SVG (exact labels).
 
-## Obsolete
-Hard-block paste on checksum-fail.
-
-## P0
-0
+## CROSS-REVIEW

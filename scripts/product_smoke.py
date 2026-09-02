@@ -38,7 +38,6 @@ def run_smoke(
     ``smoke_ci`` if present so GitHub Actions can stay green without Playwright
     browsers / Foundry / full local toolchains. Local/night keep full ``smoke``.
     """
-    import os
 
     data = load_plugin(product_root)
     use_ci = ci
