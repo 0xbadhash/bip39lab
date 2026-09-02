@@ -5257,7 +5257,7 @@
         btcFaceHtml({
           frozen: frozen,
           label: "What the app shows you",
-          note: "On their books — not a seed you hold"
+          note: "On their books — not a seed you hold. That is freeze, not a drain"
         }) +
         '<div class="row v2-gen-left">' +
         '<button type="button" class="btn' +
