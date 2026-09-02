@@ -17,8 +17,8 @@
 
 | Metric | Count |
 |--------|-------|
-| found | 4 |
-| fixed | 4 |
+| found | 8 |
+| fixed | 8 |
 | residual | 0 in this wave |
 | stop reason | **exhausted this wave** (honest; not ≥200 unique defects in static lab) |
 
@@ -46,5 +46,9 @@
 | QA-2026-09-02-2 | E2E / assets | P2 | `lab-strip.js` loaded `css/lab-strip.css` under `/v2/` → 404 | Nested pages use `../css/lab-strip.css` |
 | QA-2026-09-02-3 | Security | P1 | `wordGridHtml` concatenated paste words into innerHTML unescaped | `escapeHtml(words[i])` |
 | QA-2026-09-02-4 | Compatibility | P2 | V2 chip/CSS still `0.17.135-v2` while script was `0.17.136-v2` | Align chip + css query to 0.17.136-v2 |
+| QA-2026-09-02-5 | Security | P2 | lab-strip paste words unescaped | esc(w) |
+| QA-2026-09-02-6 | Security | P1 | unknownBip39Words fail-open if wordlist missing | return all tokens unknown |
+| QA-2026-09-02-7 | Security | P1 | Open GET reverse proxy `/api/mempool/` | nginx + JS allowlist |
+| QA-2026-09-02-8 | Security | P2 | address interpolated into explorer URL | urllib.parse.quote |
 
 Golden BIP-39 derive / V2-S26 unchanged.

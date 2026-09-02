@@ -24,6 +24,25 @@ def test_qa_step_error_escaped() -> None:
     assert "escapeHtml(e && e.message" in V2_APP
 
 
+def test_qa_lab_strip_escapes_words() -> None:
+    js = (ROOT / "web" / "js" / "lab-strip.js").read_text(encoding="utf-8")
+    assert "esc(w)" in js
+
+
+def test_qa_unknown_words_fail_closed() -> None:
+    assert "return words.slice()" in V2_APP
+
+
+def test_qa_mempool_path_allowlist() -> None:
+    assert "mempool path not allowed" in V2_APP
+    nginx = (ROOT / "deploy" / "nginx-bip39.catalyxt.xyz.conf").read_text(
+        encoding="utf-8"
+    )
+    assert "v1/fees/recommended" in nginx
+    assert "location /api/mempool/" in nginx
+    assert "return 404" in nginx
+
+
 def test_qa_lab_strip_css_loads_from_v2() -> None:
     js = (ROOT / "web" / "js" / "lab-strip.js").read_text(encoding="utf-8")
     assert "../css/" in js

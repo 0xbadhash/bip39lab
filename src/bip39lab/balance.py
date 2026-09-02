@@ -11,7 +11,7 @@ from decimal import ROUND_DOWN, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
 
@@ -47,7 +47,7 @@ def _fetch_esplora_style(
     opener: Callable = urlopen,
 ) -> BalanceResult:
     """Esplora-compatible address API (Blockstream, mempool.space)."""
-    url = f"{base_url.rstrip('/')}/address/{address}"
+    url = f"{base_url.rstrip('/')}/address/{quote(address, safe='')}"
     try:
         req = Request(url, headers={"User-Agent": "bip39lab-address-only/0.5"})
         with opener(req, timeout=20) as resp:

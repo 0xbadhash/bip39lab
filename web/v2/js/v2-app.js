@@ -387,6 +387,19 @@
   var MEMPOOL_PUBLIC = "https://mempool.space/api";
   var v2LastMempoolVia = "";
   function v2FetchMempool(path, asText) {
+    var p = String(path || "");
+    if (
+      p.indexOf("..") !== -1 ||
+      !(
+        p === "/v1/fees/recommended" ||
+        p === "/blocks/tip/height" ||
+        p === "/mempool" ||
+        /^\/tx\/[0-9a-fA-F]{64}$/.test(p) ||
+        /^\/address\/[1-9A-HJ-NP-Za-km-z]{26,90}$/.test(p)
+      )
+    ) {
+      return Promise.reject(new Error("mempool path not allowed"));
+    }
     function once(base) {
       var cred = base.indexOf("https://") === 0 ? "omit" : "same-origin";
       var via = base.indexOf("https://") === 0 ? "mempool.space" : "/api/mempool";
@@ -1464,7 +1477,8 @@
 
   function unknownBip39Words(words) {
     var list = window.BIP39_ENGLISH;
-    if (!list || !list.length) return [];
+    // Fail closed: missing wordlist ⇒ treat every token as unknown (do not derive).
+    if (!list || !list.length) return words.slice();
     if (!mem._en) {
       mem._en = Object.create(null);
       var i;

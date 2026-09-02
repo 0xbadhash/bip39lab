@@ -82,6 +82,13 @@
         html +=
           '<li class="strip-empty" id="stripEmptyHint" style="grid-column:1/-1">Generate to fill this backup</li>';
       }
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
       for (var i = 0; i < n; i++) {
         var w = words[i] || "—";
         html +=
@@ -90,7 +97,7 @@
           '"><span class="wi">' +
           (i + 1) +
           '</span><span class="ww">' +
-          w +
+          esc(w) +
           "</span></li>";
       }
       grid.innerHTML = html;
