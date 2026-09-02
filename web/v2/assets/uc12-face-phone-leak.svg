@@ -1,0 +1,15 @@
+<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Phone seed talks to the internet">
+  <title>Hot phone leak</title>
+  <rect width="640" height="640" rx="48" fill="#1a2330"/>
+  <rect x="200" y="70" width="240" height="420" rx="36" fill="#121820" stroke="#e8a23c" stroke-width="10"/>
+  <rect x="226" y="118" width="188" height="280" rx="12" fill="#1e2a38"/>
+  <circle cx="320" cy="448" r="16" fill="#e8a23c"/>
+  <path d="M320 118c70-56 150-56 220 0" fill="none" stroke="#3d8bfd" stroke-width="10" stroke-linecap="round"/>
+  <path d="M320 150c48-36 104-36 152 0" fill="none" stroke="#3d8bfd" stroke-width="8" stroke-linecap="round"/>
+  <path d="M320 178c26-18 56-18 82 0" fill="none" stroke="#3d8bfd" stroke-width="8" stroke-linecap="round"/>
+  <text x="320" y="250" text-anchor="middle" fill="#e8eef7" font-size="28" font-family="system-ui,sans-serif">seed</text>
+  <text x="320" y="292" text-anchor="middle" fill="#8b9bb4" font-size="22" font-family="system-ui,sans-serif">on this phone</text>
+  <path d="M250 330l140 0" stroke="#e85d5d" stroke-width="8"/>
+  <path d="M360 310l40 20-40 20" fill="#e85d5d"/>
+  <text x="320" y="560" text-anchor="middle" fill="#e8a23c" font-size="26" font-family="system-ui,sans-serif">internet on</text>
+</svg>

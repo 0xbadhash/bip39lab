@@ -1,0 +1,22 @@
+<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Any M good shares rebuild; a bad extra line does not cancel them">
+  <title>Any M rebuild</title>
+  <rect width="640" height="640" rx="48" fill="#1a2330"/>
+  <rect x="56" y="64" width="112" height="88" rx="14" fill="#121820" stroke="#e8a23c" stroke-width="6"/>
+  <text x="112" y="118" text-anchor="middle" fill="#e8eef7" font-size="22" font-family="ui-monospace,Menlo,sans-serif">1</text>
+  <rect x="188" y="64" width="112" height="88" rx="14" fill="#121820" stroke="#e8a23c" stroke-width="6"/>
+  <text x="244" y="118" text-anchor="middle" fill="#e8eef7" font-size="22" font-family="ui-monospace,Menlo,sans-serif">2</text>
+  <rect x="320" y="64" width="112" height="88" rx="14" fill="#121820" stroke="#8b9bb4" stroke-width="6" stroke-dasharray="10 8"/>
+  <text x="376" y="118" text-anchor="middle" fill="#8b9bb4" font-size="22" font-family="ui-monospace,Menlo,sans-serif">3</text>
+  <rect x="452" y="64" width="132" height="88" rx="14" fill="#2a1414" stroke="#e85d5d" stroke-width="6"/>
+  <text x="518" y="104" text-anchor="middle" fill="#e85d5d" font-size="18" font-family="system-ui,sans-serif">extra</text>
+  <text x="518" y="132" text-anchor="middle" fill="#e85d5d" font-size="20" font-family="system-ui,sans-serif">✗</text>
+  <path d="M112 160v56M244 160v56" stroke="#3ecf8e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M112 216h132" stroke="#3ecf8e" stroke-width="6" stroke-linecap="round"/>
+  <rect x="120" y="236" width="400" height="100" rx="20" fill="#102018" stroke="#3ecf8e" stroke-width="7"/>
+  <text x="320" y="280" text-anchor="middle" fill="#3ecf8e" font-size="24" font-family="system-ui,sans-serif">same words</text>
+  <text x="320" y="316" text-anchor="middle" fill="#e8eef7" font-size="20" font-family="system-ui,sans-serif">any M good pieces</text>
+  <text x="320" y="390" text-anchor="middle" fill="#8b9bb4" font-size="20" font-family="system-ui,sans-serif">bad extra does not cancel</text>
+  <rect x="150" y="430" width="340" height="140" rx="20" fill="#121820" stroke="#e85d5d" stroke-width="6" stroke-dasharray="14 10"/>
+  <text x="320" y="492" text-anchor="middle" fill="#e8eef7" font-size="24" font-family="system-ui,sans-serif">recovery</text>
+  <text x="320" y="536" text-anchor="middle" fill="#e85d5d" font-size="22" font-family="system-ui,sans-serif">cannot sign a spend</text>
+</svg>

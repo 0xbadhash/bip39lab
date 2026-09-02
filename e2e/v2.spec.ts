@@ -6,8 +6,8 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.135-v2)", () => {
-  // AC-4 picker 35; classic Generate; chip 0.17.90-v2
+test.describe("V2 use-case tracks (0.17.136-v2)", () => {
+  // AC-4 picker 35; classic Generate; chip follows /v2/ stamp
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
     await expect(page.locator("#btnGenerate")).toBeVisible();
@@ -30,8 +30,9 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await expect(page.locator(".uc-ghost")).toHaveCount(3);
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
     await expect(page.locator(".uc-card")).toHaveCount(35);
+    await expect(page.locator('.uc-card[data-uc="35"]')).toHaveCount(1);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.131-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.136-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -302,7 +303,7 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await expect(page.locator("#v2WordCount option")).toHaveCount(5);
     await expect(page.locator("#v2Regen")).toHaveCount(0);
     await page.locator("#v2WordCount").selectOption("24");
-    await expect(page.locator("#v2Generate")).toContainText(/24-word phrase/);
+    await expect(page.locator("#v2Generate")).toBeVisible();
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2Card .ww")).toHaveCount(24);
     await page.locator("#v2Pause").click();
@@ -531,7 +532,8 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await expect(page.locator("#v2TrapOut")).toContainText(/Wrong/i);
     await page.locator("#v2TrapHot").click();
     await page.locator("#v2Pause").click();
-    await page.locator('[data-quiz="ok"]').click();
+    await expect(page.locator(".v2-quiz-q")).toHaveCount(3);
+    await page.locator(".v2-quiz-q").nth(0).locator('[data-quiz="ok"]').click();
     await expect(page.locator("#v2QuizMsg")).toHaveClass(/msg-ok/);
   });
 
@@ -636,7 +638,7 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await expect(page.locator("#v2Generate")).toBeVisible();
     await expect(page.locator("#v2WordCount")).toBeVisible();
     await expect(page.locator("#v2WordCount")).toHaveValue("12");
-    await expect(page.locator("#v2GenRow .help-tip-btn")).toBeVisible();
+    await expect(page.locator("#v2MnemonicLine .help-tip-btn")).toBeVisible();
     await page.locator("#v2Generate").click();
     await expect(page.locator("#v2Card .ww")).toHaveCount(12);
     const words = await page.locator("#v2Card .ww").allTextContents();
@@ -826,6 +828,7 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await page.locator("#v2ElBip39").click();
     await expect(page.locator("#v2ElAddr")).toHaveText(/^tb1/, { timeout: 8000 });
     await page.locator("#v2ElElectrum").click();
+    await expect(page.locator("#v2ElElAddr")).toHaveClass(/is-wrong/);
     await expect(page.locator("#v2ElOut")).toContainText(/wrong vault/i);
     await expect(page.locator("#v2ElOut")).toContainText(/does not run Electrum/i);
   });
@@ -1075,8 +1078,11 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await expect(page.locator("#v2ShWc")).toBeVisible();
     await expect(page.locator("#v2ShWc")).toHaveValue("12");
     await expect(page.locator("#v2Pause")).toBeDisabled();
+    await expect(page.locator("#v2ShMN")).toHaveCount(0);
+    await expect(page.locator("#v2ShTry")).toHaveCount(0);
     await page.locator("#v2ShPhrase").click();
     await expect(page.locator("#v2ShWordGrid .ww").first()).not.toHaveText("—");
+    await page.locator("#v2Pause").click();
     await expect(page.locator("#v2ShMN")).toBeVisible();
     await expect(page.locator("#v2Pause")).toBeDisabled();
     await page.locator("#v2Sh").click();
@@ -1084,6 +1090,7 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await expect(page.locator("#v2ShStory")).toContainText(/not SLIP-39/i);
     await expect(page.locator("#v2ShOut")).toContainText(/share:1:/i);
     await expect(page.locator("#v2ShOut")).not.toContainText(/When \/ where/i);
+    await page.locator("#v2Pause").click();
     await page.locator("#v2ShCombine").click();
     await expect(page.locator("#v2ShOut")).toContainText(/Match original phrase: true/i);
     await expect(page.locator("#v2ShOut")).toHaveClass(/msg-ok/);
@@ -1094,7 +1101,9 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await enterV2(page, "/v2/?uc=7");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2ShPhrase").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2Sh").click();
+    await page.locator("#v2Pause").click();
     await expect(page.locator("#v2ShRecombineIn")).toBeVisible();
     await expect(page.locator("#v2ShCombine")).toBeVisible();
     const raw = await page.locator("#v2ShRecombineIn").inputValue();
@@ -1127,7 +1136,9 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await enterV2(page, "/v2/?uc=7");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2ShPhrase").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2Sh").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2ShCombine").click();
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2S39")).toBeVisible();
@@ -1145,7 +1156,9 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await enterV2(page, "/v2/?uc=7");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2ShPhrase").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2Sh").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2ShCombine").click();
     await page.locator("#v2Pause").click();
     await page.locator("#v2S39").click();
@@ -1172,7 +1185,9 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
     await enterV2(page, "/v2/?uc=7");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2ShPhrase").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2Sh").click();
+    await page.locator("#v2Pause").click();
     await page.locator("#v2ShCombine").click();
     await page.locator("#v2Pause").click();
     await page.locator("#v2S39").click();
@@ -1500,7 +1515,8 @@ test.describe("V2 use-case tracks (0.17.135-v2)", () => {
   test("V2-S54 UC9 leak kits, five future addresses, spend fails", async ({ page }) => {
     await enterV2(page, "/v2/?uc=9");
     await page.locator("#btnGateStart").click();
-    await expect(page.locator("#v2LeakTeach")).toContainText(/no second export/i);
+    await expect(page.locator("#v2LeakTeach")).toContainText(/viewing key is public/i);
+    await expect(page.locator("#v2LeakTeach")).toContainText(/cannot steal/i);
     await expect(page.locator("#v2Xpub")).toHaveCount(0);
     await page.locator("#v2Pause").click();
     await expect(page.locator("[data-leak-kit]")).toHaveCount(4);

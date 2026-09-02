@@ -21,6 +21,16 @@ def _idx(s: str, needle: str) -> int:
     return i
 
 
+def test_ac_0_shamir_progressive_pads() -> None:
+    chunk = _uc7()
+    s0 = chunk[chunk.find("if (step === 0)") : chunk.find("if (step === 1)")]
+    s1 = chunk[chunk.find("if (step === 1)") : chunk.find("if (step === 2)")]
+    s2 = chunk[chunk.find("if (step === 2)") : chunk.find("if (step === 3)")]
+    assert "v2ShPhrase" in s0 and "v2ShTry" not in s0 and "v2ShMN" not in s0
+    assert "v2ShMN" in s1 and 'id="v2Sh"' in s1 and "v2ShTry" not in s1
+    assert "v2ShTry" in s2 and "v2ShCombine" in s2 and "v2ShPhrase" not in s2
+
+
 def test_ac_1_shamir_order_and_try_colour() -> None:
     ids = [
         "v2ShWc",
@@ -55,6 +65,16 @@ def test_ac_2_slip_order_checklist() -> None:
     assert pos == sorted(pos)
     assert "Play in order: mint 3 lists" in APP
     assert "Try 1 list — must fail" in APP
+
+
+def test_ac_button_then_help_gap() -> None:
+    assert "button.btn + .control-help" in CSS
+    assert "0.85rem" in CSS
+    assert 'id="v2DescRefreshLab"' in APP
+    assert "v2DescSrcNote" in APP
+    i = APP.find('id="v2DescRefreshLab"')
+    j = APP.find("v2DescSrcNote", i)
+    assert 0 < j - i < 400
 
 
 def test_ac_3_css_and_one_line_shares() -> None:
