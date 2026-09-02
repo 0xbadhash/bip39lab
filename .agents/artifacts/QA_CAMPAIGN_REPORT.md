@@ -6,7 +6,7 @@
 
 ## Executive summary
 
-Post-FSM QA on the V2 tracks + shared Lab chrome. **8 real bugs found and fixed** (incl. security hunt follow-up). The static lab cannot honestly yield 200 unique defects without inventing filler; this wave exhausted the V2 asset-path, leftover stamp, and word-grid HTML sinks we could prove.
+Post-FSM QA on the V2 tracks + shared Lab chrome. **14 real bugs found and fixed** (security hunt + UC35 pad hunt). The static lab cannot honestly yield 200 unique defects without inventing filler; this wave exhausted the V2 asset-path, leftover stamp, and word-grid HTML sinks we could prove.
 
 ## Inventory
 

@@ -1370,7 +1370,7 @@
       atoms: [
         atom(1, 0, "assets/uc35-atom-same-words-two-apps.svg", "Same 12 words", "<strong>Plan · Two apps</strong><br/>BIP-39 and Electrum can show the same English words. Different recipe. Different wallet."),
         atom(2, 1, "assets/uc35-atom-same-words-two-apps.svg", "Wrong restore", "<strong>Practice · BIP-39 first</strong><br/>Open these words as BIP-39. Then say they were Electrum: that mailbox is the wrong vault."),
-        atom(3, 2, "assets/uc2-atom-card-object.svg", "This tab does not run Electrum", "<strong>Review · No fake address</strong><br/>We will not invent an Electrum address. The lesson is the trap.")
+        atom(3, 2, "assets/uc35-atom-same-words-two-apps.svg", "This tab does not run Electrum", "<strong>Review · No fake address</strong><br/>We will not invent an Electrum address. The lesson is the trap.")
       ]
     }
   };
@@ -3390,10 +3390,10 @@
         "<h3>Parts (lab result)</h3>" +
         '<div class="v2-xor-grid">' +
         '<div><h3>Part 1</h3><div id="v2XorA">' +
-        wordGridHtml(mem.xorA || "") +
+        wordGridHtml(mem.xorA || "", "v2XorGridA") +
         "</div></div>" +
         '<div><h3>Part 2</h3><div id="v2XorB">' +
-        wordGridHtml(mem.xorB || "") +
+        wordGridHtml(mem.xorB || "", "v2XorGridB") +
         "</div></div>" +
         "</div>" +
         '<p class="control-help">Each part looks like a backup. You still need both. That is not Shamir 2-of-3.</p>' +
@@ -3557,7 +3557,11 @@
 
   async function uc35(step) {
     if (step === 0) {
-      await ensurePhrase();
+      if (window.BIP39Lab && (!mem.elPhrase || !mem.elPhraseOk)) {
+        mem.elPhrase = await BIP39Lab.generateMnemonic(12);
+        mem.elPhraseOk = true;
+      }
+      var card = mem.elPhrase || mem.mnemonic;
       return pad(
         "<h2>Same words, two wallets</h2>" +
         doDont(
@@ -3578,9 +3582,9 @@
         ) +
         '<p class="control-help v2-uc1-chip">BIP-39 practice list · same English dictionary Electrum can use</p>' +
         '<div id="v2Card">' +
-        wordGridHtml(mem.mnemonic) +
+        wordGridHtml(card) +
         "</div>" +
-        pauseBtn("Next: try the wrong restore", !mem.mnemonic)
+        pauseBtn("Next: try the wrong restore", !card)
       );
     }
     if (step === 1) {
@@ -3611,7 +3615,7 @@
         (bip ? " secondary" : "") +
         '" id="v2ElBip39">Restore as BIP-39</button>' +
         '<code class="v2-preview-big" id="v2ElAddr">' +
-        (mem.elAddr || "Click Restore. A practice tb1 appears here.") +
+        escapeHtml(mem.elAddr || "Click Restore. A practice tb1 appears here.") +
         "</code>" +
         '<p class="control-help">Wallet A · this pad computes it.</p>' +
         "</div>" +
@@ -3624,12 +3628,14 @@
         (el ? " is-wrong" : "") +
         '" id="v2ElElAddr">' +
         (el && mem.elAddr
-          ? mem.elAddr
+          ? escapeHtml(mem.elAddr)
           : "Restore BIP-39 first. Then stamp that mailbox as wrong.") +
         "</code>" +
-        '<p class="control-help" id="v2ElOut">' +
+        '<p class="control-help' +
+        (el ? " msg-warn" : "") +
+        '" id="v2ElOut">' +
         (el
-          ? mem.elNote
+          ? escapeHtml(mem.elNote)
           : "Electrum mailbox: unknown. Not a second tb1 invented here.") +
         "</p>" +
         "</div></div>" +
@@ -9751,20 +9757,34 @@
     }
     if ($("v2ElBip39")) {
       $("v2ElBip39").addEventListener("click", async function () {
-        if (!mem.mnemonic || !window.BIP39Lab) return;
-        var r = await BIP39Lab.deriveAddresses(mem.mnemonic, "", { network: "test", count: 1 });
-        mem.elAddr = (r.rows[0] && r.rows[0].bip84_p2wpkh) || "";
-        mem.elBip = true;
-        if ($("v2ElAddr")) $("v2ElAddr").textContent = mem.elAddr;
-        var elBtn = $("v2ElElectrum");
-        if (elBtn) elBtn.disabled = false;
-        $("v2ElBip39").className = "btn secondary";
+        var phrase = mem.elPhrase || mem.mnemonic;
+        if (!phrase || !window.BIP39Lab) return;
+        try {
+          var r = await BIP39Lab.deriveAddresses(phrase, "", { network: "test", count: 1 });
+          var addr = (r.rows && r.rows[0] && r.rows[0].bip84_p2wpkh) || "";
+          if (!/^tb1/.test(addr)) throw new Error("no tb1");
+          mem.elAddr = addr;
+          mem.elBip = true;
+          if ($("v2ElAddr")) $("v2ElAddr").textContent = mem.elAddr;
+          var elBtn = $("v2ElElectrum");
+          if (elBtn) elBtn.disabled = false;
+          $("v2ElBip39").className = "btn secondary";
+        } catch (err) {
+          mem.elBip = false;
+          mem.elAddr = "";
+          if ($("v2ElAddr")) {
+            $("v2ElAddr").textContent =
+              "BIP-39 checksum failed. This list is not a valid BIP-39 backup. This tab still will not invent Electrum.";
+          }
+          var elBtn2 = $("v2ElElectrum");
+          if (elBtn2) elBtn2.disabled = true;
+        }
         if (pause && mem.elBip && mem.elNote) pause.disabled = false;
       });
     }
     if ($("v2ElElectrum")) {
       $("v2ElElectrum").addEventListener("click", function () {
-        if (!mem.elAddr) return;
+        if (!mem.elAddr || !/^tb1/.test(mem.elAddr)) return;
         mem.elNote =
           "Wrong vault. That struck-through tb1 is still the BIP-39 mailbox. Electrum’s mailbox is a different string — unknown here. This tab does not run Electrum and will not invent one.";
         var fake = $("v2ElElAddr");
@@ -9774,7 +9794,7 @@
         }
         var o = $("v2ElOut");
         if (o) {
-          o.className = "control-help msg-ok";
+          o.className = "control-help msg-warn";
           o.textContent = mem.elNote;
         }
         if (pause && mem.elBip && mem.elNote) pause.disabled = false;

@@ -3,6 +3,7 @@ import {
   validateMnemonic,
   mnemonicToSeedSync,
   entropyToMnemonic,
+  mnemonicToEntropy,
 } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english";
 import { HDKey } from "@scure/bip32";
@@ -539,6 +540,7 @@ const api = {
   generateMnemonic: async (n) => generate(n),
   validateMnemonic: async (m) => validate(m),
   mnemonicFromEntropyBytes: (bytes) => mnemonicFromEntropyBytes(bytes),
+  mnemonicToEntropyBytes: (m) => mnemonicToEntropy(m, wordlist),
   deriveAddresses: async (m, p, options) => deriveAddresses(m, p, options),
   exportWatchOnly: async (m, p, options) => exportWatchOnly(m, p, options),
   descriptorsFromWatchOnly: (wo, network) => descriptorsFromWatchOnly(wo, network),

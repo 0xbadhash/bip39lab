@@ -49,6 +49,26 @@ def test_qa_lab_strip_css_loads_from_v2() -> None:
     assert "lab-strip.css" in js
 
 
+def test_qa_uc35_pins_own_twelve_word_card() -> None:
+    assert "mem.elPhrase" in V2_APP
+    assert "generateMnemonic(12)" in V2_APP
+
+
+def test_qa_uc35_restore_try_catch() -> None:
+    assert "BIP-39 checksum failed" in V2_APP
+    assert "msg-warn" in V2_APP
+
+
+def test_qa_xor_grids_unique_ids() -> None:
+    assert 'wordGridHtml(mem.xorA || "", "v2XorGridA")' in V2_APP
+    assert 'wordGridHtml(mem.xorB || "", "v2XorGridB")' in V2_APP
+
+
+def test_qa_bundle_source_exports_entropy_bytes() -> None:
+    src = (ROOT / "web" / "js" / "build-entry.mjs").read_text(encoding="utf-8")
+    assert "mnemonicToEntropyBytes" in src
+
+
 def test_qa_v2_chip_matches_script_query() -> None:
     assert "v2-app.js?v=0.17.136-v2" in INDEX
     assert "data-v2-version>v0.17.136-v2" in INDEX

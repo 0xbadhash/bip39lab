@@ -17,8 +17,8 @@
 
 | Metric | Count |
 |--------|-------|
-| found | 8 |
-| fixed | 8 |
+| found | 14 |
+| fixed | 14 |
 | residual | 0 in this wave |
 | stop reason | **exhausted this wave** (honest; not ≥200 unique defects in static lab) |
 
@@ -52,3 +52,9 @@
 | QA-2026-09-02-8 | Security | P2 | address interpolated into explorer URL | urllib.parse.quote |
 
 Golden BIP-39 derive / V2-S26 unchanged.
+| QA-2026-09-02-9 | Functional | P1 | UC35 deriveAddresses throws on bad checksum | try/catch + classroom error |
+| QA-2026-09-02-10 | Functional | P1 | UC35 reused 15–24 word / invalid mem.mnemonic | dedicated 12-word elPhrase |
+| QA-2026-09-02-11 | UX | P2 | Trap copy used msg-ok (green) | msg-warn |
+| QA-2026-09-02-12 | Security | P2 | elAddr/elNote re-rendered unescaped | escapeHtml in template |
+| QA-2026-09-02-13 | Functional | P2 | UC32 duplicate v2WordGrid ids | v2XorGridA/B |
+| QA-2026-09-02-14 | Compatibility | P1 | build-entry missing mnemonicToEntropyBytes | export from @scure/bip39 |
