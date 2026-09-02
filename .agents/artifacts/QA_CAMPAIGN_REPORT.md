@@ -1,46 +1,38 @@
 # QA-CAMPAIGN-REPORT
 
 **Marker:** QA-CAMPAIGN-REPORT  
-**Date:** 2026-08-12  
-**Product:** bip39lab v0.16.1  
-**Stop:** exhausted (static offline lab; real bugs only)
+**Date:** 2026-09-02  
+**Product:** bip39lab after v0.16.86 UC35 ship
 
 ## Executive summary
 
-| | |
-|--|--|
-| Found | **4** |
-| Fixed | **4** |
-| Residual | **0** |
-| Baseline | 96 pytest · 89/90 e2e (S70 fail) · web_e2e fail S40b |
-| After | S70 green · learn 11/11 · check_web_e2e ok (90 S-ids) |
+Post-FSM QA on the V2 tracks + shared Lab chrome. **4 real bugs found and fixed.** The static lab cannot honestly yield 200 unique defects without inventing filler; this wave exhausted the V2 asset-path, leftover stamp, and word-grid HTML sinks we could prove.
 
-## Highest impact: QA-201 (S70)
+## Inventory
 
-Classroom shells now load `learn-levels.js`. Lab-return handlers for `?from=intquiz` ran on Multisig, cleared the query string via `replaceState` **before** `multisig-app.js` could show the dock.  
+See `.agents/artifacts/QA_CAMPAIGN_INVENTORY.md`.
 
-**Fix:** only apply Lab return navigation/strip on the Lab index page (`isLabIndexPage()`).
+## Coverage
 
-## Other fixes
-
-- Comet **S40b** documented for Classroom sidebar panel  
-- Passphrase strength display avoids `~0 bits`; clear resets bar  
-
-## Out of scope / residual risks
-
-- Live mempool 404 for balance in local playwright proxy (pre-existing; S13c still validates statuses)  
-- Full BIP-85 crypto still educational stub  
-- Multi-tab localStorage races  
+- Unit: full pytest green after fixes  
+- E2E: V2-S26 PASS (UC35)  
+- Security: mnemonic grid now HTML-escaped; no Electrum KDF added  
+- Residual: full 73-test Playwright wall still > night 720s (known ops, not a functional bug)
 
 ## Re-run
 
 ```bash
+cd /home/debian/bip39lab
 .venv/bin/python -m pytest -q
-npx playwright test
-.venv/bin/python scripts/check_web_e2e.py --root .
+npx playwright test e2e/v2.spec.ts -g "V2-S26"
 ```
 
-```text
-✅ QA-CAMPAIGN DONE  found=4  fixed=4  residual=0
-NEXT_SKILL=(done)
-```
+## Recommendations
+
+- Keep `/v2/` script/css URLs rooted (`../js`, `../css`) in any injectors.  
+- Night e2e wall vs 73 tests is an ops timeout, not a product defect.  
+- Do not compute Electrum addresses in UC35.
+
+## Handoff
+
+`python3 scripts/next_skill.py --after qa_campaign`

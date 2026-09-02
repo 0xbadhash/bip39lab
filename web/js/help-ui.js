@@ -265,7 +265,9 @@
     s.id = "labStripSrc";
     var v =
       (typeof BIP39LAB_SITE_VERSION === "string" && BIP39LAB_SITE_VERSION) || "0.16.35";
-    s.src = "js/lab-strip.js?v=" + v;
+    // Classic Lab is /js/; V2 pages live under /v2/ so relative js/ 404s.
+    var nested = /\/v2(\/|$)/.test(location.pathname || "");
+    s.src = (nested ? "../js/" : "js/") + "lab-strip.js?v=" + v;
     document.head.appendChild(s);
   }
 

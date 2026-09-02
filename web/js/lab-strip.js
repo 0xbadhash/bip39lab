@@ -17,7 +17,8 @@
     var link = document.createElement("link");
     link.id = "labStripCssLink";
     link.rel = "stylesheet";
-    link.href = "css/lab-strip.css?v=" + STRIP_CSS_V;
+    var nested = /\/v2(\/|$)/.test(location.pathname || "");
+    link.href = (nested ? "../css/" : "css/") + "lab-strip.css?v=" + STRIP_CSS_V;
     document.head.appendChild(link);
   }
 
