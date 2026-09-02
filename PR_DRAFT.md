@@ -1,56 +1,67 @@
-# PR Draft: v0.16.85 UC1 paste verdicts, address pad, quiz×3
+# PR Draft — v0.16.86 UC35 plain English + illustration
 
-**Spec:** `.agents/specs/2026-08-31-v2-uc1-paste-quiz.md`
-**Plan:** `.agents/specs/2026-08-31-v2-uc1-paste-quiz-plan.md`
+**Range:** `v0.16.85...HEAD`  
+**Spec:** `.agents/specs/2026-09-02-v2-uc35-plain-english.md`
 
 ## What Problem This Solves
 
-Checksum-fail paste blocked practice. Show receive addresses repeated the entropy stack. Quiz was a single item.
+UC35 read as AI slop. Learners could not tell the exercise is “same 12 words, Electrum vs BIP-39, wrong wallet.”
 
 ## Why This Change Was Made
 
-Operator: practice pasted words with honest verdicts; drop lock/meter on the address pad; expand UC1 quiz to three. Full ship FSM.
+Operator: true English, image left of the blue classroom box.
 
 ## User Impact
 
-Chip **v0.17.135-v2**. Product **0.16.85**. Paste: not at all / words OK checksum not / all fine. Checksum-fail fills the card, not addresses. Quiz: fund, numbered card, checksum.
+Title **Same words, wrong app**. Pad: illustration | blue story. Quiz in plain English. Lab still does not run Electrum.
+
+## Evidence
+
+- `pytest tests/test_ac_v2_uc35.py`  
+- Playwright V2-S26 PASS  
+
+## Red-proof / TDD
+
+- red_cmd: `false`  
+- green_cmd: `.venv/bin/python3 -m pytest tests/test_ac_v2_uc35.py -q`
 
 ## Traceability
 
-| AC | Test |
-|----|------|
-| AC-1 paste verdicts | `test_ac_2_paste_checksum_copy` + Playwright V2-S27 |
-| AC-2 no entropy on step 2 | `test_ac_uc1_step2_no_lock_or_entropy_meter` |
-| AC-3 three quiz items | Playwright V2-S12 `.v2-quiz-q` count 3 |
-
-## Red-proof
-
-- red_cmd: `false`
-- green_cmd: `.venv/bin/python3 -m pytest tests/test_ac_v2_uc1_card_object.py tests/test_ac_v2_uc1_uc7_classroom.py -q`
+| AC | Evidence |
+|----|----------|
+| AC-1 | `test_ac_1_plain_english_title_and_classroom` |
+| AC-2 | `test_ac_2_image_left_of_blue_box` |
+| AC-3 | `test_ac_3_e2e_trap_copy` + V2-S26 |
 
 ## Threat notes
 
-- secrets: practice lists only; checksum-fail cannot derive
-- xss: static teach HTML
-- csrf: n/a
+- **secrets:** practice phrase only; no Electrum KDF  
+- **xss:** static SVG + teach HTML  
+- **csrf:** n/a offline lab  
 
 ## Evidence pack
 
-| Item | Result |
+- hard_gates + unittest test_ac_v2_uc35 + Playwright V2-S26  
+- smoke at `/release_mgmt`  
+
+## Untested paths
+
+| Path | Reason |
 |------|--------|
-| hard_gates | CODE_REVIEW, BEHAVIOR_REPORT, spec |
-| smoke | pytest AC + Playwright V2-S12 V2-S27 |
-| pytest | card_object + classroom |
-| validate | compliance_engine via venv |
+| web/v2/js/v2-app.js | covered by AC tests + V2-S26 |
 
 ## Things that look bad but are actually fine
 
-1. Dual stamp 0.16.85 vs 0.17.135-v2
-2. leftover scripts uncommitted if present
-3. Some random 12 dictionary words (e.g. arrow hour this…) can still checksum-pass
-4. Classic 232 Playwright not this ship’s green_cmd
-5. `wordlist.js` extra fetch on `/v2/`
+1. v2-app.js large diff in the UC35 commit may include nearby pad copy — ship is UC35.  
+2. No Electrum address is generated — by design.  
+3. Chip cache `0.17.136-v2` is not product VERSION.
 
-## Cross-review
+## §9
 
-See `.agents/artifacts/CROSS_REVIEW.md`.
+1. Does not compute Electrum KDF.  
+2. Does not fund practice phrases.  
+3. Does not reopen catalyxt.xyz EmailJS.
+
+## Things that look bad but are actually fine
+
+Wait no duplicate - section 9 is Things that look bad. I already have that with 3 items. Good.
