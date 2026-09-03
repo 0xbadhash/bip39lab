@@ -1,0 +1,15 @@
+<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two full-looking 12-word parts">
+  <title>Two parts</title>
+  <rect width="640" height="640" rx="48" fill="#1a2330"/>
+  <rect x="56" y="64" width="240" height="320" rx="20" fill="#121820" stroke="#e8a23c" stroke-width="8"/>
+  <text x="176" y="120" text-anchor="middle" fill="#e8a23c" font-size="22" font-family="system-ui,sans-serif">part 1</text>
+  <text x="176" y="180" text-anchor="middle" fill="#e8eef7" font-size="18" font-family="ui-monospace,Menlo,sans-serif">12 words</text>
+  <text x="176" y="230" text-anchor="middle" fill="#8b9bb4" font-size="16" font-family="system-ui,sans-serif">looks complete</text>
+  <rect x="344" y="64" width="240" height="320" rx="20" fill="#121820" stroke="#e8a23c" stroke-width="8"/>
+  <text x="464" y="120" text-anchor="middle" fill="#e8a23c" font-size="22" font-family="system-ui,sans-serif">part 2</text>
+  <text x="464" y="180" text-anchor="middle" fill="#e8eef7" font-size="18" font-family="ui-monospace,Menlo,sans-serif">12 words</text>
+  <text x="464" y="230" text-anchor="middle" fill="#8b9bb4" font-size="16" font-family="system-ui,sans-serif">looks complete</text>
+  <text x="320" y="450" text-anchor="middle" fill="#e8eef7" font-size="24" font-family="system-ui,sans-serif">you still need both</text>
+  <text x="320" y="510" text-anchor="middle" fill="#8b9bb4" font-size="20" font-family="system-ui,sans-serif">not Shamir 2-of-3</text>
+  <text x="320" y="568" text-anchor="middle" fill="#8b9bb4" font-size="18" font-family="system-ui,sans-serif">do not photograph</text>
+</svg>

@@ -68,13 +68,18 @@ def test_ac_2_slip_order_checklist() -> None:
 
 
 def test_ac_button_then_help_gap() -> None:
-    assert "button.btn + .control-help" in CSS
-    assert "0.85rem" in CSS
-    assert 'id="v2DescRefreshLab"' in APP
-    assert "v2DescSrcNote" in APP
-    i = APP.find('id="v2DescRefreshLab"')
-    j = APP.find("v2DescSrcNote", i)
+    assert ".v2-pad > button.btn + *" in CSS
+    assert "0.85rem !important" in CSS
+    assert ".v2-pad .control-help" in CSS
+    assert "font-size: 0.92rem" in CSS
+    assert 'id="v2TlArm"' in APP
+    assert "v2TlArmOut" in APP
+    i = APP.find('id="v2TlArm"')
+    j = APP.find("v2TlArmOut", i)
     assert 0 < j - i < 400
+    k = APP.find('id="v2DescRefreshLab"')
+    n = APP.find("v2DescSrcNote", k)
+    assert 0 < n - k < 400
 
 
 def test_ac_3_css_and_one_line_shares() -> None:

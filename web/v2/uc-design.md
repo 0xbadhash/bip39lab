@@ -18,7 +18,7 @@ Anchored from operator layout work on UC1–UC3 (and classroom/paste/quiz follow
 7. **Address / look-at-card pads** do not repeat the lock + orange stack. At most a one-line chip (`12 words · 128 bits`).
 8. **Paste practice (when present):** three verdicts — not at all; words in the dictionary but checksum/entropy not (still fill the card, do not derive); all fine.
 9. **Quiz:** if the track had a single question, use **three**. Continue stays locked until each is right. Leave existing 4–5 question banks.
-10. **Stacked field then button:** **0.85rem** gap. Same gap **after** a stacked action button before help text (`Refresh descriptors…` then the line under it). Same between stacked action buttons that are **not** in a horizontal `.row`. Horizontal mint rows stay side-by-side.
+10. **Stacked field then button:** **0.85rem** gap. Direct-child stacked buttons in `.v2-pad` (`button.btn + *`) get that gap before the next line (help **div** or **p**, e.g. UC33 **Not armed.**, UC34 refresh note). Help text uses **0.92rem** (same as `.card p`), not the 0.8rem global `.control-help`. Horizontal mint rows stay side-by-side.
 11. **Coins leaving are a result.** If the lesson is *someone else can spend now* (malware, seed typed into a laptop, savings on a hot phone), **animate** the teaching balance to `0.000 BTC` — red drain bar + counting number. Do not snap to zero. **Do not drain** when the coins are still there: they-hold freeze, lost paper, unknown-is-not-zero. Those keep the number and change the caption.
 
 ## Defaults (not asked as a fork)

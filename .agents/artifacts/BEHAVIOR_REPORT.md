@@ -1,11 +1,17 @@
-# BEHAVIOR-REPORT — UC35
+# BEHAVIOR_REPORT
 
-**Marker:** BEHAVIOR-REPORT  
-**Overall:** PASS
+Date: 2026-09-03
+Runtime: static V2 tracks (no new network besides existing opt-in)
 
-| Surface | Result |
-|---------|--------|
-| V2-S26 BIP-39 tb1 + trap copy | PASS |
-| Illustration + blue box on pad | PASS (HTML + SVG) |
+## Exercised
 
-NEXT_SKILL=/pr_review --validate
+- pytest layout AC (button gap, UC7 progressive, cluster)
+- Playwright V2-S0 historically after chip pin; S24/S25 updated for clock and BIP tabs
+
+## Result
+
+PASS targeted AC. Full classic e2e at release smoke.
+
+## Notes
+
+UC33 animation is client-only CSS/interval. No broadcast.

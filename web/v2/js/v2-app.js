@@ -906,7 +906,7 @@
       30: ["Child is not a parent backup", "Mint one practice child", "Show child words + path", "Quiz", "Finish"],
       31: ["People + threshold", "Dock Suite", "Quiz", "Finish"],
       32: ["What SeedXOR is", "Split this phrase", "Show parts", "Combine", "Quiz", "Finish"],
-      33: ["Arm the timer", "Tick / refresh / heir", "Quiz", "Finish"],
+      33: ["What the clock is", "Play 90 days", "Quiz", "Finish"],
       34: ["Practice shape", "Refresh from this phrase", "Paste and explain", "Quiz", "Finish"],
       35: ["Looks like BIP-39", "Wrong restore", "Quiz", "Finish"]
     };
@@ -997,10 +997,12 @@
     mem.descNote = "";
     mem.descExplain = "";
     mem.descPackRows = null;
+    mem.descPurpose = 84;
+    mem.descChain = null;
     mem.leak = null;
     mem.bip85 = null;
     mem.utxo = null;
-    mem.tl = { armed: false, ticks: 0, expired: false };
+    mem.tl = { armed: false, days: 0, expired: false, early: false, played: false, late: false, reset: false };
     mem.tlHeirTried = false;
     mem.inh = null;
     mem.descAck = false;
@@ -3387,6 +3389,15 @@
           "Look at two numbered 12-word cards. Every part is required.",
           "Do not photograph the parts. Do not QR them. Do not send them to Network."
         ) +
+        faceWrapHtml("assets/uc32-face-parts.svg", "Two full-looking parts", teachBox(
+          "Classroom — two parts",
+          classLines(
+            "Each part looks like a complete 12-word backup.",
+            "You still need both. That is not Shamir 2-of-3.",
+            "Do not photograph them. Next you hide one part — that must fail."
+          ),
+          "v2XorPartsTeach"
+        )) +
         "<h3>Parts (lab result)</h3>" +
         '<div class="v2-xor-grid">' +
         '<div><h3>Part 1</h3><div id="v2XorA">' +
@@ -3433,47 +3444,136 @@
     return finishHtml(32);
   }
 
+  function tlState() {
+    mem.tl = mem.tl || {
+      armed: false,
+      days: 0,
+      expired: false,
+      early: false,
+      played: false,
+      late: false,
+      reset: false
+    };
+    return mem.tl;
+  }
+
+  function tlClockHtml() {
+    var tl = tlState();
+    var day = tl.expired ? 90 : tl.days || 0;
+    var pct = Math.min(100, (day / 90) * 100);
+    return (
+      '<div class="v2-tl-clock" id="v2TlClock">' +
+      '<div class="v2-tl-people">' +
+      '<div class="v2-tl-who is-owner"><strong>Owner</strong><span>alive → can reset</span></div>' +
+      '<div class="v2-tl-who is-heir' +
+      (tl.expired && !tl.reset ? " is-open" : " is-lock") +
+      '" id="v2TlHeirFace"><strong>Heir</strong><span id="v2TlHeirCap">' +
+      (tl.reset
+        ? "locked again"
+        : tl.expired
+          ? "clock finished (practice)"
+          : "cannot spend yet") +
+      "</span></div></div>" +
+      '<p class="v2-tl-state" id="v2TlState">Day <span id="v2TlDay">' +
+      day +
+      "</span> / 90 classroom days</p>" +
+      '<div class="v2-tl-bar" role="progressbar" aria-valuemin="0" aria-valuemax="90" aria-valuenow="' +
+      day +
+      '"><span class="v2-tl-fill' +
+      (tl.expired ? " is-full" : "") +
+      '" id="v2TlFill" style="width:' +
+      pct +
+      '%"></span></div></div>'
+    );
+  }
+
   function uc33(step) {
+    var tl = tlState();
     if (step === 0) {
       return pad(
-        "<h2>Arm the timer</h2>" +
+        "<h2>A classroom clock, not a will</h2>" +
         doDont(
-          "Arm a practice dead-man timer. The heir path stays locked until simulated time expires.",
-          "Do not sign. Do not broadcast. This is not a live CSV wallet and not legal counsel."
+          "Arm this practice clock. Next you will see the heir fail, then time pass, then the owner come back.",
+          "Do not sign. Do not broadcast. This is not a live bitcoin timelock and not legal advice."
         ) +
-        desc(
-          "On-chain, people use relative timelocks (CSV) so an heir key cannot spend until the owner has been inactive. This tab is a classroom clock: Arm, then later Tick / Refresh / Heir try. No signature is made."
+        faceWrapHtml(
+          "assets/uc33-face-clock.svg",
+          "Owner resets; heir waits",
+          teachBox(
+            "Classroom — what this clock is",
+            classLines(
+              "Bitcoin can delay a spend until time has passed (a relative lock). " +
+                inlineI(
+                  "CSV",
+                  "CheckSequenceVerify: a bitcoin rule that can stop a key spending until a relative time has passed. This pad is a toy clock. It does not build a real CSV transaction."
+                ),
+              "Here the owner can reset the clock by showing up. The heir cannot spend until the classroom 90 days finish.",
+              "No signature is made. A green line is not a payment."
+            ),
+            "v2TlTeach"
+          )
         ) +
-        '<button type="button" class="btn" id="v2TlArm">Arm practice timer (90-day classroom)</button>' +
+        tlClockHtml() +
+        '<button type="button" class="btn" id="v2TlArm">Arm the classroom clock</button>' +
         '<div id="v2TlArmOut" class="control-help">' +
-        (mem.tl && mem.tl.armed ? "Armed. Next pad ticks simulated days." : "Not armed.") +
+        (tl.armed ? "Armed at day 0. Next: the heir tries too soon." : "Not armed.") +
         "</div>" +
-        pauseBtn("Next: tick, refresh, heir", !(mem.tl && mem.tl.armed))
+        pauseBtn("Next: heir too soon, then wait", !tl.armed)
       );
     }
     if (step === 1) {
-      var tl = mem.tl || { armed: false, ticks: 0, expired: false };
+      var phase = !tl.early
+        ? "early"
+        : !tl.played
+          ? "play"
+          : !tl.late
+            ? "late"
+            : "reset";
+      var act =
+        phase === "early"
+          ? '<button type="button" class="btn" id="v2TlHeir">Heir tries to spend now</button>'
+          : phase === "play"
+            ? '<button type="button" class="btn" id="v2TlPlay">Let 90 classroom days pass</button>'
+            : phase === "late"
+              ? '<button type="button" class="btn" id="v2TlHeir">Heir tries again</button>'
+              : '<button type="button" class="btn" id="v2TlRefresh">Owner is alive — reset the clock</button>';
       return pad(
-        "<h2>Tick / refresh / heir</h2>" +
+        "<h2>Heir too soon, then wait</h2>" +
         doDont(
-          "Advance simulated days. Owner refresh resets. Heir try only works after expiry.",
-          "There is no Sign button. A success label is not a transaction."
+          "Try the heir first. Then let the bar fill. Then the heir again. Then the owner resets.",
+          "Do not skip ahead. This tab never signs."
         ) +
-        '<p id="v2TlState" class="v2-tl-state">Day ' +
-        tl.ticks * 30 +
-        " / 90 · " +
-        (tl.expired ? "heir path unlocked (practice)" : "heir path locked") +
-        "</p>" +
-        '<div class="row" style="flex-wrap:wrap;gap:0.5rem">' +
-        '<button type="button" class="btn" id="v2TlTick">Advance 30 simulated days</button>' +
-        '<button type="button" class="btn secondary" id="v2TlRefresh">Owner refresh (reset timer)</button>' +
-        '<button type="button" class="btn secondary" id="v2TlHeir">Heir try spend (practice)</button>' +
+        faceWrapHtml(
+          "assets/uc33-face-clock.svg",
+          "Watch the bar",
+          teachBox(
+            "Classroom — the order",
+            classLines(
+              "While the owner is still around, the heir must fail.",
+              "Then time passes on this pad — the bar fills. That is simulated days, not a real block.",
+              "After the bar is full, an heir would be allowed in a real vault. Owner reset empties the bar. Still no Sign."
+            ),
+            "v2TlPlayTeach"
+          )
+        ) +
+        tlClockHtml() +
+        act +
+        '<div id="v2TlOut" class="control-help">' +
+        (tl.reset
+          ? "Owner showed up. Clock back to day 0. Heir locked again. This tab did not sign."
+          : tl.late
+            ? "Practice only: after inactivity the heir path would be allowed. This tab did not sign or broadcast."
+            : tl.played
+              ? "90 classroom days have passed. Heir may try again (practice)."
+              : tl.early
+                ? "Locked. Heir cannot spend yet. Next: let time pass."
+                : "First the heir tries now — it should fail.") +
         "</div>" +
-        '<div id="v2TlOut" class="control-help">No signer in this tab.</div>' +
-        pauseBtn("Timer is educational only", !(mem.tlHeirTried && mem.tl && mem.tl.expired))
+        pauseBtn("I saw fail, wait, try, reset", !(tl.late && tl.reset))
       );
     }
-    return null;
+    if (step === 2) return quizBank(jobQuizzes(33));
+    return finishHtml(33);
   }
 
   function uc34(step) {
@@ -3513,9 +3613,9 @@
         faceWrapHtml("assets/uc34-face-public.svg", "Public only", teachBox(
           "Classroom — public only",
           classLines(
-            "These are public recipes (descriptors) from this practice phrase.",
-            "A viewing key lists addresses. This line is what a wallet imports as the spend recipe.",
-            "Copy the public lines. Never paste a private key here. If there is no live card, this pad makes a throwaway and says so."
+            "Refresh from this phrase. Then pick one BIP tab — same idea as Path folders.",
+            "Then pick Receive (money in, /0/*) or Change (leftover, /1/*). Only that recipe shows.",
+            "Public only. Never paste a private key. If there is no live card, this pad makes a throwaway and says so."
           ),
           "v2DescRefreshTeach"
         )) +
@@ -3523,8 +3623,12 @@
         '<p class="control-help" id="v2DescSrcNote">' +
         (mem.descNote || "Not refreshed yet.") +
         "</p>" +
+        descTypeTabsHtml() +
+        descChainTabsHtml() +
+        '<p class="control-help" id="v2DescPickHelp">Pick a BIP tab, then Receive or Change. Only that line appears.</p>' +
+        "<h3>This recipe (lab result)</h3>" +
         '<div id="v2DescList" class="v2-copy-list"></div>' +
-        pauseBtn("Next: paste and explain", !mem.descRefreshed)
+        pauseBtn("Next: paste and explain", !(mem.descRefreshed && (mem.descChain === 0 || mem.descChain === 1)))
       );
     }
     if (step === 2) {
@@ -4364,16 +4468,20 @@
         (ready
           ? '<p class="msg-ok" id="v2CsReady">Three zpubs ready. Those are what a 2-of-3 coordinator would see — not the words.</p>'
           : '<p class="control-help">Pause stays locked until each cosigner shows a zpub.</p>') +
-        '<h3>The spend rule</h3>' +
-        '<div class="v2-callout done" id="v2MsPolicy"><strong>Classroom — what 2-of-3 is</strong>' +
-        (ready
-          ? classLines(
-            "A 2-of-3 spend rule: any two of these three people can move the coins. One person alone cannot.",
-            "Each still keeps a full backup — not scraps of one phrase. The wallet also needs this recipe (how many must sign, and which three keys, in one agreed order).",
-            "Save the recipe with the three viewing keys in A–Z order. You build and spend in a real wallet, not here. This pad does not sign."
-          )
-          : "Show all three viewing keys first. Then this box explains the spend rule. The line below is the recipe.") +
-        "</div>" +
+        "<h3>The spend rule</h3>" +
+        faceWrapHtml(
+          "assets/uc6-face-2of3.svg",
+          "Any two of three",
+          '<div class="v2-callout done" id="v2MsPolicy"><strong>Classroom — what 2-of-3 is</strong>' +
+            (ready
+              ? classLines(
+                "A 2-of-3 spend rule: any two of these three people can move the coins. One person alone cannot.",
+                "Each still keeps a full backup — not scraps of one phrase. The wallet also needs this recipe (how many must sign, and which three keys, in one agreed order).",
+                "Save the recipe with the three viewing keys in A–Z order. You build and spend in a real wallet, not here. This pad does not sign."
+              )
+              : "Show all three viewing keys first. Then this box explains the spend rule. The line below is the recipe.") +
+            "</div>"
+        ) +
         "<h3>Recipe line (lab result)</h3>" +
         '<pre class="out" id="v2MsDesc">' +
         (ready
@@ -6910,6 +7018,119 @@
       '<figcaption class="control-help">Same words. Different BIP = different address shape. Receive is change=0; change chain is 1.</figcaption>' +
       "</figure>"
     );
+  }
+
+  function descPurposeNow() {
+    var p = mem.descPurpose | 0;
+    return [84, 86, 49, 44].indexOf(p) >= 0 ? p : 84;
+  }
+
+  function descChainNow() {
+    return mem.descChain === 1 ? 1 : 0;
+  }
+
+  function descTypeTabsHtml() {
+    var cur = descPurposeNow();
+    var items = [
+      [86, "BIP86 · Taproot"],
+      [84, "BIP84 · native"],
+      [49, "BIP49 · nested"],
+      [44, "BIP44 · legacy"]
+    ];
+    var tabs = items
+      .map(function (it) {
+        var on = it[0] === cur;
+        return (
+          '<button type="button" class="seg-tab' +
+          (on ? " active" : "") +
+          '" data-desc-purpose="' +
+          it[0] +
+          '" aria-selected="' +
+          (on ? "true" : "false") +
+          '">' +
+          it[1] +
+          "</button>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="seg-block v2-desc-type" id="v2DescType">' +
+      '<div class="seg-tabs" role="tablist" aria-label="Descriptor BIP purpose one at a time">' +
+      tabs +
+      "</div></div>"
+    );
+  }
+
+  function descChainTabsHtml() {
+    var ch = mem.descChain;
+    function tab(val, lab) {
+      var on = ch === val;
+      return (
+        '<button type="button" class="seg-tab' +
+        (on ? " active" : "") +
+        '" data-desc-chain="' +
+        val +
+        '" aria-selected="' +
+        (on ? "true" : "false") +
+        '"' +
+        (mem.descRefreshed ? "" : " disabled") +
+        ">" +
+        lab +
+        "</button>"
+      );
+    }
+    return (
+      '<div class="seg-block v2-desc-chain" id="v2DescChain">' +
+      '<div class="seg-tabs" role="tablist" aria-label="Receive or change descriptor">' +
+      tab(0, "Receive · /0/*") +
+      tab(1, "Change · /1/*") +
+      "</div></div>"
+    );
+  }
+
+  function paintDescLabList() {
+    var list = $("v2DescList");
+    var help = $("v2DescPickHelp");
+    var pause = $("v2Pause");
+    if (!list) return;
+    var rows = mem.descPackRows || [];
+    if (!rows.length) {
+      list.innerHTML = "";
+      if (help) help.textContent = "Refresh first. Then pick a BIP tab and Receive or Change.";
+      return;
+    }
+    if (mem.descChain !== 0 && mem.descChain !== 1) {
+      list.innerHTML = "";
+      if (help) help.textContent = "Pick Receive or Change. Only that recipe shows.";
+      if (pause) pause.disabled = true;
+      return;
+    }
+    var p = descPurposeNow();
+    var wantChange = descChainNow() === 1;
+    var hit = null;
+    var i;
+    for (i = 0; i < rows.length; i++) {
+      if (Number(rows[i].purpose) !== p) continue;
+      var lab = String(rows[i].label || "").toLowerCase();
+      if (wantChange ? /change/.test(lab) : /receive/.test(lab)) {
+        hit = rows[i];
+        break;
+      }
+    }
+    if (!hit) {
+      list.innerHTML = "";
+      if (help) help.textContent = "No recipe for this BIP tab.";
+      return;
+    }
+    mem.descLine = hit.descriptor;
+    list.innerHTML = copyQrRowHtml(hit.label, hit.descriptor).replace(">Copy viewing key<", ">Copy descriptor<");
+    wireCopyQr(list);
+    if (help) {
+      help.textContent =
+        hit.label +
+        " only. Other BIP tabs and the other chain stay hidden until you pick them.";
+    }
+    if (pause) pause.disabled = false;
   }
 
   function woPurposeNow() {
@@ -9524,7 +9745,6 @@
       $("v2DescRefreshLab").addEventListener("click", async function () {
         var B = window.BIP39Lab;
         var note = $("v2DescSrcNote");
-        var list = $("v2DescList");
         if (!B || typeof B.exportWatchOnly !== "function" || typeof B.descriptorsFromWatchOnly !== "function") {
           if (note) note.textContent = "Descriptor API missing.";
           return;
@@ -9542,30 +9762,50 @@
         var rows = (pack && pack.descriptors) || [];
         mem.descPackRows = rows;
         mem.descRefreshed = rows.length > 0;
+        mem.descChain = null;
         mem.descNote = throwaway
           ? "Throwaway 12-word practice phrase generated for this pad. Not a funded seed."
           : "Using the live practice phrase already on this tab.";
         if (note) note.textContent = mem.descNote;
-        if (list) {
-          list.innerHTML = rows
-            .map(function (d) {
-              return copyQrRowHtml(d.label, d.descriptor).replace(">Copy viewing key<", ">Copy descriptor<");
-            })
-            .join("");
-          wireCopyQr(list);
-        }
-        if (rows[0]) mem.descLine = rows[0].descriptor;
-        if (pause) pause.disabled = !mem.descRefreshed;
+        document.querySelectorAll("[data-desc-chain]").forEach(function (b) {
+          b.disabled = !mem.descRefreshed;
+          b.classList.remove("active");
+          b.setAttribute("aria-selected", "false");
+        });
+        paintDescLabList();
+        if (pause) pause.disabled = true;
       });
     }
-    if (mem.descPackRows && $("v2DescList") && !$("v2DescList").innerHTML) {
-      $("v2DescList").innerHTML = mem.descPackRows
-        .map(function (d) {
-          return copyQrRowHtml(d.label, d.descriptor).replace(">Copy viewing key<", ">Copy descriptor<");
-        })
-        .join("");
-      wireCopyQr($("v2DescList"));
+    var descType = $("v2DescType");
+    if (descType) {
+      descType.querySelectorAll("[data-desc-purpose]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          mem.descPurpose = parseInt(btn.getAttribute("data-desc-purpose") || "84", 10) || 84;
+          descType.querySelectorAll("[data-desc-purpose]").forEach(function (b) {
+            var on = parseInt(b.getAttribute("data-desc-purpose"), 10) === mem.descPurpose;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          paintDescLabList();
+        });
+      });
     }
+    var descChain = $("v2DescChain");
+    if (descChain) {
+      descChain.querySelectorAll("[data-desc-chain]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (!mem.descRefreshed) return;
+          mem.descChain = parseInt(btn.getAttribute("data-desc-chain") || "0", 10) === 1 ? 1 : 0;
+          descChain.querySelectorAll("[data-desc-chain]").forEach(function (b) {
+            var on = parseInt(b.getAttribute("data-desc-chain"), 10) === mem.descChain;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          paintDescLabList();
+        });
+      });
+    }
+    if ($("v2DescList") && mem.descPackRows) paintDescLabList();
     if ($("v2DescExplain")) {
       $("v2DescExplain").addEventListener("click", function () {
         var B = window.BIP39Lab;
@@ -9687,66 +9927,132 @@
         if (pause) pause.disabled = !mem.utxo.shownChange;
       });
     }
-    function paintTl() {
-      var tl = mem.tl || { armed: false, ticks: 0, expired: false };
-      var st = $("v2TlState");
-      if (st) {
-        st.textContent =
-          "Day " +
-          tl.ticks * 30 +
-          " / 90 · " +
-          (tl.expired ? "heir path unlocked (practice)" : "heir path locked");
+    function paintTlClock() {
+      var tl = tlState();
+      var dayEl = $("v2TlDay");
+      var fill = $("v2TlFill");
+      var cap = $("v2TlHeirCap");
+      var face = $("v2TlHeirFace");
+      var day = tl.reset ? 0 : tl.expired ? 90 : tl.days || 0;
+      if (dayEl) dayEl.textContent = String(day);
+      if (fill) {
+        fill.style.width = Math.min(100, (day / 90) * 100) + "%";
+        fill.classList.toggle("is-full", !!(tl.expired && !tl.reset));
+      }
+      if (cap) {
+        cap.textContent = tl.reset
+          ? "locked again"
+          : tl.expired
+            ? "clock finished (practice)"
+            : "cannot spend yet";
+      }
+      if (face) {
+        face.classList.toggle("is-open", !!(tl.expired && !tl.reset));
+        face.classList.toggle("is-lock", !(tl.expired && !tl.reset));
       }
     }
     if ($("v2TlArm")) {
       $("v2TlArm").addEventListener("click", function () {
-        mem.tl = { armed: true, ticks: 0, expired: false };
-        mem.tlHeirTried = false;
+        mem.tl = {
+          armed: true,
+          days: 0,
+          expired: false,
+          early: false,
+          played: false,
+          late: false,
+          reset: false
+        };
         var o = $("v2TlArmOut");
-        if (o) o.textContent = "Armed. Next pad ticks simulated days.";
+        if (o) o.textContent = "Armed at day 0. Next: the heir tries too soon.";
+        paintTlClock();
         if (pause) pause.disabled = false;
       });
     }
-    if ($("v2TlTick")) {
-      $("v2TlTick").addEventListener("click", function () {
-        mem.tl = mem.tl || { armed: true, ticks: 0, expired: false };
-        mem.tl.ticks = Math.min(6, (mem.tl.ticks || 0) + 1);
-        mem.tl.expired = mem.tl.ticks >= 3;
-        paintTl();
-        var o = $("v2TlOut");
-        if (o) o.textContent = mem.tl.expired ? "90 simulated days reached. Heir path may try (practice)." : "Timer advanced. No signature.";
+    if ($("v2TlPlay")) {
+      $("v2TlPlay").addEventListener("click", function () {
+        var tl = tlState();
+        var btn = $("v2TlPlay");
+        if (btn) btn.disabled = true;
+        var fill = $("v2TlFill");
+        var dayEl = $("v2TlDay");
+        if (fill) {
+          fill.style.transition = "width 1.6s linear";
+          fill.style.width = "100%";
+        }
+        if (mem.tlTimer) clearInterval(mem.tlTimer);
+        var day = 0;
+        mem.tlTimer = setInterval(function () {
+          day += 15;
+          if (day >= 90) {
+            day = 90;
+            clearInterval(mem.tlTimer);
+            mem.tlTimer = 0;
+            tl.days = 90;
+            tl.expired = true;
+            tl.played = true;
+            if (dayEl) dayEl.textContent = "90";
+            if (fill) fill.classList.add("is-full");
+            renderTrack();
+            return;
+          }
+          tl.days = day;
+          if (dayEl) dayEl.textContent = String(day);
+        }, 260);
       });
     }
     if ($("v2TlRefresh")) {
       $("v2TlRefresh").addEventListener("click", function () {
-        mem.tl = { armed: true, ticks: 0, expired: false };
-        mem.tlHeirTried = false;
-        paintTl();
+        var tl = tlState();
+        tl.days = 0;
+        tl.expired = false;
+        tl.reset = true;
+        var fill = $("v2TlFill");
+        if (fill) {
+          fill.style.transition = "width 0.4s ease";
+          fill.style.width = "0%";
+          fill.classList.remove("is-full");
+        }
+        paintTlClock();
         var o = $("v2TlOut");
         if (o) {
-          o.className = "msg-ok";
-          o.textContent = "Owner refreshed. Heir path locked again. No transaction signed.";
+          o.className = "control-help msg-ok";
+          o.textContent =
+            "Owner showed up. Clock back to day 0. Heir locked again. This tab did not sign.";
         }
-        if (pause) pause.disabled = true;
+        if (pause) pause.disabled = false;
+        renderTrack();
       });
     }
     if ($("v2TlHeir")) {
       $("v2TlHeir").addEventListener("click", function () {
-        var tl = mem.tl || {};
+        var tl = tlState();
         var o = $("v2TlOut");
+        if (!tl.played) {
+          tl.early = true;
+          mem.tlHeirTried = true;
+          if (o) {
+            o.className = "control-help msg-bad";
+            o.textContent =
+              "Locked. Heir cannot spend yet. Timer has not expired. No Sign in this tab.";
+          }
+          renderTrack();
+          return;
+        }
         if (!tl.expired) {
           if (o) {
-            o.className = "msg-bad";
-            o.textContent = "Locked. Heir cannot spend yet. Timer has not expired. No Sign in this tab.";
+            o.className = "control-help msg-bad";
+            o.textContent = "Locked. Heir cannot spend yet. No Sign in this tab.";
           }
           return;
         }
+        tl.late = true;
         mem.tlHeirTried = true;
         if (o) {
-          o.className = "msg-ok";
-          o.textContent = "Practice only: heir path would be allowed after inactivity. This tab did not sign or broadcast.";
+          o.className = "control-help msg-ok";
+          o.textContent =
+            "Practice only: after inactivity the heir path would be allowed. This tab did not sign or broadcast.";
         }
-        if (pause) pause.disabled = false;
+        renderTrack();
       });
     }
     if ($("v2DescAck")) {

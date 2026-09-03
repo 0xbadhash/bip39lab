@@ -790,9 +790,8 @@ test.describe("V2 use-case tracks (0.17.136-v2)", () => {
     await page.locator("#v2Pause").click();
     await page.locator("#v2TlHeir").click();
     await expect(page.locator("#v2TlOut")).toContainText(/Locked/i);
-    await page.locator("#v2TlTick").click();
-    await page.locator("#v2TlTick").click();
-    await page.locator("#v2TlTick").click();
+    await page.locator("#v2TlPlay").click();
+    await expect(page.locator("#v2TlDay")).toHaveText("90", { timeout: 8000 });
     await page.locator("#v2TlHeir").click();
     await expect(page.locator("#v2TlOut")).toContainText(/Practice only/i);
     await expect(page.locator("#v2TlOut")).toContainText(/did not sign/i);
@@ -806,8 +805,15 @@ test.describe("V2 use-case tracks (0.17.136-v2)", () => {
     await expect(page.locator("#v2DescLine")).toContainText(/wpkh/);
     await page.locator("#v2Pause").click();
     await page.locator("#v2DescRefreshLab").click();
+    await page.locator('[data-desc-purpose="84"]').click();
+    await page.locator('[data-desc-chain="0"]').click();
     await expect(page.locator("#v2DescList [data-copy]").first()).toBeVisible({ timeout: 8000 });
-    await expect(page.locator("#v2DescList")).toContainText(/wpkh\(|tr\(|pkh\(/);
+    await expect(page.locator("#v2DescList")).toContainText(/wpkh\(/);
+    await expect(page.locator("#v2DescList")).toContainText(/\/0\/\*/);
+    await expect(page.locator("#v2DescList")).not.toContainText(/\/1\/\*/);
+    await page.locator('[data-desc-chain="1"]').click();
+    await expect(page.locator("#v2DescList")).toContainText(/\/1\/\*/);
+    await expect(page.locator("#v2DescList")).not.toContainText(/\/0\/\*/);
     const pub = (await page.locator("#v2DescList .v2-copy-val").first().textContent()) || "";
     await page.locator("#v2Pause").click();
     await page.locator("#v2DescPaste").fill("xprv9s21ZrQH143Kpractice");
@@ -1499,6 +1505,8 @@ test.describe("V2 use-case tracks (0.17.136-v2)", () => {
     await expect(page.getByRole("button", { name: "Refresh descriptors from this phrase" })).toBeVisible();
     await page.locator("#v2DescRefreshLab").click();
     await expect(page.locator("#v2DescSrcNote")).toContainText(/Throwaway|live practice/i);
+    await page.locator('[data-desc-purpose="84"]').click();
+    await page.locator('[data-desc-chain="0"]').click();
     await expect(page.locator("#v2DescList [data-copy]").first()).toBeVisible({ timeout: 8000 });
     const pub = await page.locator("#v2DescList .v2-copy-val").first().textContent();
     await page.locator("#v2Pause").click();

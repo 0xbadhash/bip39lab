@@ -1,0 +1,14 @@
+<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Owner can reset a clock; heir waits">
+  <title>Classroom clock</title>
+  <rect width="640" height="640" rx="48" fill="#1a2330"/>
+  <circle cx="320" cy="250" r="140" fill="#121820" stroke="#e8a23c" stroke-width="12"/>
+  <circle cx="320" cy="250" r="12" fill="#e8a23c"/>
+  <path d="M320 250v-88" stroke="#e8eef7" stroke-width="10" stroke-linecap="round"/>
+  <path d="M320 250l52 28" stroke="#3d8bfd" stroke-width="8" stroke-linecap="round"/>
+  <rect x="72" y="430" width="200" height="120" rx="20" fill="#121820" stroke="#3ecf8e" stroke-width="7"/>
+  <text x="172" y="482" text-anchor="middle" fill="#3ecf8e" font-size="24" font-family="system-ui,sans-serif">owner</text>
+  <text x="172" y="518" text-anchor="middle" fill="#8b9bb4" font-size="18" font-family="system-ui,sans-serif">can reset</text>
+  <rect x="368" y="430" width="200" height="120" rx="20" fill="#121820" stroke="#8b9bb4" stroke-width="7"/>
+  <text x="468" y="482" text-anchor="middle" fill="#e8eef7" font-size="24" font-family="system-ui,sans-serif">heir</text>
+  <text x="468" y="518" text-anchor="middle" fill="#8b9bb4" font-size="18" font-family="system-ui,sans-serif">waits</text>
+</svg>

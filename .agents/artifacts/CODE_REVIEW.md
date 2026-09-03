@@ -1,14 +1,20 @@
-# CODE-REVIEW — UC35 plain English
+# CODE-REVIEW
 
-**Marker:** CODE-REVIEW  
-**Verdict:** PASS — no P0 defects
-
-## Scope
-- UC35 title/job/gate/pad/quiz copy
-- `uc35-atom-same-words-two-apps.svg` left of blue teach box
-- V2-S26 ids preserved
+Date: 2026-09-03
+Scope: V2 classroom cluster, UC32–34, spacing CSS
+P0: 0
 
 ## Findings
-None blocking. Electrum still not executed.
 
-## CODE-REVIEW
+- No Sign buttons introduced in UC33.
+- Descriptors remain public (`wpkh`/`tr`/`pkh` of xpub/tpub).
+- Face crop override is scoped to `.v2-face-after` so entropy lock tint crop stays.
+- Secrets: Explain still refuses xprv/seed.
+
+## Scope governor
+
+In-scope: `web/v2/**`, `e2e/v2.spec.ts`, layout AC tests, specs.
+
+## Verdict
+
+Accept. Ready for `/pr_review --validate`.

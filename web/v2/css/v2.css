@@ -106,10 +106,50 @@ textarea.out.v2-s39-print {
   margin: 0.7rem 0;
 }
 .v2-xor-grid h3 { margin: 0 0 0.35rem; font-size: 0.88rem; }
+.v2-tl-clock {
+  margin: 0.75rem 0 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+.v2-tl-people {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin: 0 0 0.75rem;
+}
+.v2-tl-who {
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.v2-tl-who strong { display: block; font-size: 0.95rem; }
+.v2-tl-who span { font-size: 0.88rem; color: var(--muted); }
+.v2-tl-who.is-owner { border-color: var(--ok); }
+.v2-tl-who.is-lock { border-color: var(--border); }
+.v2-tl-who.is-open { border-color: var(--warn); }
 .v2-tl-state {
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  margin: 0.5rem 0;
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+}
+.v2-tl-bar {
+  height: 12px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.v2-tl-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--warn, #c9892a);
+  transition: width 1.6s linear;
+}
+.v2-tl-fill.is-full {
+  background: var(--ok);
 }
 @media (max-width: 720px) {
   .v2-xor-grid { grid-template-columns: 1fr; }
@@ -772,6 +812,12 @@ textarea.out.v2-s39-print {
 }
 .v2-face-after > .v2-lock {
   grid-row: 1;
+}
+.v2-face-after > .v2-lock img.v2-lock-img,
+.v2-face-after > .v2-lock img {
+  object-fit: contain;
+  object-position: center;
+  background: #1a2330;
 }
 .v2-face-after > .v2-face-class {
   grid-column: 2;
@@ -2062,8 +2108,22 @@ ol.word-grid.v2-stamp-plate {
 .v2-pad a.btn + .control-help,
 #trackBody button.btn + .control-help,
 #trackBody button.btn + p.control-help,
-#trackBody .row + .control-help {
-  margin-top: 0.85rem;
+#trackBody .row + .control-help,
+.v2-pad > button.btn + *,
+.v2-pad > a.btn + * {
+  margin-top: 0.85rem !important;
+}
+.v2-pad > button.btn,
+.v2-pad > a.btn {
+  display: block;
+  width: fit-content;
+}
+.v2-pad .control-help,
+.v2-pad .msg-ok,
+.v2-pad .msg-bad {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 .v2-verdict {
   font-size: 1.15rem;
