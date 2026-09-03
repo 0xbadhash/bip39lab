@@ -1,9 +1,9 @@
 # PLAYWRIGHT_LAST
 
-product: 0.16.86
-tag: v0.16.86
+product: 0.16.87
+tag: v0.16.87
 s_ids: 175
 scenarios: S0–S183
 aligned: auto-stamped from VERSION + e2e/
 
-live === comet === PLAYWRIGHT_LAST === /VERSION === 0.16.86
+live === comet === PLAYWRIGHT_LAST === /VERSION === 0.16.87

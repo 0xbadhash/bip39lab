@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bip39lab"
-version = "0.16.86"
+version = "0.16.87"
 description = "Offline BIP-39 / derivation lab (no network, no secret retention)"
 requires-python = ">=3.11"
 dependencies = [

@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.136-v2)", () => {
+test.describe("V2 use-case tracks (0.17.137-v2)", () => {
   // AC-4 picker 35; classic Generate; chip follows /v2/ stamp
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -32,7 +32,7 @@ test.describe("V2 use-case tracks (0.17.136-v2)", () => {
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator('.uc-card[data-uc="35"]')).toHaveCount(1);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.136-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.137-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);

@@ -1,45 +1,41 @@
-# Release runbook — v0.16.86 UC35 same words, wrong app
+# Release runbook — v0.16.87 / 0.17.137-v2
 
-## Scope
-
-V2 UC35: plain English (Electrum vs BIP-39 trap), illustration left of blue classroom. No Electrum KDF.
-
-**Range:** `v0.16.85...HEAD`  
-**Score:** 100
+**When:** 2026-09-03  
+**Spec:** `.agents/specs/2026-09-03-v2-classroom-cluster-fsm.md`  
+**Score:** 100 (`pr_validator` approved)
 
 ## Smoke
 
-| Gate | Result |
-|------|--------|
-| pytest -q | 227 passed |
-| V2-S26 UC35 | PASS |
-| check_web_e2e | ok (175 S-ids) |
-| playwright full | 73 passed (18.4m) |
-
-## Infra
-
-None. Static lab.
+| Step | Command | Exit |
+|------|---------|------|
+| unit | `.venv/bin/python3 -m pytest tests/ -q` | 0 after chip pin AC |
+| layout AC | `pytest tests/test_ac_v2_uc7_layout.py` | 0 |
+| hard_gates | `hard_gates.py --diff v0.16.86...HEAD` | 0 |
+| V2 e2e subset | `npx playwright test e2e/v2.spec.ts -g "V2-S0 picker|V2-S24 UC33|V2-S25 UC34"` | at stamp time |
 
 ## Evidence pack
 
-- hard_gates 100  
-- unittest test_ac_v2_uc35  
-- Playwright V2-S26  
+- hard_gates ok  
+- pytest layout + hardening chip  
+- CODE-REVIEW / CROSS-REVIEW / BEHAVIOR_REPORT  
 
-## Version
+## Infra
 
-0.16.86
+N/A static nginx lab.
 
 ## Rollback
 
-`git checkout v0.16.85`
+1. `git checkout v0.16.86` on deploy host  
+2. Restore previous `web/` tree  
+3. Do not reuse practice phrases  
 
 ## §9
 
-1. Does not run Electrum KDF.  
-2. Does not fund practice phrases.  
-3. Does not reopen catalyxt EmailJS.
+1. No Sign / CSV live.  
+2. No Electrum KDF.  
+3. No force-push; leftover scripts uncommitted.
 
-## Next
+## Dual stamp
 
-`/sync_docs`
+- Product `0.16.87` / tag `v0.16.87`  
+- V2 chip `0.17.137-v2`

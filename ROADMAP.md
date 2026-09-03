@@ -72,18 +72,13 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] V2 classroom cluster + UC33 clock + UC34 BIP tabs
-- **Status:** open
+### [DONE] V2 classroom cluster + UC33 clock + UC34 BIP tabs
+- **Status:** done
 - **Priority:** P0
-- **Next:** true
 - **Spec:** `.agents/specs/2026-09-03-v2-classroom-cluster-fsm.md`
 - **Plan:** `.agents/specs/2026-09-03-v2-classroom-cluster-fsm-plan.md`
-- **Acceptance:**
-  - [ ] Face cluster contain (not lock crop)
-  - [ ] UC32/33/34 behavior + spacing 0.85rem / 0.92rem help
-  - [ ] V2-S24 S25 S0
-- **Smoke:** plugin unit + V2 Playwright subset
-- **Notes:** grill-me complete from conversation
+- **Smoke:** V2-S0 S24 S25 PASS; pytest tests/
+- **Notes:** grill-me complete; product v0.16.87 / chip 0.17.137-v2
 
 ### [DONE] V2 UC18 heir object drill
 - **Status:** done

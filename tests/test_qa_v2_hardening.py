@@ -70,6 +70,6 @@ def test_qa_bundle_source_exports_entropy_bytes() -> None:
 
 
 def test_qa_v2_chip_matches_script_query() -> None:
-    assert "v2-app.js?v=0.17.136-v2" in INDEX
-    assert "data-v2-version>v0.17.136-v2" in INDEX
-    assert "v0.17.135-v2" not in INDEX
+    assert "v2-app.js?v=0.17.137-v2" in INDEX
+    assert "data-v2-version>v0.17.137-v2" in INDEX
+    assert "v0.17.136-v2" not in INDEX
