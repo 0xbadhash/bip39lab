@@ -91,7 +91,7 @@ def wrap_js(text: str) -> str:
             print("missing id", tid)
             continue
         # Only wrap the teachBox that ends with this id (not already wrapped)
-        token = f"teachBox("
+        token = "teachBox("
         idx = 0
         found = False
         while True:
