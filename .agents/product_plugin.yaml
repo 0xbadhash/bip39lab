@@ -23,7 +23,9 @@ smoke:
   - name: e2e
     cmd: ["python", "scripts/run_e2e_smoke.py"]
     cwd: .
-    timeout: 780
+    # Night subset + hard wall in run_e2e_smoke.py (catalyxt night_e2e pattern).
+    # Headroom over BIP39LAB_E2E_SMOKE_TIMEOUT default 240s; fail closed < night wall.
+    timeout: 300
 
 # Deterministic Playwright + Comet scenario contract (harness 1.4.17+)
 web_e2e:

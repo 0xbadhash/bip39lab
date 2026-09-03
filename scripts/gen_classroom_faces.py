@@ -2,9 +2,18 @@
 """Generate 640 classroom faces and wrap teachBox classrooms that lack a picture."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-ROOT = Path("/home/debian/bip39lab")
+
+def _repo_root() -> Path:
+    env = os.environ.get("BIP39LAB_ROOT", "").strip()
+    if env:
+        return Path(env).expanduser().resolve()
+    return Path(__file__).resolve().parents[1]
+
+
+ROOT = _repo_root()
 ASSETS = ROOT / "web/v2/assets"
 APP = ROOT / "web/v2/js/v2-app.js"
 
@@ -91,18 +100,18 @@ def wrap_js(text: str) -> str:
             print("missing id", tid)
             continue
         # Only wrap the teachBox that ends with this id (not already wrapped)
-        token = "teachBox("
+        tb_call = "teachBox("
         idx = 0
         found = False
         while True:
-            i = text.find(token, idx)
+            i = text.find(tb_call, idx)
             if i < 0:
                 break
             j = text.find(needle, i)
             if j < 0:
                 break
             # ensure this teachBox's third arg is this id: next teachBox shouldn't start before j
-            nxt = text.find(token, i + 1)
+            nxt = text.find(tb_call, i + 1)
             if nxt != -1 and nxt < j:
                 idx = i + 1
                 continue
