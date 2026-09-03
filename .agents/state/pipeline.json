@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "shipped",
+  "phase": "init",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-09-03-v2-classroom-cluster-fsm.md",
-  "task": "v0.16.87 classroom cluster",
+  "task": "init after v0.16.87",
   "waiver": null
 }
