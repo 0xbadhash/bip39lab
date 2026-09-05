@@ -56,15 +56,16 @@
 }
 
 .chip-ok {
-  background: rgba(34, 160, 107, 0.22);
-  border-color: #22a06b;
-  color: #3dd68c;
+  /* Colour grammar: ok = green (not accent). Strengthened after .chip below. */
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+  border-color: var(--ok);
+  color: var(--ok);
   font-weight: 750;
 }
 [data-theme="light"] .chip-ok {
-  background: rgba(21, 128, 61, 0.16);
-  border-color: #15803d;
-  color: #15803d;
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  border-color: var(--ok);
+  color: var(--ok);
 }
 
 .chip-warn {
@@ -89,9 +90,18 @@
   color: var(--bad);
 }
 
-/* Explicit Passed label on quiz badges */
+/* Explicit Passed / airgap-ok: beat later .chip accent via post-.chip reassert */
 .chip.chip-ok {
-  box-shadow: 0 0 0 1px rgba(34, 160, 107, 0.35);
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+  border-color: var(--ok);
+  color: var(--ok);
+  font-weight: 750;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ok) 35%, transparent);
+}
+[data-theme="light"] .chip.chip-ok {
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  border-color: var(--ok);
+  color: var(--ok);
 }
 
 .compare-table {
@@ -494,13 +504,18 @@ code {
   width: auto;
   margin: 0 auto !important;
   padding: 0.75rem 1rem 0.75rem 1.1rem;
-  background: linear-gradient(135deg, #4a3508 0%, #6b4e12 45%, #3a2a0a 100%);
-  border: 2px solid #f0c14d;
-  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--warn) 28%, #0b0f14) 0%,
+    color-mix(in srgb, var(--warn) 42%, #121821) 45%,
+    color-mix(in srgb, var(--warn) 22%, #0b0f14) 100%
+  );
+  border: 2px solid var(--warn);
+  border-radius: var(--radius); /* 12px — DS card scale, not 16 */
   box-shadow:
-    0 0 0 1px rgba(255, 220, 120, 0.35),
+    0 0 0 1px color-mix(in srgb, var(--warn) 35%, transparent),
     0 10px 32px rgba(0, 0, 0, 0.55),
-    0 0 28px rgba(240, 193, 77, 0.28);
+    0 0 28px color-mix(in srgb, var(--warn) 28%, transparent);
   color: #fff8e7;
   box-sizing: border-box;
 }
@@ -520,8 +535,8 @@ body.theme-light .learn-return-dock {
 .learn-return-dock .btn,
 .learn-return-dock a.btn {
   flex: 0 0 auto;
-  background: #f0c14d;
-  border: 1px solid #ffe08a;
+  background: var(--warn);
+  border: 1px solid color-mix(in srgb, var(--warn) 70%, #fff);
   color: #1a1406;
   font-weight: 750;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
@@ -529,16 +544,18 @@ body.theme-light .learn-return-dock {
   text-align: center;
   line-height: 1.25;
   max-width: 100%;
+  min-height: 44px;
+  min-width: 44px;
 }
 .learn-return-dock .btn:hover,
 .learn-return-dock a.btn:hover {
-  background: #ffd666;
-  border-color: #fff0a8;
+  background: color-mix(in srgb, var(--warn) 82%, #fff);
+  border-color: color-mix(in srgb, var(--warn) 55%, #fff);
   color: #1a1406;
 }
 .learn-return-dock .btn.secondary {
-  background: #f0c14d;
-  border-color: #ffe08a;
+  background: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 70%, #fff);
   color: #1a1406;
 }
 .learn-return-dock .btn:disabled,
@@ -569,12 +586,18 @@ body.theme-light .learn-return-hint {
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0.2rem 0.45rem;
+  padding: 0;
   border-radius: 999px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 .learn-return-dismiss:hover {
   color: #1a1406;
-  background: #f0c14d;
+  background: var(--warn);
 }
 .quiz-evidence-banner {
   margin: 0 0 0.75rem;
@@ -707,7 +730,7 @@ body.learn-return-open {
   }
   button.btn,
   button.btn.secondary {
-    min-height: 2.5rem;
+    min-height: 44px;
   }
 }
 
@@ -947,6 +970,22 @@ a.nav-item:hover {
   background: var(--accent-soft);
   border: 1px solid rgba(61, 139, 253, 0.35);
   color: var(--focus);
+}
+
+/* W6a: chip-ok must not paint accent blue — reassert after .chip */
+.chip.chip-ok,
+.chip-airgap.chip-ok {
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+  border-color: var(--ok);
+  color: var(--ok);
+  font-weight: 750;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ok) 35%, transparent);
+}
+[data-theme="light"] .chip.chip-ok,
+[data-theme="light"] .chip-airgap.chip-ok {
+  background: color-mix(in srgb, var(--ok) 16%, transparent);
+  border-color: var(--ok);
+  color: var(--ok);
 }
 
 .content {
@@ -1781,8 +1820,11 @@ html[data-level="starter"] #watchOnlyPanel {
 }
 
 .help-tip-btn {
-  width: 1.25rem;
-  height: 1.25rem;
+  /* Visual glyph ~font-size; hit target ≥44×44 (DS help-tip / W6a) */
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
@@ -1795,6 +1837,10 @@ html[data-level="starter"] #watchOnlyPanel {
   line-height: 1;
   cursor: pointer;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .help-tip-btn:hover,
@@ -2478,13 +2524,18 @@ label.field {
 textarea,
 input[type="password"],
 input[type="text"],
+input[type="number"],
+input[type="search"],
+input[type="email"],
+input[type="url"],
+input:not([type]),
 select {
   width: 100%;
   margin-top: 0.35rem;
   background: var(--panel-2);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm); /* 8px — match btn/textarea; no bare radius 0 */
   padding: 0.65rem 0.75rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -2610,6 +2661,17 @@ button.btn {
   cursor: pointer;
   line-height: 1.25;
   box-sizing: border-box;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* W6a classroom chrome — pad even when .btn-sm shrinks padding */
+#btnTeach,
+#btnTheme,
+#btnResetClassroom,
+#btnGenerate {
+  min-height: 44px;
+  min-width: 44px;
 }
 
 button.btn:hover:not(:disabled) {
