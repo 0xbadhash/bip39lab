@@ -1,10 +1,11 @@
-# BEHAVIOR-CONTRACT
+# BEHAVIOR_CONTRACT
 
-**Marker:** BEHAVIOR-CONTRACT
-**Spec:** `.agents/specs/2026-08-31-v2-uc1-paste-quiz.md`
+Date: 2026-09-13  
+Surface: bip39.catalyxt.xyz classic Lab + /v2/
 
-1. Paste short junk → Not at all; card empty.
-2. Paste 12 dictionary words, bad checksum → card fills; meter not BIP-39.
-3. Paste abandon…about → all fine; 128 bits.
-4. Quiz pad has three `.v2-quiz-q`.
-5. Receive-address pad has no `#v2OsEnt`.
+## Clauses
+
+1. Visible classic chip is v0.16.89 after stamp.
+2. V2 chip is v0.17.138-v2.
+3. Help-tip glyph width ≤24px; host ≥44px; panel white-space normal.
+4. No Sign button on UC33.

@@ -110,12 +110,16 @@ test.describe("W6a DS normalize (chip / dock / touch / radii)", () => {
       expect(box!.width, `${id} width`).toBeGreaterThanOrEqual(44);
     }
 
-    const tip = page.locator(".help-tip-btn").first();
-    await expect(tip).toBeVisible();
-    const tipBox = await tip.boundingBox();
-    expect(tipBox).not.toBeNull();
-    expect(tipBox!.height).toBeGreaterThanOrEqual(44);
-    expect(tipBox!.width).toBeGreaterThanOrEqual(44);
+    const tipHost = page.locator(".help-tip").first();
+    await expect(tipHost).toBeVisible();
+    const hostBox = await tipHost.boundingBox();
+    expect(hostBox).not.toBeNull();
+    expect(hostBox!.height).toBeGreaterThanOrEqual(44);
+    expect(hostBox!.width).toBeGreaterThanOrEqual(44);
+    const glyph = await page.locator(".help-tip-btn").first().boundingBox();
+    expect(glyph).not.toBeNull();
+    expect(glyph!.height).toBeLessThanOrEqual(24);
+    expect(glyph!.width).toBeLessThanOrEqual(24);
   });
 
   test("S187 radii: inputs 8px, dock 12px, chips pill 999", async ({ page }) => {

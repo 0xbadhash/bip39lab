@@ -1,4 +1,4 @@
-# Release runbook — v0.16.87 / 0.17.137-v2
+# Release runbook — v0.16.88 / 0.17.137-v2
 
 **When:** 2026-09-03  
 **Spec:** `.agents/specs/2026-09-03-v2-classroom-cluster-fsm.md`  
@@ -37,5 +37,5 @@ N/A static nginx lab.
 
 ## Dual stamp
 
-- Product `0.16.87` / tag `v0.16.87`  
+- Product `0.16.88` / tag `v0.16.88`  
 - V2 chip `0.17.137-v2`

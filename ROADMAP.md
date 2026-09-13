@@ -72,13 +72,26 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] QA wave HTML escape + help-tip glyph lockstep
+- **Status:** open
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-09-13-qa-wave-html-escape-fsm.md`
+- **Plan:** `.agents/specs/2026-09-13-qa-wave-html-escape-fsm-plan.md`
+- **Acceptance:**
+  - [ ] copy/addr/tip HTML escaped
+  - [ ] (i) 1.25rem glyph, 44px host, wrapping panel
+  - [ ] VERSION lockstep + live chip
+- **Smoke:** pytest tests/test_qa_v2_hardening.py + Playwright V2-S1 S186
+- **Notes:** grill-me complete; CEO stamp 2026-09-13
+
 ### [DONE] V2 classroom cluster + UC33 clock + UC34 BIP tabs
 - **Status:** done
 - **Priority:** P0
 - **Spec:** `.agents/specs/2026-09-03-v2-classroom-cluster-fsm.md`
 - **Plan:** `.agents/specs/2026-09-03-v2-classroom-cluster-fsm-plan.md`
 - **Smoke:** V2-S0 S24 S25 PASS; pytest tests/
-- **Notes:** grill-me complete; product v0.16.87 / chip 0.17.137-v2
+- **Notes:** grill-me complete; product v0.16.88 / chip 0.17.137-v2
 
 ### [DONE] V2 UC18 heir object drill
 - **Status:** done

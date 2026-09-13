@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.137-v2)", () => {
+test.describe("V2 use-case tracks (0.17.138-v2)", () => {
   // AC-4 picker 35; classic Generate; chip follows /v2/ stamp
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -32,7 +32,7 @@ test.describe("V2 use-case tracks (0.17.137-v2)", () => {
     await expect(page.locator(".uc-card")).toHaveCount(35);
     await expect(page.locator('.uc-card[data-uc="35"]')).toHaveCount(1);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.137-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.138-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -53,6 +53,24 @@ test.describe("V2 use-case tracks (0.17.137-v2)", () => {
     await expect(page.locator("#v2Bip39What")).toContainText(/numbered list of English words/i);
     await expect(page.locator("#v2Bip39What")).toContainText(/mailbox is not the backup/i);
     await expect(page.locator("#v2Bip39What").locator(".help-tip-btn")).toHaveCount(2);
+    const iGlyph = await page.locator("#v2Bip39What .help-tip-btn").first().boundingBox();
+    expect(iGlyph).not.toBeNull();
+    expect(iGlyph!.width).toBeLessThanOrEqual(24);
+    expect(iGlyph!.height).toBeLessThanOrEqual(24);
+    const iHost = await page.locator("#v2Bip39What .help-tip").first().boundingBox();
+    expect(iHost).not.toBeNull();
+    expect(iHost!.width).toBeGreaterThanOrEqual(44);
+    expect(iHost!.height).toBeGreaterThanOrEqual(44);
+    const tip = page.locator("#v2Bip39What .help-tip").first();
+    await tip.locator(".help-tip-btn").hover();
+    const panel = tip.locator(".help-tip-panel").first();
+    await expect(panel).toBeVisible();
+    const wrap = await panel.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { white: s.whiteSpace, w: el.clientWidth, sw: el.scrollWidth };
+    });
+    expect(wrap.white).toBe("normal");
+    expect(wrap.sw).toBeLessThanOrEqual(wrap.w + 2);
     await expect(page.locator("#v2MnemonicLine")).toContainText(/English words only/i);
     await expect(page.locator("#v2MnemonicLine")).toBeVisible();
     await expect(page.locator("#v2EntropyWhat")).toHaveCount(0);

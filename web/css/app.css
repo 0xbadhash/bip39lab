@@ -1814,17 +1814,21 @@ html[data-level="starter"] #watchOnlyPanel {
 }
 
 .help-tip {
+  /* Hit ≥44px (DS W6a); visual (i) is card.catalyxt.xyz 1.25rem */
   position: relative;
   display: inline-flex;
   vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .help-tip-btn {
-  /* Visual glyph ~font-size; hit target ≥44×44 (DS help-tip / W6a) */
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
   padding: 0;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
@@ -1869,6 +1873,9 @@ html[data-level="starter"] #watchOnlyPanel {
   line-height: 1.4;
   font-weight: 400;
   font-style: normal;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
 }
 
 .help-tip:hover .help-tip-panel,

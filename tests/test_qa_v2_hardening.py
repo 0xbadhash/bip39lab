@@ -69,7 +69,22 @@ def test_qa_bundle_source_exports_entropy_bytes() -> None:
     assert "mnemonicToEntropyBytes" in src
 
 
+def test_qa_copy_row_and_addr_escape_html() -> None:
+    assert "escapeHtml(label)" in V2_APP
+    assert "escapeHtml(value)" in V2_APP
+    assert "escapeHtml(addr)" in V2_APP
+
+
+def test_qa_help_tip_glyph_is_card_size() -> None:
+    css = (ROOT / "web" / "css" / "app.css").read_text(encoding="utf-8")
+    assert ".help-tip-btn {\n  width: 1.25rem;" in css.replace("\r\n", "\n")
+    assert "white-space: normal;" in css
+    v2 = (ROOT / "web" / "v2" / "css" / "v2.css").read_text(encoding="utf-8")
+    assert ".v2-callout .help-tip-panel" in v2
+    assert "white-space: normal" in v2
+
+
 def test_qa_v2_chip_matches_script_query() -> None:
-    assert "v2-app.js?v=0.17.137-v2" in INDEX
-    assert "data-v2-version>v0.17.137-v2" in INDEX
-    assert "v0.17.136-v2" not in INDEX
+    assert "v2-app.js?v=0.17.138-v2" in INDEX
+    assert "data-v2-version>v0.17.138-v2" in INDEX
+    assert "v0.17.137-v2" not in INDEX

@@ -6670,7 +6670,7 @@
       attrEsc(title) +
       '">i</button>' +
       '<span class="help-tip-panel" hidden><strong>' +
-      title +
+      escapeHtml(title) +
       "</strong> " +
       body +
       "</span></span>"
@@ -6708,15 +6708,17 @@
       id +
       '">' +
       '<button type="button" class="help-tip-btn" aria-label="About ' +
-      title +
+      attrEsc(title) +
       '">i</button>' +
       '<span class="help-tip-panel" hidden><strong>' +
-      title +
+      escapeHtml(title) +
       "</strong>" +
-      (short ? " — " + short : "") +
+      (short ? " — " + escapeHtml(short) : "") +
       ". " +
       (body
-        ? '<span class="control-help" style="display:block;margin-top:0.35rem">' + body + "</span>"
+        ? '<span class="control-help" style="display:block;margin-top:0.35rem">' +
+          escapeHtml(body) +
+          "</span>"
         : "") +
       "</span></span>"
     );
@@ -7215,10 +7217,10 @@
     return (
       '<div class="v2-copy-row">' +
       '<span class="v2-copy-lab">' +
-      label +
+      escapeHtml(label) +
       "</span>" +
       '<code class="v2-copy-val">' +
-      value +
+      escapeHtml(value) +
       "</code>" +
       '<button type="button" class="btn secondary btn-sm" data-copy="' +
       attrEsc(value) +
@@ -7367,7 +7369,7 @@
         r.index +
         "</span>" +
         '<span class="addr-text">' +
-        addr +
+        escapeHtml(addr) +
         "</span>" +
         '<span class="v2-cell-act">' +
         '<button type="button" class="btn secondary btn-sm" data-copy="' +

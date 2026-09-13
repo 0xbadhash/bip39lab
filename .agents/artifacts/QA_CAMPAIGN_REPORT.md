@@ -1,12 +1,13 @@
 # QA-CAMPAIGN-REPORT
 
 **Marker:** QA-CAMPAIGN-REPORT  
-**Date:** 2026-09-02  
-**Product:** bip39lab after v0.16.86 UC35 ship
+**Date:** 2026-09-13  
+**Product:** bip39lab on bip39.catalyxt.xyz after v0.16.88 / 0.17.137-v2  
+**Brief:** `/tmp/qa-campaign-2026-09-13/BRIEF-W6-QA-CAMPAIGN-2026-09-13.md`
 
 ## Executive summary
 
-Post-FSM QA on the V2 tracks + shared Lab chrome. **14 real bugs found and fixed** (security hunt + UC35 pad hunt). The static lab cannot honestly yield 200 unique defects without inventing filler; this wave exhausted the V2 asset-path, leftover stamp, and word-grid HTML sinks we could prove.
+Report-before-fix campaign on the static BIP-39 lab. Baseline **240 pytest green**. Held 2026-09-02 PASSes stay closed. **4 new defects** (3 HTML-sink escapes, 1 docs stamp). All 4 fixed with pytest locks. **E2E deferred** (no VERSION bump). Codebase **exhausted** honestly — not 200 filler bugs.
 
 ## Inventory
 
@@ -14,24 +15,27 @@ See `.agents/artifacts/QA_CAMPAIGN_INVENTORY.md`.
 
 ## Coverage
 
-- Unit: full pytest green after fixes  
-- E2E: V2-S26 PASS (UC35)  
-- Security: mnemonic grid now HTML-escaped; no Electrum KDF added  
-- Residual: full 73-test Playwright wall still > night 720s (known ops, not a functional bug)
+| Type | Result |
+|------|--------|
+| Unit | 242 passed |
+| E2E | deferred |
+| Security | copy/addr/glossary tip sinks escaped |
+| Residual | uncommitted help-tip CSS already live via this tree; Playwright gated |
 
 ## Re-run
 
 ```bash
 cd /home/debian/bip39lab
-.venv/bin/python -m pytest -q
-npx playwright test e2e/v2.spec.ts -g "V2-S26"
+.venv/bin/python3 -m pytest -q
+# E2E only if VERSION bumps:
+# npx playwright test e2e/v2.spec.ts -g "V2-S1"
 ```
 
 ## Recommendations
 
-- Keep `/v2/` script/css URLs rooted (`../js`, `../css`) in any injectors.  
-- Night e2e wall vs 73 tests is an ops timeout, not a product defect.  
-- Do not compute Electrum addresses in UC35.
+- Keep display HTML on the same `escapeHtml` path as word grids.
+- Do not reopen 2026-09-02 XSS/asset PASSes without a new FAIL.
+- Next ship can commit help-tip CSS + this QA wave together if desired.
 
 ## Handoff
 

@@ -2361,6 +2361,12 @@ pre.out.msg-warn {
   vertical-align: middle;
   white-space: nowrap;
 }
+.v2-callout .help-tip-panel,
+.v2-callout.one-line .help-tip-panel {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
+}
 .v2-callout.is {
   border-color: var(--ok);
   background: rgba(34, 160, 107, 0.12);
