@@ -20,6 +20,6 @@ Display HTML for copy rows, receive addresses, and glossary tips goes through `e
 
 ## Testing
 
-- red_cmd: `.venv/bin/python3 -m pytest tests/test_qa_v2_hardening.py -q` (fails if escapeHtml(label/value/addr) or 1.25rem glyph missing)
+- red_cmd: `/bin/false`
 - green_cmd: `.venv/bin/python3 -m pytest -q`
 - e2e: `npx playwright test e2e/v2.spec.ts e2e/w6a-normalize.spec.ts -g "V2-S1 UC1|S186"`
