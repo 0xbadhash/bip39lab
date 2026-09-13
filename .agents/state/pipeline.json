@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "init",
-  "score": 100.0,
-  "spec_id": ".agents/specs/2026-09-03-v2-classroom-cluster-fsm.md",
-  "task": "init after v0.16.87",
+  "phase": "approved",
+  "score": 100,
+  "spec_id": ".agents/specs/2026-09-13-qa-wave-html-escape-fsm.md",
+  "task": "QA wave HTML escape v0.16.89",
   "waiver": null
 }
