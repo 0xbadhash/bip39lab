@@ -72,13 +72,13 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
-### [OPEN] V2 UC32 SeedXOR live examples (N-word + lab results)
-- **Status:** open
+### [DONE] V2 UC32 SeedXOR live examples (N-word + lab results)
+- **Status:** done
 - **Priority:** P0
 - **Spec:** `.agents/specs/2026-09-15-v2-uc32-live-examples.md`
 - **Plan:** none
 - **Smoke:** Playwright V2-S23 V2-S52 (+ non-12 / visible grids) + product smoke
-- **Notes:** grill-me complete from BRIEF-W6-BIP39-UC32-LIVE-EXAMPLES-2026-09-15; bump past 0.16.89
+- **Notes:** grill-me complete; product v0.16.90 / chip 0.17.139-v2; READY-FOR-E2E
 
 ### [DONE] QA wave HTML escape + help-tip glyph lockstep
 - **Status:** done
