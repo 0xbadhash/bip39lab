@@ -44,4 +44,4 @@ def test_ac_4_uc16_and_xor() -> None:
     chunk = APP[i : APP.find("function uc17")]
     assert chunk.find("wordCountSelectHtml()") < chunk.find('id="v2Generate"')
     assert "function restoreWordCount" in APP
-    assert 'id="v2XorMake12"' in APP
+    assert 'id="v2XorMakeSrc"' in APP

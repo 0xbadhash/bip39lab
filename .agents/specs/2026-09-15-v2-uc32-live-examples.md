@@ -5,7 +5,7 @@
 - **Status:** ready-for-agent
 - **Priority:** P0
 - **Roadmap:** ROADMAP.md → Open work
-- **Plan:** none
+- **Plan:** `.agents/specs/2026-09-15-v2-uc32-live-examples-plan.md`
 - **Tracker:** local
 - **Constitution:** AGENTS.md
 - **Grill-me:** complete
@@ -42,12 +42,12 @@ When the pad advances to split, the live source mnemonic is visible as a word gr
 
 ## Acceptance Criteria
 
-- [ ] AC-a: On split step ("Next: split this phrase" / step 1), source mnemonic is visibly shown (word grid / locked card), not only a status message.
-- [ ] AC-b: Split works for at least one non-12 length in {12,15,18,21,24}; no silent truncate; UI no longer hardcodes "12-word" as the only allowed length.
-- [ ] AC-c: Hide-one fails with a visible lab result (msg-bad + visible fail presentation beyond stub-only help).
-- [ ] AC-d: Combine-all restores matching source words on screen (visible word grid equals source).
-- [ ] AC-e: VERSION bumped past 0.16.89; lockstep stamps; Playwright V2-S23/V2-S52 (extended) + comet aligned.
-- [ ] AC-f: compare.md UC32 row updated; no secrets; classroom locks held.
+- [ ] AC-1: On split step ("Next: split this phrase" / step 1), source mnemonic is visibly shown (word grid / locked card), not only a status message.
+- [ ] AC-2: Split works for at least one non-12 length in {12,15,18,21,24}; no silent truncate; UI no longer hardcodes "12-word" as the only allowed length.
+- [ ] AC-3: Hide-one fails with a visible lab result (msg-bad + visible fail presentation beyond stub-only help).
+- [ ] AC-4: Combine-all restores matching source words on screen (visible word grid equals source).
+- [ ] AC-5: VERSION bumped past 0.16.89; lockstep stamps; Playwright V2-S23/V2-S52 (extended) + comet aligned.
+- [ ] AC-6: compare.md UC32 row updated; no secrets; classroom locks held.
 
 ## Out of Scope
 

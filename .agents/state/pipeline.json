@@ -1,8 +1,8 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "init",
-  "score": 100.0,
+  "phase": "approved",
+  "score": 100,
   "spec_id": ".agents/specs/2026-09-15-v2-uc32-live-examples.md",
   "task": "UC32 SeedXOR live examples",
   "waiver": null

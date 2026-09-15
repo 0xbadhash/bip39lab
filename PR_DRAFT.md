@@ -1,8 +1,8 @@
 # PR Draft — v0.16.90 UC32 SeedXOR live examples
 
-**Range:** `d2a0e0d...HEAD` (task-base after spec commit)
+**Range:** `d2a0e0d...HEAD`
 **Spec:** `.agents/specs/2026-09-15-v2-uc32-live-examples.md`
-**Plan:** none
+**Plan:** `.agents/specs/2026-09-15-v2-uc32-live-examples-plan.md`
 **Brief:** `/opt/second-brain/vault/agent-tasks/BRIEF-W6-BIP39-UC32-LIVE-EXAMPLES-2026-09-15.md`
 
 ## What Problem This Solves
@@ -25,27 +25,39 @@ Learners see the source word grid on split, can split 15/18/21/24 practice cards
 
 ## Red-proof / TDD
 
-- red_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S23|V2-S52" ` (failed: missing `#v2XorSrcGrid` / `#v2XorWordN` before impl)
-- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S23|V2-S52"` (3 passed after uc32() + handlers)
+- red_cmd: `git show d2a0e0d:web/v2/js/v2-app.js | rg -q v2XorSrcGrid`
+- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S23|V2-S52"`
+- TDD: red proved missing `#v2XorSrcGrid` / `#v2XorWordN` before impl; green 3 passed after uc32() + handlers.
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| AC-a visible source on split | `#v2XorSrcGrid` in V2-S23/S52 |
-| AC-b non-12 length | V2-S52b 24-word split + parts count 24 |
-| AC-c hide-one visible fail | `#v2XorNeedAll.msg-bad` + `#v2XorRecLab.is-fail` |
-| AC-d combine matching words | `#v2XorRecGrid .ww` equals source words |
-| AC-e VERSION lockstep | 0.16.90 + chip 0.17.139-v2 + comet + PLAYWRIGHT_LAST |
-| AC-f compare.md + locks | UC32 row updated; classroom only |
+| AC-1 visible source on split | Playwright V2-S23/S52 `#v2XorSrcGrid` |
+| AC-2 non-12 length | Playwright V2-S52b 24-word split + parts count 24 |
+| AC-3 hide-one visible fail | `#v2XorNeedAll.msg-bad` + `#v2XorRecLab.is-fail` |
+| AC-4 combine matching words | `#v2XorRecGrid .ww` equals source words |
+| AC-5 VERSION lockstep | 0.16.90 + chip 0.17.139-v2 + comet + PLAYWRIGHT_LAST |
+| AC-6 compare.md + locks | UC32 row updated; classroom only |
 
 ## Threat notes
 
-- Practice XOR parts must not be funded or QRd (copy + existing refusals).
-- No silent truncate of longer BIP-39 cards (fail closed on invalid length).
-- No secrets committed; mnemonics stay in-memory practice only.
+- secrets: practice mnemonics stay in-memory; no funded seeds committed.
+- xss: recovered/source words render via `escapeHtml` in `wordGridHtml`.
+- supply-chain: no new deps; static lab only.
 
 ## Evidence pack
 
-- hard_gates / check_web_e2e PASS
-- Playwright V2-S23 S52 S52b PASS
+- hard_gates: see `python3 scripts/hard_gates.py --diff d2a0e0d...HEAD`
+- smoke/web_e2e: `python3 scripts/check_web_e2e.py` PASS
+- Playwright: V2-S23 S52 S52b PASS
+
+## Cross-review
+
+Blockers: 0. See `.agents/artifacts/CROSS_REVIEW.md`.
+
+## Things that look bad but are actually fine
+
+1. Dual stamp product 0.16.90 vs V2 chip 0.17.139-v2
+2. Empty wordGridHtml 12 dash placeholder before MakeSrc
+3. Hide-fail uses empty `#v2XorRecGrid` (0 `.ww`) for unambiguous e2e

@@ -26,6 +26,6 @@ def test_ac_2_restore_uses_n_not_twelve() -> None:
 
 
 def test_ac_4_xor_and_slip_untouched() -> None:
-    assert 'id="v2XorMake12"' in APP
-    assert "Need a 12-word source first" in APP
+    assert 'id="v2XorMakeSrc"' in APP
+    assert "Need a BIP-39 source of 12, 15, 18, 21, or 24 words." in APP
     assert 'id="v2S39">Make practice SLIP-39 shares' in APP

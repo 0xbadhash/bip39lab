@@ -85,6 +85,6 @@ def test_qa_help_tip_glyph_is_card_size() -> None:
 
 
 def test_qa_v2_chip_matches_script_query() -> None:
-    assert "v2-app.js?v=0.17.138-v2" in INDEX
-    assert "data-v2-version>v0.17.138-v2" in INDEX
+    assert "v2-app.js?v=0.17.139-v2" in INDEX
+    assert "data-v2-version>v0.17.139-v2" in INDEX
     assert "v0.17.137-v2" not in INDEX

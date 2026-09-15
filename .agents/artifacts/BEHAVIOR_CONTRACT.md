@@ -1,11 +1,7 @@
-# BEHAVIOR_CONTRACT
+# Behavior contract — UC32 live examples
 
-Date: 2026-09-13  
-Surface: bip39.catalyxt.xyz classic Lab + /v2/
-
-## Clauses
-
-1. Visible classic chip is v0.16.89 after stamp.
-2. V2 chip is v0.17.138-v2.
-3. Help-tip glyph width ≤24px; host ≥44px; panel white-space normal.
-4. No Sign button on UC33.
+1. On split step, `#v2XorSrcGrid` is visible.
+2. Selecting 24 + MakeSrc + Split yields 24-word parts.
+3. Hide one part → `#v2XorNeedAll` msg-bad and `#v2XorRecLab` is-fail.
+4. Combine all → recovered `#v2XorRecGrid` words equal source words.
+5. No Sign button on UC32.
