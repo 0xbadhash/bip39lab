@@ -1,25 +1,19 @@
-# CODE-REVIEW
+# CODE-REVIEW — UC32 SeedXOR live examples (v0.16.90)
 
-**Marker:** CODE-REVIEW  
-Date: 2026-09-13  
-Scope: QA wave escapeHtml + help-tip 1.25rem + VERSION 0.16.89 / 0.17.138-v2  
-P0: 0
+**Marker:** CODE-REVIEW
+**Scope:** web/v2/js/v2-app.js uc32 + xor handlers; e2e V2-S23/S52/S52b; compare.md; VERSION/comet stamps; v2.css rec lab
+**Verdict:** ACCEPT (no P0)
 
 ## Findings
 
-- copyQrRowHtml/addrHtml/termI/inlineI use escapeHtml for text; attributes stay attrEsc. Glossary bodies are first-party prose; escaping is defense in depth.
-- Help-tip painted circle is 1.25rem; 44px hit is the host. V2 callout nowrap no longer applies to the panel.
-- Dual stamp is existing product policy, not a mismatch.
-- No Sign, no secret retention, no force-push.
-
-## Secrets
-
-`check_secrets_diff` on this ship range: expected clean (no mnemonics, no RPC passwords).
+- P0: none
+- P1: none in-scope
+- Note: empty `wordGridHtml("")` still paints 12 dash slots before MakeSrc — acceptable placeholder; split button stays disabled until valid source.
 
 ## Scope governor
 
-In-scope: `web/v2/js/v2-app.js`, `web/css/app.css`, `web/v2/css/v2.css`, e2e V2-S1/S186, QA pytest, stamp files.
+Classroom N-of-N only. No Shamir/SeedXOR.com/QR/fund. P0 isolation untouched.
 
-## Verdict
+## Secrets scan
 
-Accept. Ready for `/pr_review --validate`.
+No credentials or funded mnemonics in diff.

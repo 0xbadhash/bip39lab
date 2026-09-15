@@ -485,7 +485,7 @@
     { id: 29, level: "Advanced", title: "Duress / decoy passphrase", job: "Same words, two extras: two funded vaults. A wipe PIN does not delete coins on the chain.", done: "You funded empty vs extra (practice). Ledger two PINs / Coldcard wipe do not erase the chain. Not safety advice." },
     { id: 30, level: "Advanced", title: "BIP-85 child seeds", job: "Mint one practice child. The parent card is still required.", done: "You minted one practice child and you know it does not replace the parent card." },
     { id: 31, level: "Advanced", title: "SLIP-39 for people", job: "People hold word shares. UC7 hex stays educational.", done: "Suite lives in the SLIP-39 room. Combine is recovery, not a cosign." },
-    { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Split this 12-word card. Every part is required.", done: "You split the live 12-word card, saw combine fail without every part, and restored the same words." },
+    { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Split this BIP-39 card (12–24 words). Every part is required.", done: "You split the live card, saw combine fail without every part, and restored the same words." },
     { id: 33, level: "Advanced", title: "Timelock dead-man (practice)", job: "Heir cannot spend until a timer expires. Owner refresh resets it.", done: "Educational timer only. This tab never signs. Not legal counsel." },
     { id: 34, level: "Advanced", title: "Descriptor / policy backup", job: "Refresh a public descriptor from this phrase and explain one line.", done: "You refreshed a public descriptor from the practice phrase and explained one line. You did not paste a private key." },
     { id: 35, level: "Advanced", title: "Same words, wrong app", job: "Twelve English words are not always a BIP-39 backup. Electrum uses the same kind of words with a different recipe. Restore in the wrong app and you open a different wallet.", done: "You saw a BIP-39 restore of these words, then marked them as Electrum: that restore is the wrong vault. This tab does not run Electrum." }
@@ -535,7 +535,7 @@
     29: { is: "Same twelve words + a different extra secret = a different vault. Both can hold coins. A wipe PIN erases a device, not the chain.", isnt: "Not legal or personal-safety advice. Do not fund this practice phrase." },
     30: { is: "Mint one practice child from this parent. The parent card is still required.", isnt: "A child is not a backup of the parent. Do not fund practice children. The full matrix lives on classic Lab." },
     31: { is: "People hold product word shares. Dock the SLIP-39 room.", isnt: "UC7 hex is educational, not Suite." },
-    32: { is: "Split this 12-word card into full-looking parts. Recover needs every part.", isnt: "This is not Shamir 2-of-3. This is not SLIP-39. This is not the SeedXOR.com calculator." },
+    32: { is: "Split this BIP-39 card (12–24 words) into full-looking parts. Recover needs every part.", isnt: "This is not Shamir 2-of-3. This is not SLIP-39. This is not the SeedXOR.com calculator." },
     33: { is: "A practice timer. Heir spend stays locked until it expires. Refresh resets.", isnt: "This tab never signs or broadcasts. Not a live CSV wallet. Not legal counsel." },
     34: { is: "Refresh a public descriptor from the practice phrase and explain one line.", isnt: "Do not paste a private key, seed, or WIF. Words alone can fail for scripted vaults." },
     35: { is: "These twelve English words look like a normal seed. Electrum can use the same word list with a different recipe, so the same words open a different wallet.", isnt: "Do not assume a BIP-39 restore is always right because the words are English. This tab does not run Electrum." }
@@ -992,6 +992,7 @@
     mem.xorSrc = "";
     mem.xorAll = false;
     mem.xorFail = false;
+    mem.xorRec = "";
     mem.descRefreshed = false;
     mem.descExplained = false;
     mem.descNote = "";
@@ -3313,30 +3314,58 @@
     return o;
   }
 
+  function xorValidLens() {
+    return [12, 15, 18, 21, 24];
+  }
+
+  function xorIsValidLen(n) {
+    return xorValidLens().indexOf(n) >= 0;
+  }
+
   function xorSrcPhrase() {
     return mem.xorSrc || "";
   }
 
   function xorCanSplit() {
-    return xorWordCount(xorSrcPhrase()) === 12;
+    return xorIsValidLen(xorWordCount(xorSrcPhrase()));
+  }
+
+  function xorRecLabHtml() {
+    var fail = !!mem.xorFail && !mem.xorAll;
+    var ok = !!mem.xorAll;
+    var cls = "v2-xor-rec" + (fail ? " is-fail" : "") + (ok ? " is-ok" : "");
+    var body = ok
+      ? wordGridHtml(mem.xorRec || "", "v2XorRecGrid")
+      : fail
+        ? '<p class="v2-xor-rec-empty" id="v2XorRecGrid">No recovered words — missing a part.</p>'
+        : '<p class="control-help" id="v2XorRecGrid">Hide one part (should fail), then combine all parts to see the restored words here.</p>';
+    return (
+      '<div id="v2XorRecLab" class="' +
+      cls +
+      '">' +
+      "<h4>Recovered words (lab result)</h4>" +
+      body +
+      "</div>"
+    );
   }
 
   async function uc32(step) {
     var src = xorSrcPhrase();
     var nLive = xorWordCount(mem.mnemonic);
+    var nSrc = xorWordCount(src);
     if (step === 0) {
       return pad(
         "<h2>What SeedXOR is</h2>" +
         doDont(
-          "Treat every part as a full 12-word card. Recover needs every part.",
+          "Treat every part as a full BIP-39 card (12–24 words). Recover needs every part.",
           "Do not treat one list as a Shamir share. Do not fund these parts. This is not the SeedXOR.com calculator."
         ) +
         faceWrapHtml("assets/uc32-face-n-of-n.svg", "Need every part", teachBox(
           "Classroom — N-of-N, not Shamir",
           classLines(
-            "Each part looks like a complete 12-word backup. You need every part to rebuild the original.",
+            "Each part looks like a complete BIP-39 backup. You need every part to rebuild the original.",
             "Lose one list and the original is gone. That is not “any 2 of 3.”",
-            "Next you split this 12-word card. Do not QR the parts. Do not fund them."
+            "Next you split this practice card. Do not QR the parts. Do not fund them."
           ),
           "v2XorTeach"
         )) +
@@ -3344,38 +3373,52 @@
       );
     }
     if (step === 1) {
-      if (nLive === 12 && !mem.xorSrc) mem.xorSrc = mem.mnemonic;
+      if (xorIsValidLen(nLive) && !mem.xorSrc) mem.xorSrc = mem.mnemonic;
       src = xorSrcPhrase();
+      nSrc = xorWordCount(src);
+      var srcMsg = xorCanSplit()
+        ? ("Source is " + nSrc + " words. This drill splits the full list — it will not cut it.")
+        : nLive && xorIsValidLen(nLive)
+          ? ("Live First-wallet card is " + nLive + " words. Use it, or make a practice card below.")
+          : nLive
+            ? ("Live card is " + nLive + " words (not a BIP-39 length). Make a 12/15/18/21/24 practice card. This drill will not cut the live card.")
+            : "No live card yet. Make a practice card (12/15/18/21/24) for this drill.";
+      var lensOpts = xorValidLens()
+        .map(function (n) {
+          return '<option value="' + n + '"' + (n === 12 ? " selected" : "") + ">" + n + "</option>";
+        })
+        .join("");
       return pad(
         "<h2>Split this phrase</h2>" +
         doDont(
-          "Split the live 12-word practice card. If the card is not 12 words, make a 12-word card for this drill.",
+          "Split the live practice card at its full BIP-39 length (12–24). Do not cut a longer card.",
           "Do not silently cut a 24-word card. Do not fund XOR parts."
         ) +
-        faceWrapHtml("assets/uc32-face-card.svg", "This 12-word card", teachBox(
+        faceWrapHtml("assets/uc32-face-card.svg", "This practice card", teachBox(
           "Classroom — this card",
           classLines(
-            "This drill starts from a 12-word list.",
-            "A 24-word list is a different length, so this pad will not cut it.",
+            "This drill starts from a BIP-39 list of 12, 15, 18, 21, or 24 words.",
+            "A different length is a different card — this pad will not cut it.",
             "The button below splits the list into two parts. The parts stay on this screen."
           ),
           "v2XorSplitTeach"
         )) +
         "<h3>Source (lab)</h3>" +
         '<p class="control-help" id="v2XorSrcMsg">' +
-        (nLive === 12
-          ? "Live First-wallet card is 12 words. This drill can use it."
-          : nLive
-            ? "Live card is " + nLive + " words. This drill needs 12. It will not cut the live card."
-            : "No live card yet. Make a 12-word practice card for this drill.") +
+        srcMsg +
         "</p>" +
-        uc1EntropyAfterHtml(xorCanSplit() ? xorSrcPhrase() : "") +
-        (xorCanSplit()
-          ? ""
-          : '<button type="button" class="btn" id="v2XorMake12">Make a 12-word practice card for this drill</button>') +
+        wordGridHtml(xorCanSplit() ? src : "", "v2XorSrcGrid") +
+        uc1EntropyAfterHtml(xorCanSplit() ? src : "") +
+        '<label class="field" for="v2XorWordN">Practice word count ' +
+        '<select id="v2XorWordN">' +
+        lensOpts +
+        "</select></label>" +
+        '<button type="button" class="btn" id="v2XorMakeSrc">Make practice card for this drill</button>' +
         '<button type="button" class="btn" id="v2XorSplit"' +
         (xorCanSplit() ? "" : " disabled") +
-        ">Split this 12-word card</button>" +
+        ">Split this " +
+        (xorCanSplit() ? nSrc + "-word" : "N-word") +
+        " card</button>" +
         '<div id="v2XorSplitOut" class="control-help">' +
         (mem.xorA && mem.xorB ? "Split done. Next pad shows the two parts." : "Split is not done yet.") +
         "</div>" +
@@ -3383,16 +3426,17 @@
       );
     }
     if (step === 2) {
+      var nPart = xorWordCount(mem.xorA || "") || nSrc || 12;
       return pad(
         "<h2>Show parts</h2>" +
         doDont(
-          "Look at two numbered 12-word cards. Every part is required.",
+          "Look at two numbered BIP-39 cards. Every part is required.",
           "Do not photograph the parts. Do not QR them. Do not send them to Network."
         ) +
         faceWrapHtml("assets/uc32-face-parts.svg", "Two full-looking parts", teachBox(
           "Classroom — two parts",
           classLines(
-            "Each part looks like a complete 12-word backup.",
+            "Each part looks like a complete " + nPart + "-word backup.",
             "You still need both. That is not Shamir 2-of-3.",
             "Do not photograph them. Next you hide one part — that must fail."
           ),
@@ -3423,7 +3467,7 @@
           classLines(
             "Rebuild mixes every part back into the original words.",
             "Hide one part: it must fail. You need every part — not “any two of three.”",
-            "The messages below tell you fail or match."
+            "The lab result below shows fail or the restored word grid."
           ),
           "v2XorRecTeach"
         )) +
@@ -3432,18 +3476,22 @@
         '<button type="button" class="btn secondary" id="v2XorHide">Hide one part (should fail)</button>' +
         '<button type="button" class="btn" id="v2XorAll">Combine all parts</button>' +
         "</div>" +
-        '<div id="v2XorNeedAll" class="control-help">' +
+        '<div id="v2XorNeedAll" class="' +
+        (mem.xorAll ? "msg-ok" : mem.xorFail ? "msg-bad" : "control-help") +
+        '">' +
         (mem.xorAll
           ? "All parts present. Source words restored. N-of-N, not Shamir."
-          : "You need every part.") +
+          : mem.xorFail
+            ? "Not enough parts. N-of-N needs every list. One part is not Shamir 2-of-3."
+            : "You need every part.") +
         "</div>" +
+        xorRecLabHtml() +
         pauseBtn("N-of-N, not Shamir", !(mem.xorFail && mem.xorAll))
       );
     }
     if (step === 4) return quizBank(jobQuizzes(32));
     return finishHtml(32);
   }
-
   function tlState() {
     mem.tl = mem.tl || {
       armed: false,
@@ -9644,14 +9692,19 @@
         renderTrack();
       });
     }
-    if ($("v2XorMake12")) {
-      $("v2XorMake12").addEventListener("click", async function () {
+    if ($("v2XorMakeSrc") || $("v2XorMake12")) {
+      var makeBtn = $("v2XorMakeSrc") || $("v2XorMake12");
+      makeBtn.addEventListener("click", async function () {
         if (!window.BIP39Lab) return;
-        mem.xorSrc = await BIP39Lab.generateMnemonic(12);
+        var sel = $("v2XorWordN");
+        var n = sel ? parseInt(sel.value, 10) : 12;
+        if (!xorIsValidLen(n)) n = 12;
+        mem.xorSrc = await BIP39Lab.generateMnemonic(n);
         mem.xorA = "";
         mem.xorB = "";
         mem.xorAll = false;
         mem.xorFail = false;
+        mem.xorRec = "";
         renderTrack();
       });
     }
@@ -9660,12 +9713,16 @@
         var B = window.BIP39Lab;
         var src = xorSrcPhrase();
         var o = $("v2XorSplitOut");
+        var n = xorWordCount(src);
         if (!B || typeof B.mnemonicToEntropyBytes !== "function" || typeof B.mnemonicFromEntropyBytes !== "function") {
           if (o) o.textContent = "XOR API missing. Hard-refresh the page.";
           return;
         }
-        if (xorWordCount(src) !== 12) {
-          if (o) o.textContent = "Need a 12-word source first.";
+        if (!xorIsValidLen(n)) {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent = "Need a BIP-39 source of 12, 15, 18, 21, or 24 words.";
+          }
           return;
         }
         try {
@@ -9678,9 +9735,11 @@
           mem.xorB = B.mnemonicFromEntropyBytes(b);
           mem.xorAll = false;
           mem.xorFail = false;
+          mem.xorRec = "";
           if (o) {
             o.className = "msg-ok";
-            o.textContent = "Split done. Two 12-word parts. Next pad shows them. Do not fund.";
+            o.textContent =
+              "Split done. Two " + n + "-word parts. Next pad shows them. Do not fund.";
           }
           if (pause) pause.disabled = false;
         } catch (err) {
@@ -9696,10 +9755,19 @@
       hideBtn.addEventListener("click", function () {
         mem.xorFail = true;
         mem.xorAll = false;
+        mem.xorRec = "";
         var o = $("v2XorNeedAll");
         if (o) {
           o.className = "msg-bad";
-          o.textContent = "Not enough parts. N-of-N needs every list. One 12-word part is not Shamir 2-of-3.";
+          o.textContent =
+            "Not enough parts. N-of-N needs every list. One part is not Shamir 2-of-3.";
+        }
+        var lab = $("v2XorRecLab");
+        if (lab) {
+          lab.className = "v2-xor-rec is-fail";
+          lab.innerHTML =
+            "<h4>Recovered words (lab result)</h4>" +
+            '<p class="v2-xor-rec-empty" id="v2XorRecGrid">No recovered words — missing a part.</p>';
         }
         if (pause) pause.disabled = true;
       });
@@ -9722,17 +9790,32 @@
           var src = (mem.xorOrig || xorSrcPhrase()).replace(/\s+/g, " ").trim();
           var same = rec.replace(/\s+/g, " ").trim() === src;
           if (!same) {
+            mem.xorRec = "";
             if (o) {
               o.className = "msg-bad";
               o.textContent = "Combine did not match the source card.";
             }
+            var labBad = $("v2XorRecLab");
+            if (labBad) {
+              labBad.className = "v2-xor-rec is-fail";
+              labBad.innerHTML =
+                "<h4>Recovered words (lab result)</h4>" +
+                '<p class="v2-xor-rec-empty" id="v2XorRecGrid">Combine did not match.</p>';
+            }
             return;
           }
           mem.xorAll = true;
+          mem.xorRec = rec;
           if (o) {
             o.className = "msg-ok";
             o.textContent =
               "All parts present. Source words restored. N-of-N, not Shamir. Do not fund.";
+          }
+          var labOk = $("v2XorRecLab");
+          if (labOk) {
+            labOk.className = "v2-xor-rec is-ok";
+            labOk.innerHTML =
+              "<h4>Recovered words (lab result)</h4>" + wordGridHtml(rec, "v2XorRecGrid");
           }
           if (pause) pause.disabled = !(mem.xorFail && mem.xorAll);
         } catch (err) {

@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.138-v2)", () => {
+test.describe("V2 use-case tracks (0.17.139-v2)", () => {
   // AC-4 picker 35; classic Generate; chip follows /v2/ stamp
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -785,18 +785,33 @@ test.describe("V2 use-case tracks (0.17.138-v2)", () => {
     await page.locator("#btnGateStart").click();
     await expect(page.locator("#v2XorTeach")).toContainText(/N-of-N/i);
     await page.locator("#v2Pause").click();
-    await page.locator("#v2XorMake12").click();
+    // (a) split step shows live source phrase as a word grid
+    await expect(page.locator("#v2XorSrcGrid")).toBeVisible();
+    await page.locator("#v2XorWordN").selectOption("12");
+    await page.locator("#v2XorMakeSrc").click();
+    await expect(page.locator("#v2XorSrcGrid .ww")).toHaveCount(12);
+    const srcWords = await page.locator("#v2XorSrcGrid .ww").allTextContents();
     await page.locator("#v2XorSplit").click();
     await expect(page.locator("#v2XorSplitOut")).toContainText(/Split done/i);
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2XorA .ww")).toHaveCount(12);
     await expect(page.locator("#v2XorB .ww")).toHaveCount(12);
     await page.locator("#v2Pause").click();
+    // (c) hide-one fails with visible lab result
     await page.locator("#v2XorHide").click();
+    await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-bad/);
     await expect(page.locator("#v2XorNeedAll")).toContainText(/Not enough/i);
+    await expect(page.locator("#v2XorRecLab")).toHaveClass(/is-fail/);
+    await expect(page.locator("#v2XorRecGrid .ww")).toHaveCount(0);
+    // (d) combine-all restores matching source words on screen
     await page.locator("#v2XorAll").click();
+    await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-ok/);
     await expect(page.locator("#v2XorNeedAll")).toContainText(/All parts/i);
     await expect(page.locator("#v2XorNeedAll")).toContainText(/N-of-N/i);
+    await expect(page.locator("#v2XorRecLab")).toHaveClass(/is-ok/);
+    await expect(page.locator("#v2XorRecGrid .ww")).toHaveCount(12);
+    const recWords = await page.locator("#v2XorRecGrid .ww").allTextContents();
+    expect(recWords).toEqual(srcWords);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
@@ -1501,8 +1516,12 @@ test.describe("V2 use-case tracks (0.17.138-v2)", () => {
     await enterV2(page, "/v2/?uc=32");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
-    await expect(page.locator("#v2XorSrcMsg")).toContainText(/12|No live/i);
-    await page.locator("#v2XorMake12").click();
+    await expect(page.locator("#v2XorSrcGrid")).toBeVisible();
+    await expect(page.locator("#v2XorSrcMsg")).toContainText(/12|15|18|21|24|No live|practice/i);
+    await page.locator("#v2XorWordN").selectOption("12");
+    await page.locator("#v2XorMakeSrc").click();
+    await expect(page.locator("#v2XorSrcGrid .ww")).toHaveCount(12);
+    const srcWords = await page.locator("#v2XorSrcGrid .ww").allTextContents();
     await page.locator("#v2XorSplit").click();
     await page.locator("#v2Pause").click();
     await expect(page.locator("#v2XorA .ww")).toHaveCount(12);
@@ -1511,9 +1530,39 @@ test.describe("V2 use-case tracks (0.17.138-v2)", () => {
     await expect(page.locator("#v2Pause")).toBeDisabled();
     await page.locator("#v2XorHide").click();
     await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-bad/);
+    await expect(page.locator("#v2XorRecLab")).toHaveClass(/is-fail/);
     await page.locator("#v2XorAll").click();
     await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2XorRecLab")).toHaveClass(/is-ok/);
+    const recWords = await page.locator("#v2XorRecGrid .ww").allTextContents();
+    expect(recWords).toEqual(srcWords);
     await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S52b UC32 split 24-word source then hide fails then combine matches", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=32");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2XorWordN").selectOption("24");
+    await page.locator("#v2XorMakeSrc").click();
+    await expect(page.locator("#v2XorSrcGrid .ww")).toHaveCount(24);
+    const srcWords = await page.locator("#v2XorSrcGrid .ww").allTextContents();
+    await expect(page.locator("#v2XorSplit")).toBeEnabled();
+    await expect(page.locator("#v2XorSplit")).toContainText(/24/);
+    await page.locator("#v2XorSplit").click();
+    await expect(page.locator("#v2XorSplitOut")).toContainText(/Split done/i);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2XorA .ww")).toHaveCount(24);
+    await expect(page.locator("#v2XorB .ww")).toHaveCount(24);
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2XorHide").click();
+    await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-bad/);
+    await expect(page.locator("#v2XorRecLab")).toHaveClass(/is-fail/);
+    await page.locator("#v2XorAll").click();
+    await expect(page.locator("#v2XorNeedAll")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2XorRecGrid .ww")).toHaveCount(24);
+    const recWords = await page.locator("#v2XorRecGrid .ww").allTextContents();
+    expect(recWords).toEqual(srcWords);
   });
 
   test("V2-S53 UC34 refresh from phrase + refuse private + explain", async ({ page }) => {

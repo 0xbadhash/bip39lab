@@ -35,7 +35,7 @@ surfaces:
   - id: v2
     path: /v2/
     playwright: e2e/v2.spec.ts
-scenarios: S0–S187 · Playwright 179 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S187 · Playwright 180 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -45,7 +45,7 @@ scenarios: S0–S187 · Playwright 179 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.89 · Contract: 2 · Last aligned: 2026-09-13 · Scenarios: S0–S187 · Playwright S-ids: 179`
+`Product: 0.16.90 · Contract: 2 · Last aligned: 2026-09-15 · Scenarios: S0–S187 · Playwright S-ids: 180`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -82,7 +82,7 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **179** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **180** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
 **Comet/Perplexity score sheet:** **S0–S187** (scenario IDs below; Playwright titles map 1:1 where listed).
 
@@ -839,7 +839,7 @@ Lists BIP-39/44/84/86, scripts, zpub/xpub, UTXO, sat/vB; Shamir/Teach terms pres
 ### S51 — Inline ⓘ from glossary
 Lab mnemonic **i** filled from glossary.
 
-### S52 — Address-type terms
+### S52 S52b — Address-type terms
 BIP84 tab / glossary covers SegWit/BIP-84.
 
 ---
@@ -1061,6 +1061,7 @@ V2-S45 UC7 try two SLIP-39 share lists rebuild hex: PASS|FAIL —
 V2-S46 UC14 +10 d6 (fast) and send pad to First wallet: PASS|FAIL —
 V2-S51 UC18 heir kits, map packet, open while alive: PASS|FAIL —
 V2-S52 UC32 split live 12-word then drop-one fails then combine matches: PASS|FAIL —
+V2-S52b UC32 split 24-word source then hide fails then combine matches: PASS|FAIL — visible source grid; 24-word split; hide fail lab; combine matches source words
 V2-S53 UC34 refresh from phrase + refuse private + explain: PASS|FAIL —
 V2-S54 UC9 leak kits, five future addresses, spend fails: PASS|FAIL —
 V2-S55 UC30 mint practice child #0; child is not parent backup: PASS|FAIL —

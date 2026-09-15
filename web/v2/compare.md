@@ -35,7 +35,7 @@ Omitted on purpose (ports, not unique): UC1 generate, UC2 paper stamp, UC4 path 
 | **UC19** | Simulated 0.000184 tBTC + second watch view. Never funds practice mainnet. Not Network live lookup. |
 | **UC27** | Two fake coins, spend 0.05, change to `…/1/0`. Words unchanged. Lab has no coin-control pad (Network only reminds what a UTXO is). |
 | **UC30** | **Real** BIP-85 child #0 (`m/83696968'/39'/0'/12'/0'`, HMAC `"bip-entropy-from-k"`). Lab `#cardBip85` is still an **idea / hash demo**, not full crypto. Parent still required. No application/index matrix on either face. |
-| **UC32** | Live 12-word SeedXOR. Hide one part fails. Combine restores the same words. No Lab SeedXOR card. Not seedxor.com. |
+| **UC32** | Live BIP-39 SeedXOR (12–24). Source words visible on split. Hide one part fails with lab result. Combine restores matching source words on screen. No Lab SeedXOR card. Not seedxor.com. |
 | **UC33** | Classroom dead-man timer. No Sign. Not legal counsel. No Lab CSV card. |
 | **UC35** | Same 12 English words can be Electrum, not BIP-39. BIP-39 restore is the wrong vault. This tab does not run Electrum. |
 
