@@ -1,7 +1,7 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "approved",
+  "phase": "shipped",
   "score": 100.0,
   "spec_id": ".agents/specs/2026-09-16-v2-sovereign-uc-stamp.md",
   "task": "sovereign-uc-stamp",
