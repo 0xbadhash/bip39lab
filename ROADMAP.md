@@ -72,6 +72,22 @@ Phase numbers here are **product milestones**, not `pipeline.json` states (`init
 
 ## Open work
 
+### [OPEN] V2 Sovereign UC stamp (UC14 / UC6+A/B/C / UC21 / UC36)
+- **Status:** open
+- **Priority:** P0
+- **Next:** true
+- **Spec:** `.agents/specs/2026-09-16-v2-sovereign-uc-stamp.md`
+- **Acceptance:**
+  - [ ] UC14 offline-verify storyboard + online-bip39 Do-not
+  - [ ] UC6 vault-map / recovery-drill / vendor-diversity classroom; A/B/C DONE
+  - [ ] UC21 phone/hardware/server + cloud vs paper; no BitKey/Casa run
+  - [ ] UC36 recovery-contact practice; picker 36
+  - [ ] VERSION site+V2 lockstep + Playwright + comet
+- **Smoke:** `npx playwright test e2e/v2.spec.ts -g "V2-S0|V2-S15|V2-S188|V2-S189|V2-S190"`
+- **Notes:** grill spike-skipped (CEO stamp 2026-09-16)
+
+
+
 ### [DONE] V2 UC32 SeedXOR live examples (N-word + lab results)
 - **Status:** done
 - **Priority:** P0
@@ -732,27 +748,27 @@ This epic **does not implement UC1 UI** in the lock stamp. Next product work: se
   - [ ] Testnet default; session only on handoff
   - [ ] Leak-ack proxy + contrast
 
-### [OPEN] A — Vault map object
-- **Status:** open
+### [DONE] A — Vault map object
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-13-a-vault-map.md`
 - **Next:** true
 - **Acceptance:**
-  - [ ] `#msVaultMap` after Build
-  - [ ] S72 Playwright + Comet
+  - [x] `#msVaultMap` after Build
+  - [x] S72 Playwright + Comet
 
-### [OPEN] B — Recovery drill
-- **Status:** open
+### [DONE] B — Recovery drill
+- **Status:** done
 - **Priority:** P1
 - **Spec:** `.agents/specs/2026-08-13-b-recovery-drill.md`
 - **Depends:** A
 - **Acceptance:**
-  - [ ] Rebuild from map matches P2WSH
-  - [ ] Without-map errors
-  - [ ] S73
+  - [x] Rebuild from map matches P2WSH
+  - [x] Without-map errors
+  - [x] S73
 
-### [OPEN] C — Vendor-diversity Extra help
-- **Status:** open
+### [DONE] C — Vendor-diversity Extra help
+- **Status:** done
 - **Priority:** P2
 - **Spec:** `.agents/specs/2026-08-13-c-vendor-diversity.md`
 

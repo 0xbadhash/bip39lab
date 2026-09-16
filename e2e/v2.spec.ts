@@ -6,7 +6,7 @@ async function enterV2(page: Page, url = "/v2/") {
   if (await ack.isVisible()) await ack.click();
 }
 
-test.describe("V2 use-case tracks (0.17.139-v2)", () => {
+test.describe("V2 use-case tracks (0.17.140-v2)", () => {
   // AC-4 picker 35; classic Generate; chip follows /v2/ stamp
   test("V2-S0 picker loads; classic / still Lab", async ({ page }) => {
     await page.goto("/index.html");
@@ -29,10 +29,10 @@ test.describe("V2 use-case tracks (0.17.139-v2)", () => {
     await expect(page.locator(".v2-start-dots li")).toHaveCount(3);
     await expect(page.locator(".uc-ghost")).toHaveCount(3);
     await page.locator('.v2-path-filters [data-path-filter="all"]').click();
-    await expect(page.locator(".uc-card")).toHaveCount(35);
-    await expect(page.locator('.uc-card[data-uc="35"]')).toHaveCount(1);
+    await expect(page.locator(".uc-card")).toHaveCount(36);
+    await expect(page.locator('.uc-card[data-uc="36"]')).toHaveCount(1);
     await expect(page.locator(".v2-mission")).toContainText(/Practice the custody decision offline/i);
-    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.138-v2/);
+    await expect(page.locator("[data-v2-version]")).toContainText(/0\.17\.140-v2/);
     await expect(page.locator(".v2-path-hero .v2-step-path li")).toHaveCount(3);
     await expect(page.locator(".topbar-actions #v2HardRefresh")).toBeVisible();
     await expect(page.locator(".sidebar #btnClearV2")).toHaveCount(0);
@@ -407,6 +407,13 @@ test.describe("V2 use-case tracks (0.17.139-v2)", () => {
     await expect(page.locator("#v2MsDesc")).toContainText(/wsh\(sortedmulti\(2,/);
     await expect(page.locator("#v2MsDesc")).toContainText(/zpub/);
     await expect(page.locator("#v2Pause")).toBeEnabled();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2Uc6MapTeach")).toBeVisible();
+    await expect(page.locator("#v2VaultMapDemo")).toContainText(/sortedmulti/);
+    for (const k of ["map", "rebuild", "nomap", "vendor"] as const) {
+      await page.locator(`[data-vd="${k}"]`).click();
+    }
+    await expect(page.locator("#v2VaultDrillOut")).toContainText(/classroom complete/i);
     await page.locator("#v2Pause").click();
     await page.locator('[data-quiz="bad"]').first().click();
     await expect(page.locator("#v2QuizMsg")).toContainText(/Wrong/);
@@ -1038,7 +1045,7 @@ test.describe("V2 use-case tracks (0.17.139-v2)", () => {
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
   });
 
-  test("V2-S35 UC6 five quiz questions shuffled", async ({ page }) => {
+  test("V2-S35 UC6 seven quiz questions shuffled", async ({ page }) => {
     await enterV2(page, "/v2/?uc=6");
     await page.locator("#btnGateStart").click();
     await page.locator("#v2Pause").click();
@@ -1047,9 +1054,13 @@ test.describe("V2 use-case tracks (0.17.139-v2)", () => {
       await page.locator(`[data-cs-zpub="${i}"]`).click();
     }
     await page.locator("#v2Pause").click();
-    await expect(page.locator(".v2-quiz-q")).toHaveCount(5);
-    await expect(page.locator(".v2-quiz-q [data-quiz]")).toHaveCount(15);
-    for (let i = 0; i < 5; i++) {
+    for (const k of ["map", "rebuild", "nomap", "vendor"] as const) {
+      await page.locator(`[data-vd="${k}"]`).click();
+    }
+    await page.locator("#v2Pause").click();
+    await expect(page.locator(".v2-quiz-q")).toHaveCount(7);
+    await expect(page.locator(".v2-quiz-q [data-quiz]")).toHaveCount(21);
+    for (let i = 0; i < 7; i++) {
       await page.locator(".v2-quiz-q").nth(i).locator('[data-quiz="ok"]').click();
     }
     await expect(page.locator("#v2Pause")).toBeEnabled();
@@ -1801,6 +1812,59 @@ test.describe("V2 use-case tracks (0.17.139-v2)", () => {
     await page.locator("#v2Pause").click();
     await expect(page.locator('[data-v2-dock="31"]')).toHaveAttribute("href", /slip39/);
     await expect(page.getByRole("button", { name: "Sign", exact: true })).toHaveCount(0);
+  });
+
+  test("V2-S188 UC14 offline verify storyboard + online bip39 Do-not", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=14");
+    await page.locator("#btnGateStart").click();
+    await page.locator("#v2Dice").click();
+    await page.locator("#v2Dice").click();
+    await page.locator("#v2Dice").click();
+    await page.locator("#v2Pause").click();
+    await page.locator("#v2EntMint").click();
+    await page.locator("#v2Pause").click();
+    for (let i = 0; i < 5; i++) await page.locator("#v2Dice10").click();
+    await page.locator("#v2EntMint").click();
+    await expect(page.locator("#v2EntSuff")).toContainText(/Sufficient/i);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2Uc14Story")).toBeVisible();
+    await expect(page.locator("#v2Uc14VerifyTeach")).toContainText(/offline/i);
+    await expect(page.locator("#trackBody")).toContainText(/Never type funded words/i);
+    await expect(page.locator("#v2Pause")).toBeDisabled();
+    await page.locator("#v2Uc14OfflineAck").check();
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S189 UC21 phone/hardware/server + cloud vs paper; no BitKey/Casa", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=21");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#trackBody")).toContainText(/Phone/i);
+    await expect(page.locator("#trackBody")).toContainText(/does not run BitKey or Casa/i);
+    await page.locator('[data-co-pol="you2"]').click();
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-co-q="steal"][data-co-a="no"]').click();
+    await page.locator('[data-co-q="freeze"][data-co-a="no"]').click();
+    await page.locator('[data-co-q="help"][data-co-a="yes"]').click();
+    await page.locator("#v2Pause").click();
+    await expect(page.locator("#v2Uc21JobTeach")).toContainText(/cloud/i);
+    await expect(page.locator("#trackBody")).toContainText(/BIP-39 paper/i);
+    await page.locator('[data-co-cloud="diff"]').click();
+    await expect(page.locator("#v2CoCloudOut")).toHaveClass(/msg-ok/);
+    await expect(page.locator("#v2Pause")).toBeEnabled();
+  });
+
+  test("V2-S190 UC36 trusted helper practice only", async ({ page }) => {
+    await enterV2(page, "/v2/?uc=36");
+    await page.locator("#btnGateStart").click();
+    await expect(page.locator("#uc36Viz .atom")).toHaveCount(3);
+    await expect(page.locator("#trackBody")).toContainText(/does not run social recovery/i);
+    await page.locator('[data-helper-role="ok"]').click();
+    await page.locator("#v2Pause").click();
+    await page.locator('[data-helper-q="safe"][data-helper-a="yes"]').click();
+    await page.locator('[data-helper-q="never"][data-helper-a="yes"]').click();
+    await expect(page.locator("#v2HelperSafeOut")).toHaveClass(/msg-ok/);
+    await page.locator("#v2Pause").click();
+    await expect(page.locator(".v2-quiz-q")).toHaveCount(3);
   });
 
 });

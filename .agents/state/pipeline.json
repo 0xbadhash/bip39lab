@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "init",
+  "phase": "approved",
   "score": 100.0,
-  "spec_id": ".agents/specs/2026-09-15-v2-uc32-live-examples.md",
-  "task": "init after v0.16.90",
+  "spec_id": ".agents/specs/2026-09-16-v2-sovereign-uc-stamp.md",
+  "task": "sovereign-uc-stamp",
   "waiver": null
 }

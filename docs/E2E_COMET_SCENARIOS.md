@@ -35,7 +35,7 @@ surfaces:
   - id: v2
     path: /v2/
     playwright: e2e/v2.spec.ts
-scenarios: S0–S187 · Playwright 180 tests · auto-stamped from e2e/ + VERSION
+scenarios: S0–S190 · Playwright 183 tests · auto-stamped from e2e/ + VERSION
 -->
 
 # BIP39 Lab — Exhaustive E2E (Playwright + Comet / Perplexity)
@@ -45,7 +45,7 @@ scenarios: S0–S187 · Playwright 180 tests · auto-stamped from e2e/ + VERSION
 > - GitHub raw: https://raw.githubusercontent.com/0xbadhash/bip39lab/master/docs/E2E_COMET_SCENARIOS.md  
 > Current stamp is in the `Product:` line below (must be ≥ 0.16.1, scenarios S0–S82).
 
-`Product: 0.16.90 · Contract: 2 · Last aligned: 2026-09-15 · Scenarios: S0–S187 · Playwright S-ids: 180`
+`Product: 0.16.91 · Contract: 2 · Last aligned: 2026-09-16 · Scenarios: S0–S190 · Playwright S-ids: 183`
 
 **Canonical:** `docs/E2E_COMET_SCENARIOS.md`  
 **Repo:** [0xbadhash/bip39lab](https://github.com/0xbadhash/bip39lab)  
@@ -82,9 +82,9 @@ Live deploy lag is not a product FAIL if GitHub/raw doc already has Extra help +
 | Help / Teach | all shells | `e2e/help-ux.spec.ts` |
 | Chrome parity | all shells | `e2e/site-chrome.spec.ts` |
 
-**Playwright total:** `npm run test:e2e` → **180** S-id tests (local `http://127.0.0.1:4173`).
+**Playwright total:** `npm run test:e2e` → **183** S-id tests (local `http://127.0.0.1:4173`).
 **Live:** `npm run test:e2e:live` (`BASE_URL=https://bip39.catalyxt.xyz`).  
-**Comet/Perplexity score sheet:** **S0–S187** (scenario IDs below; Playwright titles map 1:1 where listed).
+**Comet/Perplexity score sheet:** **S0–S190** (scenario IDs below; Playwright titles map 1:1 where listed).
 
 ### Sidebar (every page) — **6 items**
 
@@ -1228,6 +1228,11 @@ Step rails: FAIL if any mid-page [data-step-rail] / *StepRail appears.
 ```
 
 ---
+
+
+V2-S188 UC14 offline verify storyboard + online bip39 Do-not: PASS|FAIL —
+V2-S189 UC21 phone/hardware/server + cloud vs paper; no BitKey/Casa: PASS|FAIL —
+V2-S190 UC36 trusted helper practice only: PASS|FAIL —
 
 ## Operator one-liner
 

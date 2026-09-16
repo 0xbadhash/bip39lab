@@ -488,7 +488,8 @@
     { id: 32, level: "Advanced", title: "SeedXOR all-parts split", job: "Split this BIP-39 card (12–24 words). Every part is required.", done: "You split the live card, saw combine fail without every part, and restored the same words." },
     { id: 33, level: "Advanced", title: "Timelock dead-man (practice)", job: "Heir cannot spend until a timer expires. Owner refresh resets it.", done: "Educational timer only. This tab never signs. Not legal counsel." },
     { id: 34, level: "Advanced", title: "Descriptor / policy backup", job: "Refresh a public descriptor from this phrase and explain one line.", done: "You refreshed a public descriptor from the practice phrase and explained one line. You did not paste a private key." },
-    { id: 35, level: "Advanced", title: "Same words, wrong app", job: "Twelve English words are not always a BIP-39 backup. Electrum uses the same kind of words with a different recipe. Restore in the wrong app and you open a different wallet.", done: "You saw a BIP-39 restore of these words, then marked them as Electrum: that restore is the wrong vault. This tab does not run Electrum." }
+    { id: 35, level: "Advanced", title: "Same words, wrong app", job: "Twelve English words are not always a BIP-39 backup. Electrum uses the same kind of words with a different recipe. Restore in the wrong app and you open a different wallet.", done: "You saw a BIP-39 restore of these words, then marked them as Electrum: that restore is the wrong vault. This tab does not run Electrum." },
+    { id: 36, level: "Intermediate", title: "Trusted helper drill", job: "Practice what a recovery contact may hold — and what they must never hold. No real social recovery here.", done: "You named helper-safe objects vs seed/login secrets. Practice only. This tab does not run social recovery." }
   ];
 
   var PATHS = [
@@ -497,11 +498,11 @@
     { id: "watch", title: "Addresses and watch", blurb: "1 Folders · 2 Watch only · 3 Viewing-key privacy · 4 First receive · 5 Silent payments.", ids: [4, 5, 9, 19, 25] },
     { id: "custody", title: "Who holds the keys", blurb: "1 They hold · 2 Hot vs hardware · 3 Hot vs cold · 4 How much.", ids: [11, 12, 13, 17] },
     { id: "shared", title: "Shared and air-gap", blurb: "1 Multisig keys · 2 Shamir shares · 3 PSBT air-gap.", ids: [6, 7, 8, 10, 21, 23] },
-    { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys.", ids: [18, 24] },
+    { id: "life", title: "Over time", blurb: "1 If I cannot speak · 2 Places for keys · 3 Trusted helper.", ids: [18, 24, 36] },
     { id: "adv", title: "Advanced", blurb: "1 Own node · 2 Coin pieces · 3 Mixing · 4 Child seeds.", ids: [26, 27, 28, 29, 30, 31] },
     { id: "odd", title: "Odd recoveries", blurb: "1 All-parts XOR · 2 Timelock FSM · 3 Policy string · 4 Same words, two apps.", ids: [32, 33, 34, 35] }
   ];
-  var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
+  var SUGGESTED = [1, 2, 16, 3, 4, 5, 19, 11, 12, 13, 17, 14, 15, 20, 6, 7, 8, 10, 18, 21, 22, 23, 24, 36, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
   var pickerFilter = "start";
   var GATES = {
     1: { is: "Make practice words and look at the numbered card before any address.", isnt: "Do not import these words. Do not send coins here." },
@@ -524,7 +525,7 @@
     18: { is: "Rehearse the objects an heir needs. Fail in front of you.", isnt: "Do not put a seed in chat. This is not a will or legal counsel." },
     19: { is: "Compare the full receive string. Wait for a confirm. Leave surprise dust alone.", isnt: "Do not fund this practice phrase. Do not spend bait dust. Live lookup is Network." },
     20: { is: "Practice choosing a fire- and flood-resistant object for a funded seed.", isnt: "A shop, a product review site, or permission to photograph any plate." },
-    21: { is: "2-of-3. You hold two whole keys. A company holds one and can co-sign. They cannot steal. They cannot freeze a spend if you still have both keys.", isnt: "Not Shamir pieces. Not a login (UC11). Not three friends DIY. This tab does not run Casa or Unchained." },
+    21: { is: "2-of-3 shaped like phone + hardware + server. You hold two. A company holds one and can co-sign. They cannot steal. They cannot freeze a spend if you still have both keys.", isnt: "Not Shamir pieces. Not a login (UC11). Not three friends DIY. This tab does not run BitKey or Casa." },
     22: { is: "Check firmware before a seed is born. A seed that lived on a laptop stays a hot wallet.", isnt: "Do not import a laptop phrase into hardware and call it cold." },
     23: { is: "Build online, sign offline, broadcast from hot.", isnt: "This tab never signs." },
     24: { is: "Home, elsewhere, a person — three sites.", isnt: "Do not put two keys in one building." },
@@ -538,7 +539,8 @@
     32: { is: "Split this BIP-39 card (12–24 words) into full-looking parts. Recover needs every part.", isnt: "This is not Shamir 2-of-3. This is not SLIP-39. This is not the SeedXOR.com calculator." },
     33: { is: "A practice timer. Heir spend stays locked until it expires. Refresh resets.", isnt: "This tab never signs or broadcasts. Not a live CSV wallet. Not legal counsel." },
     34: { is: "Refresh a public descriptor from the practice phrase and explain one line.", isnt: "Do not paste a private key, seed, or WIF. Words alone can fail for scripted vaults." },
-    35: { is: "These twelve English words look like a normal seed. Electrum can use the same word list with a different recipe, so the same words open a different wallet.", isnt: "Do not assume a BIP-39 restore is always right because the words are English. This tab does not run Electrum." }
+    35: { is: "These twelve English words look like a normal seed. Electrum can use the same word list with a different recipe, so the same words open a different wallet.", isnt: "Do not assume a BIP-39 restore is always right because the words are English. This tab does not run Electrum." },
+    36: { is: "A trusted helper can hold a map, a sealed packet, or a call tree — never the live funded words and never your company login alone as if it were custody.", isnt: "This is practice only. This tab does not run social recovery, BitKey, or Casa." }
   };
 
   function $(id) { return document.getElementById(id); }
@@ -879,7 +881,7 @@
       3: ["Same words", "Compare A/B", "Quiz", "Finish"],
       4: ["Folders", "Toggle path", "Quiz", "Finish"],
       5: ["Public only", "Export", "Quiz", "Finish"],
-      6: ["Show 2-of-3", "Three full seeds", "Quiz", "Finish"],
+      6: ["Show 2-of-3", "Three full seeds", "Vault map drill", "Quiz", "Finish"],
       7: ["Make the phrase", "Split into hex", "Try M shares", "SLIP-39 2-of-3", "Extra secret", "Quiz", "Finish"],
       8: ["Air-gap model", "Inspect sample", "Quiz", "Finish"],
       9: ["What the leak is", "Fail kits", "Five future addresses", "Quiz", "Finish"],
@@ -887,14 +889,14 @@
       11: ["Who is they", "Company app", "You hold", "Quiz", "Finish"],
       12: ["Hot wallet on phone", "Hardware signer", "Quiz", "Finish"],
       13: ["Hot vs cold", "Daily vs savings", "Quiz", "Finish"],
-      14: ["Few dice", "Words still weak", "Roll until enough", "Quiz", "Finish"],
+      14: ["Few dice", "Words still weak", "Roll until enough", "Offline verify", "Quiz", "Finish"],
       15: ["Pad + words", "Add passphrase", "Quiz", "Finish"],
       16: ["Hide the card", "Type from paper", "Quiz", "Finish"],
       17: ["How much", "Place amounts", "Quiz", "Finish"],
       18: ["Heirs fail on objects", "Build the packet", "Open while alive", "Quiz", "Finish"],
       19: ["Compare the string", "Wait for a confirm", "Refuse dust", "Quiz", "Finish"],
       20: ["Paper fails", "Metals compared", "4 letters are enough", "Solid plate rules", "Quiz", "Finish"],
-      21: ["Who holds the keys", "Steal vs freeze vs sign", "Not friends, not Shamir", "Quiz", "Finish"],
+      21: ["Phone · hardware · server", "Steal vs freeze vs sign", "Cloud backup vs paper", "Quiz", "Finish"],
       22: ["Check firmware", "Laptop seed stays hot", "Quiz", "Finish"],
       23: ["Four steps", "Tap the loop", "Quiz", "Finish"],
       24: ["Three sites", "Place three keys", "Quiz", "Finish"],
@@ -908,7 +910,8 @@
       32: ["What SeedXOR is", "Split this phrase", "Show parts", "Combine", "Quiz", "Finish"],
       33: ["What the clock is", "Play 90 days", "Quiz", "Finish"],
       34: ["Practice shape", "Refresh from this phrase", "Paste and explain", "Quiz", "Finish"],
-      35: ["Looks like BIP-39", "Wrong restore", "Quiz", "Finish"]
+      35: ["Looks like BIP-39", "Wrong restore", "Quiz", "Finish"],
+      36: ["Who is the helper", "Safe objects vs secrets", "Quiz", "Finish"]
     };
     return map[id] || ["Start", "Finish"];
   }
@@ -920,7 +923,7 @@
       3: ["Optional 25th", "New wallet", "Forgotten = loss"],
       4: ["Path = folder", "BIP purpose", "Index / change"],
       5: ["Watch-only", "zpub/xpub", "Never the seed"],
-      6: ["M-of-N", "Public keys", "Not Shamir"],
+      6: ["M-of-N", "Public keys", "Vault map + vendors"],
       7: ["Threshold shares", "2-of-3 lists", "Extra secret ≠ 25th"],
       8: ["PSBT package", "Never sign here", "Broadcast elsewhere"],
       9: ["Cannot steal", "Account camera", "One invoice is not the account"],
@@ -928,14 +931,14 @@
       11: ["They hold", "You hold", "Not BIP-39"],
       12: ["Hot software", "Hardware", "USB is not air-gap"],
       13: ["Hot vs cold", "Daily vs savings", "Four objects"],
-      14: ["Few dice TOO LOW", "Words still weak", "Roll until enough"],
+      14: ["Few dice TOO LOW", "Words still weak", "Offline verify"],
       15: ["Pad is the source", "Passphrase extra", "Does not fix pad"],
       16: ["Hide the screen", "Checksum", "Same address"],
       17: ["Daily hot", "Mid hardware", "Large 2-of-3"],
       18: ["Missing objects", "Packet is a map", "Open while alive"],
       19: ["Test address", "Second view", "Unknown is not zero"],
       20: ["Paper fails", "Aluminium bad · stainless good", "Plate is still secret"],
-      21: ["You hold 2 keys", "They cannot steal or freeze your spend", "Refuse help ≠ steal"],
+      21: ["Phone · hardware · server", "Steal vs freeze", "Cloud ≠ BIP-39 paper"],
       22: ["Firmware", "Notes-file vault", "New seed on device"],
       23: ["Build PSBT", "Offline sign", "Broadcast elsewhere"],
       24: ["Home", "Elsewhere", "Not one building"],
@@ -949,7 +952,8 @@
       32: ["N-of-N parts", "Split this card", "All parts required"],
       33: ["Arm", "Expire", "Refresh"],
       34: ["Public descriptor", "Refresh from phrase", "Explain one line"],
-      35: ["Same English", "BIP-39 restore", "Wrong vault"]
+      35: ["Same English", "BIP-39 restore", "Wrong vault"],
+      36: ["Trusted helper", "Map not seed", "Practice only"]
     };
     return c[id] || ["A", "B", "C"];
   }
@@ -1040,7 +1044,7 @@
       3: [0, 1, 2],
       4: [0, 1, 2],
       5: [0, 1, 2],
-      6: [0, 1, 2],
+      6: [0, 1, 2],  /* map step is 2 */
       7: [0, 1, 2],
       8: [0, 1, 2],
       9: [0, 1, 2],
@@ -1048,7 +1052,7 @@
       11: [0, 2, 3],
       12: [0, 1, 2],
       13: [0, 1, 2],
-      14: [0, 1, 2],
+      14: [0, 1, 3],
       15: [0, 1, 2],
       16: [0, 1, 2],
       17: [0, 1, 2],
@@ -1069,7 +1073,8 @@
       32: [0, 1, 2],
       33: [0, 1, 2],
       34: [0, 1, 2],
-      35: [0, 1, 2]
+      35: [0, 1, 2],
+      36: [0, 1, 2]
     };
     var row = map[id] || [0, 1, 2];
     return row[chipIndex] != null ? row[chipIndex] : 0;
@@ -1154,10 +1159,11 @@
       ]
     },
     6: {
+      forStep: function (s) { if (s <= 0) return 1; if (s === 1) return 2; return 3; },
       atoms: [
         atom(1, 0, "assets/uc6-atom-mofn.svg", "Two of three signatures spend", "<strong>Plan · M-of-N signatures</strong><br/>N is how many keys. M is how many signatures move coins."),
         atom(2, 1, "assets/uc6-atom-three-phrases.svg", "Each cosigner has a whole recovery phrase", "<strong>Practice · Three whole phrases</strong><br/>Each cosigner keeps a full seed and shares only a zpub."),
-        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Cosigner keys are not pieces of one mnemonic", "<strong>Review · Not Shamir pieces</strong><br/>These are independent keys, not shares of one secret.")
+        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Vault map + vendor diversity", "<strong>Review · Map and vendors</strong><br/>Back up the public vault map (BSMS-shaped). Prefer independent vendor classes. Lose map + one key and you may not rebuild.")
       ]
     },
     7: {
@@ -1212,10 +1218,11 @@
       ]
     },
     14: {
+      forStep: function (s) { if (s <= 0) return 1; if (s === 1) return 2; return 3; },
       atoms: [
         atom(1, 0, "assets/uc14-atom-few-dice.svg", "A few dice rolls are too little randomness", "<strong>Plan · Few dice</strong><br/>Roll a few times. You can still get words. Those words can still be too weak."),
         atom(2, 1, "assets/uc14-atom-words-weak.svg", "12 or 24 words from a short pad are still TOO LOW", "<strong>Practice · Words still weak</strong><br/>Hashing a short roll log can still print 12 or 24 words. Word count is not entropy."),
-        atom(3, 2, "assets/uc14-atom-coin-tedious.svg", "Keep rolling until the pad meets 128 or 256 bits", "<strong>Review · Until enough</strong><br/>12-word wants ~128 bits (~50 d6 or 128 flips). 24-word wants ~256 (~100 d6 or 256 flips). Coin = 1 bit.")
+        atom(3, 2, "assets/uc14-atom-coin-tedious.svg", "Offline verify storyboard", "<strong>Review · Offline verify</strong><br/>Dice → device fingerprint → verify on an offline-saved tool. Never type funded words into an online bip39 website. Lab = offline classroom.")
       ]
     },
     15: {
@@ -1264,11 +1271,11 @@
       ]
     },
     21: {
-      forStep: function (s) { if (s <= 0) return 1; if (s <= 1) return 2; return 3; },
+      forStep: function (s) { if (s <= 0) return 1; if (s === 1) return 2; return 3; },
       atoms: [
-        atom(1, 0, "assets/uc6-atom-mofn.svg", "2-of-3: you hold two whole keys", "<strong>Plan · You hold 2</strong><br/>A company holds the third key and can add a signature. Not Shamir pieces."),
+        atom(1, 0, "assets/uc6-atom-mofn.svg", "Phone, hardware, server keys", "<strong>Plan · Three jobs</strong><br/>2-of-3 shaped like phone + hardware + company server. You hold two. Not Shamir pieces."),
         atom(2, 1, "assets/uc6-atom-three-phrases.svg", "One company key cannot steal", "<strong>Practice · Sign, not control</strong><br/>They cannot spend alone. If you still have both keys, they cannot freeze your spend either."),
-        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Refuse to help is the only freeze", "<strong>Review · Lost a key</strong><br/>If you lost one key, you need their signature. They can delay. That is not the same as stealing.")
+        atom(3, 2, "assets/uc6-atom-not-shamir.svg", "Cloud backup vs BIP-39 paper", "<strong>Review · Two backup stories</strong><br/>Encrypted cloud mobile-key backup is not the same as BIP-39 paper words. This tab does not run BitKey or Casa.")
       ]
     },
     22: {
@@ -1374,6 +1381,13 @@
         atom(1, 0, "assets/uc35-atom-same-words-two-apps.svg", "Same 12 words", "<strong>Plan · Two apps</strong><br/>BIP-39 and Electrum can show the same English words. Different recipe. Different wallet."),
         atom(2, 1, "assets/uc35-atom-same-words-two-apps.svg", "Wrong restore", "<strong>Practice · BIP-39 first</strong><br/>Open these words as BIP-39. Then say they were Electrum: that mailbox is the wrong vault."),
         atom(3, 2, "assets/uc35-atom-same-words-two-apps.svg", "This tab does not run Electrum", "<strong>Review · No fake address</strong><br/>We will not invent an Electrum address. The lesson is the trap.")
+      ]
+    },
+    36: {
+      atoms: [
+        atom(1, 0, "assets/uc18-face-cannot-speak.svg", "Name a trusted helper", "<strong>Plan · Helper</strong><br/>A recovery contact is a person you practise with — not a second seed holder by default."),
+        atom(2, 1, "assets/uc18-face-packet.svg", "Safe objects only", "<strong>Practice · Map not seed</strong><br/>Helper may hold a vault map, sealed packet instructions, or a call tree. Never live funded words."),
+        atom(3, 2, "assets/uc18-face-watch-fail.svg", "Practice only", "<strong>Review · No social recovery here</strong><br/>This tab does not run social recovery. Drill the story while you can still talk (UC18 adjacent).")
       ]
     }
   };
@@ -1709,7 +1723,7 @@
     if (id === 13) return uc13(step);
     if (id === 14) return uc14(step);
     if (id === 15) return uc15(step);
-    if (id >= 16 && id <= 35) return ucJob(id, step);
+    if (id >= 16 && id <= 36) return ucJob(id, step);
     return "";
   }
 
@@ -1761,10 +1775,10 @@
         { q: "Is this the same lesson as the paper-backup track?", opts: [qOk("No. That track was how to copy. This track is paper versus metal as an object.", "Correct."), qBad("Yes. It is the same job twice.", "Wrong. This job is which object survives fire.")] }
       ],
       21: [
-        { q: "You hold two keys of a 2-of-3. The company holds one. Can they steal?", opts: [qOk("No. One key cannot meet two-of-three.", "Correct. They can only add a signature."), qBad("Yes. The company can spend whenever it wants.", "Wrong.")] },
-        { q: "You still have both of your keys. Can the company freeze your spend?", opts: [qOk("No. You already have two signatures. You do not need them.", "Correct. Freeze only appears if the policy needs their key."), qBad("Yes. They can always freeze any spend.", "Wrong. That would be true if you needed their signature (for example 2-of-2, or you lost a key).")] },
-        { q: "You lost one of your keys. What can the company do?", opts: [qOk("Refuse to co-sign. Then you cannot recover until they help — or you find the other key.", "Correct. That delay is not stealing."), qBad("Take the coins. They now have the only remaining key.", "Wrong. They still have only one key.")] },
-        { q: "Are these keys Shamir pieces of one phrase?", opts: [qOk("No. Each key is a whole seed or device. UC7 is pieces of one secret.", "Correct."), qBad("Yes. The company holds word 5–8 of your backup.", "Wrong.")] }
+        { q: "In this classroom 2-of-3, which three jobs are the keys?", opts: [qOk("Phone (you), hardware (you), server (company).", "Correct."), qBad("Three scraps of one phrase.", "Wrong."), qBad("Login, password, and email only.", "Wrong. That is they-hold.")] },
+        { q: "You hold phone + hardware. The company holds the server key. Can they steal?", opts: [qOk("No. One key cannot meet two-of-three.", "Correct. They can only add a signature."), qBad("Yes. The company can spend whenever it wants.", "Wrong.")] },
+        { q: "Encrypted cloud mobile-key backup is:", opts: [qOk("A different object from BIP-39 paper words.", "Correct."), qBad("The same as writing twelve words on paper.", "Wrong."), qBad("Proof you can fund this practice tab.", "Wrong.")] },
+        { q: "Does this tab run BitKey or Casa?", opts: [qOk("No. This tab does not run BitKey or Casa.", "Correct."), qBad("Yes. It signs with their servers.", "Wrong.")] }
       ],
       22: [
         { q: "On a new hardware device, what comes first?", opts: [qOk("Prove it is genuine: seals, official app or published firmware hash on the device screen — then create the seed on the device.", "Correct. Do this before any coins."), qBad("Type the recovery words into the laptop to test the device.", "Wrong. Typing the seed into a computer kills the vault.")] },
@@ -1840,6 +1854,11 @@
         { q: "You see twelve English words. Are they always a BIP-39 seed?", opts: [qOk("No. Electrum can use the same word list with a different recipe.", "Correct."), qBad("Yes. If they look English, any BIP-39 wallet will open the right coins.", "Wrong.")] },
         { q: "You type Electrum words into a BIP-39 wallet. What happens?", opts: [qOk("You open a different wallet — often empty. Not the Electrum coins.", "Correct."), qBad("You get the same coins, because the words match.", "Wrong.")] },
         { q: "Does this practice tab compute a real Electrum address?", opts: [qOk("No. It will not run Electrum. It only shows the trap.", "Correct."), qBad("Yes. It prints a real Electrum tb1.", "Wrong.")] }
+      ],
+      36: [
+        { q: "What may a trusted helper hold in this drill?", opts: [qOk("A vault map, sealed packet instructions, or a call tree — not the live funded words.", "Correct."), qBad("A full copy of your funded recovery phrase in chat.", "Wrong."), qBad("Your exchange password so they can spend anytime.", "Wrong.")] },
+        { q: "Is this real social recovery?", opts: [qOk("No. Practice only. This tab does not run social recovery.", "Correct."), qBad("Yes. The helper can move coins from this page.", "Wrong.")] },
+        { q: "How does this relate to UC18?", opts: [qOk("Adjacent: practise missing objects and helper roles while you can still talk.", "Correct."), qBad("It replaces UC18 as a legal will.", "Wrong.")] }
       ]
     };
     return m[id] || [];
@@ -1868,6 +1887,7 @@
     if (id === 31) return uc31(step);
     if (id === 33) return uc33(step);
     if (id === 35) return uc35(step);
+    if (id === 36) return uc36(step);
     return "";
   }
 
@@ -2497,7 +2517,7 @@
   }
 
   function coMem() {
-    if (!mem.collab) mem.collab = { policy: "", steal: "", freeze: "", help: "" };
+    if (!mem.collab) mem.collab = { policy: "", steal: "", freeze: "", help: "", cloud: "" };
     return mem.collab;
   }
 
@@ -2507,29 +2527,26 @@
     var c = coMem();
     if (step === 0) {
       return pad(
-        "<h2>Who holds the three keys?</h2>" +
+        "<h2>Phone · hardware · server</h2>" +
         doDont(
-          "This classroom is 2-of-3. You hold two whole keys (devices or seeds). A company holds the third and can co-sign.",
-          "Do not give the company two keys. Do not treat their key as Shamir pieces. This tab is not Casa or Unchained."
+          "Classroom 2-of-3 shaped like phone key + hardware key + company server key. You hold two. The company holds one and can co-sign.",
+          "Do not give the company two keys. Do not treat their key as Shamir pieces. This tab does not run BitKey or Casa."
         ) +
-        faceWrapHtml("assets/uc21-face-you-two.svg", "You hold two", teachBox(
-          "Classroom — collaborative custody",
+        faceWrapHtml("assets/uc21-face-you-two.svg", "Three jobs, two you hold", teachBox(
+          "Classroom — collaborative custody shape",
           classLines(
-            "A third party holds <strong>one key</strong> so they can add a signature. " +
-              inlineI(
-                "signature",
-                "A signature is “I agree to this payment.” It is not taking the coins. 2-of-3 needs any two signatures."
-              ),
-            "You already have two, so you can spend without them. They cannot spend with one key.",
-            "That is the product. It is not a company login. It is not three friends each holding a phrase."
+            "<strong>Phone</strong> — mobile key you control (hotter).",
+            "<strong>Hardware</strong> — key on a dedicated device (colder).",
+            "<strong>Server</strong> — company co-sign key. One signature only. Not they-hold login (UC11).",
+            "Spend needs any two. With phone + hardware you can spend without the company."
           ),
           "v2Uc21Teach"
         )) +
-        '<p class="control-help">Keys: <strong>A you</strong> · <strong>B you</strong> · <strong>C company</strong>. Spend needs any 2.</p>' +
+        '<p class="control-help">Keys: <strong>A phone (you)</strong> · <strong>B hardware (you)</strong> · <strong>C server (company)</strong>. Spend needs any 2.</p>' +
         '<div class="v2-recv-wait">' +
-        '<button type="button" class="btn" data-co-pol="you2">I can spend with A+B. I do not need the company.</button>' +
-        '<button type="button" class="btn secondary" data-co-pol="need3">I need A+B+C every time.</button>' +
-        '<button type="button" class="btn secondary" data-co-pol="they1">The company can spend with C alone.</button>' +
+        '<button type="button" class="btn" data-co-pol="you2">I can spend with phone + hardware. I do not need the server.</button>' +
+        '<button type="button" class="btn secondary" data-co-pol="need3">I need phone + hardware + server every time.</button>' +
+        '<button type="button" class="btn secondary" data-co-pol="they1">The company can spend with the server key alone.</button>' +
         "</div>" +
         '<p id="v2CoPolOut" class="control-help">' +
         (c.policy === "you2" ? "2-of-3. Your two keys are enough to spend." : "Pick how 2-of-3 actually spends.") +
@@ -2543,28 +2560,28 @@
         "<h2>What can one company key do?</h2>" +
         doDont(
           "They can co-sign. They cannot steal. They cannot freeze a spend while you still have both keys.",
-          "Do not say they “control” the vault. One key is not control."
+          "Do not say they “control” the vault. One key is not control. This tab does not run BitKey or Casa."
         ) +
         faceWrapHtml("assets/uc21-face-freeze.svg", "Freeze is not steal", teachBox(
           "Classroom — freeze is not steal",
           classLines(
-            "If you still have keys A and B, the company is optional.",
-            "They can stall you only if you <em>lost</em> a key and now need their signature to recover.",
+            "If you still have phone and hardware keys, the company is optional.",
+            "They can stall you only if you lost a key and now need their signature to recover.",
             "Refusing to help is not taking the coins."
           ),
           "v2Uc21ThreatTeach"
         )) +
-        '<p class="control-help">1. Can they steal with key C alone?</p>' +
+        '<p class="control-help">1. Can they steal with the server key alone?</p>' +
         '<div class="v2-recv-wait">' +
         '<button type="button" class="btn secondary" data-co-q="steal" data-co-a="yes">Yes, steal</button>' +
         '<button type="button" class="btn" data-co-q="steal" data-co-a="no">No. One key cannot spend.</button>' +
         "</div>" +
-        '<p class="control-help">2. You still have A and B. Can they freeze this spend?</p>' +
+        '<p class="control-help">2. You still have phone + hardware. Can they freeze this spend?</p>' +
         '<div class="v2-recv-wait">' +
         '<button type="button" class="btn secondary" data-co-q="freeze" data-co-a="yes">Yes, they freeze every spend</button>' +
         '<button type="button" class="btn" data-co-q="freeze" data-co-a="no">No. I already have two keys.</button>' +
         "</div>" +
-        '<p class="control-help">3. You lost key B. You need C to recover. Can they refuse to sign?</p>' +
+        '<p class="control-help">3. You lost hardware. You need the server to recover. Can they refuse to sign?</p>' +
         '<div class="v2-recv-wait">' +
         '<button type="button" class="btn" data-co-q="help" data-co-a="yes">Yes. That delays recovery. It is not theft.</button>' +
         '<button type="button" class="btn secondary" data-co-q="help" data-co-a="no">No. They must always sign.</button>' +
@@ -2572,27 +2589,38 @@
         '<p id="v2CoThreatOut" class="control-help">' +
         (ok ? "Steal: no. Freeze while you have two keys: no. Refuse recovery help: yes." : "Answer all three. Wrong answers stay red.") +
         "</p>" +
-        pauseBtn("Next: not friends, not Shamir", !ok)
+        pauseBtn("Next: cloud backup vs paper", !ok)
       );
     }
     return pad(
-      "<h2>Not Shamir, not three friends, not a login</h2>" +
+      "<h2>Cloud backup vs BIP-39 paper</h2>" +
       doDont(
-        "Each key is a whole seed or hardware device. The company is a product with terms of service.",
-        "Do not mix this with UC7 shares, UC11 they-hold login, or three named friends (UC6)."
+        "Some products encrypt a mobile-key backup to cloud storage and add an emergency kit if the company disappears. That is a different object from a BIP-39 paper phrase.",
+        "Do not treat encrypted cloud backup as “the twelve words on paper.” Do not mix this with UC7 shares, UC11 they-hold login, or three named friends (UC6). This tab does not run BitKey or Casa."
       ) +
-      faceWrapHtml("assets/uc21-face-jobs.svg", "Three jobs", teachBox(
-        "Classroom — three different jobs",
+      faceWrapHtml("assets/uc21-face-jobs.svg", "Two backup stories", teachBox(
+        "Classroom — cloud kit vs paper words",
         classLines(
-          "Three friends each with a full phrase is one job. Pieces of one secret is another. A company login (they hold the coins) is a third.",
-          "Here you hold two whole keys. The company holds one key only to co-sign.",
-          "Brand names change. The two-of-three math does not."
+          "Collaborative custody may offer encrypted cloud backup of a mobile key + an emergency PDF/kit.",
+          "BIP-39 paper (or metal) is a different recovery story: numbered words you control offline.",
+          "Company gone path ≠ “paste the seed into a website.” Drill both stories without funding practice material.",
+          "Brand names change. The 2-of-3 math and the backup-object distinction do not."
         ),
         "v2Uc21JobTeach"
       )) +
-      pauseBtn("I can name steal vs freeze vs sign", false)
+      '<div class="v2-recv-wait">' +
+      '<button type="button" class="btn" data-co-cloud="diff">Cloud kit ≠ BIP-39 paper — different objects</button>' +
+      '<button type="button" class="btn secondary" data-co-cloud="same">Cloud backup is just another way to write the twelve words</button>' +
+      "</div>" +
+      '<p id="v2CoCloudOut" class="control-help">' +
+      (c.cloud === "diff"
+        ? "Correct. Encrypted cloud mobile-key backup is not BIP-39 paper."
+        : "Pick the classroom contrast.") +
+      "</p>" +
+      pauseBtn("I can name cloud kit vs paper words", c.cloud !== "diff")
     );
   }
+
 
   function uc22(step) {
     if (step === 0) {
@@ -3707,6 +3735,76 @@
     return finishHtml(34);
   }
 
+  function helperMem() {
+    if (!mem.helperDrill) mem.helperDrill = { role: "", safe: "", never: "" };
+    return mem.helperDrill;
+  }
+
+  function uc36(step) {
+    if (step === 2) return quizBank(jobQuizzes(36));
+    if (step >= 3) return finishHtml(36);
+    var h = helperMem();
+    if (step === 0) {
+      return pad(
+        "<h2>Who is the trusted helper?</h2>" +
+        doDont(
+          "Name a person you would practise recovery contact with. They help you find objects or call a tree — they do not become a second funded-seed holder by default.",
+          "Do not paste live funded words to the helper. This tab does not run social recovery."
+        ) +
+        faceWrapHtml("assets/uc18-face-cannot-speak.svg", "Helper, not cosigner by default", teachBox(
+          "Classroom — recovery contact",
+          classLines(
+            "A recovery contact is a human process drill (adjacent to UC18).",
+            "They may know where a sealed packet lives, or who to call.",
+            "They should not receive your funded BIP-39 words in chat or email.",
+            "Practice only. No real social recovery product runs here."
+          ),
+          "v2Uc36Teach"
+        )) +
+        '<div class="v2-recv-wait">' +
+        '<button type="button" class="btn" data-helper-role="ok">Helper holds process + map pointers</button>' +
+        '<button type="button" class="btn secondary" data-helper-role="seed">Helper holds my funded twelve words</button>' +
+        '<button type="button" class="btn secondary" data-helper-role="login">Helper holds only my exchange login</button>' +
+        "</div>" +
+        '<p id="v2HelperRoleOut" class="control-help">' +
+        (h.role === "ok" ? "Good. Process and map pointers — not the live seed." : "Pick the classroom role.") +
+        "</p>" +
+        pauseBtn("Next: safe objects vs secrets", h.role !== "ok")
+      );
+    }
+    var sorted = h.safe === "yes" && h.never === "yes";
+    return pad(
+      "<h2>Safe objects vs secrets</h2>" +
+      doDont(
+        "Safe: vault map / BSMS pointer, sealed packet instructions, call tree. Never: live funded words, hot wallet seed paste, “just the login” as if it were custody.",
+        "Do not run a real social-recovery ceremony in this tab."
+      ) +
+      faceWrapHtml("assets/uc18-face-packet.svg", "Map not seed", teachBox(
+        "Classroom — what the helper may touch",
+        classLines(
+          "Tick what a helper may hold in practice.",
+          "Refuse the funded phrase and refuse “login equals custody.”",
+          "If the company offers a recovery contact UX, still drill objects offline first."
+        ),
+        "v2Uc36SafeTeach"
+      )) +
+      '<p class="control-help">1. May the helper hold a vault map / packet instructions?</p>' +
+      '<div class="v2-recv-wait">' +
+      '<button type="button" class="btn" data-helper-q="safe" data-helper-a="yes">Yes — map / instructions</button>' +
+      '<button type="button" class="btn secondary" data-helper-q="safe" data-helper-a="no">No — helpers never hold anything</button>' +
+      "</div>" +
+      '<p class="control-help">2. May the helper hold your funded recovery words?</p>' +
+      '<div class="v2-recv-wait">' +
+      '<button type="button" class="btn secondary" data-helper-q="never" data-helper-a="no">Yes — email them the words</button>' +
+      '<button type="button" class="btn" data-helper-q="never" data-helper-a="yes">Never — funded words stay offline</button>' +
+      "</div>" +
+      '<p id="v2HelperSafeOut" class="control-help">' +
+      (sorted ? "Safe objects yes. Funded words never. Practice only." : "Answer both. Wrong answers stay red.") +
+      "</p>" +
+      pauseBtn("Next: quiz", !sorted)
+    );
+  }
+
   async function uc35(step) {
     if (step === 0) {
       if (window.BIP39Lab && (!mem.elPhrase || !mem.elPhraseOk)) {
@@ -4540,6 +4638,49 @@
       );
     }
     if (step === 2) {
+      if (!mem.vaultDrill) mem.vaultDrill = { map: false, rebuild: false, nomap: false, vendor: false };
+      var vd = mem.vaultDrill;
+      var readyMap = !!(vd.map && vd.rebuild && vd.nomap && vd.vendor);
+      return pad(
+        "<h2>Vault map, recovery drill, vendors</h2>" +
+        doDont(
+          "Back up the public vault map (descriptor / BSMS-shaped object) with each key. Rebuild from the map. Prefer independent vendor / firmware classes.",
+          "Do not treat keys alone as enough. Lose the map and one key together and you may not rebuild. Same-vendor boxes can share one bug."
+        ) +
+        desc(
+          "Multisig wallets need a public policy string — often called a vault map or BSMS export — alongside the keys. The Multisig room already shows the live vault map after Build. This pad drills the classroom story."
+        ) +
+        faceWrapHtml(
+          "assets/uc6-face-2of3.svg",
+          "Map is an object",
+          teachBox(
+            "Classroom — vault map · recovery · vendors",
+            classLines(
+              "The map is public policy (M-of-N + key ids + wsh(sortedmulti…)). It is not a seed.",
+              "Recovery drill: rebuild from the map should match the vault address. Trying without the map must error — not invent an address.",
+              "Vendor diversity Extra help: independent entropy and independent vendor/firmware class.",
+              "Open Multisig room for the live vault map / Rebuild / Try without map / vendor-diversity controls."
+            ),
+            "v2Uc6MapTeach"
+          )
+        ) +
+        '<pre class="out" id="v2VaultMapDemo">wsh(sortedmulti(2,&lt;pubA&gt;,&lt;pubB&gt;,&lt;pubC&gt;)) · practice map only</pre>' +
+        '<div class="v2-recv-wait">' +
+        '<button type="button" class="btn" data-vd="map">I backed up the vault map with the keys</button>' +
+        '<button type="button" class="btn secondary" data-vd="rebuild">Rebuild from map matches</button>' +
+        '<button type="button" class="btn secondary" data-vd="nomap">Without map → explicit error</button>' +
+        '<button type="button" class="btn secondary" data-vd="vendor">Independent vendor / firmware class</button>' +
+        "</div>" +
+        '<p id="v2VaultDrillOut" class="control-help">' +
+        (readyMap
+          ? "Map · rebuild · without-map error · vendor diversity — classroom complete."
+          : "Tick all four classroom beats. Then open Multisig room if you want the live controls.") +
+        "</p>" +
+        '<a class="btn secondary" href="../multisig.html" data-v2-dock="6b">Open Multisig room (vault map live)</a>' +
+        pauseBtn("Next: quiz", !readyMap)
+      );
+    }
+    if (step === 3) {
       return quizBank([
         {
           q: "In a 2-of-3 setup, the three keys are:",
@@ -4579,6 +4720,22 @@
             qOk("The three keys are always listed in the same order so every wallet builds the same vault.", "Correct. Different order can mean a different address."),
             qBad("The coins are mixed on the network.", "Wrong. Sorted is about key order in the recipe, not CoinJoin."),
             qBad("This page signed the spend for you.", "Wrong. This pad never signs.")
+          ]
+        },
+        {
+          q: "What is the vault map (BSMS-shaped object) for?",
+          opts: [
+            qOk("A public policy backup with the keys. Lose the map and one key and you may not rebuild.", "Correct. The map is not a seed."),
+            qBad("A second copy of all three recovery phrases.", "Wrong. The map is public policy, not the words."),
+            qBad("Something you can skip if you still have two seeds.", "Wrong. Without the recipe, wallets may not rebuild the same vault.")
+          ]
+        },
+        {
+          q: "Why prefer independent vendor / firmware classes?",
+          opts: [
+            qOk("Same-vendor boxes can share one bug. Spread risk across vendors.", "Correct. Entropy independence alone is not enough."),
+            qBad("So you can paste seeds into three brand apps for a check.", "Wrong. Never paste seeds into chat or random apps."),
+            qBad("Because one vendor always holds the coins for you.", "Wrong. That would be they-hold login, not multisig keys.")
           ]
         }
       ]);
@@ -6311,7 +6468,7 @@
         "<h2>A few dice rolls</h2>" +
         doDont(
           "Roll a few simulated dice. Read TOO LOW. You can still get a full-looking phrase later.",
-          "Do not treat three rolls as a wallet. These buttons are a classroom demo, not a real dice ceremony."
+          "Do not treat three rolls as a wallet. Never type funded words into an online bip39 tool. These buttons are a classroom demo, not a real dice ceremony."
         ) +
         desc(
           "A short pad can still print words. Word count is not enough. How many rolls you need comes after you have seen TOO LOW."
@@ -6326,7 +6483,7 @@
         "<h2>Words from a short pad</h2>" +
         doDont(
           "Pick 12 to 24 words, generate from the roll log, and read TOO LOW next to a complete-looking phrase.",
-          "Do not fund these words. A 24-word phrase can still be weak if the pad is short."
+          "Do not fund these words. Do not paste them into an online Ian Coleman / bip39 website. A 24-word phrase can still be weak if the pad is short."
         ) +
         desc(
           "The lab hashes the roll log and turns that hash into BIP-39 words so you can see a phrase. That is not the same as having real entropy. 12 words want 128 bits; 24 words want 256 bits. If the estimate is TOO LOW, an attacker has a smaller guess space than a proper wallet of that length."
@@ -6353,6 +6510,41 @@
       );
     }
     if (step === 3) {
+      return pad(
+        "<h2>Offline verify storyboard</h2>" +
+        doDont(
+          "Dice rolls on paper → air-gapped device (SeedSigner-shaped) shows a fingerprint → cross-check the same rolls on an offline-saved bip39 tool.",
+          "Never type funded words into an online bip39 website. This lab is an offline classroom. Practice phrase only."
+        ) +
+        desc(
+          "Real dice ceremonies often mint on a device that never needs a browser, then verify with a second tool that you saved offline. Brand names change. The job does not: weak-pad indicator first, then verify without putting a funded phrase on the public web."
+        ) +
+        faceWrapHtml(
+          "assets/uc14-atom-coin-tedious.svg",
+          "Verify offline",
+          teachBox(
+            "Classroom — SeedSigner-shaped + offline verify",
+            classLines(
+              "Write the rolls on paper. A device can turn those rolls into words and show a <strong>fingerprint</strong> of the seed.",
+              "Cross-check the same rolls in an <strong>offline-saved</strong> Ian Coleman–style bip39 page (or another offline tool). Match fingerprint / words.",
+              "Discard the seed from the device when the lesson ends. Unplug clears. Do not fund the practice phrase.",
+              "Do / Do-not: never type a funded phrase into an online bip39 tool. Lab = offline classroom."
+            ),
+            "v2Uc14VerifyTeach"
+          )
+        ) +
+        '<div class="v2-storyboard" id="v2Uc14Story">' +
+        "<ol>" +
+        "<li><strong>Roll</strong> — paper log (casino-grade optional).</li>" +
+        "<li><strong>Mint on device</strong> — SeedSigner-shaped dice seed create; read fingerprint.</li>" +
+        "<li><strong>Verify offline</strong> — same rolls in offline-saved bip39 tool.</li>" +
+        "<li><strong>Wall</strong> — funded words never go into an online website.</li>" +
+        "</ol></div>" +
+        '<label class="check"><input type="checkbox" id="v2Uc14OfflineAck"/> I will not type funded words into an online bip39 tool</label>' +
+        pauseBtn("Next: quiz", true)
+      );
+    }
+    if (step === 4) {
       return quizBank([
         {
           q: "A few dice rolls that still print 12 or 24 recovery words mean:",
@@ -6392,6 +6584,14 @@
             { k: "ok", t: "Still weak. An attacker has fewer guesses than a well-rolled phrase.", okwhy: "Correct. A short roll log can still print twelve words. That does not make it strong." },
             { k: "bad", t: "Safe to fund because the checksum passed.", why: "Wrong. Checksum only checks the format. It does not add missing rolls." },
             { k: "bad", t: "As strong as Lab Generate because both show 12 words.", why: "Wrong. Lab Generate uses the operating system. The pad is a classroom estimate." }
+          ]
+        },
+        {
+          q: "You want to verify dice rolls. What is the lab rule?",
+          opts: [
+            { k: "ok", t: "Use an offline-saved tool. Never type funded words into an online bip39 website.", okwhy: "Correct. Lab is an offline classroom. Online tools are a leak surface for funded phrases." },
+            { k: "bad", t: "Paste the funded phrase into any popular online bip39 page for a quick check.", why: "Wrong. Funded words must not go into online bip39 tools." },
+            { k: "bad", t: "Skip verify because twelve words always means enough randomness.", why: "Wrong. Word count is not entropy." }
           ]
         }
       ]);
@@ -10341,6 +10541,97 @@
         if (pause) pause.disabled = !all;
       });
     });
+
+    document.querySelectorAll("[data-co-cloud]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-co-cloud") || "";
+        var c = coMem();
+        var o = $("v2CoCloudOut");
+        var ok = k === "diff";
+        c.cloud = k;
+        if (o) {
+          o.className = ok ? "msg-ok" : "msg-bad";
+          o.textContent = ok
+            ? "Correct. Encrypted cloud mobile-key backup is not BIP-39 paper."
+            : "Fail. Cloud kit and BIP-39 paper are different recovery objects.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    document.querySelectorAll("[data-vd]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (!mem.vaultDrill) mem.vaultDrill = { map: false, rebuild: false, nomap: false, vendor: false };
+        var k = btn.getAttribute("data-vd") || "";
+        if (k) mem.vaultDrill[k] = true;
+        var vd = mem.vaultDrill;
+        var all = !!(vd.map && vd.rebuild && vd.nomap && vd.vendor);
+        var o = $("v2VaultDrillOut");
+        if (o) {
+          o.className = all ? "msg-ok" : "control-help";
+          o.textContent = all
+            ? "Map · rebuild · without-map error · vendor diversity — classroom complete."
+            : "Ticked: " +
+              ["map", "rebuild", "nomap", "vendor"].filter(function (x) { return vd[x]; }).join(", ") +
+              " — keep going.";
+        }
+        if (pause) pause.disabled = !all;
+      });
+    });
+    var ack14 = $("v2Uc14OfflineAck");
+    if (ack14) {
+      ack14.addEventListener("change", function () {
+        if (pause) pause.disabled = !ack14.checked;
+      });
+      if (pause) pause.disabled = !ack14.checked;
+    }
+    document.querySelectorAll("[data-helper-role]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var k = btn.getAttribute("data-helper-role") || "";
+        var h = helperMem();
+        var o = $("v2HelperRoleOut");
+        var ok = k === "ok";
+        h.role = ok ? "ok" : k;
+        if (o) {
+          o.className = ok ? "msg-ok" : "msg-bad";
+          o.textContent = ok
+            ? "Good. Process and map pointers — not the live seed."
+            : k === "seed"
+              ? "Fail. Do not give the helper funded words."
+              : "Fail. A login alone is they-hold, not a recovery-contact drill.";
+        }
+        if (pause) pause.disabled = !ok;
+      });
+    });
+    document.querySelectorAll("[data-helper-q]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var q = btn.getAttribute("data-helper-q") || "";
+        var a = btn.getAttribute("data-helper-a") || "";
+        var h = helperMem();
+        var want = { safe: "yes", never: "yes" };
+        var right = want[q] === a;
+        h[q] = a;
+        var o = $("v2HelperSafeOut");
+        var all = h.safe === "yes" && h.never === "yes";
+        if (!right) {
+          if (o) {
+            o.className = "msg-bad";
+            o.textContent =
+              q === "safe"
+                ? "Fail. Helpers may hold map / packet instructions in this drill."
+                : "Fail. Funded words must never go to the helper in chat.";
+          }
+          if (pause) pause.disabled = true;
+          return;
+        }
+        if (o) {
+          o.className = all ? "msg-ok" : "";
+          o.textContent = all
+            ? "Safe objects yes. Funded words never. Practice only."
+            : "Correct so far. Finish both.";
+        }
+        if (pause) pause.disabled = !all;
+      });
+    });
     if ($("v2Fw")) {
       $("v2Fw").addEventListener("change", function () {
         if (pause) pause.disabled = !$("v2Fw").checked;
@@ -10714,7 +11005,7 @@
     var dock = loadState().dock;
     if (q) {
       var n = parseInt(q, 10);
-      if (n >= 1 && n <= 35) pendingUc = n;
+      if (n >= 1 && n <= 36) pendingUc = n;
     } else if (dock && dock.id) {
       var s = loadState();
       delete s.dock;

@@ -2535,3 +2535,21 @@ pre.out.msg-warn {
   .word-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .v2-addr-grid { grid-template-columns: 1fr; }
 }
+
+
+/* Sovereign stamp — offline verify / classroom lists */
+.v2-storyboard {
+  margin: 0.75rem 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--amber, #d4a017);
+  border-radius: 8px;
+  background: rgba(212, 160, 23, 0.06);
+}
+.v2-storyboard ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.v2-storyboard li {
+  margin: 0.35rem 0;
+  color: var(--fg, #e8e4d9);
+}
