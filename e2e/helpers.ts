@@ -36,6 +36,44 @@ export async function seedAck(page: Page) {
   });
 }
 
+export type LabLevel = "starter" | "beginner" | "intermediate" | "advanced";
+
+/**
+ * Seed the product's own classroom level (learn-levels.js LEVEL_KEY
+ * "bip39lab.level"; LEVELS starter|beginner|intermediate|advanced; default
+ * starter) before load. Use the lowest level whose controls the spec needs:
+ * Starter hides Seed QR / Send → Network / watch-only (app.css) and keeps the
+ * address card off the h1 frame, so derive/QR/bridge specs run at Beginner.
+ */
+export async function seedLevel(page: Page, level: LabLevel) {
+  await page.addInitScript((lv) => {
+    try {
+      localStorage.setItem("bip39lab.level", lv);
+    } catch (e) {
+      /* ignore */
+    }
+  }, level);
+}
+
+/**
+ * Above Starter, earlier-level faces (data-face="starter": #card-mnemonic,
+ * #card-addresses) load collapsed by design (applyFaces). Expand the way a user
+ * does: click the card heading.
+ */
+export async function expandFace(page: Page, cardId: string) {
+  const card = page.locator(`#${cardId}`);
+  if (await card.evaluate((el) => el.classList.contains("face-collapsed"))) {
+    await card.locator(":scope > .card-head, :scope > h2").first().click({ position: { x: 8, y: 8 } });
+    await expect(card).not.toHaveClass(/face-collapsed/);
+  }
+}
+
+/** Beginner Lab: expand the Starter mnemonic + receive-address faces. */
+export async function openStarterFaces(page: Page) {
+  await expandFace(page, "card-mnemonic");
+  await expandFace(page, "card-addresses");
+}
+
 /** Dismiss first-visit is/isn’t ack if present. */
 export async function dismissAck(page: Page) {
   const ov = page.locator("#ackOverlay");

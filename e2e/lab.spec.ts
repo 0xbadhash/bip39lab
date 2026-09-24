@@ -11,6 +11,8 @@ import {
   clickLabAction,
   dismissAck,
   seedAck,
+  seedLevel,
+  openStarterFaces,
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
@@ -147,6 +149,8 @@ test.describe("Lab shell & chrome", () => {
     await expect(page.locator("#overlayGenerate")).toContainText(/Nothing leaves this browser tab/i);
     await expect(page.locator("#overlayGenerate .lab-overlay-ok")).toHaveCount(0);
     await page.locator("#btnGenerate").click();
+    // 0.16.35 (ca49d27): Generate no longer auto-derives (S1 asserts table hidden until Validate & derive).
+    await page.locator("#btnDerive").click();
     await waitForTableRows(page, 5);
     const mnemonic = await page.locator("#mnemonic").inputValue();
     expect(mnemonic.trim().split(/\s+/).length).toBe(24);
@@ -224,8 +228,12 @@ test.describe("Lab mnemonic & derive", () => {
   test("S2 abandon golden BIP86 + BIP84 + BIP49 + BIP44", async ({ page }) => {
     await page.goto("/");
     await clickLabAction(page, "clear");
-    await selectLabMainnet(page);
+    // 0.16.35 (ca49d27): Clear hides #card-addresses and suppresses auto-derive until
+    // Validate & derive, so derive first, then pick Mainnet on the re-shown controls.
     await pasteMnemonic(page, ABANDON);
+    await clickLabAction(page, "derive");
+    await waitForTableRows(page, 5);
+    await selectLabMainnet(page);
     await waitForTableRows(page, 5);
     await expect(page.locator("#entropyMnemonic")).toHaveText(/128 bits \(12-word BIP-39\)/);
 
@@ -243,7 +251,9 @@ test.describe("Lab mnemonic & derive", () => {
   });
 
   test("S3 passphrase changes addresses + strength", async ({ page }) => {
+    await seedLevel(page, "beginner");
     await page.goto("/");
+    await openStarterFaces(page);
     await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
@@ -276,7 +286,9 @@ test.describe("Lab mnemonic & derive", () => {
   });
 
   test("S4 account change indices path summary", async ({ page }) => {
+    await seedLevel(page, "beginner");
     await page.goto("/");
+    await openStarterFaces(page);
     await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
@@ -342,7 +354,9 @@ test.describe("Lab mnemonic & derive", () => {
   });
 
   test("S8 watch-only zpub then xpub pads", async ({ page }) => {
+    await seedLevel(page, "beginner");
     await page.goto("/");
+    await openStarterFaces(page);
     await selectLabMainnet(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
@@ -413,7 +427,9 @@ test.describe("Lab mnemonic & derive", () => {
   });
 
   test("S15 seed QR confirm + modal", async ({ page }) => {
+    await seedLevel(page, "beginner");
     await page.goto("/");
+    await openStarterFaces(page);
     await pasteMnemonic(page, ABANDON);
     page.once("dialog", (d) => d.accept());
     await page.locator("#btnSeedQr").click();
@@ -425,7 +441,9 @@ test.describe("Lab mnemonic & derive", () => {
   });
 
   test("S15b invalid phrase cannot Seed QR", async ({ page }) => {
+    await seedLevel(page, "beginner");
     await page.goto("/");
+    await openStarterFaces(page);
     await page.locator("#mnemonic").fill("not a real seed phrase here at all xx");
     await page.locator("#btnSeedQr").click();
     await expect(page.locator("#qrModal")).toBeHidden();
@@ -433,7 +451,9 @@ test.describe("Lab mnemonic & derive", () => {
   });
 
   test("S16 send addresses → Network session bridge", async ({ page }) => {
+    await seedLevel(page, "beginner");
     await page.goto("/");
+    await openStarterFaces(page);
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
     await page.locator("#btnSendNetwork").click();
@@ -471,7 +491,9 @@ test.describe("Lab Tools panel", () => {
     await expect(page.locator("#pathPlayTable")).toBeVisible();
     await expect(page.locator("#pathCellPurpose")).toContainText(/'/);
     await expect(page.locator("#pathPlayHelp")).toContainText(/plain words|seed|address/i);
-    await page.locator("#btnPathToLab").click();
+    // 0.16.35 (ca49d27) removed "Open Lab path controls" (#btnPathToLab) by design; S174 asserts it is gone.
+    await expect(page.locator("#btnPathToLab")).toHaveCount(0);
+    await page.locator('.nav-item[data-nav="lab"]').click();
     await expect(page.locator("#panel-lab")).toBeVisible();
   });
 
@@ -526,6 +548,9 @@ test.describe("Lab Tools panel", () => {
   });
 
   test("S18b tools generate test phrase then compare", async ({ page }) => {
+    // Starter Generate re-frames to Lab h1 (applyHourFrame → goTab("lab")); Beginner stays in Tools.
+    await seedLevel(page, "beginner");
+    await page.goto("/");
     await page.locator('.nav-item[data-nav="tools"]').click();
     await page.locator("#btnCmpGen").click();
     await expect(page.locator("#cmpMnPreview")).not.toHaveText("—");

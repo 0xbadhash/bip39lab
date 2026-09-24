@@ -7,6 +7,7 @@
     "build:web": "esbuild web/js/build-entry.mjs --bundle --format=iife --outfile=web/js/bip39lab.bundle.js",
     "test:e2e": "playwright test",
     "test:e2e:live": "BASE_URL=https://bip39.catalyxt.xyz playwright test",
+    "test:e2e:live:wide": "playwright test -c playwright.live.config.ts e2e/lab.spec.ts e2e/site-chrome.spec.ts",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report playwright-report",
     "build:slip39": "esbuild web/js/slip39-entry.mjs --bundle --format=iife --platform=browser --outfile=web/js/slip39.bundle.js --alias:crypto=./web/js/slip39-crypto-shim.js --inject:./web/js/slip39-buffer-inject.js"
