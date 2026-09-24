@@ -10,6 +10,7 @@ import {
   waitForTableRows,
   clickLabAction,
   dismissAck,
+  seedAck,
 } from "./helpers";
 
 test.describe("Lab shell & chrome", () => {
@@ -456,6 +457,7 @@ test.describe("Lab mnemonic & derive", () => {
 
 test.describe("Lab Tools panel", () => {
   test.beforeEach(async ({ page }) => {
+    await seedAck(page);
     await page.goto("/");
     await pasteMnemonic(page, ABANDON);
     await waitForTableRows(page, 5);
@@ -620,6 +622,10 @@ test.describe("Lab Tools panel", () => {
 });
 
 test.describe("Lab Network CLI redirect + Glossary security", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedAck(page);
+  });
+
   test("S24 old #balance deep-links to Network CLI guidance", async ({ page }) => {
     await page.goto("/#balance");
     await expect(page).toHaveURL(/network\.html/);
@@ -641,6 +647,10 @@ test.describe("Lab Network CLI redirect + Glossary security", () => {
 });
 
 test.describe("Lab nav matrix", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedAck(page);
+  });
+
   test("S10 full nav Lab→Tools→Glossary→Multisig→Shamir→Network", async ({ page }) => {
     await page.goto("/");
     await expectNavCount(page);

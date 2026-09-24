@@ -21,6 +21,21 @@ export const GOLDEN = {
 /** Six primary nav items (Shamir after Multisig). */
 export const NAV = ["lab", "multisig", "shamir", "network", "tools", "glossary"] as const;
 
+/**
+ * Pre-seed the first-visit is/isn’t ack (lab:ack-v1) before any navigation so
+ * the by-design #ackOverlay (Starter + no ack, index only) does not intercept
+ * clicks in specs that are not testing the ack itself (S130–S135 / S150 are).
+ */
+export async function seedAck(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("lab:ack-v1", "1");
+    } catch (e) {
+      /* ignore */
+    }
+  });
+}
+
 /** Dismiss first-visit is/isn’t ack if present. */
 export async function dismissAck(page: Page) {
   const ov = page.locator("#ackOverlay");
