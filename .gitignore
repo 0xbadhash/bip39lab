@@ -47,3 +47,16 @@ Thumbs.db
 
 # local random seed scan state (hashes only)
 .local/seed_scan/
+
+# --- generated noise (CEO stamp 2026-09-29 08:34 HKT, repo dirty review) ---
+.coverage
+.coverage.*
+coverage.xml
+.hypothesis/
+.ruff_cache/
+.agents/artifacts/NIGHT_SHIFT_*.md
+.agents/execution.log
+*.bak
+*.bak-*
+*.orig
+*.rej
