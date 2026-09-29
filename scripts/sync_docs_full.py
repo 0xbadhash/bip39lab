@@ -18,8 +18,9 @@ import argparse
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+
 
 def _vw(path: Path, text: str) -> None:
     try:
@@ -231,7 +232,7 @@ def mirror_to_vault(
     dry_run: bool = False,
 ) -> list[str]:
     """Copy repo docs → vault/01-Projects/<label>/docs/ with sync banner."""
-    when = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    when = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     head = _git_head_short()
     dest_root = vault / "01-Projects" / project_label / "docs"
     notes: list[str] = []
@@ -275,7 +276,7 @@ def update_wiki_index(
     dry_run: bool = False,
 ) -> str:
     wiki = vault / "wiki" / f"{project_label}.md"
-    when = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    when = datetime.now(UTC).strftime("%Y-%m-%d")
     clean = []
     for m in mirrored:
         if m.startswith("mirror ok:"):
