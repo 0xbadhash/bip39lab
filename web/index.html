@@ -9,6 +9,7 @@
   <meta name="description" content="Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz." />
   <title>BIP39 Lab · bip39.catalyxt.xyz</title>
   <link rel="stylesheet" href="css/app.css?v=0.16.91" />
+  <link rel="stylesheet" href="css/first-run-motion.css" />
 </head>
 <body>
   <div class="app">
@@ -131,6 +132,40 @@
 
       <main class="content">
         <div class="main-work" id="mainWork">
+        <section class="first-run" id="firstRunMotion" aria-label="First-run seed walkthrough">
+          <p class="first-run-kicker">First run · empty vault · mock data · not a real seed</p>
+          <h2>What a seed phrase is</h2>
+          <p class="first-run-body">
+            A seed phrase is a human-readable backup of wallet entropy. Anyone with the phrase can recreate the keys.
+            These twelve words are for teaching only. Generate, Reveal, and Copy on the lab below stay as they are.
+          </p>
+          <ol class="first-run-words">
+            <li><span class="first-run-n">1</span>apple</li>
+            <li><span class="first-run-n">2</span>river</li>
+            <li><span class="first-run-n">3</span>orbit</li>
+            <li><span class="first-run-n">4</span>candle</li>
+            <li><span class="first-run-n">5</span>maple</li>
+            <li><span class="first-run-n">6</span>quiet</li>
+            <li><span class="first-run-n">7</span>falcon</li>
+            <li><span class="first-run-n">8</span>harbor</li>
+            <li><span class="first-run-n">9</span>velvet</li>
+            <li><span class="first-run-n">10</span>prism</li>
+            <li><span class="first-run-n">11</span>jade</li>
+            <li><span class="first-run-n">12</span>lantern</li>
+          </ol>
+          <p class="first-run-note">Example words for teaching only — not entropy, not recoverable.</p>
+          <div class="first-run-verify">
+            <h3>Verify a word (demo)</h3>
+            <p>Which word was in position 2?</p>
+            <div class="first-run-choices">
+              <span class="first-run-choice">orbit</span>
+              <span class="first-run-choice is-correct">river</span>
+              <span class="first-run-choice">maple</span>
+              <span class="first-run-choice">harbor</span>
+            </div>
+          </div>
+        </section>
+
         <div class="warn" role="note" id="labSafetyBanner">
           <strong>Air-gap recommended.</strong>
           Crypto stays in this tab. Progress/theme may be saved in the browser.
