@@ -17,7 +17,8 @@ harness_backlog: .agents/BACKLOG.md
 # Executed at release / smoke (argv arrays; cwd relative to product root).
 smoke:
   - name: unit
-    cmd: ["python", "-m", "pytest", "-q"]
+    # pytest-timeout: fail one hung test instead of burning the whole 180s wall (night flake 2026-10-10)
+    cmd: ["python", "-m", "pytest", "-q", "--timeout=60", "--timeout-method=thread"]
     cwd: .
     timeout: 180
   - name: e2e
