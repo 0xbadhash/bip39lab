@@ -23,13 +23,13 @@ Schedule (suggested):
 from __future__ import annotations
 
 import argparse
+import grp
 import json
 import os
 import re
 import subprocess
 import sys
 import tempfile
-import grp
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path

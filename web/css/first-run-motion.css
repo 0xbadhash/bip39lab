@@ -1,0 +1,83 @@
+/* First-run walkthrough. Demo words only. Generate / Reveal / Copy stay on the lab cards. */
+.first-run {
+  border: 1px solid var(--border, rgba(148, 163, 184, 0.35));
+  border-radius: 12px;
+  padding: 16px 18px 14px;
+  margin: 0 0 16px;
+  background: var(--panel, rgba(17, 26, 46, 0.6));
+}
+.first-run-kicker {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f0c674;
+  margin: 0 0 8px;
+}
+.first-run h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+.first-run-body {
+  margin: 0 0 12px;
+  max-width: 68ch;
+  color: var(--muted, #94a3b8);
+}
+.first-run-words {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.first-run-words li {
+  border: 1px solid var(--border, rgba(148, 163, 184, 0.35));
+  border-radius: 8px;
+  padding: 8px 10px;
+  animation: fr-word-in 0.45s ease both;
+}
+.first-run-words li:nth-child(1) { animation-delay: 0.2s; }
+.first-run-words li:nth-child(2) { animation-delay: 0.32s; }
+.first-run-words li:nth-child(3) { animation-delay: 0.44s; }
+.first-run-words li:nth-child(4) { animation-delay: 0.56s; }
+.first-run-words li:nth-child(5) { animation-delay: 0.68s; }
+.first-run-words li:nth-child(6) { animation-delay: 0.8s; }
+.first-run-words li:nth-child(7) { animation-delay: 0.92s; }
+.first-run-words li:nth-child(8) { animation-delay: 1.04s; }
+.first-run-words li:nth-child(9) { animation-delay: 1.16s; }
+.first-run-words li:nth-child(10) { animation-delay: 1.28s; }
+.first-run-words li:nth-child(11) { animation-delay: 1.4s; }
+.first-run-words li:nth-child(12) { animation-delay: 1.52s; }
+.first-run-n { color: var(--muted, #94a3b8); margin-right: 6px; font-size: 12px; }
+.first-run-note { margin: 10px 0 0; color: #f0c674; font-size: 13px; }
+.first-run-verify { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border, rgba(148, 163, 184, 0.35)); }
+.first-run-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.first-run-choice {
+  border: 1px solid var(--border, rgba(148, 163, 184, 0.35));
+  border-radius: 8px;
+  padding: 8px 12px;
+  animation: fr-word-in 0.4s ease 2.2s both;
+}
+.first-run-choice.is-correct {
+  border-color: rgba(125, 211, 199, 0.7);
+  color: #7dd3c7;
+  animation: fr-word-in 0.4s ease 2.2s both, fr-pick 0.45s ease 3.1s both;
+}
+@keyframes fr-word-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fr-pick {
+  from { box-shadow: none; }
+  to { box-shadow: 0 0 0 2px rgba(125, 211, 199, 0.45); }
+}
+@media (max-width: 720px) {
+  .first-run-words { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .first-run-words li,
+  .first-run-choice,
+  .first-run-choice.is-correct {
+    animation: none;
+  }
+}

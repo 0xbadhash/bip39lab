@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """REMOVED — unsafe historical scanner.
 
 This file intentionally no longer contains network URLs, eval(), or mnemonic
