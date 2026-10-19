@@ -1,0 +1,7 @@
+# bip39lab
+
+Offline BIP-39 lab — generate and derive addresses without retaining secrets.
+Hosted at https://bip39.catalyxt.xyz/
+
+V2 use-case tracks — practice custody offline:
+https://bip39.catalyxt.xyz/v2/
