@@ -7,8 +7,10 @@ For teaching only; do not use for real recovery seed backups.
 
 from __future__ import annotations
 
+import re
 import secrets
 from collections.abc import Mapping, Sequence
+from itertools import combinations
 from typing import Any
 
 MAX_N = 7
@@ -111,7 +113,12 @@ def split_secret(
 
     shares_payload: list[bytearray] = [bytearray(len(secret)) for _ in range(n)]
     for bi, sb in enumerate(secret):
-        coeffs = [sb & 0xFF] + [rand_byte() for _ in range(m - 1)]
+        # Leading coeff must be nonzero or the polynomial degree drops below M-1.
+        high = [rand_byte() for _ in range(m - 2)]
+        lead = rand_byte()
+        while lead == 0:
+            lead = rand_byte()
+        coeffs = [sb & 0xFF] + high + [lead]
         for i in range(n):
             x = i + 1
             shares_payload[i][bi] = _eval_poly(coeffs, x)
@@ -119,8 +126,23 @@ def split_secret(
     return [{"index": i + 1, "payload": bytes(shares_payload[i])} for i in range(n)]
 
 
-def combine_shares(shares: Sequence[Mapping[str, Any]]) -> bytes:
-    """Reconstruct secret from shares (use exactly M or more valid shares)."""
+def _combine_points(items: Sequence[tuple[int, bytes]]) -> bytes:
+    length = len(items[0][1])
+    if length == 0:
+        raise ValueError("empty share payload")
+    for _, payload in items:
+        if len(payload) != length:
+            raise ValueError("share payload length mismatch")
+    out = bytearray(length)
+    xs = [idx for idx, _ in items]
+    for bi in range(length):
+        ys = [payload[bi] for _, payload in items]
+        out[bi] = _lagrange_at_zero(xs, ys)
+    return bytes(out)
+
+
+def combine_shares(shares: Sequence[Mapping[str, Any]], *, m: int | None = None) -> bytes:
+    """Reconstruct from exactly M consistent shares. Extra shares must agree or raise."""
     if not shares:
         raise ValueError("need shares to combine")
     if len(shares) < MIN_M:
@@ -134,28 +156,27 @@ def combine_shares(shares: Sequence[Mapping[str, Any]]) -> bytes:
             raise TypeError("share payload must be bytes")
         if idx < 1 or idx > 255:
             raise ValueError("invalid share index")
-        by_idx[idx] = bytes(payload)
-
-    if len(by_idx) < MIN_M:
-        raise ValueError(f"need at least M={MIN_M} distinct shares")
+        blob = bytes(payload)
+        prev = by_idx.get(idx)
+        if prev is not None and prev != blob:
+            raise ValueError("inconsistent shares")
+        by_idx[idx] = blob
 
     items = list(by_idx.items())
-    length = len(items[0][1])
-    if length == 0:
-        raise ValueError("empty share payload")
-    for _, p in items:
-        if len(p) != length:
-            raise ValueError("share payload length mismatch")
+    count = len(items)
+    if m is None:
+        m = count
+    if m < MIN_M:
+        raise ValueError(f"threshold M must be >= {MIN_M}")
+    if count < m:
+        raise ValueError(f"need exactly M={m} consistent shares")
+    if count == m:
+        return _combine_points(items)
 
-    # Use only first M distinct shares by index order for stable degree-(M-1)
-    # interpolation when caller passes extra shares (callers that know M can pass M).
-    # For educational combine we accept k>=MIN_M; if k>degree+1 points must be consistent.
-    out = bytearray(length)
-    xs = [idx for idx, _ in items]
-    for bi in range(length):
-        ys = [p[bi] for _, p in items]
-        out[bi] = _lagrange_at_zero(xs, ys)
-    return bytes(out)
+    outs = [_combine_points(group) for group in combinations(items, m)]
+    if any(got != outs[0] for got in outs[1:]):
+        raise ValueError("inconsistent shares")
+    return outs[0]
 
 
 def encode_share(share: Mapping[str, Any]) -> str:
@@ -171,5 +192,8 @@ def parse_share(line: str) -> dict[str, Any]:
     if len(parts) != 3 or parts[0] != "share":
         raise ValueError("share format must be share:<index>:<hex>")
     idx = int(parts[1], 10)
-    payload = bytes.fromhex(parts[2])
+    hx = parts[2]
+    if not re.fullmatch(r"[0-9a-fA-F]+", hx or "") or len(hx) % 2:
+        raise ValueError("share payload is not hex")
+    payload = bytes.fromhex(hx)
     return {"index": idx, "payload": payload}

@@ -65,6 +65,35 @@ def test_duplicate_index_does_not_count_as_two_shares():
 def test_parse_share_rejects_malformed():
     with pytest.raises(ValueError, match="format|share"):
         parse_share("not-a-share-line")
+    with pytest.raises(ValueError, match="hex"):
+        parse_share("share:1:zz")
+
+
+class _ZeroThenSeven:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def randbelow(self, _n: int) -> int:
+        self.calls += 1
+        return 0 if self.calls == 1 else 7
+
+
+def test_leading_coeff_redraws_away_from_zero():
+    secret = b"\x01"
+    shares = split_secret(secret, m=2, n=2, rng=_ZeroThenSeven())
+    assert shares[0]["payload"] != secret
+    assert combine_shares(shares) == secret
+
+
+def test_inconsistent_extra_share_is_rejected():
+    secret = b"\x02\x03"
+    shares = split_secret(secret, m=2, n=3, rng=secrets.SystemRandom())
+    bad = {
+        "index": shares[2]["index"],
+        "payload": bytes([shares[2]["payload"][0] ^ 0x01, shares[2]["payload"][1]]),
+    }
+    with pytest.raises(ValueError, match="inconsistent"):
+        combine_shares([shares[0], shares[1], bad], m=2)
 
 
 def test_encode_parse_roundtrip():
