@@ -99,12 +99,11 @@
   }
 
   function randomBytes(n) {
-    var out = new Uint8Array(n);
-    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-      crypto.getRandomValues(out);
-    } else {
-      for (var i = 0; i < n; i++) out[i] = (Math.random() * 256) | 0;
+    if (typeof crypto === "undefined" || !crypto.getRandomValues) {
+      throw new Error("CSPRNG unavailable");
     }
+    var out = new Uint8Array(n);
+    crypto.getRandomValues(out);
     return out;
   }
 
