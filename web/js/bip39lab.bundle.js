@@ -7933,7 +7933,8 @@ zoo`.split("\n");
     if (!validateMnemonic(mnemonic, wordlist)) {
       throw new Error("parent mnemonic invalid");
     }
-    const seed = mnemonicToSeedSync(mnemonic, "");
+    const parentPassphrase = opts.passphrase == null ? "" : String(opts.passphrase);
+    const seed = mnemonicToSeedSync(mnemonic, parentPassphrase);
     const hd = HDKey.fromMasterSeed(seed);
     const node = hd.derive("m/83696968'/39'/0'/12'/" + index + "'");
     const priv = node.privateKey;

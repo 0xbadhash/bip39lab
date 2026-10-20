@@ -10126,7 +10126,9 @@
           mem.mnemonic = await B.generateMnemonic(12);
         }
         try {
-          var pack = B.deriveBip85Bip39Child(mem.mnemonic, { index: 0 });
+          var ppEl = $("v2EntPp");
+          var parentPassphrase = ppEl ? String(ppEl.value || "") : "";
+          var pack = B.deriveBip85Bip39Child(mem.mnemonic, { index: 0, passphrase: parentPassphrase });
           mem.bip85 = {
             child: pack.mnemonic,
             path: pack.path,

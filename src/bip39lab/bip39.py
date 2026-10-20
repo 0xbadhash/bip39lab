@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+import unicodedata
 
 from .wordlist import load_english_wordlist, word_index
 
@@ -67,13 +68,15 @@ def _mnemonic_to_entropy(mnemonic: str) -> bytes:
 
 
 def mnemonic_to_seed(mnemonic: str, passphrase: str = "") -> bytes:
-    """PBKDF2-HMAC-SHA512 (BIP-39). Does not log or persist secrets."""
-    if not validate_mnemonic(mnemonic):
+    """PBKDF2-HMAC-SHA512 (BIP-39). NFKD on mnemonic and passphrase. Does not log or persist secrets."""
+    mnemonic_n = unicodedata.normalize("NFKD", normalize_mnemonic(mnemonic))
+    passphrase_n = unicodedata.normalize("NFKD", passphrase or "")
+    if not validate_mnemonic(mnemonic_n):
         raise ValueError("invalid mnemonic")
-    salt = ("mnemonic" + passphrase).encode("utf-8")
+    salt = ("mnemonic" + passphrase_n).encode("utf-8")
     return hashlib.pbkdf2_hmac(
         "sha512",
-        mnemonic.strip().encode("utf-8"),
+        mnemonic_n.encode("utf-8"),
         salt,
         2048,
         dklen=64,
