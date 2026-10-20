@@ -937,8 +937,10 @@
           }
         });
       });
-      if (addrs.length) {
-        sessionStorage.setItem("bip39lab.derivedAddresses", JSON.stringify(addrs));
+      try {
+        sessionStorage.removeItem("bip39lab.derivedAddresses");
+      } catch (e2) {
+        /* memory only */
       }
       return addrs;
     } catch (e) {
@@ -1305,7 +1307,6 @@
 
     const words = parseInt(($("entPadWords") && $("entPadWords").value) || "12", 10) || 12;
     const needBits = words >= 24 ? 256 : 128;
-    const needBytes = needBits / 8;
     const est = estimateEntPadBits();
     const estRound = Math.round(est * 10) / 10;
     const gap = needBits - est;
@@ -1331,19 +1332,8 @@
       return;
     }
 
-    let mnemonic;
-    try {
-      // Hash the event log → 32 bytes; take ENT length for BIP-39 (educational)
-      const digest = await sha256Bytes(entEvents.join("|"));
-      const ent = digest.slice(0, needBytes);
-      mnemonic = B.mnemonicFromEntropyBytes(ent);
-    } catch (e) {
-      if (box) box.hidden = false;
-      if (warn) warn.innerHTML = "<strong>Could not build words.</strong>";
-      if (note) note.textContent = String(e && e.message ? e.message : e);
-      if (ta) ta.value = "";
-      return;
-    }
+    // Pad output is not a mnemonic, even when a checksum would pass.
+    if (ta) ta.value = "";
 
     if ($("entPadBitsEst")) {
       $("entPadBitsEst").textContent =
@@ -1359,7 +1349,7 @@
         gapEl.innerHTML =
           '<strong class="ent-pad-verdict-low">TOO LOW</strong> — pad estimate is short by about <strong>' +
           Math.ceil(gap) +
-          "</strong> bits. Words below are only a classroom demo of a weak pad.";
+          "</strong> bits. Pad output is not a mnemonic.";
         gapEl.className = "ent-pad-gap-low";
       } else {
         gapEl.innerHTML =
@@ -1380,16 +1370,8 @@
     }
     if (note) {
       note.textContent =
-        "How we built the words: SHA-256(your roll log) → " +
-        needBytes +
-        " bytes → BIP-39 " +
-        words +
-        " words with checksum. " +
-        "Same rolls always make the same practice phrase. This does not prove your pad had " +
-        needBits +
-        " bits of real entropy.";
+        "Pad output is not accepted as a mnemonic. The roll log is not turned into BIP-39 words.";
     }
-    if (ta) ta.value = mnemonic;
     if (box) {
       box.hidden = false;
       try {
@@ -1401,28 +1383,9 @@
   }
 
   function copyPracticePadToLab() {
-    const ta = $("entPadSeedWords");
-    const m = (ta && ta.value.trim()) || "";
-    if (!m) {
-      setStatus("Build practice words in Step 2 first.", "err");
-      return;
-    }
-    if (!confirm(
-      "Put these PRACTICE words on the Lab tab?\n\n" +
-        "• They stay TEST DATA only — never fund them\n" +
-        "• Overwrites whatever is currently in Lab’s mnemonic box\n\n" +
-        "Use this only to keep experimenting offline (derive table, etc.)."
-    )) {
-      return;
-    }
-    if ($("mnemonic")) $("mnemonic").value = m;
-    if (typeof refreshMnemonicEntropy === "function") {
-      refreshMnemonicEntropy().catch(function () {});
-    }
-    showTab("lab");
-    setStatus("Lab holds PRACTICE pad words (TEST DATA). Do not fund this phrase.", "err");
+    setStatus("Entropy pad output is not accepted as a mnemonic.", "err");
     setPlainStatus(
-      "Entropy pad → Lab: practice only. For a proper random phrase use Lab Generate.",
+      "Entropy pad → Lab refused. For a phrase use Lab Generate (OS CSPRNG).",
       ""
     );
   }
@@ -2041,18 +2004,44 @@
       $("btnPrintBackup").addEventListener("click", () => printBackup().catch(console.error));
     }
     if ($("btnSendNetwork")) $("btnSendNetwork").addEventListener("click", sendToNetwork);
+    function padCsprngByte() {
+      if (typeof crypto === "undefined" || !crypto.getRandomValues) {
+        throw new Error("CSPRNG unavailable");
+      }
+      const buf = new Uint8Array(1);
+      crypto.getRandomValues(buf);
+      return buf[0];
+    }
+    function padD6() {
+      let v = padCsprngByte();
+      while (v >= 252) v = padCsprngByte();
+      return (v % 6) + 1;
+    }
+    function padCoin() {
+      return (padCsprngByte() & 1) === 0 ? "H" : "T";
+    }
     if ($("btnDice")) {
       $("btnDice").addEventListener("click", () => {
-        entEvents.push("d6:" + (1 + Math.floor(Math.random() * 6)));
+        try {
+          entEvents.push("d6:" + padD6());
+        } catch (e) {
+          setStatus(String(e && e.message ? e.message : e), "err");
+          return;
+        }
         if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
         refreshEntPad();
       });
     }
     if ($("btnDice10")) {
       $("btnDice10").addEventListener("click", () => {
-        for (let i = 0; i < 10; i++) {
-          entEvents.push("d6:" + (1 + Math.floor(Math.random() * 6)));
-          if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
+        try {
+          for (let i = 0; i < 10; i++) {
+            entEvents.push("d6:" + padD6());
+            if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
+          }
+        } catch (e) {
+          setStatus(String(e && e.message ? e.message : e), "err");
+          return;
         }
         refreshEntPad();
       });
@@ -2065,7 +2054,12 @@
     }
     if ($("btnCoin")) {
       $("btnCoin").addEventListener("click", () => {
-        entEvents.push("coin:" + (Math.random() < 0.5 ? "H" : "T"));
+        try {
+          entEvents.push("coin:" + padCoin());
+        } catch (e) {
+          setStatus(String(e && e.message ? e.message : e), "err");
+          return;
+        }
         if (entEvents.length > ENT_PAD_MAX) entEvents.shift();
         refreshEntPad();
       });
