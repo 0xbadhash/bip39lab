@@ -1,0 +1,16 @@
+# bip39lab
+
+> Offline BIP-39 lab. Practice only. It does not keep secrets and it is not a wallet.
+
+## Pages
+
+- [Home](https://bip39.catalyxt.xyz/) — BIP39 Lab. Generate and derive addresses without retaining secrets.
+- [V2 tracks](https://bip39.catalyxt.xyz/v2/) — use-case tracks for practicing custody offline.
+- [Multisig room](https://bip39.catalyxt.xyz/multisig.html) — educational M-of-N from public keys only, offline. Also [https://bip39.catalyxt.xyz/multisig/](https://bip39.catalyxt.xyz/multisig/).
+- [Shamir room](https://bip39.catalyxt.xyz/shamir.html) — educational Shamir demo, offline, not SLIP-39. Also [https://bip39.catalyxt.xyz/shamir/](https://bip39.catalyxt.xyz/shamir/).
+- [Network room](https://bip39.catalyxt.xyz/network.html) — fees, mempool traffic, and address balances (opt-in, address-only). Also [https://bip39.catalyxt.xyz/network/](https://bip39.catalyxt.xyz/network/).
+
+## Also
+
+- [robots.txt](https://bip39.catalyxt.xyz/robots.txt)
+- [sitemap.xml](https://bip39.catalyxt.xyz/sitemap.xml)

@@ -1,0 +1,10 @@
+# bip39lab
+
+> Offline BIP-39 lab — generate and derive addresses without retaining secrets. Hosted at bip39.catalyxt.xyz.
+
+- [Home](https://bip39.catalyxt.xyz/)
+- [V2 use-case tracks](https://bip39.catalyxt.xyz/v2/)
+- [Multisig room](https://bip39.catalyxt.xyz/multisig.html)
+- [Shamir room](https://bip39.catalyxt.xyz/shamir.html)
+- [Network room](https://bip39.catalyxt.xyz/network.html)
+- [Fuller outline](https://bip39.catalyxt.xyz/llms-full.txt)
