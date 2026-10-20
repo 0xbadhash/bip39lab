@@ -1,1 +1,0 @@
-../../docs/E2E_COMET_SCENARIOS.md
