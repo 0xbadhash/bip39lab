@@ -28,7 +28,7 @@ DEFAULT_REPOS: dict[str, str] = {
     "second-brain": "0xbadhash/second-brain",
     "catalyxt": "0xbadhash/catalyxt.ltd",
     "zk": "0xbadhash/zk",
-    "bip39": "0xbadhash/bip39",
+    "bip39": "0xbadhash/bip39lab",
     "watchlist": "0xbadhash/watchlist",
     "substack": "0xbadhash/substack",
 }
