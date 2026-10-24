@@ -7904,20 +7904,33 @@
         }
       });
     }
+    function csprngBelow(n) {
+      if (typeof crypto === "undefined" || !crypto.getRandomValues) {
+        throw new Error("CSPRNG unavailable");
+      }
+      var buf = new Uint8Array(1);
+      var limit = 256 - (256 % n);
+      var draw = 0;
+      do {
+        crypto.getRandomValues(buf);
+        draw = buf[0];
+      } while (draw >= limit);
+      return draw % n;
+    }
     function rollD6() {
-      pushEnt("d6:" + (1 + Math.floor(Math.random() * 6)));
+      pushEnt("d6:" + (1 + csprngBelow(6)));
       refreshEntDom();
     }
     if ($("v2Dice")) $("v2Dice").addEventListener("click", rollD6);
     if ($("v2Dice10")) {
       $("v2Dice10").addEventListener("click", function () {
-        for (var i = 0; i < 10; i++) pushEnt("d6:" + (1 + Math.floor(Math.random() * 6)));
+        for (var i = 0; i < 10; i++) pushEnt("d6:" + (1 + csprngBelow(6)));
         refreshEntDom();
       });
     }
     if ($("v2Coin")) {
       $("v2Coin").addEventListener("click", function () {
-        pushEnt("coin:" + (Math.random() < 0.5 ? "H" : "T"));
+        pushEnt("coin:" + (csprngBelow(2) === 0 ? "H" : "T"));
         refreshEntDom();
       });
     }

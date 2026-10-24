@@ -123,7 +123,16 @@
     for (bi = 0; bi < len; bi++) {
       var coeffs = [secretU8[bi] & 0xff];
       var rnd = randomBytes(m - 1);
-      for (i = 0; i < m - 1; i++) coeffs.push(rnd[i]);
+      for (i = 0; i < m - 1; i++) {
+        var coeff = rnd[i];
+        var spins = 0;
+        while (coeff === 0 && spins < 16) {
+          coeff = randomBytes(1)[0];
+          spins++;
+        }
+        if (coeff === 0) throw new Error("CSPRNG zero coefficient");
+        coeffs.push(coeff);
+      }
       for (i = 0; i < n; i++) {
         x = i + 1;
         payloads[i][bi] = evalPoly(coeffs, x);
