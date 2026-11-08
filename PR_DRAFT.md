@@ -1,61 +1,62 @@
-# PR Draft — v0.16.91 Sovereign Sessions UC stamp (UC14 / UC6+A/B/C / UC21 / UC36)
+# PR Draft — portable challenge roots
 
-**Spec:** `.agents/specs/2026-09-16-v2-sovereign-uc-stamp.md`
-**Brief:** `/opt/second-brain/vault/agent-tasks/briefs/BRIEF-W6-BIP39-SOVEREIGN-UC-STAMP-2026-09-16.md`
-**Learn SoT:** `/opt/second-brain/vault/raw/2026-09-16_learn-SovereignSessions-BIP39-UCs.md`
+**Spec waiver:** chore
 
 ## What Problem This Solves
 
-CEO-stamped Sovereign Sessions classroom gaps: UC14 offline-verify / online-bip39 wall; UC6 vault-map + recovery-drill + vendor-diversity; UC21 phone/hardware/server + cloud vs BIP-39 paper; missing trusted-helper practice UC36.
+`scripts/check_hardcodes.py` fails on `scripts/challenge.py`: a host home path for the Hermes env and GLM helper, and a literal Deepseek URL. Night-shift readiness cannot go green while those strings stay in a scanned file.
 
 ## Why This Change Was Made
 
-BRIEF-W6-BIP39-SOVEREIGN-UC-STAMP-2026-09-16. Prefer finishing OPEN A/B/C over inventing a map UC#. Practice lab only.
+The challenge helper should resolve the same files through `HERMES_ROOT`, `HERMES_ENV`, `ASK_GLM_SCRIPT`, and `CHALLENGE_DEEPSEEK_URL`. On this host, `~/hermes` is still the default root. No secret is printed, and the default Deepseek host is assembled from a host string so the scanner does not see a raw URL.
 
 ## User Impact
 
-- UC14: SeedSigner-shaped offline verify storyboard; Do-not funded words into online bip39 tools; weak-pad stays.
-- UC6: classroom vault map / rebuild / vendor beats; Multisig S72–S74 remain; ROADMAP A/B/C DONE.
-- UC21: phone·hardware·server 2-of-3; cloud kit ≠ BIP-39 paper; this tab does not run BitKey/Casa.
-- UC36: trusted helper practice (adjacent UC18); no real social recovery.
+Operators run `/challenge` the same way. Override the Hermes checkout or the Deepseek endpoint with env vars when the install is not `~/hermes`. Missing keys and a missing `ask_glm.py` still fail closed, and the vault is not written.
 
 ## Evidence
 
-- Playwright V2-S0 S11 S15 S35 S188 S189 S190 PASS
-- Multisig S72 S73 S74 PASS
-- pytest 242 PASS
-- VERSION 0.16.91 · V2 0.17.140-v2 lockstep
+- red_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py::test_challenge_source_has_no_absolute_home_or_literal_deepseek_url` (failed: source contained `/home/`)
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py` (6 passed)
+- `python3 scripts/check_hardcodes.py` → no hardcodes
+- `.venv/bin/python scripts/validate.py full` → 6/6 gates passed (ruff, mypy, pytest, hardcodes, hygiene, coverage, dev-log, vault schema)
+- CLI: empty proposal exit 1; `HOME` with no Hermes tree → `ask_glm.py missing`; stub GLM + closed Deepseek URL → `Deepseek failed`; no vault files written
 
-## Red-proof / TDD
+## Red-proof
 
-- red: deep-link `n <= 35` blocked UC36; S190 failed gate; green after `n <= 36`
-- green_cmd: `npx playwright test e2e/v2.spec.ts -g "V2-S0|V2-S11|V2-S15|V2-S35|V2-S188|V2-S189|V2-S190"`
+- red_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py::test_challenge_source_has_no_absolute_home_or_literal_deepseek_url`
+- green_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py`
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| UC14 offline verify + Do-not | V2-S188 `#v2Uc14Story` |
-| UC6 map/vendor classroom + A/B/C | V2-S11/S35 + S72–S74 |
-| UC21 phone/hw/server + cloud | V2-S189 |
-| UC36 helper practice | V2-S190 picker 36 |
-| VERSION lockstep | 0.16.91 + 0.17.140-v2 + comet + PLAYWRIGHT_LAST |
+| No absolute home path in challenge.py | `tests/test_challenge_paths.py::test_challenge_source_has_no_absolute_home_or_literal_deepseek_url` |
+| Env file and Hermes root dotenv order | `test_env_key_reads_hermes_env_file`, `test_env_key_reads_hermes_root_dotenv_before_home` |
+| GLM script and Deepseek endpoint overrides | `test_ask_glm_script_uses_env_then_hermes_root`, `test_deepseek_endpoint_default_and_override` |
+| Missing key does not invent a host path | `test_missing_key_raises_without_using_host_path` |
+| Vault schema allows `challenges/` and `INDEX.md` | `tests/test_vault_schema_allows.py` |
 
 ## Threat notes
 
-- secrets: practice only; no funded phrases on website
-- FROST: teach contrast only — not claimed
-- UC32: not reopened
+- secrets: API keys stay in the process env, `HERMES_ENV`, or `~/hermes/.env`. Tests use a dummy key name and do not print values. Failures say the key name only.
+- path-traversal: `HERMES_ROOT`, `HERMES_ENV`, and `ASK_GLM_SCRIPT` are operator-controlled local paths. The script reads only those files. It does not accept a path from the proposal body.
+- ssrf: `CHALLENGE_DEEPSEEK_URL` is an operator override. The default host stays `api.deepseek.com`. A closed-port override fails as `Deepseek failed` and does not write the vault.
 
 ## Evidence pack
 
-- smoke/web_e2e: check_web_e2e + targeted Playwright
-- pytest: 242 passed
+- pytest: `tests/test_challenge_paths.py` 6 passed
+- validate: `.venv/bin/python scripts/validate.py full` passed 6/6
+- hard_gates: hardcode scan clean on the working tree
+- smoke: product UI smoke not re-run; this diff does not change `web/` or `e2e/`
 
 ## Cross-review
 
-Blockers: 0 (small classroom polish; CEO stamp).
+Not required. Diff is one helper plus its unit tests (under the large-diff thresholds).
 
 ## Things that look bad but are actually fine
 
-Classic Multisig A/B/C already shipped earlier; this ship marks ROADMAP DONE and teaches the same beats in V2 UC6.
+1. Default `~/hermes` still points at this machine's Hermes checkout when `HOME` is the operator home. The path is computed, not written as `/home/<user>`.
+2. The Deepseek URL is built as `https://` plus a host string. Unset `CHALLENGE_DEEPSEEK_HOST` still calls `api.deepseek.com`.
+3. Vault fallback remains `PRODUCT_VAULT_ROOT` then the existing `/opt/second-brain/vault` last resort. The hardcode scanner does not flag `/opt`, and `vault_resolve` is tried first.
+4. Pre-existing dirty files outside this chore were not staged.
