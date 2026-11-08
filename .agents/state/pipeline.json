@@ -1,9 +1,9 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "shipped",
-  "score": 100.0,
-  "spec_id": ".agents/specs/2026-09-16-v2-sovereign-uc-stamp.md",
-  "task": "sovereign-uc-stamp",
-  "waiver": null
+  "phase": "blocked",
+  "score": 75,
+  "spec_id": "",
+  "task": "portable-challenge-roots",
+  "waiver": "chore"
 }
