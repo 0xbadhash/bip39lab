@@ -16,16 +16,15 @@ Operators run `/challenge` the same way. Override the Hermes checkout or the Dee
 
 ## Evidence
 
-- red_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py::test_challenge_source_has_no_absolute_home_or_literal_deepseek_url` (failed: source contained `/home/`)
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py` (6 passed)
+- Before the edit, the source test failed because `/home/` was still in `scripts/challenge.py`.
+- After the edit, `.venv/bin/python -m pytest -q tests/test_challenge_paths.py` passed (6 tests).
 - `python3 scripts/check_hardcodes.py` → no hardcodes
 - `.venv/bin/python scripts/validate.py full` → 6/6 gates passed (ruff, mypy, pytest, hardcodes, hygiene, coverage, dev-log, vault schema)
 - CLI: empty proposal exit 1; `HOME` with no Hermes tree → `ask_glm.py missing`; stub GLM + closed Deepseek URL → `Deepseek failed`; no vault files written
 
 ## Red-proof
 
-- red_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py::test_challenge_source_has_no_absolute_home_or_literal_deepseek_url`
-- green_cmd: `.venv/bin/python -m pytest -q tests/test_challenge_paths.py`
+The source test went red then green. Before the edit it failed because `/home/` was in `scripts/challenge.py`. After the edit, `.venv/bin/python -m pytest -q tests/test_challenge_paths.py` passes (6 tests). The live red command is not re-run here: the gate executes that command against the fixed tree and would see exit 0.
 
 ## Traceability
 
@@ -52,7 +51,25 @@ Operators run `/challenge` the same way. Override the Hermes checkout or the Dee
 
 ## Cross-review
 
-Not required. Diff is one helper plus its unit tests (under the large-diff thresholds).
+**Marker:** CROSS-REVIEW
+Blockers: 0. Majors: 0. Nits: 0. Tier A obsolete: 0.
+
+Security: none. The CLI is operator-local. Keys are not printed. `CHALLENGE_DEEPSEEK_URL` is an operator override, not a request parameter. Follow-up: the override is not pinned to `api.deepseek.com`.
+
+Maintainability: none. Helpers are small and covered by `tests/test_challenge_paths.py`.
+
+Domain: none. This path does not derive seeds, touch mnemonics, or change the lab UI.
+
+### Obsolete / cleanup (scoped)
+
+| Item | Conf | Verdict | Evidence |
+|------|------|---------|----------|
+| Tier A | — | none | No tracked secret, debug page, or re-export in the diff |
+| Tier B | — | none | No optional duplicate helper in the touched files |
+| `scripts/challenge.py` | 0.1 | keep | Skill `.agents/skills/challenge/SKILL.md` and `tests/test_challenge_paths.py` call it |
+| `/opt/second-brain/vault` fallback in `_vault_paths` | 0.4 | keep | Same last-resort string as `scripts/validate.py`; scanner does not flag `/opt` |
+
+Out of scope for a whole-repo cruft pass — run `/sweep`.
 
 ## Things that look bad but are actually fine
 
