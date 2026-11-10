@@ -49,7 +49,25 @@ The new tests went red then green. Before the flag, help omitted `--skip-hardcod
 
 ## Cross-review
 
-Not required. Diff is the argparse flag, the skip branch, and the three tests.
+**Marker:** CROSS-REVIEW
+Blockers: 0. Majors: 0. Nits: 0. Tier A obsolete: 0.
+
+Security: none. The flag is boolean. Default validate still runs the hardcode scan. Night shift runs that scan as its own gate.
+
+Maintainability: none. `tests/test_validate_skip_hardcodes.py` covers help, skip, and the default path.
+
+Domain: none. No mnemonic, seed, wordlist, or lab UI change.
+
+### Obsolete / cleanup (scoped)
+
+| Item | Conf | Verdict | Evidence |
+|------|------|---------|----------|
+| Tier A | — | none | No tracked secret, debug page, or re-export in the diff |
+| Tier B | — | none | Flag matches the harness validator; not a second tool |
+| `scripts/validate.py` | 0.1 | keep | Night shift and the new tests call it |
+| `scripts/validate.py.bak-20261009` | 0.7 | follow-up | Not in this diff. Out of scope — run `/sweep` |
+
+Out of scope for a whole-repo cruft pass — run `/sweep`.
 
 ## Things that look bad but are actually fine
 
