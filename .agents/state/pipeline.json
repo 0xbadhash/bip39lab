@@ -1,8 +1,8 @@
 {
   "card_id": null,
   "note": "init after v0.16.78 docs sync",
-  "phase": "ready_for_review",
-  "score": 90.0,
+  "phase": "blocked",
+  "score": 75,
   "spec_id": "",
   "task": "validate-skip-hardcodes",
   "waiver": "hotfix"
