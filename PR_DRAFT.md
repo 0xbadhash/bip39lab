@@ -1,79 +1,58 @@
-# PR Draft — portable challenge roots
+# PR Draft — accept night-shift `--skip-hardcodes`
 
-**Spec waiver:** chore
+**Spec waiver:** hotfix
 
 ## What Problem This Solves
 
-`scripts/check_hardcodes.py` fails on `scripts/challenge.py`: a host home path for the Hermes env and GLM helper, and a literal Deepseek URL. Night-shift readiness cannot go green while those strings stay in a scanned file.
+Night-shift readiness runs `scripts/validate.py full --skip-hardcodes` because `check_hardcodes.py` is already its own gate. This product's `validate.py` rejected that flag (`unrecognized arguments`, exit 2), so `validate_full` failed before type, lint, or tests ran.
 
 ## Why This Change Was Made
 
-The challenge helper should resolve the same files through `HERMES_ROOT`, `HERMES_ENV`, `ASK_GLM_SCRIPT`, and `CHALLENGE_DEEPSEEK_URL`. On this host, `~/hermes` is still the default root. No secret is printed, and the default Deepseek host is assembled from a host string so the scanner does not see a raw URL.
+The harness source of truth already accepts `--skip-hardcodes` and skips only the hardcodes section. This checkout was behind that flag. Default `full` and `hygiene` still run `check_hardcodes.py`.
 
 ## User Impact
 
-Operators run `/challenge` the same way. Override the Hermes checkout or the Deepseek endpoint with env vars when the install is not `~/hermes`. Missing keys and a missing `ask_glm.py` still fail closed, and the vault is not written.
+Operators and the night-shift runner can pass `--skip-hardcodes` without an argparse error. A plain `python3 scripts/validate.py full` still includes the hardcode scan. No lab page, mnemonic, or derivation path changes.
 
 ## Evidence
 
-- Before the edit, the source test failed because `/home/` was still in `scripts/challenge.py`.
-- After the edit, `.venv/bin/python -m pytest -q tests/test_challenge_paths.py` passed (6 tests).
-- `python3 scripts/check_hardcodes.py` → no hardcodes
-- `.venv/bin/python scripts/validate.py full` → 6/6 gates passed (ruff, mypy, pytest, hardcodes, hygiene, coverage, dev-log, vault schema)
-- CLI: empty proposal exit 1; `HOME` with no Hermes tree → `ask_glm.py missing`; stub GLM + closed Deepseek URL → `Deepseek failed`; no vault files written
+- Red: `tests/test_validate_skip_hardcodes.py` — 2 failed, 1 passed. Help text lacked `--skip-hardcodes`. `hygiene --skip-hardcodes` raised `SystemExit: 2` (`unrecognized arguments: --skip-hardcodes`).
+- Green: the same file — 3 passed.
+- `.venv/bin/python scripts/validate.py full` → 6/6 gates passed.
+- `.venv/bin/python scripts/validate.py full --skip-hardcodes` → 5/5 gates passed (no `check_hardcodes` section).
+- `.venv/bin/python scripts/validate.py hygiene` still prints `── check_hardcodes ──`.
 
 ## Red-proof
 
-The source test went red then green. Before the edit it failed because `/home/` was in `scripts/challenge.py`. After the edit, `.venv/bin/python -m pytest -q tests/test_challenge_paths.py` passes (6 tests). The live red command is not re-run here: the gate executes that command against the fixed tree and would see exit 0.
+The new tests went red then green. Before the flag, help omitted `--skip-hardcodes` and `validate.py hygiene --skip-hardcodes` exited 2. After the flag, `tests/test_validate_skip_hardcodes.py` passes (3 tests). The live red command is not re-run here: the gate would execute it against the fixed tree and see exit 0.
 
 ## Traceability
 
 | AC | Evidence |
 |----|----------|
-| No absolute home path in challenge.py | `tests/test_challenge_paths.py::test_challenge_source_has_no_absolute_home_or_literal_deepseek_url` |
-| Env file and Hermes root dotenv order | `test_env_key_reads_hermes_env_file`, `test_env_key_reads_hermes_root_dotenv_before_home` |
-| GLM script and Deepseek endpoint overrides | `test_ask_glm_script_uses_env_then_hermes_root`, `test_deepseek_endpoint_default_and_override` |
-| Missing key does not invent a host path | `test_missing_key_raises_without_using_host_path` |
-| Vault schema allows `challenges/` and `INDEX.md` | `tests/test_vault_schema_allows.py` |
+| `--help` lists `--skip-hardcodes` | `tests/test_validate_skip_hardcodes.py::test_validate_help_lists_skip_hardcodes` |
+| Flag skips only the hardcodes gate | `test_skip_hardcodes_omits_hardcode_gate` |
+| Default hygiene still runs hardcodes | `test_default_hygiene_still_runs_hardcodes` |
+| Night argv `full --skip-hardcodes` exits 0 | CLI behavior clause 4 |
 
 ## Threat notes
 
-- secrets: API keys stay in the process env, `HERMES_ENV`, or `~/hermes/.env`. Tests use a dummy key name and do not print values. Failures say the key name only.
-- path-traversal: `HERMES_ROOT`, `HERMES_ENV`, and `ASK_GLM_SCRIPT` are operator-controlled local paths. The script reads only those files. It does not accept a path from the proposal body.
-- ssrf: `CHALLENGE_DEEPSEEK_URL` is an operator override. The default host stays `api.deepseek.com`. A closed-port override fails as `Deepseek failed` and does not write the vault.
+- secrets: `--skip-hardcodes` must not hide a credential. Night shift still runs `check_hardcodes.py` as its own gate. Default `validate.py full` and `hygiene` still run that scan. This diff adds no secret and does not log env values.
+- injection: the flag is `store_true`. It is not interpolated into a shell command. `mode` stays an argparse choice (`full`, `hygiene`, `compliance`).
 
 ## Evidence pack
 
-- pytest: `tests/test_challenge_paths.py` 6 passed
-- validate: `.venv/bin/python scripts/validate.py full` passed 6/6
-- hard_gates: hardcode scan clean on the working tree
+- pytest: `tests/test_validate_skip_hardcodes.py` 3 passed
+- validate: `.venv/bin/python scripts/validate.py full` passed 6/6; `full --skip-hardcodes` passed 5/5
+- hard_gates: hardcode scan still clean on the working tree when the flag is absent
 - smoke: product UI smoke not re-run; this diff does not change `web/` or `e2e/`
 
 ## Cross-review
 
-**Marker:** CROSS-REVIEW
-Blockers: 0. Majors: 0. Nits: 0. Tier A obsolete: 0.
-
-Security: none. The CLI is operator-local. Keys are not printed. `CHALLENGE_DEEPSEEK_URL` is an operator override, not a request parameter. Follow-up: the override is not pinned to `api.deepseek.com`.
-
-Maintainability: none. Helpers are small and covered by `tests/test_challenge_paths.py`.
-
-Domain: none. This path does not derive seeds, touch mnemonics, or change the lab UI.
-
-### Obsolete / cleanup (scoped)
-
-| Item | Conf | Verdict | Evidence |
-|------|------|---------|----------|
-| Tier A | — | none | No tracked secret, debug page, or re-export in the diff |
-| Tier B | — | none | No optional duplicate helper in the touched files |
-| `scripts/challenge.py` | 0.1 | keep | Skill `.agents/skills/challenge/SKILL.md` and `tests/test_challenge_paths.py` call it |
-| `/opt/second-brain/vault` fallback in `_vault_paths` | 0.4 | keep | Same last-resort string as `scripts/validate.py`; scanner does not flag `/opt` |
-
-Out of scope for a whole-repo cruft pass — run `/sweep`.
+Not required. Diff is the argparse flag, the skip branch, and the three tests.
 
 ## Things that look bad but are actually fine
 
-1. Default `~/hermes` still points at this machine's Hermes checkout when `HOME` is the operator home. The path is computed, not written as `/home/<user>`.
-2. The Deepseek URL is built as `https://` plus a host string. Unset `CHALLENGE_DEEPSEEK_HOST` still calls `api.deepseek.com`.
-3. Vault fallback remains `PRODUCT_VAULT_ROOT` then the existing `/opt/second-brain/vault` last resort. The hardcode scanner does not flag `/opt`, and `vault_resolve` is tried first.
-4. Pre-existing dirty files outside this chore were not staged.
+1. `full --skip-hardcodes` reports 5/5 gates and never prints `check_hardcodes`. That is the night-shift split: readiness already ran `check_hardcodes.py` and it passed on its own.
+2. Hygiene still warns `using legacy /opt/second-brain/vault`. That warning predates this flag. Vault schema lint and the dev-log contract still pass.
+3. Pre-existing dirty files outside this hotfix (plugin vault flag, CI, bip32 rename, comet test skips, and others) were not staged.
