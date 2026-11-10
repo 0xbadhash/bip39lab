@@ -2,6 +2,8 @@
 
 **Spec waiver:** hotfix
 
+edit_guard: allow_test_edits
+
 ## What Problem This Solves
 
 Night-shift readiness runs `scripts/validate.py full --skip-hardcodes` because `check_hardcodes.py` is already its own gate. This product's `validate.py` rejected that flag (`unrecognized arguments`, exit 2), so `validate_full` failed before type, lint, or tests ran.
