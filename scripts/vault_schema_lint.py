@@ -53,13 +53,13 @@ PROJECT_FILE_ALLOW = frozenset(
         "project.md",
         "decisions.md",
         "README.md",
-        "INDEX.md",
         ".gitkeep",
+        # Generated vault index (type: index) at each project root.
+        "INDEX.md",
     }
 )
 
-# Directories always allowed under every product.
-# `challenges/` is where scripts/challenge.py files the operator note.
+# Directories always allowed under every product
 PROJECT_DIR_ALLOW = frozenset({"docs", "_archive", "challenges"})
 
 # Multi-product ops re-homed to agent-tasks/night-shift/ (2026-08-07).
@@ -67,7 +67,7 @@ PROJECT_DIR_ALLOW = frozenset({"docs", "_archive", "challenges"})
 SPECIAL_PROJECTS: dict[str, set[str]] = {
     # Stub vault home for private hermes-config (vault plugin still disabled).
     # Files-only; created W1 forensic 2026-10-20. Enable plugin only with CEO stamp.
-    "herm-config": {"README.md", "TODO.md", "INDEX.md", ".gitkeep"},
+    "herm-config": {"README.md", "TODO.md", ".gitkeep", "INDEX.md"},
 }
 
 
