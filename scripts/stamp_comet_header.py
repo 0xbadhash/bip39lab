@@ -78,7 +78,10 @@ def stamp_comet_doc(
 
     comet_path = root / DEFAULT_COMET
     if not comet_path.is_file():
-        raise SystemExit(f"missing {DEFAULT_COMET}")
+        # CEO t238u: comet E2E ship-gate docs dropped — no-op success
+        import sys
+        print(f"skip: {DEFAULT_COMET} absent (CEO t238u)", file=sys.stderr)
+        raise SystemExit(0)
 
     pw_ids = collect_playwright_ids(root)
     rng = scenario_range_label(pw_ids)

@@ -49,4 +49,4 @@ Exit 0 writes the same note to `01-Projects/<project_label>/challenges/YYYY-MM-D
 
 ## Models
 
-GLM is `z-ai-glm-5-3-flash` through `$ASK_GLM_SCRIPT` or `$HERMES_ROOT/scripts/ask_glm.py` (default `~/hermes`). Deepseek is `deepseek-chat` at `$CHALLENGE_DEEPSEEK_URL` (default host `api.deepseek.com`). Keys stay in the process env, `$HERMES_ENV`, or `~/hermes/.env`, and are never printed.
+GLM is `z-ai-glm-5-3-flash` through `/home/debian/hermes/scripts/ask_glm.py`. Deepseek is `deepseek-v4-flash` through Venice (`https://api.venice.ai/api/v1/chat/completions`, key `VENICE_API_KEY`). Do not call `api.deepseek.com`. Keys stay in the Hermes env and are never printed.

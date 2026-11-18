@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Two-model challenge: GLM and Deepseek, then a local decision on disk.
 
 Round 1 sends only the proposal. Round 2 sends the proposal plus the other
@@ -17,7 +16,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -40,34 +39,13 @@ class ModelError(RuntimeError):
     pass
 
 
-def _hermes_root() -> Path:
-    raw = os.environ.get("HERMES_ROOT", "").strip()
-    if raw:
-        return Path(raw).expanduser()
-    return Path.home() / "hermes"
-
-
-def _dotenv_candidates() -> list[Path]:
-    seen: list[Path] = []
-    explicit = os.environ.get("HERMES_ENV", "").strip()
-    candidates: list[Path] = []
-    if explicit:
-        candidates.append(Path(explicit).expanduser())
-    candidates.append(_hermes_root() / ".env")
-    candidates.append(Path.home() / ".env")
-    for path in candidates:
-        if path not in seen:
-            seen.append(path)
-    return seen
-
-
 def _env_key(name: str) -> str:
     val = os.environ.get(name, "").strip()
     if val:
         return val
-    for path in _dotenv_candidates():
+    for path in (str(Path.home() / "hermes" / ".env"), str(Path.home() / ".env")):
         try:
-            for line in path.read_text(encoding="utf-8").splitlines():
+            for line in Path(path).read_text(encoding="utf-8").splitlines():
                 if line.startswith(name + "="):
                     return line.split("=", 1)[1].strip().strip('"').strip("'")
         except OSError:
@@ -75,23 +53,8 @@ def _env_key(name: str) -> str:
     raise ModelError(f"{name} not found")
 
 
-def _ask_glm_script() -> Path:
-    raw = os.environ.get("ASK_GLM_SCRIPT", "").strip()
-    if raw:
-        return Path(raw).expanduser()
-    return _hermes_root() / "scripts" / "ask_glm.py"
-
-
-def _deepseek_endpoint() -> str:
-    explicit = os.environ.get("CHALLENGE_DEEPSEEK_URL", "").strip()
-    if explicit:
-        return explicit
-    host = os.environ.get("CHALLENGE_DEEPSEEK_HOST", "").strip() or "api.deepseek.com"
-    return f"https://{host}/chat/completions"
-
-
 def call_glm(prompt: str) -> str:
-    script = _ask_glm_script()
+    script = Path.home() / "hermes" / "scripts" / "ask_glm.py"
     if not script.is_file():
         raise ModelError("ask_glm.py missing")
     import subprocess
@@ -115,25 +78,34 @@ def call_glm(prompt: str) -> str:
 
 
 def call_deepseek(prompt: str) -> str:
-    key = _env_key("DEEPSEEK_API_KEY")
+    """Deepseek through Venice. Direct api.deepseek.com is not the challenge route."""
+    key = _env_key("VENICE_API_KEY")
     body = json.dumps({
-        "model": os.environ.get("CHALLENGE_DEEPSEEK_MODEL", "deepseek-chat"),
+        "model": os.environ.get("CHALLENGE_DEEPSEEK_MODEL", "deepseek-v4-flash"),
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": 2500,
         "temperature": 0.2,
     }).encode()
     req = urllib.request.Request(
-        _deepseek_endpoint(),
+        os.environ.get(
+            "CHALLENGE_DEEPSEEK_URL",
+            "https://api.venice.ai/api/v1/chat/completions",
+        ),
         data=body,
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
     )
     try:
         with urllib.request.urlopen(req, timeout=180) as resp:
             payload = json.load(resp)
+    except urllib.error.HTTPError as exc:
+        raise ModelError(f"Deepseek failed HTTP {exc.code}") from exc
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise ModelError("Deepseek failed") from exc
-    text = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
-    if not text.strip():
+    msg = ((payload.get("choices") or [{}])[0].get("message") or {})
+    text = (msg.get("content") or "").strip()
+    if not text:
+        text = (msg.get("reasoning_content") or "").strip()
+    if not text:
         raise ModelError("Deepseek empty")
     return text.strip()
 
@@ -154,20 +126,28 @@ def _rounds(proposal: str, glm, deepseek) -> tuple[str, str, str, str]:
 
 
 def _note(proposal: str, rounds: tuple[str, str, str, str], decision: str) -> str:
+    """The artifact body. Every field is interpolated once, by an f-string: the proposal, the decision
+    and both critiques are arbitrary user/model text, and feeding the assembled body through
+    ``str.format`` made any brace in them a format field (``KeyError: 'a,b'`` on a proposal that
+    happened to list ``{render_page,capture}.py``)."""
     g1, d1, g2, d2 = rounds
     return (
         "# Challenge\n\n"
-        f"- **Date:** {datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n"
-        "- **Models:** z-ai-glm-5-3-flash, deepseek-chat\n\n"
+        f"- **Date:** {datetime.now(UTC).strftime('%Y-%m-%d')}\n"
+        "- **Models:** z-ai-glm-5-3-flash, deepseek-v4-flash via Venice\n\n"
         "## Decision\n\n"
         f"{decision.strip()}\n\n"
         "## Proposal\n\n"
         f"{proposal.strip()}\n\n"
-        "## GLM round 1\n\n{g1}\n\n"
-        "## Deepseek round 1\n\n{d1}\n\n"
-        "## GLM round 2\n\n{g2}\n\n"
-        "## Deepseek round 2\n\n{d2}\n"
-    ).format(g1=g1.strip(), d1=d1.strip(), g2=g2.strip(), d2=d2.strip())
+        "## GLM round 1\n\n"
+        f"{g1.strip()}\n\n"
+        "## Deepseek round 1\n\n"
+        f"{d1.strip()}\n\n"
+        "## GLM round 2\n\n"
+        f"{g2.strip()}\n\n"
+        "## Deepseek round 2\n\n"
+        f"{d2.strip()}\n"
+    )
 
 
 def _vault_paths(product_root: Path, slug: str, vault: Path | None):
@@ -175,8 +155,15 @@ def _vault_paths(product_root: Path, slug: str, vault: Path | None):
 
     root = vault or resolve_vault_root(product_root=product_root, require_enabled=False)
     if root is None:
-        root = Path(os.environ.get("PRODUCT_VAULT_ROOT", "/opt/second-brain/vault"))
-    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        raise ValueError(
+            "vault root is unset; pass --vault or set PRODUCT_VAULT_ROOT"
+        )
+    # A vault path we cannot create is a typo, not a new vault. Allow creation only when the
+    # parent exists and is writable (a fresh vault under tmp is fine; /nonexistent is not).
+    root_p = Path(root)
+    if not root_p.is_dir() and not (root_p.parent.is_dir() and os.access(root_p.parent, os.W_OK)):
+        raise ValueError(f"vault root is not creatable: {root}")
+    day = datetime.now(UTC).strftime("%Y-%m-%d")
     note = root / project_rel(product_root, "challenges", f"{day}-{slug}.md")
     decisions = root / project_rel(product_root, "decisions.md")
     return note, decisions
@@ -186,7 +173,7 @@ def publish(note_body: str, product_root: Path, slug: str, vault: Path | None) -
     note, decisions = _vault_paths(product_root, slug, vault)
     note.parent.mkdir(parents=True, exist_ok=True)
     note.write_text(note_body, encoding="utf-8")
-    pointer = f"- {datetime.now(timezone.utc).strftime('%Y-%m-%d')} — Challenge. See [[{note.with_suffix('').as_posix()}]].\n"
+    pointer = f"- {datetime.now(UTC).strftime('%Y-%m-%d')} — Challenge. See [[{note.with_suffix('').as_posix()}]].\n"
     if decisions.is_file():
         text = decisions.read_text(encoding="utf-8")
         if pointer not in text:
@@ -201,6 +188,8 @@ def main(argv: list[str] | None = None, *, glm=call_glm, deepseek=call_deepseek)
     ap.add_argument("--decision")
     ap.add_argument("--root", type=Path, default=Path.cwd())
     ap.add_argument("--vault", type=Path, default=None)
+    ap.add_argument("--check", action="store_true",
+                    help="resolve the target note and exit; calls no model")
     args = ap.parse_args(argv)
 
     product = args.root.resolve()
@@ -210,6 +199,26 @@ def main(argv: list[str] | None = None, *, glm=call_glm, deepseek=call_deepseek)
         print("empty proposal", file=sys.stderr)
         return 1
     slug = _slug(proposal_path)
+
+    if args.check:
+        note, decisions = _vault_paths(product, slug, args.vault)
+        print(f"proposal: {proposal_path or '<stdin>'}\nnote: {note}\ndecisions: {decisions}")
+        return 0
+
+    # Pre-flight: everything cheap that can be fatal, before a single model call.
+    # Both rounds are paid for up front, so a missing vault or key found afterwards
+    # throws away work that was already bought.
+    if args.decision:
+        try:
+            _vault_paths(product, slug, args.vault)
+        except (OSError, ValueError, ImportError) as exc:
+            print(f"pre-flight failed, no model was called: {exc}", file=sys.stderr)
+            return 1
+        if not Path(args.decision).is_file():
+            print(f"pre-flight failed, no model was called: decision file not found: {args.decision}",
+                  file=sys.stderr)
+            return 1
+
     artifact = product / ".agents" / "artifacts" / "CHALLENGE.md"
     try:
         rounds = _rounds(proposal, glm, deepseek)
@@ -231,7 +240,7 @@ def main(argv: list[str] | None = None, *, glm=call_glm, deepseek=call_deepseek)
     print(body)
     try:
         publish(body, product, slug, args.vault)
-    except OSError as exc:
+    except (OSError, ValueError) as exc:
         print(f"vault write failed: {exc}", file=sys.stderr)
         return 1
     return 0
