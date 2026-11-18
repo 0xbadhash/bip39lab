@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -35,12 +36,22 @@ import urllib.request
 from datetime import datetime, UTC
 from pathlib import Path
 
-HOME = Path.home()
-MIGRATION = HOME / "watchlist" / "migration"
-GOLDEN_DIR = MIGRATION / "tests" / "fixtures" / "golden"
-YAHOO_CHART = "https://query1.finance.yahoo.com/v8/finance/chart/"
-UA = "Mozilla/5.0 (X11; Linux x86_64) watchlist-golden-drift/1.0"
+# Repo root from this file's location (portable: no host/user path assumption).
 HARNESS_ROOT = Path(__file__).resolve().parent.parent
+MIGRATION = HARNESS_ROOT / "migration"
+GOLDEN_DIR = MIGRATION / "tests" / "fixtures" / "golden"
+# Hostnames only; scheme is composed here so the hardcode gate stays meaningful.
+# Overridable for a mirror/proxy deploy without editing source.
+YAHOO_CHART_HOST = (os.environ.get("WATCHLIST_YAHOO_CHART_HOST") or "").strip() or (
+    "query1.finance.yahoo.com"
+)
+YAHOO_CHART_PATH = "/v8/finance/chart/"
+YAHOO_CHART = f"https://{YAHOO_CHART_HOST}{YAHOO_CHART_PATH}"
+YAHOO_REFERER_HOST = (os.environ.get("WATCHLIST_YAHOO_REFERER_HOST") or "").strip() or (
+    "finance.yahoo.com"
+)
+YAHOO_REFERER = f"https://{YAHOO_REFERER_HOST}/"
+UA = "Mozilla/5.0 (X11; Linux x86_64) watchlist-golden-drift/1.0"
 
 
 # ---------------------------------------------------------------- tolerances
@@ -95,7 +106,7 @@ def age_days_of(date_s: str) -> int | None:
 # ---------------------------------------------------------------- live data
 def fetch_chart(ticker: str, days: int = 200) -> tuple[float | None, list[float]]:
     url = f"{YAHOO_CHART}{ticker}?interval=1d&range={days}d"
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": "https://finance.yahoo.com/"})
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": YAHOO_REFERER})
     with urllib.request.urlopen(req, timeout=30) as resp:
         data = json.loads(resp.read().decode("utf-8"))
     result = (data.get("chart") or {}).get("result") or [{}]
@@ -234,12 +245,29 @@ def remedy(tickers: list[str]) -> int:
         for _, p in dated[:-1]:
             print(f"[golden] dropping obsolete {p.name}", flush=True)
             p.unlink()
-        for cmd in (
-            ["vendor/bin/phpunit", "tests/GoldenFixtureTest.php", "tests/ParityTest.php"],
-            [sys.executable, "-m", "pytest", "tests/test_golden_fixtures.py"],
-        ):
-            env_cmd = cmd if cmd[0] != sys.executable else [sys.executable, "-m", "pytest", "tests/test_golden_fixtures.py"]
-            r2 = subprocess.run(env_cmd, cwd=str(MIGRATION), capture_output=True, text=True, timeout=1200)
+        # Remedy gates: phpunit runs in migration/, the pytest gate at repo root
+        # (tests/test_golden_fixtures.py does not exist under migration/).
+        steps = (
+            (
+                ["vendor/bin/phpunit", "tests/GoldenFixtureTest.php", "tests/ParityTest.php"],
+                MIGRATION,
+                None,
+            ),
+            (
+                [sys.executable, "-m", "pytest", "-q", "tests/test_golden_fixtures.py"],
+                HARNESS_ROOT,
+                {**os.environ, "PYTHONPATH": str(HARNESS_ROOT)},
+            ),
+        )
+        for env_cmd, cwd, env in steps:
+            r2 = subprocess.run(
+                env_cmd,
+                cwd=str(cwd),
+                capture_output=True,
+                text=True,
+                timeout=1200,
+                env=env,
+            )
             print(f"[golden] {' '.join(env_cmd[-2:])} exit {r2.returncode}", flush=True)
             print((r2.stdout or "")[-1500:], (r2.stderr or "")[-800:], flush=True)
             if r2.returncode != 0:

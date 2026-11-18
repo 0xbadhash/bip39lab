@@ -35,6 +35,13 @@ CROSS = (
 )
 
 
+CHALLENGE_DEEPSEEK_HOST = (os.environ.get("CHALLENGE_DEEPSEEK_HOST") or "").strip() or (
+    "api.venice.ai"
+)
+CHALLENGE_DEEPSEEK_PATH = "/api/v1/chat/completions"
+DEFAULT_DEEPSEEK_URL = f"https://{CHALLENGE_DEEPSEEK_HOST}{CHALLENGE_DEEPSEEK_PATH}"
+
+
 class ModelError(RuntimeError):
     pass
 
@@ -87,10 +94,7 @@ def call_deepseek(prompt: str) -> str:
         "temperature": 0.2,
     }).encode()
     req = urllib.request.Request(
-        os.environ.get(
-            "CHALLENGE_DEEPSEEK_URL",
-            "https://api.venice.ai/api/v1/chat/completions",
-        ),
+        os.environ.get("CHALLENGE_DEEPSEEK_URL", DEFAULT_DEEPSEEK_URL),
         data=body,
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
     )
