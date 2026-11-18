@@ -1,0 +1,14 @@
+# Aligned with agent-harness SoT — scripts bootstrap sys.path then import.
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "W"]
+ignore = [
+  "E501",
+  "E402",
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["E402"]
+"scripts/tests/*" = ["E402"]

@@ -41,6 +41,10 @@ def test_learn_levels_stores_int_adv_keys():
 
 
 def test_comet_has_s68_s69():
-    comet = (ROOT / "docs/E2E_COMET_SCENARIOS.md").read_text(encoding="utf-8")
+    comet_path = ROOT / "docs/E2E_COMET_SCENARIOS.md"
+    if not comet_path.is_file():
+        # CEO t238u: comet E2E ship-gate docs dropped (b65f451)
+        return
+    comet = comet_path.read_text(encoding="utf-8")
     assert "S68" in comet
     assert "S69" in comet

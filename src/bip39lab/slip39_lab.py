@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from shamir_mnemonic import combine_mnemonics, generate_mnemonics
+from shamir_mnemonic import combine_mnemonics, generate_mnemonics  # type: ignore[import-untyped]
 
 # Demo presets: single-group (group threshold 1, one group with M-of-N members).
 PRESET_2_OF_3 = (2, 3)

@@ -37,6 +37,10 @@ def test_comet_and_agent_prompt_have_no_stale_s0_s71():
 
 
 def test_stamp_comet_header_updates_product_and_range():
+    comet_path = ROOT / "docs" / "E2E_COMET_SCENARIOS.md"
+    if not comet_path.is_file():
+        # CEO t238u: comet E2E ship-gate docs dropped (b65f451)
+        return
     r = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "stamp_comet_header.py"), "--root", str(ROOT)],
         capture_output=True,
@@ -44,7 +48,7 @@ def test_stamp_comet_header_updates_product_and_range():
         check=False,
     )
     assert r.returncode == 0, r.stderr + r.stdout
-    comet = (ROOT / "docs" / "E2E_COMET_SCENARIOS.md").read_text(encoding="utf-8")
+    comet = comet_path.read_text(encoding="utf-8")
     ver = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     assert f"Product: {ver}" in comet
     assert "Scenarios: S" in comet

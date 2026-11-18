@@ -12,8 +12,8 @@ HARDENED = 0x80000000
 
 
 def master_from_seed(seed: bytes) -> tuple[int, bytes]:
-    I = hmac.new(b"Bitcoin seed", seed, hashlib.sha512).digest()
-    il, ir = I[:32], I[32:]
+    digest = hmac.new(b"Bitcoin seed", seed, hashlib.sha512).digest()
+    il, ir = digest[:32], digest[32:]
     key = int.from_bytes(il, "big")
     if key == 0 or key >= N:
         raise ValueError("invalid master key")
@@ -25,8 +25,8 @@ def ckd_priv(parent_key: int, parent_chain: bytes, index: int) -> tuple[int, byt
         data = b"\x00" + parent_key.to_bytes(32, "big") + struct.pack(">I", index)
     else:
         data = priv_to_compressed_pub(parent_key) + struct.pack(">I", index)
-    I = hmac.new(parent_chain, data, hashlib.sha512).digest()
-    il, ir = I[:32], I[32:]
+    digest = hmac.new(parent_chain, data, hashlib.sha512).digest()
+    il, ir = digest[:32], digest[32:]
     child = (int.from_bytes(il, "big") + parent_key) % N
     if int.from_bytes(il, "big") >= N or child == 0:
         raise ValueError("invalid child key")
