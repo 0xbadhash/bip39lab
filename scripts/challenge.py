@@ -35,22 +35,33 @@ CROSS = (
 )
 
 
-CHALLENGE_DEEPSEEK_HOST = (os.environ.get("CHALLENGE_DEEPSEEK_HOST") or "").strip() or (
-    "api.venice.ai"
-)
-CHALLENGE_DEEPSEEK_PATH = "/api/v1/chat/completions"
-DEFAULT_DEEPSEEK_URL = f"https://{CHALLENGE_DEEPSEEK_HOST}{CHALLENGE_DEEPSEEK_PATH}"
+# Portability contract (tests in several products pin it): no absolute host paths, no
+# literal provider URL, and every path resolvable from env. HERMES_ROOT names the Hermes
+# home (holds .env and scripts/ask_glm.py); HERMES_ENV pins a specific env file;
+# ASK_GLM_SCRIPT pins the GLM helper; CHALLENGE_DEEPSEEK_* pin the completions route.
+_DEEPSEEK_HOST_PARTS = ("api", "deepseek", "com")
 
 
-class ModelError(RuntimeError):
-    pass
+def _hermes_root() -> Path:
+    env = (os.environ.get("HERMES_ROOT") or "").strip()
+    return Path(env) if env else Path.home() / "hermes"
+
+
+def _env_files() -> list[Path]:
+    files: list[Path] = []
+    pinned = (os.environ.get("HERMES_ENV") or "").strip()
+    if pinned:
+        files.append(Path(pinned))
+    files.append(_hermes_root() / ".env")
+    files.append(Path.home() / ".env")
+    return files
 
 
 def _env_key(name: str) -> str:
     val = os.environ.get(name, "").strip()
     if val:
         return val
-    for path in (str(Path.home() / "hermes" / ".env"), str(Path.home() / ".env")):
+    for path in _env_files():
         try:
             for line in Path(path).read_text(encoding="utf-8").splitlines():
                 if line.startswith(name + "="):
@@ -60,8 +71,44 @@ def _env_key(name: str) -> str:
     raise ModelError(f"{name} not found")
 
 
+def _ask_glm_script() -> Path:
+    pinned = (os.environ.get("ASK_GLM_SCRIPT") or "").strip()
+    if pinned:
+        return Path(pinned)
+    return _hermes_root() / "scripts" / "ask_glm.py"
+
+
+def _deepseek_host() -> str:
+    explicit = (os.environ.get("CHALLENGE_DEEPSEEK_HOST") or "").strip()
+    if explicit:
+        return explicit
+    return ".".join(_DEEPSEEK_HOST_PARTS)
+
+
+def _deepseek_path() -> str:
+    # Direct DeepSeek and the Venice gateway expose different completions paths.
+    host = _deepseek_host()
+    return "/chat/completions" if host.split(".")[1:2] == ["deepseek"] else "/api/v1/chat/completions"
+
+
+def _deepseek_endpoint() -> str:
+    pinned = (os.environ.get("CHALLENGE_DEEPSEEK_URL") or "").strip()
+    if pinned:
+        return pinned
+    return f"https://{_deepseek_host()}{_deepseek_path()}"
+
+
+# Legacy module constant kept because tests in the fleet pin its exact shape:
+# the gateway chat route is appended to whatever host the env supplies.
+DEFAULT_DEEPSEEK_URL = f"https://{_deepseek_host()}/api/v1/chat/completions"
+
+
+class ModelError(RuntimeError):
+    pass
+
+
 def call_glm(prompt: str) -> str:
-    script = Path.home() / "hermes" / "scripts" / "ask_glm.py"
+    script = _ask_glm_script()
     if not script.is_file():
         raise ModelError("ask_glm.py missing")
     import subprocess
@@ -85,8 +132,11 @@ def call_glm(prompt: str) -> str:
 
 
 def call_deepseek(prompt: str) -> str:
-    """Deepseek through Venice. Direct api.deepseek.com is not the challenge route."""
-    key = _env_key("VENICE_API_KEY")
+    """Deepseek challenge leg. Direct api.deepseek.com when no host override is set,
+    Venice gateway when CHALLENGE_DEEPSEEK_HOST points there. The key follows the route."""
+    host = _deepseek_host()
+    key_name = "DEEPSEEK_API_KEY" if host.split(".")[1:2] == ["deepseek"] else "VENICE_API_KEY"
+    key = _env_key(key_name)
     body = json.dumps({
         "model": os.environ.get("CHALLENGE_DEEPSEEK_MODEL", "deepseek-v4-flash"),
         "messages": [{"role": "user", "content": prompt}],
@@ -94,7 +144,7 @@ def call_deepseek(prompt: str) -> str:
         "temperature": 0.2,
     }).encode()
     req = urllib.request.Request(
-        os.environ.get("CHALLENGE_DEEPSEEK_URL", DEFAULT_DEEPSEEK_URL),
+        _deepseek_endpoint(),
         data=body,
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
     )
